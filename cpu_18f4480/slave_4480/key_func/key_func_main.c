@@ -90,6 +90,10 @@ unsigned    char  CommonXUpKey[4];
 unsigned    char  CommonXDnKey[4];
 
 
+unsigned    char  UpKeyTxConfirm[32];
+unsigned    char  DnKeyTxConfirm[32];
+
+
 bit   HostCallMe;
 bit   UpMove;
 bit   DnMove;
@@ -281,11 +285,13 @@ void    CommonKeyLoad(void)
 		UpButtonTime=10;
 		if( !(CommonXUpKey[i] & bitval)){
 			CommonXUpKey[i]=(CommonXUpKey[i] | bitval);
+			UpKeyTxConfirm[MyAddress-1]=3;
 			Tx1ConfirmCnt=3;
 		}
 	}	
 	else{
 		CommonXUpKey[i]=(CommonXUpKey[i] & ~bitval);
+		UpKeyTxConfirm[MyAddress-1]=0;
 	}
 
 
@@ -300,11 +306,13 @@ void    CommonKeyLoad(void)
 
 		if( !(CommonXDnKey[i] & bitval)){
 			CommonXDnKey[i]=(CommonXDnKey[i] | bitval);
+			DnKeyTxConfirm[MyAddress-1]=3;
 			Tx0ConfirmCnt=3;
 		}
 	}
 	else{
 		CommonXDnKey[i]=(CommonXDnKey[i] & ~bitval);
+		DnKeyTxConfirm[MyAddress-1]=0;
 	}
 
 
@@ -627,6 +635,8 @@ bMainSubDoor=0;  // every main door
 			CompanyWrite();
 	    }
 
+bToggleOn=0;
+ButtonType=0;
 
         CLRWDT();
         CanLiveChk();  
@@ -648,14 +658,22 @@ CommonKeyLoad();
                 CanTx1();
                 HostCallMe=0;
             }
-            else if(Up_Key_Valid && Tx1ConfirmCnt){
+			else if(Up_Key_Valid &&  (UpKeyTxConfirm[MyAddress-1] > 0)){
+//            else if(Up_Key_Valid && Tx1ConfirmCnt){
+
+				CanKeyValue[0]=0;
+
                 SelHostAdr=ReceiveAdr;
                 CanCmd=CAN_KEY_CONFIRM;
                 confirmkey=(MyAddress-1);
                 CanKeyValue[1] = (confirmkey | UP_READY);                
                 CanTx1();
                 HostCallMe=0;
+				if(CanKeyValue[0] == CAN_KEY_CONFIRM){
+					if(UpKeyTxConfirm[MyAddress-1] > 0)	UpKeyTxConfirm[MyAddress-1]--;
+				}
             }            
+/*
             else if(bToggleOn){
 	            if(Up_Key_Clear && Tx1ConfirmCnt){
 	                SelHostAdr=ReceiveAdr;
@@ -667,20 +685,28 @@ CommonKeyLoad();
 	            }            
 	            else if(Tx1ConfirmCnt==0)   Up_Key_Clear=0;
 			}
+*/
 
 
-            if(!DnKeyLoad(ReceiveAdr) && (ButtonType==0)){
+            if(!DnKeyLoad(ReceiveAdr)){
                 CanTx0();
                 HostCallMe=0;
             }
-            else if(Dn_Key_Valid && Tx0ConfirmCnt){
+			else if(Dn_Key_Valid &&  (DnKeyTxConfirm[MyAddress-1] > 0)){
+//            else if(Dn_Key_Valid && Tx0ConfirmCnt){
+				CanKeyValue[0]=0;
                 SelHostAdr=ReceiveAdr;
                 CanCmd=CAN_KEY_CONFIRM;
                 confirmkey=(MyAddress-1);
                 CanKeyValue[1] = (confirmkey | DN_READY);                
                 CanTx0();
                 HostCallMe=0;
+				if(CanKeyValue[0] == CAN_KEY_CONFIRM){
+					if(DnKeyTxConfirm[MyAddress-1] > 0)	DnKeyTxConfirm[MyAddress-1]--;
+				}
             }
+
+/*
 			else if(bToggleOn){ 
 	            if(Dn_Key_Clear && Tx0ConfirmCnt){
 	                SelHostAdr=ReceiveAdr;
@@ -693,7 +719,6 @@ CommonKeyLoad();
 	            else if(Tx0ConfirmCnt==0)   Dn_Key_Clear=0;
 			}
 
-/*
             if(HostCallMe){
         		SelHostAdr=LocalNumber;                  
                 CanCmd=CAN_NO_KEY_SET;
