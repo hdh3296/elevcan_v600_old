@@ -140,6 +140,8 @@ bit   b_MyFamily=0;
 bit   bIamXSubDoor=0;                    
 bit	  bHALL_LAMP_UP=0;
 
+bit	  bButtonTx=0;
+
 
 //const   unsigned        char    seg1[]={0x0,0x06,0x0b,0x07};
 const   unsigned        char    seg0[]={0x3f,0x06,0xdb,0xcf,0xe6,0xed,0xfd,0x27,0xff,0xef,0x5c};
@@ -283,6 +285,7 @@ void    CommonKeyLoad(void)
 		Up_Key_Valid=1;
 		UP_KEY_LAMP=1;
 		UpButtonTime=10;
+
 		if( !(CommonXUpKey[i] & bitval)){
 			CommonXUpKey[i]=(CommonXUpKey[i] | bitval);
 			UpKeyTxConfirm[MyAddress-1]=3;
@@ -319,6 +322,11 @@ void    CommonKeyLoad(void)
     for(i=0;i<MAX_ELEV;i++){ 
        XDoorOpenCheck(i);
     }
+
+	if(UpKeyBit || DnKeyBit){
+//		CanTxAct=1;
+		bButtonTx=1;		
+	}
 }
 
 
@@ -652,7 +660,11 @@ CommonKeyLoad();
                   
         UpDownKey();
                                 
-        if(CanTxAct){
+		if(bButtonTx){
+
+CanTxAct=1;
+
+//        if(CanTxAct){
             if(!UpKeyLoad(ReceiveAdr)){
                 CanTx1();
                 HostCallMe=0;
@@ -725,9 +737,9 @@ CommonKeyLoad();
 				HostCallMe=0;              
                 CanTx0();
             }
-
 			CanTxAct=0;
 */
+		bButtonTx=0;
 
         }            
     }
