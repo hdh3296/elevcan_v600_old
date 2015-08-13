@@ -561,7 +561,6 @@ void main(void)
     LoadSetupValue();  //1
     CAN_Init();
     ei();
-    
         
     FloorChange=0;
     BefCurFloor=0;
@@ -726,6 +725,7 @@ CommonKeyLoad();
 				HostCallMe=0;              
                 CanTx0();
             }
+
 			CanTxAct=0;
 */
 
