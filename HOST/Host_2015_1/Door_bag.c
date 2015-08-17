@@ -440,17 +440,19 @@ UserDataType	__attribute__((section(".usercode"))) DoorOpenSetCheck(void)
 				ret=1;  
 			}
 
-
+/*
 	    	if(sRamDArry[mDoorSeq] == DOOR_REOPEN_CHECK){		    		      
 	            if(bDoorJumper || S1_POWER_FAIL || S3_VIP1){
 					ret=1;  
 				}
 			}
+*/
 
 		}
 	}
 	return(ret);
 }
+
 
 
 void  __attribute__((section(".usercode"))) MainDoorOpenCmd_abc(void)
@@ -459,7 +461,7 @@ void  __attribute__((section(".usercode"))) MainDoorOpenCmd_abc(void)
 
 
     if(!bOpenEnd || DoorOpenSetCheck() )	     OUT_OP(1);      
-
+ 
 
     if((USE_CHECK == BAGGAGE_USE) || (USE_CHECK == CARLIFT_USE)){
         if(!bHoleDoorOpenEnd && (!IN_LU || !IN_LD) )  OUT_HOP(1);   //main sub hole door  open    1

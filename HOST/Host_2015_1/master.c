@@ -4603,7 +4603,7 @@ unsigned int	__attribute__((section(".usercode"))) FixFloorStartValidCheck(void)
 		if( FixFlrTimeCnt < i)				return(0);
 	}
 	else{
-		if( FixFlrTimeCnt < cF_FIXFLOORTIME)	return(0);
+		if( FixFlrTimeCnt < i)				return(0);
 	}
 
 
@@ -5693,7 +5693,7 @@ void __attribute__((section(".usercode")))  DoorOpenCloseSeq(void)
 			}
             break;            
         case	DOOR_REOPEN_CHECK:     
-            if(bDoorJumper || bOutDate || bMotor_Overheat){
+            if(bDoorJumper || bOutDate || bMotor_Overheat || S1_POWER_FAIL){
                 SelectDoorOpen_you();    
                 sRamDArry[mDoorSeq]=DOOR_REOPEN_CHECK;         						
             }
@@ -8302,7 +8302,6 @@ void  __attribute__((section(".usercode")))   IO_Check(void)
     OUT_ERR(0);        
 
 /////////////
-
 /////////
 
 	
@@ -9359,8 +9358,8 @@ void _ISR_X _T1Interrupt(void)
                 bDspSeq=!bDspSeq;
                 FanTime++; 
 				if(AccTimer < 254)			AccTimer++;							 
-                if(FixFlrTimeCnt <= 254)	FixFlrTimeCnt++;
-
+                if(FixFlrTimeCnt <= 6000)	FixFlrTimeCnt++;
+//                if(FixFlrTimeCnt <= 254)	FixFlrTimeCnt++;
 
 
 
