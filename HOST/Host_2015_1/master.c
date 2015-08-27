@@ -5513,6 +5513,24 @@ unsigned int  __attribute__((section(".usercode")))  StopPulseCheck(void)
 }
 
 
+
+unsigned int  __attribute__((section(".usercode")))  DoorjumperChkValid(void)
+{
+	#ifdef  TEST_SIMULATION  
+		return(0);
+	#else
+		if(DoorJumperChkOnOffChk){
+			if(Old_Law_SystemChk()){
+				if((!bFirstFire && !bSecondFire))	return(1);
+				else								return(0);
+			}
+			else									return(1);
+		}
+		else	return(0);
+	#endif				  
+}
+
+
 void __attribute__((section(".usercode")))  DoorOpenCloseSeq(void)
 {			  
 	LocalType TmpTime;
@@ -5552,6 +5570,39 @@ void __attribute__((section(".usercode")))  DoorOpenCloseSeq(void)
 		}
     }
 
+
+    if(DoorjumperChkValid()){
+	    if((sRamDArry[mDoorSeq] > DOOR_OPEN_START) && (sRamDArry[mDoorSeq] < READY_ELEVATOR) && ( !bDoorJumper)){
+			if(sRamDArry[mDoorSeq] == DOOR_OPEN_WAIT){
+				if(OneDoorSenserCloseChk())	bDoorJumper=1;	
+			}
+			else{
+			    if((USE_CHECK == BAGGAGE_USE) || (USE_CHECK == CARLIFT_USE)){			
+	        		if( (!IN_OP_E) && (CarDoorCloseEndCheckForDoorjmp()) ){
+						DoorJumperNm=1;
+						bDoorJumper=1;
+					}
+					if( (!IN_X7) && (HoleDoorCloseEndCheckForDoorjmp()) ){
+						DoorJumperNm=(DoorJumperNm | 2);
+						bDoorJumper=1;
+					}					
+			    }
+			    else{
+        			if(!IN_OP_E){
+						if(OneDoorSenserCloseChk())	bDoorJumper=1;
+					}
+				}
+			}
+
+			if(bDoorJumper){		
+				if(DoorJumperNm > 0)	DoorJumperNm=(DoorJumperNm-1);
+			}
+		}
+
+		if(bDoorJumper){		
+		  	sRamDArry[mDoorSeq]=DOOR_REOPEN_CHECK;
+		}
+	}
 
 
 
@@ -5666,7 +5717,7 @@ void __attribute__((section(".usercode")))  DoorOpenCloseSeq(void)
 
 			OutDateCheck();
 
-
+/*
 			if(Old_Law_SystemChk()){
 				if((OneDoorSenserCloseChk()) && (!bFirstFire && !bSecondFire) && DoorJumperChkOnOffChk){                                     		
 				  	sRamDArry[mDoorSeq]=DOOR_REOPEN_CHECK;
@@ -5681,7 +5732,7 @@ void __attribute__((section(".usercode")))  DoorOpenCloseSeq(void)
 					if(DoorJumperNm > 0)	DoorJumperNm=(DoorJumperNm-1);
 				}
 			}
-
+*/
 
 			if(bDoorJumper==0){
 				if((DoorOpenTime > (cF_OPWTTM + cF_REOPTM))){

@@ -812,55 +812,55 @@ const unsigned char GroupLineMessage[][17]={
                                     "W_FLR:Prk S_Time",//31 
                                     "W_FLR:Prk E_Time",//32 
 ///////////////////////////////////////////////////////////                          
-                                    "NcNo1:Emergency ",//1  
-                                    "NcNo1:Parking   ",//2  
-                                    "NcNo1:AutoButton",//3  
-                                    "NcNo1:Up Button ",//4  
-                                    "NcNo1:Dn Button ",//5  
-                                    "NcNo1:Open limit",//6  
-                                    "NcNo1:Car Door  ",//7  
-                                    "NcNo1:Hall Door ",//8  
-                                    "NcNo1:Su1       ",//9  
-                                    "NcNo1:Sd1       ",//10 
-                                    "NcNo1:Safety sw ",//11 
-                                    "NcNo1:Overload  ",//12 
-                                    "NcNo1:Uls       ",//13 
-                                    "NcNo1:Dls       ",//14 
-                                    "NcNo1:Lu        ",//15 
-                                    "NcNo1:Ld        ",//16 
-                                    "NcNo1:Rg        ",//17 
-                                    "NcNo1:Bat       ",//18 
-                                    "NcNo1:Pass      ",//19 
-                                    "NcNo1:Fire      ",//20 
-                                    "NcNo1:Water     ",//21 
-                                    "NcNo1:Full      ",//22 
-                                    "NcNo1:Mm        ",//23 
-                                    "NcNo1:Fhm       ",//24
-                                    "NcNo1:Fr1       ",//25 
-                                    "NcNo1:Fr2       ",//26
-                                    "NcNo1:Gs2       ",//27 
-                                    "NcNo1:Ds2       ",//28
-                                    "NcNo1:Su2       ",//29 
-                                    "NcNo1:Sd2       ",//30
-                                    "NcNo1:Bm        ",//31 
-                                    "NcNo1:Inv       ",//32 
+                                    "NcNo1:EMG       ",//1  
+                                    "NcNo1:PRK       ",//2  
+                                    "NcNo1:AT        ",//3  
+                                    "NcNo1:UB        ",//4  
+                                    "NcNo1:DB        ",//5  
+                                    "NcNo1:OLS       ",//6  
+                                    "NcNo1:GS        ",//7  
+                                    "NcNo1:HDS       ",//8  
+                                    "NcNo1:SUS       ",//9  
+                                    "NcNo1:SDS       ",//10 
+                                    "NcNo1:SFT       ",//11 
+                                    "NcNo1:OVL       ",//12 
+                                    "NcNo1:ULS       ",//13 
+                                    "NcNo1:DLS       ",//14 
+                                    "NcNo1:LU        ",//15 
+                                    "NcNo1:LD        ",//16 
+                                    "NcNo1:RG        ",//17 
+                                    "NcNo1:BAT       ",//18 
+                                    "NcNo1:PAS       ",//19 
+                                    "NcNo1:FIR       ",//20 
+                                    "NcNo1:WAT       ",//21 
+                                    "NcNo1:FUL       ",//22 
+                                    "NcNo1:MM        ",//23 
+                                    "NcNo1:TH        ",//24
+                                    "NcNo1:FR1       ",//25 
+                                    "NcNo1:FR2       ",//26
+                                    "NcNo1:BMR       ",//27 
+                                    "NcNo1:BML       ",//28
+                                    "NcNo1:SU1       ",//29 
+                                    "NcNo1:SD1       ",//30
+                                    "NcNo1:DZ        ",//31 
+                                    "NcNo1:INV       ",//32 
 ///////////////////////////////////////////////////////////                                                                                                           
-                                    "NcNo2:x0        ",//1  
-                                    "NcNo2:x1        ",//2  
-                                    "NcNo2:x2        ",//3  
-                                    "NcNo2:x3        ",//4  
-                                    "NcNo2:x4        ",//5  
-                                    "NcNo2:x5        ",//6  
-                                    "NcNo2:x6        ",//7  
-                                    "NcNo2:x7        ",//8  
-                                    "NcNo2:Fs0       ",//9  
-                                    "NcNo2:Fs1       ",//10 
-                                    "NcNo2:Fs2       ",//11 
-                                    "NcNo2:Fs3       ",//12 
-                                    "NcNo2:Fs4       ",//13 
-                                    "NcNo2:Der       ",//14 
-                                    "NcNo2:Fid       ",//15 
-                                    "NcNo2:Und       ",//16 
+                                    "NcNo2:X0        ",//1  
+                                    "NcNo2:X1        ",//2  
+                                    "NcNo2:X2        ",//3  
+                                    "NcNo2:X3        ",//4  
+                                    "NcNo2:X4        ",//5  
+                                    "NcNo2:X5        ",//6  
+                                    "NcNo2:X6        ",//7  
+                                    "NcNo2:HOLS/X7   ",//8  
+                                    "NcNo2:W/FS0     ",//9  
+                                    "NcNo2:S.S/FS1   ",//10 
+                                    "NcNo2:FS2       ",//11 
+                                    "NcNo2:FS3       ",//12 
+                                    "NcNo2:FS4       ",//13 
+                                    "NcNo2:DER       ",//14 
+                                    "NcNo2:FID       ",//15 
+                                    "NcNo2:UND       ",//16 
                                     "NcNo2:nc        ",//17 
                                     "NcNo2:nc        ",//18 
                                     "NcNo2:nc        ",//19 
@@ -879,29 +879,29 @@ const unsigned char GroupLineMessage[][17]={
                                     "NcNo2:nc        ",//32 
 ///////////////////////////////////////////////////////////                                                                                                           
 /////////////////////////////////////////////////////////// 
-                                    "NcNo3:Fan       ",//9
-                                    "NcNo3:Lit       ",//10 
-                                    "NcNo3:Buz       ",//11
-                                    "NcNo3:Bell      ",//12
-                                    "NcNo3:Move      ",//13
-                                    "NcNo3:Err       ",//14
-                                    "NcNo3:HOp       ",//15
+                                    "NcNo3:FAN       ",//9
+                                    "NcNo3:LIT       ",//10 
+                                    "NcNo3:BUZ       ",//11
+                                    "NcNo3:BEL       ",//12
+                                    "NcNo3:REL       ",//13
+                                    "NcNo3:ERR       ",//14
+                                    "NcNo3:HOP       ",//15
                                     "NcNo3:HCl       ",//16
-                                    "NcNo3:Op        ",//1  
-                                    "NcNo3:Cl        ",//2  
-                                    "NcNo3:S_Op      ",//3  
-                                    "NcNo3:S_Cl      ",//4  
-                                    "NcNo3:Bk2       ",//5  
+                                    "NcNo3:OP        ",//1  
+                                    "NcNo3:CL        ",//2  
+                                    "NcNo3:SOP       ",//3  
+                                    "NcNo3:SCL       ",//4  
+                                    "NcNo3:BK2       ",//5  
                                     "NcNo3:D_S       ",//6  
-                                    "NcNo3:Gbr       ",//7  
-                                    "NcNo3:Bk1       ",//8  
-                                    "NcNo3:Up        ",//17 
-                                    "NcNo3:Dn        ",//18 
+                                    "NcNo3:UCM       ",//7  
+                                    "NcNo3:BK1       ",//8  
+                                    "NcNo3:UP        ",//17 
+                                    "NcNo3:DN        ",//18 
                                     "NcNo3:P1        ",//19 
                                     "NcNo3:P2        ",//20 
                                     "NcNo3:P3        ",//21 
                                     "NcNo3:P4        ",//22 
-                                    "NcNo3:Dac       ",//23 
+                                    "NcNo3:DAC       ",//23 
                                     "NcNo3:nc        ",//24
                                     "NcNo3:nc        ",//25 
                                     "NcNo3:nc        ",//26
@@ -912,55 +912,55 @@ const unsigned char GroupLineMessage[][17]={
                                     "NcNo3:nc        ",//31 
                                     "NcNo3:nc        ",//32 
 ///////////////////////////////////////////////////////////                                                                                                           
-                                    "INP1:Emergency  ",//1  
-                                    "INP1:Parking    ",//2  
-                                    "INP1:Auto Button",//3  
-                                    "INP1:Up Button  ",//4  
-                                    "INP1:Dn Button  ",//5  
-                                    "INP1:Open limit ",//6  
-                                    "INP1:Car Door   ",//7  
-                                    "INP1:Hall Door  ",//8  
-                                    "INP1:Su1        ",//9  
-                                    "INP1:Sd1        ",//10 
-                                    "INP1:Safety sw  ",//11 
-                                    "INP1:Overload   ",//12 
-                                    "INP1:Uls        ",//13 
-                                    "INP1:Dls        ",//14 
-                                    "INP1:Lu         ",//15 
-                                    "INP1:Ld         ",//16 
-                                    "INP1:Rg         ",//17 
-                                    "INP1:Bat        ",//18 
-                                    "INP1:Pass       ",//19 
-                                    "INP1:Fire       ",//20 
-                                    "INP1:Water      ",//21 
-                                    "INP1:Full       ",//22 
-                                    "INP1:Mm         ",//23 
-                                    "INP1:Fhm        ",//24
-                                    "INP1:Fr1        ",//25 
-                                    "INP1:Fr2        ",//26
-                                    "INP1:Gs2        ",//27 
-                                    "INP1:Ds2        ",//28
-                                    "INP1:Su2        ",//29 
-                                    "INP1:Sd2        ",//30
-                                    "INP1:Bm         ",//31 
-                                    "INP1:Inv        ",//32 
+                                    "INP1:EMG        ",//1  
+                                    "INP1:PRK        ",//2  
+                                    "INP1:AT         ",//3  
+                                    "INP1:UP         ",//4  
+                                    "INP1:DN         ",//5  
+                                    "INP1:OLS        ",//6  
+                                    "INP1:GS         ",//7  
+                                    "INP1:HDS        ",//8  
+                                    "INP1:SUS        ",//9  
+                                    "INP1:SDS        ",//10 
+                                    "INP1:SFT        ",//11 
+                                    "INP1:OVL        ",//12 
+                                    "INP1:ULS        ",//13 
+                                    "INP1:DLS        ",//14 
+                                    "INP1:LU         ",//15 
+                                    "INP1:LD         ",//16 
+                                    "INP1:RG         ",//17 
+                                    "INP1:BAT        ",//18 
+                                    "INP1:PAS        ",//19 
+                                    "INP1:FIR        ",//20 
+                                    "INP1:WAT        ",//21 
+                                    "INP1:FUL        ",//22 
+                                    "INP1:MM         ",//23 
+                                    "INP1:TH         ",//24
+                                    "INP1:FR1        ",//25 
+                                    "INP1:FR2        ",//26
+                                    "INP1:BMR        ",//27 
+                                    "INP1:BML        ",//28
+                                    "INP1:SU1        ",//29 
+                                    "INP1:SD1        ",//30
+                                    "INP1:DZ         ",//31 
+                                    "INP1:INV        ",//32 
 ///////////////////////////////////////////////////////////                                                                                                           
-                                    "INP2:x0         ",//1  
-                                    "INP2:x1         ",//2  
-                                    "INP2:x2         ",//3  
-                                    "INP2:x3         ",//4  
-                                    "INP2:x4         ",//5  
-                                    "INP2:x5         ",//6  
-                                    "INP2:x6         ",//7  
-                                    "INP2:x7         ",//8  
-                                    "INP2:Fs0        ",//9  
-                                    "INP2:Fs1        ",//10 
-                                    "INP2:Fs2        ",//11 
-                                    "INP2:Fs3        ",//12 
-                                    "INP2:Fs4        ",//13 
-                                    "INP2:Der        ",//14 
-                                    "INP2:Fid        ",//15 
-                                    "INP2:Und        ",//16 
+                                    "INP2:X0         ",//1  
+                                    "INP2:X1         ",//2  
+                                    "INP2:X2         ",//3  
+                                    "INP2:X3         ",//4  
+                                    "INP2:X4         ",//5  
+                                    "INP2:X5         ",//6  
+                                    "INP2:X6         ",//7  
+                                    "INP2:HOLS/X7    ",//8  
+                                    "INP2:W/FS0      ",//9  
+                                    "INP2:S.S/FS1    ",//10 
+                                    "INP2:FS2        ",//11 
+                                    "INP2:FS3        ",//12 
+                                    "INP2:FS4        ",//13 
+                                    "INP2:DER        ",//14 
+                                    "INP2:FID        ",//15 
+                                    "INP2:UND        ",//16 
                                     "INP2:nc         ",//17 
                                     "INP2:nc         ",//18 
                                     "INP2:nc         ",//19 
@@ -979,29 +979,29 @@ const unsigned char GroupLineMessage[][17]={
                                     "INP2:nc         ",//32 
 ///////////////////////////////////////////////////////////                                                                                                           
 ///////////////////////////////////////////////////////////                                                                                                           
-                                    "OUTP:Fan        ",//9
-                                    "OUTP:Lit        ",//10 
-                                    "OUTP:Buz        ",//11
-                                    "OUTP:Bell       ",//12
-                                    "OUTP:Move       ",//13
-                                    "OUTP:Err        ",//14
-                                    "OUTP:HOp        ",//15
-                                    "OUTP:HCl        ",//16
-                                    "OUTP:Op         ",//1  
-                                    "OUTP:Cl         ",//2  
-                                    "OUTP:S_Op       ",//3  
-                                    "OUTP:S_Cl       ",//4  
-                                    "OUTP:Bk2        ",//5  
+                                    "OUTP:FAN        ",//9
+                                    "OUTP:LIT        ",//10 
+                                    "OUTP:BUZ        ",//11
+                                    "OUTP:BEL        ",//12
+                                    "OUTP:REL        ",//13
+                                    "OUTP:ERR        ",//14
+                                    "OUTP:HOP        ",//15
+                                    "OUTP:HCL        ",//16
+                                    "OUTP:OP         ",//1  
+                                    "OUTP:CL         ",//2  
+                                    "OUTP:SOP        ",//3  
+                                    "OUTP:SCL        ",//4  
+                                    "OUTP:BK2        ",//5  
                                     "OUTP:D_S        ",//6  
-                                    "OUTP:Gbr        ",//7  
-                                    "OUTP:Bk1        ",//8  
-                                    "OUTP:Up         ",//17 
-                                    "OUTP:Dn         ",//18 
+                                    "OUTP:UCM        ",//7  
+                                    "OUTP:BK1        ",//8  
+                                    "OUTP:UP         ",//17 
+                                    "OUTP:DN         ",//18 
                                     "OUTP:P1         ",//19 
                                     "OUTP:P2         ",//20 
                                     "OUTP:P3         ",//21 
                                     "OUTP:P4         ",//22 
-                                    "OUTP:Dac        ",//23 
+                                    "OUTP:DAC        ",//23 
                                     "OUTP:nc         ",//24
                                     "OUTP:nc         ",//25 
                                     "OUTP:nc         ",//26
@@ -1303,8 +1303,8 @@ const unsigned char NormalDspMessage[NORMAL_DSP_MESSAGE_CNT][11]={
                                       "Date_Time  ",
                                       "Encod Pulse",                                      
                                       "EMG  Input ",  
-                                      "SU1  Input ",  
-                                      "GR   Input ",  
+                                      "SUS  Input ",  
+                                      "RG   Input ",  
                                       "FR1  Input ",  
                                       "X0   Input ",  
                                       "FS0  Input ",
@@ -1333,35 +1333,35 @@ const unsigned char NormalDspMessage[NORMAL_DSP_MESSAGE_CNT][11]={
 const unsigned char InputPort1SelMessage[][11]={
                                       "SILK_EMG   ",                                      
                                       "SILK_PRK   ",                                      
-                                      "SILK_AUTO  ",                                      
-                                      "SILK_U_B   ",                                                                            
-                                      "SILK_D_B   ",                                                                            
+                                      "SILK_AT    ",                                      
+                                      "SILK_UB    ",                                                                            
+                                      "SILK_DB    ",                                                                            
                                       "SILK_OLS   ",
                                       "SILK_GS    ",                                      
-                                      "SILK_DS    ",  
-                                      "SILK_SU1   ",  
-                                      "SILK_SD1   ",  
+                                      "SILK_HDS   ",  
+                                      "SILK_SUS   ",  
+                                      "SILK_SDS   ",  
                                       "SILK_SFT   ",  
-                                      "SILK_OLR   ",  
+                                      "SILK_OVL   ",  
                                       "SILK_ULS   ",   
                                       "SILK_DLS   ",
                                       "SILK_LU    ",
                                       "SILK_LD    ",
-                                      "SILK_GR    ",
+                                      "SILK_RG    ",
                                       "SILK_BAT   ",
-                                      "SILK_PASS  ",
-                                      "SILK_FIRE  ",
-                                      "SILK_WATER ",
-                                      "SILK_FULL  ",
+                                      "SILK_PAS   ",
+                                      "SILK_FIR   ",
+                                      "SILK_WAT   ",
+                                      "SILK_FUL   ",
                                       "SILK_MM    ",
-                                      "SILK_FHM   ",
+                                      "SILK_TH    ",
                                       "SILK_FR1   ",
                                       "SILK_FR2   ",
-                                      "SILK_GS2   ",
-                                      "SILK_DS2   ",
-                                      "SILK_SU2   ",
-                                      "SILK_SD2   ",
-                                      "SILK_BM    ",
+                                      "SILK_BMR   ",
+                                      "SILK_BML   ",
+                                      "SILK_SU1   ",
+                                      "SILK_SD1   ",
+                                      "SILK_DZ    ",
                                       "SILK_INV   ",
                                       "SILK_X0    ",                                      
                                       "SILK_X1    ",                                      
@@ -1370,9 +1370,9 @@ const unsigned char InputPort1SelMessage[][11]={
                                       "SILK_X4    ",                                                                            
                                       "SILK_X5    ",
                                       "SILK_X6    ",                                      
-                                      "SILK_X7    ",  
-                                      "SILK_FS0   ",  
-                                      "SILK_FS1   ",  
+                                      "SILK_HOS/X7",  
+                                      "SILK_W/FS0 ",  
+                                      "SILK_SS/FS1",  
                                       "SILK_FS2   ",  
                                       "SILK_FS3   ",  
                                       "SILK_FS4   ",   
@@ -1419,20 +1419,20 @@ const unsigned char InputPort1SelMessage[][11]={
 
 const unsigned char OutputPortSelMessage[OUTPORT_SEL_MESSAGE_CNT][11]={
                                       "SILK_FAN   ",                                      
-                                      "SILK_LIGHT ",                                      
+                                      "SILK_LIT   ",                                      
                                       "SILK_BUZ   ",                                      
-                                      "SILK_BELL  ",                                                                            
-                                      "SILK_RST   ",                                                                            
+                                      "SILK_BEL   ",                                                                            
+                                      "SILK_REL   ",                                                                            
                                       "SILK_ERR   ",
-                                      "SILK_HOp   ",                                      
-                                      "SILK_HCl   ",  
+                                      "SILK_HOP   ",                                      
+                                      "SILK_HCL   ",  
                                       "SILK_OP    ",  
                                       "SILK_CL    ",  
-                                      "SILK_S_OP  ",  
-                                      "SILK_S_CL  ",  
+                                      "SILK_SOP   ",  
+                                      "SILK_SCL   ",  
                                       "SILK_BK2   ",   
                                       "SILK_D_S   ",
-                                      "SILK_GBR   ",
+                                      "SILK_UCM   ",
                                       "SILK_BK1   ",
                                       "SILK_UP    ",
                                       "SILK_DN    ",
@@ -1470,10 +1470,9 @@ const unsigned char SlipMessage[][11]={
 
 
 
-
 const unsigned char InputName[6][3]={
                                       "EMG",                                      
-                                      "SU1",    
+                                      "SUS",    
                                       "RG ",   
                                       "FR1",                                      
                                       "X0 ",    
