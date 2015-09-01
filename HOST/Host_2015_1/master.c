@@ -732,6 +732,104 @@ UserDataType  __attribute__((section(".usercode"))) EEP_Clear_All(void)
 
 UserDataType  __attribute__((section(".usercode"))) EEP_Save_All(void)
 {
+	unsigned int	i,j,k,err_savept;
+	long_field	m_data;  
+
+/*	
+	i=eDArry[eErrCntPt]-1;
+	if(i >= ERR_SAVE_CNT){
+		NotRecoveryData=(NotRecoveryData & ~0x03);
+	}
+	else{
+		for(j=0;j<ERR_SAVE_CNT;j++){
+			if(eDArryEvent[i] > 0){
+				if(eDArryEvent[i] < 5){
+					k=(i * ERR_SAVE_WIDE);
+					eDArry[eSysErCnt + k + 0] = 0;             
+				    eDArry[eSysErCnt + k + 1] = 0;             
+				    eDArry[eSysErCnt + k + 2] = 0;            
+				    eDArry[eSysErCnt + k + 3] = 0;       
+				    eDArry[eSysErCnt + k + 4] = 0;             
+				    eDArry[eSysErCnt + k + 5] = 0;             
+					eDArry[eErrCntPt]--;					
+				}
+			}
+			else	j=ERR_SAVE_CNT;
+
+			i--;
+			if(i==0xff)	i=0;
+		}
+	}
+*/
+
+
+	parameter_mirror[0]=CurPulse;
+	parameter_mirror[1]=MoveCounterx;
+
+	m_data.intger[0]=PowerOnTime;
+	m_data.byte[2]=sRamDArry[mcurfloor];
+	m_data.byte[3]=CurDoorSelect;
+	parameter_mirror[2]=m_data.long_data;
+
+
+	m_data.byte[0]=NotRecoveryData;
+	m_data.byte[1]=eDArry[eErrCntPt];
+	parameter_mirror[3]=m_data.long_data;
+	flash_write_DspChar(F_BLOCK_X0);
+
+
+
+	
+	if(sRamDArry[mBefErrCntPt] != eDArry[eErrCntPt]){
+		if(sRamDArry[mBefErrCntPt] >= 40)	sRamDArry[mBefErrCntPt]=0; 
+		err_savept=(sRamDArry[mBefErrCntPt] * 6);
+		err_savept=(err_savept/64);
+		if(err_savept >= 4)	return(0);
+
+		j=(err_savept * 64);
+		k=j;
+		for(i=0;i<16;i++){
+			m_data.byte[0]=eDArry[j+0];
+			m_data.byte[1]=eDArry[j+1];
+			m_data.byte[2]=eDArry[j+2];
+			m_data.byte[3]=eDArry[j+3];
+			parameter_mirror[i]=m_data.long_data;
+			j=(j+4);
+		}
+		flash_write_DspChar( (F_BLOCK_X1 + k));
+
+
+		j=( k + 64);
+		if(j >= 256)	j=0;
+		k=j;	 
+
+/*
+		err_savept++;
+		if(err_savept>3)	err_savept=0;
+		j=(err_savept * 64);
+		k=j;
+*/
+		for(i=0;i<16;i++){
+			m_data.byte[0]=eDArry[j+0];
+			m_data.byte[1]=eDArry[j+1];
+			m_data.byte[2]=eDArry[j+2];
+			m_data.byte[3]=eDArry[j+3];
+			parameter_mirror[i]=m_data.long_data;
+			j=(j+4);
+		}
+
+		flash_write_DspChar( (F_BLOCK_X1 + k));
+	}
+	
+	return(0);
+}
+
+
+
+
+/*
+UserDataType  __attribute__((section(".usercode"))) EEP_Save_All(void)
+{
 	unsigned int	i,j,k,l,err_savept;
 	long_field	m_data;  
 
@@ -746,12 +844,6 @@ UserDataType  __attribute__((section(".usercode"))) EEP_Save_All(void)
 				if(eDArryEvent[i] < 5){
 					k=(i * ERR_SAVE_WIDE);
 
-/*
-					if(eDArry[eSysErCnt + k + 3] == sSLIP){
-						NotRecoveryData=(NotRecoveryData & ~0x03);
-					}
-
-*/
 
 					eDArry[eSysErCnt + k + 0] = 0;             
 				    eDArry[eSysErCnt + k + 1] = 0;             
@@ -784,16 +876,6 @@ UserDataType  __attribute__((section(".usercode"))) EEP_Save_All(void)
 	parameter_mirror[3]=m_data.long_data;
 	flash_write_DspChar(F_BLOCK_X0);
 
-
-
-
-/*
-	for(j=1;j<255;j++){
-		eDArry[j] =  ((j/6)+1);		
-	}
-	eDArry[255]=40;
-	eDArry[0]=sRamDArry[mcurfloor];		
-*/
 
 
 	if(sRamDArry[mBefErrCntPt] != eDArry[eErrCntPt]){
@@ -833,7 +915,7 @@ UserDataType  __attribute__((section(".usercode"))) EEP_Save_All(void)
 
 	return(0);
 }
-
+*/
 
 
 UserDataType  __attribute__((section(".usercode"))) EEP_Load_All(void)
