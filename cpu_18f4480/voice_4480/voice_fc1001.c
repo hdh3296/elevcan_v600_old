@@ -116,7 +116,9 @@ date    :       1999,9,21
 #define         CANCLE_MENT      		FLOOR_B7+85	//93
 #define         PUSH_MENT      		    FLOOR_B7+86	//94
 #define         SILENCE_MENT            FLOOR_B7+87 //95
-#define         SONG_MENT               FLOOR_B7+88 //95
+#define         SONG_MENT               FLOOR_B7+88 //96
+#define         BEEP_MENT               FLOOR_B7+89 //97 삐 소리 
+
 
 
  //IO 정의
@@ -224,8 +226,8 @@ unsigned char sizex = 64;
 
 
 unsigned    char     delay;
+unsigned    char     TmpCurVoice; // 
 unsigned    char     CurVoice; // 
-unsigned    char     SelVoice; // 
 unsigned    char     PlaySeq;
 unsigned    char     RunPgm;
 unsigned    char     HwajaeVoiceCnt;
@@ -290,8 +292,7 @@ unsigned int    IdPt;
 bit bAfterCancel;
 bit bSetAfterCancel;
 bit bSetSong;
-
-
+bit bBeep;
 
 
 
@@ -316,6 +317,8 @@ extern void SetDipSW();
 extern unsigned char VoiceBusy();
 extern unsigned char GetFloorMent();
 extern unsigned char   UdtVoice_Song(unsigned char);
+extern unsigned char   UdtVoice_Beep(unsigned char);
+
 
 
 
@@ -358,15 +361,17 @@ void main(void)
 		DspCharRdWr(); // CAR CALL 음성을 위한 엘리베이터 각층 디스플레이 값 저장 
         SetCarKeyCancel(); // CAR CALL 취소 값 셋팅  
         
-        CurVoice = 0xff;        
-		CurVoice = UdtVoice_Emer(CurVoice, SelVoice);
-        CurVoice = UdtVoice_EleStatus(CurVoice);   
-        CurVoice = UdtVoice_Floor(CurVoice);
-        if(bSetCarBtnVoice) CurVoice = UdtVoice_CarCall(CurVoice,CurCarKey,BefCarKey);
-        if(bSetSong) CurVoice = UdtVoice_Song(CurVoice);
+        TmpCurVoice = 0xff;
+		TmpCurVoice = UdtVoice_Emer(TmpCurVoice, CurVoice);
+        TmpCurVoice = UdtVoice_EleStatus(TmpCurVoice);   
+        TmpCurVoice = UdtVoice_Floor(TmpCurVoice);
+        if(bSetCarBtnVoice) TmpCurVoice = UdtVoice_CarCall(TmpCurVoice,CurCarKey,BefCarKey);
+        if(bSetSong) TmpCurVoice = UdtVoice_Song(TmpCurVoice);
+		TmpCurVoice = UdtVoice_Beep(TmpCurVoice);
+		
 
-        if(CurVoice != 0xff){
-            SelVoice = CurVoice;
+        if(TmpCurVoice != 0xff){
+            CurVoice = TmpCurVoice;
             _VOICE_ACT = VOICE_ON;            
             if(bVoicePlaying){
                 SPI_Stop_Play(); // 일단, 기존 방송 중이던 음성 중지 !
@@ -401,14 +406,14 @@ void main(void)
             break;
         case SEQ_VOICE_READY:
             if(bVoicePlaying == FALSE){
-                if(SelVoice & 0x80)
+                if(CurVoice & 0x80)
                     PlaySeq = SEQ_END_CHK;
                 else                    
                     PlaySeq = SEQ_VOICE_PLAY;
             }
             break;
         case SEQ_VOICE_PLAY:
-            SPI_Play(SelVoice); // 도착 '몇 층입다','문이열립이다','닫힙니다' 등 안내방송 출력
+            SPI_Play(CurVoice); // 도착 '몇 층입다','문이열립이다','닫힙니다' 등 안내방송 출력
             PlaySeq = SEQ_VOICE_PLAYING;
             break;          
         case SEQ_VOICE_PLAYING:
@@ -441,7 +446,8 @@ void main(void)
            bVoicePlaying = TRUE;
         }else{            
             if(PlaySeq == SEQ_END){
-                SelVoice = 0xff;
+                CurVoice = 0xff;
+				bBeep = TRUE;
             }
             bVoicePlaying = FALSE;
         }
@@ -560,36 +566,38 @@ void interrupt isr(void)
      }
      return tmMent;
  }
- 
+
+
  unsigned char    UdtVoice_Floor(unsigned char befVoice)
  {
-     unsigned char tmCurVoice;
-     unsigned char tmFloorMent;
-     static unsigned char BefFloorMent = 0; 
+     unsigned char tmpCurVoice;
+     unsigned char curFloorMent;
+     static unsigned char befFloorMent = 0; 
      static bit bFlowValid = FALSE;
 
      if(befVoice != 0xff) 
         return befVoice;
 
-     tmFloorMent = GetFloorMent();
-     if(tmFloorMent != 0xfe){
+     curFloorMent = GetFloorMent();
+     if(curFloorMent != 0xfe){
          if(ELE_bAUTO){ // 자동   
              if(ELE_bFLOW){
-                 if((tmFloorMent != BefFloorMent) && (bFlowValid == FALSE)){
-                     tmCurVoice = BefFloorMent = tmFloorMent;
+                 if((curFloorMent != befFloorMent) && (bFlowValid == FALSE)){
+                     tmpCurVoice = befFloorMent = curFloorMent;
                      bFlowValid = TRUE;
-                     return tmCurVoice;
+                     return tmpCurVoice;
                  }
              }else{
                  bFlowValid = FALSE;                         
              }
          }else{ // 수동
-             if(tmFloorMent != BefFloorMent){             
-                 tmCurVoice = BefFloorMent = tmFloorMent;
-                 return tmCurVoice;
+             if(curFloorMent != befFloorMent){             
+                 tmpCurVoice = befFloorMent = curFloorMent;
+				 bBeep = FALSE;
+                 return tmpCurVoice;
              }
          }
-     }
+     }	 
      return befVoice;
  }
  
@@ -608,7 +616,7 @@ void interrupt isr(void)
         return befVoice;
      
      tmCurVoice = befVoice;
-     if(ELE_bAUTO == FALSE){     //manual
+     if(ELE_bAUTO == FALSE){ // 수동일 때 !
          if(ELE_bCLOSE){ // 문이 닫힐 때
              if(bUpDnVoice == FALSE){
                  if((UpDnVoice != UP_MENT) && ELE_bUP){
@@ -624,7 +632,7 @@ void interrupt isr(void)
              UpDnVoice = 0;
              bUpDnVoice = FALSE;
          }
-     }else{ // 자동 이면...
+     }else{ // 자동 일 때 !
          // Up, Down 음성 처리
          if((bOpenVoice == TRUE) && (UpDnVoiceTime > 50) && 
              ELE_bOPEN && (bUpDnVoice == FALSE)){
@@ -679,9 +687,30 @@ void interrupt isr(void)
      }    
      return befVoice;
  }
+
+ unsigned char   UdtVoice_Beep(unsigned char befVoice)
+ {
+     unsigned char tmCurVoice;
+
+     if(befVoice != 0xff) 
+        return befVoice;
+    
+     if(ELE_bCAR_MOVE && ELE_bMANUAL){
+         if(!VoiceBusy() && bBeep && ELE_bUP){  
+             tmCurVoice = BEEP_MENT;
+             return tmCurVoice; 
+         }else if(!VoiceBusy() && bBeep && ELE_bDOWN){  
+             tmCurVoice = BEEP_MENT;
+             return tmCurVoice; 
+         }
+     }else{
+         bBeep = TRUE;
+     }    
+     return befVoice;
+ }
  
  
- unsigned char    UdtVoice_Emer(UCHAR befVoice, UCHAR tmSelVoice)
+ unsigned char    UdtVoice_Emer(UCHAR befVoice, UCHAR curVoice)
  {
      unsigned char tmMent;
      static unsigned char EmergencyVoiceCnt = 0;
@@ -690,27 +719,30 @@ void interrupt isr(void)
         return befVoice;
 
      tmMent = befVoice;
-    
-     if(ELE_bPARKING_READY  && (tmSelVoice != PARKING_MENT)){
+     // 파킹 
+     if(ELE_bPARKING_READY  && (curVoice != PARKING_MENT)){
          tmMent = PARKING_MENT;
      }
-     if(ELE_bPARKING  && (tmSelVoice == PARKING_MENT)){
+     if(ELE_bPARKING  && (curVoice == PARKING_MENT)){
          if(bVoicePlaying){
              SPI_Stop_Play();
              bVoicePlaying = FALSE;
          }
      }
- 
-     if((ELE_bOPEN || ELE_bOPEN_SUB) && ELE_bOVERLOAD && (tmSelVoice != OVERLOAD_MENT) ){
+
+	 // 오버로드 
+     if((ELE_bOPEN || ELE_bOPEN_SUB) && ELE_bOVERLOAD && (curVoice != OVERLOAD_MENT) ){
          tmMent = OVERLOAD_MENT;
      }
- 
-     if(ELE_bFIRE && (tmSelVoice != HWAJAE_MENT) ){
+
+     // 화재 
+     if(ELE_bFIRE && (curVoice != HWAJAE_MENT) ){
          tmMent = HWAJAE_MENT;
      }
 
+     // 비상 
 	 // [151006] 자동시에만 EMG MENT 출력 되도록 수정	
-     if(ELE_bEMG  && (tmSelVoice != EMERGENCY_MENT) && (ELE_bMANUAL==FALSE) ){ 
+     if(ELE_bEMG  && (curVoice != EMERGENCY_MENT) && (ELE_bMANUAL==FALSE) ){ 
          if(EmergencyVoiceCnt < 10)  
              EmergencyVoiceCnt++;
          if(EmergencyVoiceCnt < 6)   
@@ -718,8 +750,9 @@ void interrupt isr(void)
      }
      if(ELE_bEMG == FALSE)   
          EmergencyVoiceCnt = 0;
- 
-     if(ELE_bBAT  && (tmSelVoice != POWER_DOWN_MENT) ){
+
+     // 밧데리 
+     if(ELE_bBAT  && (curVoice != POWER_DOWN_MENT) ){
          tmMent = POWER_DOWN_MENT;
      }
 
@@ -742,7 +775,7 @@ void interrupt isr(void)
         return befVoice;
      if(!ELE_bUP && !ELE_bDOWN)
         return befVoice;
-     if(SelVoice != 0xff)
+     if(CurVoice != 0xff)
         return befVoice;
  
      bitKey = 0x01;
@@ -1033,7 +1066,7 @@ void    TestVoicePlay(void)
 {
     unsigned bBusy;
 
-    CurVoice = 0;
+    TmpCurVoice = 0;
     delay = 0;
     _VOICE_ACT = VOICE_ON;
 
@@ -1050,10 +1083,10 @@ void    TestVoicePlay(void)
 
         if(bBusy == FALSE){
             if(delay > 200){
-                SPI_Play(CurVoice);
-                CurVoice++;
-                if(CurVoice > 100)     
-                    CurVoice = 0;
+                SPI_Play(TmpCurVoice);
+                TmpCurVoice++;
+                if(TmpCurVoice > 100)     
+                    TmpCurVoice = 0;
                 delay = 0;
             }
         }else{
@@ -1245,10 +1278,10 @@ void InitVoice(void)
     active_key=0;
     BatteryRun=0;
     Flow_Active=0;
-    SelVoice = 0xff;
+    CurVoice = 0xff;
     PlaySeq=0;
     bVoicePlaying=0;
-    CurVoice=0xff;
+    TmpCurVoice=0xff;
     HwajaeVoiceCnt=0;
     OverLoadVoiceCnt=0;
     bAfterCancel=FALSE;
