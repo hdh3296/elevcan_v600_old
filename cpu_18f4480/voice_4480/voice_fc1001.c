@@ -708,8 +708,9 @@ void interrupt isr(void)
      if(ELE_bFIRE && (tmSelVoice != HWAJAE_MENT) ){
          tmMent = HWAJAE_MENT;
      }
- 
-     if(ELE_bEMG  && (tmSelVoice != EMERGENCY_MENT) ){
+
+	 // [151006] 자동시에만 EMG MENT 출력 되도록 수정	
+     if(ELE_bEMG  && (tmSelVoice != EMERGENCY_MENT) && (ELE_bMANUAL==FALSE) ){ 
          if(EmergencyVoiceCnt < 10)  
              EmergencyVoiceCnt++;
          if(EmergencyVoiceCnt < 6)   
