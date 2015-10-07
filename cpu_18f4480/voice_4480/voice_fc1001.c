@@ -282,17 +282,17 @@ bit bBeepEnab;
 // Voice Play Seqence
 typedef enum
 {
-	DINGDONG_READY_SEQ, 
-	CURVOICE_READY_SEQ, 
-	DINGDONG_PLAY_SEQ, 
-	ALARM_PLAYING_SEQ,
-	CURVOICE_PLAY_SEQ,
-	CURVOICE_PLAYING_SEQ,
-	END_CHK_SEQ,
-	END_SEQ,
-	SEQ_CALCEL_READY_SEQ,
-	SEQ_CALCEL_PLAY_SEQ,
-	SEQ_Default_SEQ
+    DINGDONG_READY_SEQ,
+    CURVOICE_READY_SEQ,
+    DINGDONG_PLAY_SEQ,
+    ALARM_PLAYING_SEQ,
+    CURVOICE_PLAY_SEQ,
+    CURVOICE_PLAYING_SEQ,
+    END_CHK_SEQ,
+    END_SEQ,
+    CALCEL_READY_SEQ,
+    CALCEL_PLAY_SEQ,
+    Default_SEQ
 } tag_Sequence;
 tag_Sequence	PlaySeq;
 
@@ -402,7 +402,7 @@ void main(void)
                 }
             }
         }
-		
+
 
         switch (PlaySeq)
         {
@@ -430,7 +430,7 @@ void main(void)
                 else
                     PlaySeq = CURVOICE_PLAY_SEQ;
             }
-            break;
+			break;
         case CURVOICE_PLAY_SEQ:
             SPI_Play(CurVoice); // 도착 '몇 층입다','문이열립이다','닫힙니다' 등 안내방송 출력
             PlaySeq = CURVOICE_PLAYING_SEQ;
@@ -442,7 +442,7 @@ void main(void)
                 if (bAfterCancel)
                 {
                     bAfterCancel = FALSE;
-                    PlaySeq = SEQ_CALCEL_READY_SEQ;
+                    PlaySeq = CALCEL_READY_SEQ;
                 }
             }
             break;
@@ -453,18 +453,18 @@ void main(void)
                 _VOICE_ACT = VOICE_OFF;
             }
             break;
-        case SEQ_CALCEL_READY_SEQ:
+        case CALCEL_READY_SEQ:
             if (bVoicePlaying == FALSE)
             {
-                PlaySeq = SEQ_CALCEL_PLAY_SEQ;
+                PlaySeq = CALCEL_PLAY_SEQ;
             }
             break;
-        case SEQ_CALCEL_PLAY_SEQ:
+        case CALCEL_PLAY_SEQ:
             SPI_Play(CANCLE_MENT); // 도착 알림 딩동 !
             PlaySeq = CURVOICE_PLAYING_SEQ;
             break;
         }
-		
+
 
         if (VoiceBusy())
         {
@@ -1443,7 +1443,7 @@ void InitVoice(void)
     BatteryRun = 0;
     Flow_Active = 0;
     CurVoice = 0xff;
-    PlaySeq = SEQ_Default_SEQ;
+    PlaySeq = Default_SEQ;
     bVoicePlaying = 0;
     TmpCurVoice = 0xff;
     HwajaeVoiceCnt = 0;
