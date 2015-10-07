@@ -202,20 +202,6 @@ date    :       1999,9,21
 #define msysDOORCLOSE   58
 
 
-// Voice Play Seqence
-#define SEQ_ALARM_READY            10
-#define SEQ_VOICE_READY        20
-#define SEQ_ALARM_PLAY          30
-#define SEQ_ALARM_PLAYING      31
-#define SEQ_VOICE_PLAY       40
-#define SEQ_VOICE_PLAYING   41
-#define SEQ_END_CHK             50
-#define SEQ_END                 51
-#define SEQ_CALCEL_READY              60
-#define SEQ_CALCEL_PLAY               61
-
-
-
 
 volatile const unsigned char FloorChar[] = {"B5B4B3B2B10102030405060708091011121314151617181920212223242526272829303132"};
 
@@ -228,7 +214,6 @@ unsigned char sizex = 64;
 unsigned    char     delay;
 unsigned    char     TmpCurVoice; //
 unsigned    char     CurVoice; //
-unsigned    char     PlaySeq;
 unsigned    char     RunPgm;
 unsigned    char     HwajaeVoiceCnt;
 unsigned    char     OverLoadVoiceCnt;
@@ -283,7 +268,7 @@ bit bSetCarBtnVoice;
 typedef struct
 {
     unsigned char CarKey[4];
-}tag_Elevator;
+} tag_Elevator;
 tag_Elevator	Elevator0, Elevator1, Elevator2, Elevator3;
 
 typedef unsigned char UCHAR;
@@ -292,7 +277,24 @@ unsigned int    IdPt;
 bit bAfterCancel;
 bit bSetAfterCancel;
 bit bSetSong;
-bit bBeepEnable;
+bit bBeepEnab;
+
+// Voice Play Seqence
+typedef enum
+{
+	sALARM_READY, 
+	sVOICE_READY, 
+	sALARM_PLAY, 
+	sALARM_PLAYING,
+	sVOICE_PLAY,
+	sVOICE_PLAYING,
+	sEND_CHK,
+	sEND,
+	sSEQ_CALCEL_READY,
+	sSEQ_CALCEL_PLAY,
+	sSEQ_Default
+} tag_Sequence;
+tag_Sequence	PlaySeq;
 
 
 
@@ -381,86 +383,88 @@ void main(void)
                 SPI_Stop_Play(); // 일단, 기존 방송 중이던 음성 중지 !
                 if ((CurVoice >= START_FL) && (CurVoice <= END_FL))
                 {
-                    PlaySeq = SEQ_ALARM_READY;
+                    PlaySeq = sALARM_READY;
                 }
                 else
                 {
-                    PlaySeq = SEQ_VOICE_READY;
+                    PlaySeq = sVOICE_READY;
                 }
             }
             else
             {
-                if ((CurVoice >= START_FL) && (CurVoice <= END_FL)) // 층 도착 !
+                if ((CurVoice >= START_FL) && (CurVoice <= END_FL))   // 층 도착 !
                 {
-                    PlaySeq = SEQ_ALARM_PLAY;
+                    PlaySeq = sALARM_PLAY;
                 }
                 else
                 {
-                    PlaySeq = SEQ_VOICE_PLAY;
+                    PlaySeq = sVOICE_PLAY;
                 }
             }
         }
+		
 
         switch (PlaySeq)
         {
-        case SEQ_ALARM_READY:
+        case sALARM_READY:
             if (bVoicePlaying == FALSE)
             {
-                PlaySeq = SEQ_ALARM_PLAY;
+                PlaySeq = sALARM_PLAY;
             }
             break;
-        case SEQ_ALARM_PLAY:
+        case sALARM_PLAY:
             SPI_Play(DINGDONG_MENT); // 도착 알림 딩동 !
-            PlaySeq = SEQ_ALARM_PLAYING;
+            PlaySeq = sALARM_PLAYING;
             break;
-        case SEQ_ALARM_PLAYING:
+        case sALARM_PLAYING:
             if (bVoicePlaying)
             {
-                PlaySeq = SEQ_VOICE_READY;
+                PlaySeq = sVOICE_READY;
             }
             break;
-        case SEQ_VOICE_READY:
+        case sVOICE_READY:
             if (bVoicePlaying == FALSE)
             {
                 if (CurVoice & 0x80)
-                    PlaySeq = SEQ_END_CHK;
+                    PlaySeq = sEND_CHK;
                 else
-                    PlaySeq = SEQ_VOICE_PLAY;
+                    PlaySeq = sVOICE_PLAY;
             }
             break;
-        case SEQ_VOICE_PLAY:
+        case sVOICE_PLAY:
             SPI_Play(CurVoice); // 도착 '몇 층입다','문이열립이다','닫힙니다' 등 안내방송 출력
-            PlaySeq = SEQ_VOICE_PLAYING;
+            PlaySeq = sVOICE_PLAYING;
             break;
-        case SEQ_VOICE_PLAYING:
+        case sVOICE_PLAYING:
             if (bVoicePlaying)
             {
-                PlaySeq = SEQ_END_CHK;
+                PlaySeq = sEND_CHK;
                 if (bAfterCancel)
                 {
                     bAfterCancel = FALSE;
-                    PlaySeq = SEQ_CALCEL_READY;
+                    PlaySeq = sSEQ_CALCEL_READY;
                 }
             }
             break;
-        case SEQ_END_CHK:
+        case sEND_CHK:
             if (bVoicePlaying == FALSE)
             {
-                PlaySeq = SEQ_END;
+                PlaySeq = sEND;
                 _VOICE_ACT = VOICE_OFF;
             }
             break;
-        case SEQ_CALCEL_READY:
+        case sSEQ_CALCEL_READY:
             if (bVoicePlaying == FALSE)
             {
-                PlaySeq = SEQ_CALCEL_PLAY;
+                PlaySeq = sSEQ_CALCEL_PLAY;
             }
             break;
-        case SEQ_CALCEL_PLAY:
+        case sSEQ_CALCEL_PLAY:
             SPI_Play(CANCLE_MENT); // 도착 알림 딩동 !
-            PlaySeq = SEQ_VOICE_PLAYING;
+            PlaySeq = sVOICE_PLAYING;
             break;
         }
+		
 
         if (VoiceBusy())
         {
@@ -468,10 +472,10 @@ void main(void)
         }
         else
         {
-            if (PlaySeq == SEQ_END)
+            if (PlaySeq == sEND)
             {
                 CurVoice = 0xff;
-                bBeepEnable = TRUE;
+                bBeepEnab = TRUE;
             }
             bVoicePlaying = FALSE;
         }
@@ -578,6 +582,7 @@ unsigned char GetFloorMent(void)
         bValid = FALSE;
         tmMent = 0xff;
     }
+
     // Dot2 체크(1의 자리)
     if (bValid)
     {
@@ -631,34 +636,34 @@ unsigned char GetFloorMent(void)
 unsigned char    UdtVoice_Floor(unsigned char tmpCurVoice, unsigned char curFloorMent)
 {
     static unsigned char befFloorMent = 0;
-    static bit bFlowValid = FALSE;
+    static bit bmentSaveEnab;
 
     if (tmpCurVoice != 0xff)
         return tmpCurVoice;
 
     if (curFloorMent != 0xfe)
     {
-        if (ELE_bAUTO) // 자동 !
+        if (ELE_bAUTO)   // 자동 !
         {
             if (ELE_bFLOW)
             {
-                if ((curFloorMent != befFloorMent) && (bFlowValid == FALSE))
+                if (bmentSaveEnab && (curFloorMent != befFloorMent))
                 {
                     tmpCurVoice = befFloorMent = curFloorMent;
-                    bFlowValid = TRUE;
+                    bmentSaveEnab = FALSE;
                 }
             }
             else
             {
-                bFlowValid = FALSE;
+                bmentSaveEnab = TRUE;
             }
         }
-        else  // 자동이 아닌 경우 !
+        else   // 자동이 아닌 경우 !
         {
             if (curFloorMent != befFloorMent)
             {
                 tmpCurVoice = befFloorMent = curFloorMent;
-                bBeepEnable = FALSE;
+                bBeepEnab = FALSE;
             }
         }
     }
@@ -680,9 +685,9 @@ unsigned char   UdtVoice_EleStatus(unsigned char befVoice)
         return befVoice;
 
     tmCurVoice = befVoice;
-    if (ELE_bAUTO == FALSE) // 수동일 때 !
+    if (ELE_bAUTO == FALSE)   // 수동일 때 !
     {
-        if (ELE_bCLOSE) // 문이 닫힐 때
+        if (ELE_bCLOSE)   // 문이 닫힐 때
         {
             if (bUpDnVoice == FALSE)
             {
@@ -704,7 +709,7 @@ unsigned char   UdtVoice_EleStatus(unsigned char befVoice)
             bUpDnVoice = FALSE;
         }
     }
-    else  // 자동 일 때 !
+    else   // 자동 일 때 !
     {
         // Up, Down 음성 처리
         if ((bOpenVoice == TRUE) && (UpDnVoiceTime > 50) &&
@@ -724,13 +729,13 @@ unsigned char   UdtVoice_EleStatus(unsigned char befVoice)
         // Door Open 음성 처리
         if (ELE_bCAR_MOVE == FALSE)
         {
-            if ((ELE_mSYSSTATUS == msysDOOROPEN) && (bOpenVoice == FALSE) && !bVoicePlaying)  //open
+            if ((ELE_mSYSSTATUS == msysDOOROPEN) && (bOpenVoice == FALSE) && !bVoicePlaying)   //open
             {
                 tmCurVoice = OPEN_MENT;
                 bOpenVoice = TRUE;
                 UpDnVoiceTime = 0;
             }
-            else if ((ELE_mSYSSTATUS == msysDOORCLOSE) && (bOpenVoice == TRUE))  //close
+            else if ((ELE_mSYSSTATUS == msysDOORCLOSE) && (bOpenVoice == TRUE))   //close
             {
                 tmCurVoice = CLOSE_MENT;
                 bOpenVoice = FALSE;
@@ -775,31 +780,29 @@ unsigned char   UdtVoice_Song(unsigned char befVoice)
     return befVoice;
 }
 
-unsigned char   UdtVoice_Beep(unsigned char befVoice)
+unsigned char   UdtVoice_Beep(unsigned char tmpCurVoice)
 {
     unsigned char tmCurVoice;
 
-    if (befVoice != 0xff)
-        return befVoice;
+    if (tmpCurVoice != 0xff)
+        return tmpCurVoice;
 
     if (ELE_bCAR_MOVE && ELE_bMANUAL)
     {
-        if (!VoiceBusy() && bBeepEnable && ELE_bUP)
+        if (!VoiceBusy() && bBeepEnab && ELE_bUP)
         {
-            tmCurVoice = BEEP_MENT;
-            return tmCurVoice;
+            tmpCurVoice = BEEP_MENT;
         }
-        else if (!VoiceBusy() && bBeepEnable && ELE_bDOWN)
+        else if (!VoiceBusy() && bBeepEnab && ELE_bDOWN)
         {
-            tmCurVoice = BEEP_MENT;
-            return tmCurVoice;
+            tmpCurVoice = BEEP_MENT;
         }
     }
     else
     {
-        bBeepEnable = TRUE;
+        bBeepEnab = TRUE;
     }
-    return befVoice;
+    return tmpCurVoice;
 }
 
 
@@ -882,16 +885,16 @@ unsigned char   UdtVoice_CarCall(UCHAR befVoice, UCHAR *curkey, UCHAR *befkey)
     j = 0;
     for (iFloor = 0; iFloor < 32; iFloor++)
     {
-        if (curkey[j] != befkey[j]) //8개의 카키 상태 비교
+        if (curkey[j] != befkey[j])   //8개의 카키 상태 비교
         {
             // 한 개의 카키 상태 비교
-            if ((curkey[j] & bitKey) &&  !(befkey[j] & bitKey)) //카콜 등록이면? 참 && !거짓
+            if ((curkey[j] & bitKey) &&  !(befkey[j] & bitKey))   //카콜 등록이면? 참 && !거짓
             {
                 befkey[j] = (befkey[j] | bitKey);
                 tmCurVoice = GetCarCallMent(iFloor);
                 return tmCurVoice;
             }
-            else if (!(curkey[j] & bitKey) && (befkey[j] & bitKey))  //카콜 취소이면? !거짓 && 참
+            else if (!(curkey[j] & bitKey) && (befkey[j] & bitKey))   //카콜 취소이면? !거짓 && 참
             {
                 befkey[j] = (befkey[j] & ~bitKey);
                 //tmCurVoice = CANCLE_MENT;
@@ -1075,17 +1078,17 @@ unsigned char SyncButtonCheck(unsigned char src)
 {
     unsigned char i;
 
-    if (RxEidBuffer & HOST_BOARD) // Host !
+    if (RxEidBuffer & HOST_BOARD)   // Host !
     {
         if (SrcAddress  == LocalNumber)	return(1);
         else							return(0);
     }
-    else  // Slave !
+    else   // Slave !
     {
         if (SrcAddress  == LocalNumber)
         {
             i = (unsigned char)RxEidBuffer;
-            if ((i == 0x80) || (i == 0x81) || (i == 0x82) || (i == 0x83)) // CAR Board
+            if ((i == 0x80) || (i == 0x81) || (i == 0x82) || (i == 0x83))   // CAR Board
             {
                 return(1);
             }
@@ -1108,7 +1111,7 @@ void    MyLampCheck(void)
 
     i = (unsigned char)RxEidBuffer;
 
-    switch (i)  // Car Address
+    switch (i)   // Car Address
     {
     case    0x80:
         YourDoor0 = EqualDataBuf[2]; // mCarOpCl
@@ -1220,7 +1223,7 @@ void    TestVoicePlay(void)
     _VOICE_ACT = VOICE_ON;
 
 
-    for (;1;)
+    for (; 1;)
     {
         CLRWDT();
 
@@ -1398,7 +1401,7 @@ void InitVoice(void)
     unsigned char i;
 
     FloorXCnt = 0;
-    for (;FloorXCnt < 10;)
+    for (; FloorXCnt < 10;)
     {
         CLRWDT();
     }
@@ -1427,7 +1430,7 @@ void InitVoice(void)
     CanDatacnt1 = 2;
     CanCmd = 0;
 
-    for (i = 0;i < 64;i++)
+    for (i = 0; i < 64; i++)
     {
         new_buf[i] = FloorChar[i];
         nBefFlr = 0;
@@ -1440,7 +1443,7 @@ void InitVoice(void)
     BatteryRun = 0;
     Flow_Active = 0;
     CurVoice = 0xff;
-    PlaySeq = 0;
+    PlaySeq = sSEQ_Default;
     bVoicePlaying = 0;
     TmpCurVoice = 0xff;
     HwajaeVoiceCnt = 0;
