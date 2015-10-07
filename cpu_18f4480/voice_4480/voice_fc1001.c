@@ -211,20 +211,21 @@ far unsigned char * dest_ptr_1 = (far unsigned char *)FloorChar;
 unsigned char sizex = 64;
 
 
-unsigned    char     delay;
-unsigned    char     TmpCurVoice; //
-unsigned    char     CurVoice; //
-unsigned    char     RunPgm;
-unsigned    char     HwajaeVoiceCnt;
-unsigned    char     OverLoadVoiceCnt;
-unsigned    char     MyAddress;
-unsigned    char     MyLogAdr;
-unsigned    char     src;
-unsigned    char     firstdata;
-unsigned    char     seconddata;
-unsigned    char     TimeOutBd = 0;
-unsigned    char     CallMeAdr = 0;
-unsigned    char     FloorXCnt;
+unsigned    char    delay;
+unsigned    char    TmpCurVoice; //
+unsigned    char    CurVoice; //
+unsigned	char	CurFloorVoice;
+unsigned    char    RunPgm;
+unsigned    char    HwajaeVoiceCnt;
+unsigned    char    OverLoadVoiceCnt;
+unsigned    char    MyAddress;
+unsigned    char    MyLogAdr;
+unsigned    char    src;
+unsigned    char    firstdata;
+unsigned    char    seconddata;
+unsigned    char    TimeOutBd = 0;
+unsigned    char    CallMeAdr = 0;
+unsigned    char    FloorXCnt;
 
 /*
 Error[000]   : _SetupDisplay (C:\micom\project\elevcan\dot_lamp\setup.obj)
@@ -286,6 +287,7 @@ typedef enum
     CURVOICE_READY_SEQ,
     DINGDONG_PLAY_SEQ,
     ALARM_PLAYING_SEQ,
+    CURFLOORVOICE_PLAY_SEQ,
     CURVOICE_PLAY_SEQ,
     CURVOICE_PLAYING_SEQ,
     END_CHK_SEQ,
@@ -295,6 +297,8 @@ typedef enum
     Default_SEQ
 } tag_Sequence;
 tag_Sequence	PlaySeq;
+
+bit bDingdong;
 
 
 
@@ -384,10 +388,11 @@ void main(void)
                 if ((CurVoice >= START_FL) && (CurVoice <= END_FL))
                 {
                     PlaySeq = DINGDONG_READY_SEQ;
+					CurFloorVoice = CurVoice;
                 }
                 else
                 {
-                    PlaySeq = CURVOICE_READY_SEQ;
+                    if(bDingdong == FALSE)	PlaySeq = CURVOICE_READY_SEQ;
                 }
             }
             else
@@ -395,10 +400,11 @@ void main(void)
                 if ((CurVoice >= START_FL) && (CurVoice <= END_FL))   // Ãþ µµÂø !
                 {
                     PlaySeq = DINGDONG_PLAY_SEQ;
+					CurFloorVoice = CurVoice;
                 }
                 else
                 {
-                    PlaySeq = CURVOICE_PLAY_SEQ;
+                    if(bDingdong == FALSE)	PlaySeq = CURVOICE_PLAY_SEQ;
                 }
             }
         }
@@ -414,6 +420,7 @@ void main(void)
             break;
         case DINGDONG_PLAY_SEQ:
             SPI_Play(DINGDONG_MENT); // µµÂø ¾Ë¸² µùµ¿ !
+            bDingdong = TRUE;
             PlaySeq = ALARM_PLAYING_SEQ;
             break;
         case ALARM_PLAYING_SEQ:
@@ -429,7 +436,15 @@ void main(void)
                     PlaySeq = END_CHK_SEQ;
                 else
                     PlaySeq = CURVOICE_PLAY_SEQ;
+
+                if (bDingdong) 
+					PlaySeq = CURFLOORVOICE_PLAY_SEQ;
             }
+            break;
+        case CURFLOORVOICE_PLAY_SEQ:
+            SPI_Play(CurFloorVoice);
+			bDingdong = FALSE;
+			PlaySeq = CURVOICE_READY_SEQ;
 			break;
         case CURVOICE_PLAY_SEQ:
             SPI_Play(CurVoice); // µµÂø '¸î ÃþÀÔ´Ù','¹®ÀÌ¿­¸³ÀÌ´Ù','´ÝÈü´Ï´Ù' µî ¾È³»¹æ¼Û Ãâ·Â
@@ -476,6 +491,7 @@ void main(void)
             {
                 CurVoice = 0xff;
                 bBeepEnab = TRUE;
+				bDingdong = FALSE;
             }
             bVoicePlaying = FALSE;
         }
