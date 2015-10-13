@@ -879,21 +879,20 @@ unsigned char    GetVoice_State(UCHAR befVoice, UCHAR curVoice)
 
 
 //카버튼 음성 처리
-unsigned char   GetVoice_CarCall(UCHAR befVoice, UCHAR *curkey, UCHAR *befkey)
+unsigned char   GetVoice_CarCall(UCHAR tmpCurVoice, UCHAR *curkey, UCHAR *befkey)
 {
     unsigned char j;
     unsigned char iFloor; // 0~31
     unsigned char bitKey;
-    unsigned char tmCurVoice;
 
-    if (befVoice != 0xff)
-        return befVoice;
+    if (tmpCurVoice != 0xff)
+        return tmpCurVoice;
     if (!ELE_bAUTO || ELE_bFLOW)
-        return befVoice;
+        return tmpCurVoice;
     if (!ELE_bUP && !ELE_bDOWN)
-        return befVoice;
+        return tmpCurVoice;
     if (CurVoice != 0xff)
-        return befVoice;
+        return tmpCurVoice;
 
     bitKey = 0x01;
     j = 0;
@@ -905,23 +904,23 @@ unsigned char   GetVoice_CarCall(UCHAR befVoice, UCHAR *curkey, UCHAR *befkey)
             if ((curkey[j] & bitKey) &&  !(befkey[j] & bitKey))   //카콜 등록이면? 참 && !거짓
             {
                 befkey[j] = (befkey[j] | bitKey);
-                tmCurVoice = GetCarCallMent(iFloor);
-                return tmCurVoice;
+                tmpCurVoice = GetCarCallMent(iFloor);
+                break;
             }
             else if (!(curkey[j] & bitKey) && (befkey[j] & bitKey))   //카콜 취소이면? !거짓 && 참
             {
                 befkey[j] = (befkey[j] & ~bitKey);
-                //tmCurVoice = CANCLE_MENT;
+                //tmpCurVoice = CANCLE_MENT;
                 if (bSetAfterCancel)
                 {
                     bAfterCancel = TRUE;
-                    tmCurVoice = GetCarCallMent(iFloor);
+                    tmpCurVoice = GetCarCallMent(iFloor);
                 }
                 else
                 {
-                    tmCurVoice = CANCLE_MENT;
+                    tmpCurVoice = CANCLE_MENT;
                 }
-                return tmCurVoice;
+                break;
             }
 
             bitKey = (bitKey << 1);
@@ -938,7 +937,7 @@ unsigned char   GetVoice_CarCall(UCHAR befVoice, UCHAR *curkey, UCHAR *befkey)
             iFloor = (iFloor + 7);
         }
     }
-    return befVoice;
+    return tmpCurVoice;
 }
 
 
