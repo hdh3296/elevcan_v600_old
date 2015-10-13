@@ -155,7 +155,7 @@ date    :       1999,9,21
 #endif
 
 //
-#define ELE_nFLOOR          RcvBuf[IdPt + S0_FLOOR] // 층수를 10진수로 표현
+#define ELE_nCURFLOOR          RcvBuf[IdPt + S0_FLOOR] // 층수를 10진수로 표현
 
 #define ELE_bOPEN           (RcvBuf[IdPt + S1_STATE] & S1_OPEN)
 #define ELE_bCLOSE          (RcvBuf[IdPt + S1_STATE] & S1_CLOSE)
@@ -901,16 +901,18 @@ unsigned char   GetVoice_CarCall(UCHAR tmpCurVoice, UCHAR *curkey, UCHAR *befkey
         if (curkey[j] != befkey[j])   //8개의 카키 상태 비교
         {
             // 한 개의 카키 상태 비교
-            if ((curkey[j] & bitKey) &&  !(befkey[j] & bitKey))   //카콜 등록이면? 참 && !거짓
+            if ((curkey[j] & bitKey) &&  !(befkey[j] & bitKey)) // 카콜 등록이면? (참 && !거짓)
             {
-                befkey[j] = (befkey[j] | bitKey);
-                tmpCurVoice = GetCarCallMent(iFloor);
+				if(iFloor != (ELE_nCURFLOOR - 1)){ // 카콜 등록 층이 현재 층과 같지 않을 때 ! (즉, 같을 땐 무시)
+                	befkey[j] = (befkey[j] | bitKey);
+                	tmpCurVoice = GetCarCallMent(iFloor);
+				}
                 break;
             }
-            else if (!(curkey[j] & bitKey) && (befkey[j] & bitKey))   //카콜 취소이면? !거짓 && 참
+            else if (!(curkey[j] & bitKey) && (befkey[j] & bitKey)) //카콜 취소이면? (!거짓 && 참)
             {
                 befkey[j] = (befkey[j] & ~bitKey);
-                //tmpCurVoice = CANCLE_MENT;
+
                 if (bSetAfterCancel)
                 {
                     bAfterCancel = TRUE;
@@ -1037,7 +1039,7 @@ void    SetCarKeyCancel(void)
 
     if (ELE_bOPEN || ELE_bOPEN_SUB)
     {
-        k = (ELE_nFLOOR - 1);
+        k = (ELE_nCURFLOOR - 1);
         i = (k / 8);
         j = (k % 8);
         k = 0x01;
@@ -1180,10 +1182,10 @@ unsigned char DspCharRdWr(void)
 {
     unsigned char   CurFlrNum;
 
-    if (ELE_nFLOOR > 32)	return(0);
-    if (ELE_nFLOOR < 1)	return(0);
+    if (ELE_nCURFLOOR > 32)	return(0);
+    if (ELE_nCURFLOOR < 1)	return(0);
 
-    if (nBefFlr == ELE_nFLOOR)
+    if (nBefFlr == ELE_nCURFLOOR)
     {
         nBefFlrTime = 0;
     }
@@ -1192,11 +1194,10 @@ unsigned char DspCharRdWr(void)
         if (nBefFlrTime > 3)
         {
             nBefFlrTime = 0;
-            nBefFlr = ELE_nFLOOR;
-            CurFlrNum = ELE_nFLOOR - 1;
+            nBefFlr = ELE_nCURFLOOR;
+            CurFlrNum = ELE_nCURFLOOR - 1;
             CurFlrNum = (CurFlrNum * 2);
-            if ((ELE_DSP1 != FloorChar[CurFlrNum]) ||
-                (ELE_DSP2 != FloorChar[CurFlrNum + 1]))
+            if ((ELE_DSP1 != FloorChar[CurFlrNum]) || (ELE_DSP2 != FloorChar[CurFlrNum + 1]))
             {
                 new_buf[CurFlrNum + 0] = ELE_DSP1;
                 new_buf[CurFlrNum + 1] = ELE_DSP2;
