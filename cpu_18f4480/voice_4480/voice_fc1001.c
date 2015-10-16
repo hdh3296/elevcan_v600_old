@@ -864,8 +864,7 @@ unsigned char    GetVoice_State(UCHAR befVoice, UCHAR curVoice)
     // [151006] 자동시에만 EMG MENT 출력 되도록 수정
     if (ELE_bEMG  && (curVoice != EMERGENCY_MENT) && (ELE_bMANUAL == FALSE))
     {
-        if (EmergencyVoiceCnt < 10)
-            EmergencyVoiceCnt++;
+        if (EmergencyVoiceCnt < 10)	EmergencyVoiceCnt++;
         if (EmergencyVoiceCnt < 6)
             tmMent = EMERGENCY_MENT;
     }
