@@ -211,7 +211,7 @@ far unsigned char * dest_ptr_1 = (far unsigned char *)FloorChar;
 unsigned char sizex = 64;
 
 
-unsigned    char    delay;
+unsigned    char    TestMentDelayTimer;
 unsigned    char    TmpCurVoice; //
 unsigned    char    CurVoice; //
 unsigned	char	CurFloorVoice;
@@ -237,7 +237,6 @@ unsigned    char  MainTimer = 0;
 unsigned    char  UpButtonTime = 0;
 unsigned    char  DnButtonTime = 0;
 unsigned    char  DspModel = 0;
-unsigned    int   CloseVoiceTime = 0;
 
 unsigned    char     UpDnVoiceTimer = 0;
 unsigned    char     abctimer = 0;
@@ -299,6 +298,8 @@ typedef enum
 tag_Sequence	PlaySeq;
 
 bit bDingdong;
+
+unsigned int BeefDelayTimer = 0;
 
 
 
@@ -371,12 +372,18 @@ void main(void)
 
         TmpCurVoice = 0xff;
         TmpCurVoice = GetVoice_State(TmpCurVoice, CurVoice);
-        if(bDingdong == FALSE) TmpCurVoice = GetVoice_OpenCloseUpDn(TmpCurVoice);
+        if (bDingdong == FALSE) TmpCurVoice = GetVoice_OpenCloseUpDn(TmpCurVoice);
         TmpCurVoice = GetVoice_Floor(TmpCurVoice, GetFloorMent());
         if (bSetCarBtnVoice) TmpCurVoice = GetVoice_CarCall(TmpCurVoice, CurCarKey, BefCarKey);
         if (bSetSong) TmpCurVoice = GetVoice_Song(TmpCurVoice);
-        TmpCurVoice = GetVoice_Beep(TmpCurVoice);
 
+		if (TmpCurVoice != 0xff)	BeefDelayTimer = 4000;
+		if (BeefDelayTimer > 4000)
+		{
+			TmpCurVoice = GetVoice_Beep(TmpCurVoice);
+			if (TmpCurVoice == BEEP_MENT)	BeefDelayTimer = 0;
+		}
+		
 
         if (TmpCurVoice != 0xff)
         {
@@ -515,13 +522,11 @@ void interrupt isr(void)
         TMR0L = MSEC_L;
         TMR0H = MSEC_H;
 
-        delay++;
-
-
+        TestMentDelayTimer++;
         shiftTime++;
 
-        CloseVoiceTime++;
-
+		if (BeefDelayTimer < 0xffff) BeefDelayTimer++;
+	
         abctimer++;
         if (abctimer > 100)
         {
@@ -532,7 +537,7 @@ void interrupt isr(void)
             if (FloorXCnt < 200)	FloorXCnt++;
 
 
-        }
+        }		
     }
 
 
@@ -798,16 +803,12 @@ unsigned char   GetVoice_Beep(unsigned char tmpCurVoice)
 {
     unsigned char tmCurVoice;
 
-    if (tmpCurVoice != 0xff)
+    if (tmpCurVoice != 0xff) // 이미 다른 음성이 등록되어 있다면 !
         return tmpCurVoice;
 
     if (ELE_bCAR_MOVE && ELE_bMANUAL)
     {
-        if (!VoiceBusy() && bBeepEnab && ELE_bUP)
-        {
-            tmpCurVoice = BEEP_MENT;
-        }
-        else if (!VoiceBusy() && bBeepEnab && ELE_bDOWN)
+        if (!VoiceBusy() && bBeepEnab && (ELE_bUP || ELE_bDOWN))
         {
             tmpCurVoice = BEEP_MENT;
         }
@@ -1233,7 +1234,7 @@ void    TestVoicePlay(void)
     unsigned bBusy;
 
     TmpCurVoice = 0;
-    delay = 0;
+    TestMentDelayTimer = 0;
     _VOICE_ACT = VOICE_ON;
 
 
@@ -1250,18 +1251,18 @@ void    TestVoicePlay(void)
 
         if (bBusy == FALSE)
         {
-            if (delay > 200)
+            if (TestMentDelayTimer > 200)
             {
                 SPI_Play(TmpCurVoice);
                 TmpCurVoice++;
                 if (TmpCurVoice > 100)
                     TmpCurVoice = 0;
-                delay = 0;
+                TestMentDelayTimer = 0;
             }
         }
         else
         {
-            delay = 0;
+            TestMentDelayTimer = 0;
         }
     }
 
