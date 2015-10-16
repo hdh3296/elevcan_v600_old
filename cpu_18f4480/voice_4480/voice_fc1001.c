@@ -119,6 +119,9 @@ date    :       1999,9,21
 #define         SONG_MENT               FLOOR_B7+88 //96
 #define         BEEP_MENT               FLOOR_B7+89 //97 삐 소리
 
+#define NO_MENT 0xff // 멘트 없음
+
+
 
 
 //IO 정의
@@ -201,6 +204,7 @@ date    :       1999,9,21
 #define msysDOOROPEN    57
 #define msysDOORCLOSE   58
 
+#define BEEP_DELAY	4000 // 단위 msec
 
 
 volatile const unsigned char FloorChar[] = {"B5B4B3B2B10102030405060708091011121314151617181920212223242526272829303132"};
@@ -370,22 +374,22 @@ void main(void)
         DspCharRdWr(); // CAR CALL 음성을 위한 엘리베이터 각층 디스플레이 값 저장
         SetCarKeyCancel(); // CAR CALL 취소 값 셋팅
 
-        TmpCurVoice = 0xff;
+        TmpCurVoice = NO_MENT;
         TmpCurVoice = GetVoice_State(TmpCurVoice, CurVoice);
         if (bDingdong == FALSE) TmpCurVoice = GetVoice_OpenCloseUpDn(TmpCurVoice);
         TmpCurVoice = GetVoice_Floor(TmpCurVoice, GetFloorMent());
         if (bSetCarBtnVoice) TmpCurVoice = GetVoice_CarCall(TmpCurVoice, CurCarKey, BefCarKey);
         if (bSetSong) TmpCurVoice = GetVoice_Song(TmpCurVoice);
+        // Beef 멘트 관련
+        if (TmpCurVoice != NO_MENT)	BeefDelayTimer = BEEP_DELAY;
+        if (BeefDelayTimer > BEEP_DELAY)
+        {
+            TmpCurVoice = GetVoice_Beep(TmpCurVoice);
+            if (TmpCurVoice == BEEP_MENT)	BeefDelayTimer = 0;
+        }
 
-		if (TmpCurVoice != 0xff)	BeefDelayTimer = 4000;
-		if (BeefDelayTimer > 4000)
-		{
-			TmpCurVoice = GetVoice_Beep(TmpCurVoice);
-			if (TmpCurVoice == BEEP_MENT)	BeefDelayTimer = 0;
-		}
-		
 
-        if (TmpCurVoice != 0xff)
+        if (TmpCurVoice != NO_MENT)
         {
             CurVoice = TmpCurVoice;
             _VOICE_ACT = VOICE_ON;
@@ -496,7 +500,7 @@ void main(void)
         {
             if (PlaySeq == END_SEQ)
             {
-                CurVoice = 0xff;
+                CurVoice = NO_MENT;
                 bBeepEnab = TRUE;
                 bDingdong = FALSE;
             }
@@ -525,8 +529,8 @@ void interrupt isr(void)
         TestMentDelayTimer++;
         shiftTime++;
 
-		if (BeefDelayTimer < 0xffff) BeefDelayTimer++;
-	
+        if (BeefDelayTimer < 0xffff) BeefDelayTimer++;
+
         abctimer++;
         if (abctimer > 100)
         {
@@ -537,7 +541,7 @@ void interrupt isr(void)
             if (FloorXCnt < 200)	FloorXCnt++;
 
 
-        }		
+        }
     }
 
 
@@ -691,7 +695,7 @@ unsigned char    GetVoice_Floor(unsigned char tmpCurVoice, unsigned char curFloo
     return tmpCurVoice;
 }
 
-// 문이 열립니다, 닫힙니다, 올라갑니다, 내려갑니다. 
+// 문이 열립니다, 닫힙니다, 올라갑니다, 내려갑니다.
 unsigned char   GetVoice_OpenCloseUpDn(unsigned char tmpCurVoice)
 {
     static unsigned char UpDnVoice = 0x0;
@@ -904,10 +908,11 @@ unsigned char   GetVoice_CarCall(UCHAR tmpCurVoice, UCHAR *curkey, UCHAR *befkey
             // 한 개의 카키 상태 비교
             if ((curkey[j] & bitKey) &&  !(befkey[j] & bitKey)) // 카콜 등록이면? (참 && !거짓)
             {
-				if(iFloor != (ELE_nCURFLOOR - 1)){ // 카콜 등록 층이 현재 층과 같지 않을 때 ! (즉, 같을 땐 무시)
-                	befkey[j] = (befkey[j] | bitKey);
-                	tmpCurVoice = GetCarCallMent(iFloor);
-				}
+                if (iFloor != (ELE_nCURFLOOR - 1)) // 카콜 등록 층이 현재 층과 같지 않을 때 ! (즉, 같을 땐 무시)
+                {
+                    befkey[j] = (befkey[j] | bitKey);
+                    tmpCurVoice = GetCarCallMent(iFloor);
+                }
                 break;
             }
             else if (!(curkey[j] & bitKey) && (befkey[j] & bitKey)) //카콜 취소이면? (!거짓 && 참)
