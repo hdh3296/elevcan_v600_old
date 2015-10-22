@@ -50,13 +50,13 @@ extern void __attribute__((section(".usercode"))) HextoASCIIByte(void);
 
 
 
-
 //#define		DELTA_INVERTER	1
 
 //#define			SHORT_FLOOR		1
 
 
 //#define			FIX_FLOOR		1
+
 
 
 ////////////////////////////////////////////
@@ -69,6 +69,7 @@ extern void __attribute__((section(".usercode"))) HextoASCIIByte(void);
 
 
 
+#define  SLIP_MM    	100
 
 
 #define  I_AM_MASTER    0x2000
@@ -313,12 +314,23 @@ typedef  union  _long_union
 /////////////////////////////////////
 #define  sEncoderErr          15
 #define  sEncoderABErr        16 
+
+#define  sSpeedPortError      17 
+#define  sMinLengthErr        18
+#define  sSystemErr           19
+#define  sNotuse20            20 
+#define  sEqualFloorError     21 
+#define  sInvCommErr          22
+
+/*
 #define  sSpeedSetError       17 
 #define  sSpeedPortError      18 
 #define  sNoUseSpeed          19 
 #define  sMinLengthErr        20 
 #define  sEqualFloorError     21 
 #define  sSystemErr           22
+*/
+
 #define  sBreakMgtOpen        23  
 #define  sBreakOpen           24  
 #define  sSusErr              25  
@@ -1448,6 +1460,7 @@ extern	UserDataType    StateBit4;
 extern	UserDataType    StateBit5;   
 extern	UserDataType    StateBit6;   
 extern	UserDataType    StateBit7;   
+extern	UserDataType    StateBit8;   
 
 extern  UserDataType    Vip_Floor;   
 
@@ -1524,6 +1537,9 @@ extern	unsigned long   FindScurveTime;
 extern	unsigned long   FindDecTime;
 extern	unsigned long   DeltaTime;
 
+extern	unsigned long   Slip_pulse,Base_Slip_pulse;
+extern	unsigned long 	PositionPulse1;
+
 
 extern	UserDataType    LadderGroup;
 extern	UserDataType    LadderGroupSub;
@@ -1539,6 +1555,11 @@ extern const unsigned char DftFlrName[];
 extern const unsigned char StatusMessage[][16];
 extern const unsigned int EncRate[];
 
+
+
+
+extern	unsigned int    iType_Test_PlusMinus;
+extern	unsigned long   LType_Test_Value;
 
 
 //////
@@ -1668,7 +1689,7 @@ extern const unsigned int EncRate[];
 #define  bFhmCount              GET_BITFIELD(&Etc1Bit).bit3 
 #define  bSaveFlash             GET_BITFIELD(&Etc1Bit).bit4 
 #define  bWaterSen              GET_BITFIELD(&Etc1Bit).bit5 
-//#define  bSamsungFire           GET_BITFIELD(&Etc1Bit).bit6 
+//#define  bxxxxxxxxxxx         GET_BITFIELD(&Etc1Bit).bit6 
 #define  bCarOnceStop           GET_BITFIELD(&Etc1Bit).bit7 
 
 
@@ -1791,11 +1812,23 @@ extern const unsigned int EncRate[];
 #define  bsEarthquake      		GET_BITFIELD(&StateBit7).bit0 
 #define  bBefbsEarthquake      	GET_BITFIELD(&StateBit7).bit1 
 #define  bSlaveEarthquake    	GET_BITFIELD(&StateBit7).bit2 
-#define  bSubSlavePrk        	GET_BITFIELD(&StateBit6).bit3 
-#define  bSlaveFire         	GET_BITFIELD(&StateBit6).bit4 
-#define  bSubSlaveFire       	GET_BITFIELD(&StateBit6).bit5 
+#define  bSubSlavePrk        	GET_BITFIELD(&StateBit7).bit3 
+#define  bSlaveFire         	GET_BITFIELD(&StateBit7).bit4 
+#define  bSubSlaveFire       	GET_BITFIELD(&StateBit7).bit5 
 #define  bSafeFire		    	GET_BITFIELD(&StateBit7).bit6 
 #define  bPowerSaveMoveValid    GET_BITFIELD(&StateBit7).bit7 
+
+
+
+#define  bStrongDec      		GET_BITFIELD(&StateBit8).bit0 
+#define  bInvComErr      		GET_BITFIELD(&StateBit8).bit1 
+#define  bBefbEqualFloorError   GET_BITFIELD(&StateBit8).bit2 
+#define  bReLoadEncoderExe      GET_BITFIELD(&StateBit8).bit3 
+#define  bFlrMatchErr			GET_BITFIELD(&StateBit8).bit4 
+#define  bNOTUSE5       		GET_BITFIELD(&StateBit8).bit5 
+#define  bNOTUSE6		    	GET_BITFIELD(&StateBit8).bit6 
+#define  bNOTUSE7    			GET_BITFIELD(&StateBit8).bit7 
+
 
 //////////////////////////////////////////////////////////////
 #define  IN_SU1_PORT            GET_BITFIELD(&I_SU1_bit).bit0 
@@ -2257,6 +2290,8 @@ extern const unsigned int EncRate[];
 #define  cF_X0X1_V_SPD3       	GET_LONGFIELD(&FlashDspCharBuf[F_X0X1_V_SPD3/4])  	.byte[F_X0X1_V_SPD3%4]
 
 
+#define  cF_LULD_MPM_SPD3_10    (cF_LULD_MPM_SPD3 * 10)
+
 ////////////////
 
 
@@ -2533,6 +2568,7 @@ extern  UserDataType    BefX0Byte;
 #define  RunningOpenOnOff                   bitChk_FLRDSPCH(F_OnOff3,(bRunOpenSetClear % 8))
 
 /////////////////////////////////////////////////////////////////////////////////////////
+#define  EncoderCopyOnOff                   bitChk_FLRDSPCH(F_OnOff3,(bEncoderCpy % 8))
 #define  ManWorkingChk                      bitChk_FLRDSPCH(F_OnOff3,(bManWorkingChk % 8))
 
 
@@ -2571,10 +2607,21 @@ extern  UserDataType    MotorMoveTime;
 
 
 #ifdef	DELTA_INVERTER	
+
+extern	unsigned int	DeltaNoAck;
+extern	unsigned int	InverterPDORxTime;
+extern	unsigned int	InverterReady;
 extern	unsigned int	DeltaRdWrStatus;
 extern	unsigned int	DeltaRdWrStatusFhm;
+////////extern	unsigned int   	DeltaCmdTimer;
+
+extern	unsigned char	EV_ReqRdWrTxBuf[27];
+extern	unsigned char	IV_AckRdWrTxBuf[27];
+extern	unsigned char	ElevStatus[8];
 extern	unsigned char	InvStatus[8];
-extern	unsigned int	DeltaNoAck;
+extern	unsigned char	ThisAttribute[8];
+extern	unsigned char	PDO_TX_DataBuf[8];
+
 
 /*
 extern	unsigned int	InverterReady;

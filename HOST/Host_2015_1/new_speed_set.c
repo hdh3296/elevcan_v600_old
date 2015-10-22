@@ -748,7 +748,7 @@ unsigned int  __attribute__((section(".usercode")))   SpeedChange_spd3(void)
 
 
 
-
+/*
 unsigned int  __attribute__((section(".usercode")))   SpeedSet_spd3(void)
 {
     unsigned long tmppulse1,tmppulse2;
@@ -856,6 +856,108 @@ unsigned int  __attribute__((section(".usercode")))   SpeedSet_spd3(void)
 
 }
 
+*/
 
+
+
+unsigned int  __attribute__((section(".usercode")))   SpeedSet_spd3(void)
+{
+    unsigned long tmppulse1,tmppulse2;
+    LocalType     j,want_updn,ret;
+
+
+	ret=0;
+	NoStart=0;
+
+	if((cF_SPEED_LOW_PORT == 0) && (cF_SPEED_MID_PORT == 0) && (cF_SPEED_HIGH_PORT == 0)){		
+		ret=1;
+		NoStart=1;
+		return(NoStart);
+	}
+
+
+
+    if(INVERTER_CHECK == LG)    return(0);
+    if(INVERTER_CHECK == D_F)   return(0);
+
+
+
+    ret=0;
+    want_updn=0;
+
+    j=(sRamDArry[mAckStopFloor] & ONLY_FLR);
+    
+    TotalPulse=1;
+    StartPulse=CurPulse;    
+
+    tmppulse1=FLOOR_COUNT(j);
+    tmppulse2=FLOOR_COUNT(sRamDArry[mcurfloor]);
+
+    if(j>sRamDArry[mcurfloor]){
+        TotalPulse=(tmppulse1-tmppulse2);   
+        want_updn=1;            //up want
+    }
+	else{
+        TotalPulse=(tmppulse2-tmppulse1);   
+        want_updn=2;            //dn want
+    }
+
+
+
+    if(ret==0){
+		if(!SpeedHighCheck()){
+		    CurSpeed=SPEED_HIGH;
+		    DecreasePulse=GET_LONG(DEC_PULSE_SPD_HIGH);
+		    ret=0;
+		}
+		else if(!SpeedMidCheck()){
+		    CurSpeed=SPEED_MID;
+		    DecreasePulse=GET_LONG(DEC_PULSE_SPD_MID);
+		    ret=0;
+		}
+		else if(!SpeedLowCheck()){
+		    CurSpeed=SPEED_LOW;
+		    DecreasePulse=GET_LONG(DEC_PULSE_SPD_LOW);
+		    ret=0;
+		}
+		else	ret=2;		
+	}
+
+
+
+
+    if(ret==0){
+        if(want_updn==1){           //up want
+            StopMinimumPulse=DecreasePulse + CurPulse;	      
+        }
+        else if(want_updn==2){           //dn want
+            StopMinimumPulse=CurPulse-DecreasePulse;
+        }
+        else    ret=3;
+    }
+		    
+	
+/*
+    if(ret){
+        switch(ret){
+            case    1:
+			    if(sRamDArry[mSysStatus] > sSpeedPortError) sRamDArry[mSysStatus]=sSpeedPortError;      
+                break;
+            case    2:
+			    if(sRamDArry[mSysStatus] > sMinLengthErr)   sRamDArry[mSysStatus]=sMinLengthErr;      
+                break;
+            case    3:
+			    if(sRamDArry[mSysStatus] > sSystemErr)      sRamDArry[mSysStatus]=sSystemErr;      
+                break;
+        }
+
+		NoStart=ret;
+    }
+*/
+
+	NoStart=ret;
+    return(NoStart);
+
+}
 
 

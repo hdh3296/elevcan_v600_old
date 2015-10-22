@@ -867,7 +867,7 @@ unsigned int  __attribute__((section(".usercode")))   SpeedChange_old(void)
 
 
 
-
+/*
 unsigned int  __attribute__((section(".usercode")))   SpeedSet_old(void)
 {
     unsigned long tmppulse1,tmppulse2;
@@ -1158,6 +1158,285 @@ NoStart=0;
 //ret==3    : No Use
 //ret==4    : MinLengthErr
 //ret==5    : SystemErr
+}
+
+
+*/
+
+
+unsigned int  __attribute__((section(".usercode")))   SpeedSet_old(void)
+{
+    unsigned long tmppulse1,tmppulse2;
+    LocalType     j,want_updn,ret;
+
+
+	NoStart=0;
+
+    if(INVERTER_CHECK == LG)    return(0);
+    if(INVERTER_CHECK == D_F)   return(0);
+
+
+    ret=0;
+    want_updn=0;
+
+    j=(sRamDArry[mAckStopFloor] & ONLY_FLR);
+    
+    TotalPulse=1;
+
+    StartPulse=CurPulse;    
+
+    tmppulse1=FLOOR_COUNT(j);
+    tmppulse2=FLOOR_COUNT(sRamDArry[mcurfloor]);
+
+    if(j>sRamDArry[mcurfloor]){
+        TotalPulse=(tmppulse1-tmppulse2);  
+        want_updn=1;            //up want
+    }
+    else{
+        TotalPulse=(tmppulse2-tmppulse1);   
+        want_updn=2;            //dn want
+    }
+
+
+    
+    if(ret==0){
+        switch(cF_ELEV_SPEED){
+            case    SPEED_30:
+                if(!Speed30Check()){
+                    CurSpeed=SPEED_30;
+                    DecreasePulse=GET_LONG(DEC_PULSE_30);
+					ret=0;
+                }    
+				else	ret=2;
+
+                if((cF_SPEED30 == 0))	ret=1;
+                break;     
+            case    SPEED_45:
+                if(!Speed45Check()){
+                    CurSpeed=SPEED_45;
+                    DecreasePulse=GET_LONG(DEC_PULSE_45);
+                    ret=0;
+                }
+                else if(!Speed30Check()){
+                    CurSpeed=SPEED_30;
+                    DecreasePulse=GET_LONG(DEC_PULSE_30);
+                    ret=0;
+                }
+				else	ret=2;
+				
+               if((cF_SPEED30 == 0) && (cF_SPEED45 == 0))	ret=1;
+
+                break;     
+            case    SPEED_60:
+                if(!Speed60Check()){
+                    CurSpeed=SPEED_60;
+                    DecreasePulse=GET_LONG(DEC_PULSE_60);
+                    ret=0;
+                }
+                else if(!Speed45Check()){
+                    CurSpeed=SPEED_45;
+                    DecreasePulse=GET_LONG(DEC_PULSE_45);
+                    ret=0;
+                }
+                else if(!Speed30Check()){
+                    CurSpeed=SPEED_30;
+                    DecreasePulse=GET_LONG(DEC_PULSE_30);
+                    ret=0;
+                }
+				else	ret=2;
+
+                if((cF_SPEED30 == 0) && (cF_SPEED45 == 0) && (cF_SPEED60 == 0))	ret=1;
+
+                break;     
+            case    SPEED_90:
+                if(!Speed90Check()){
+                    CurSpeed=SPEED_90;
+                    DecreasePulse=GET_LONG(DEC_PULSE_90);
+                    ret=0;
+                }
+                else if(!Speed60Check()){
+                    CurSpeed=SPEED_60;
+                    DecreasePulse=GET_LONG(DEC_PULSE_60);
+                    ret=0;
+                }
+                else if(!Speed45Check()){
+                    CurSpeed=SPEED_45;
+                    DecreasePulse=GET_LONG(DEC_PULSE_45);
+                    ret=0;
+                }
+ 				else	ret=2;
+
+                if((cF_SPEED45 == 0) && (cF_SPEED60 == 0) && (cF_SPEED90 == 0))	ret=1;
+
+                break;     
+            case    SPEED_105:
+                if(!Speed105Check()){
+                    CurSpeed=SPEED_105;
+                    DecreasePulse=GET_LONG(DEC_PULSE_105);
+                    ret=0;
+                }
+                else if(!Speed90Check()){
+                    CurSpeed=SPEED_90;
+                    DecreasePulse=GET_LONG(DEC_PULSE_90);
+                    ret=0;
+                }
+                else if(!Speed60Check()){
+                    CurSpeed=SPEED_60;
+                    DecreasePulse=GET_LONG(DEC_PULSE_60);
+                    ret=0;
+                }
+				else	ret=2;
+
+                if((cF_SPEED60 == 0) && (cF_SPEED90 == 0) && (cF_SPEED105 == 0))	ret=1;
+                break;     
+            case    SPEED_120:
+                if(!Speed120Check()){
+                    CurSpeed=SPEED_120;
+                    DecreasePulse=GET_LONG(DEC_PULSE_120);
+                    ret=0;
+                }
+                else if(!Speed90Check()){
+                    CurSpeed=SPEED_90;
+                    DecreasePulse=GET_LONG(DEC_PULSE_90);
+                    ret=0;
+                }
+                else if(!Speed60Check()){
+                    CurSpeed=SPEED_60;
+                    DecreasePulse=GET_LONG(DEC_PULSE_60);
+                    ret=0;
+                }
+				else	ret=2;
+
+                if((cF_SPEED60 == 0) && (cF_SPEED90 == 0) && (cF_SPEED120 == 0))	ret=1;
+                break;     
+            case    SPEED_150:
+                if(!Speed150Check()){
+                    CurSpeed=SPEED_150;
+                    DecreasePulse=GET_LONG(DEC_PULSE_150);
+                    ret=0;
+                }
+                else if(!Speed120Check()){
+                    CurSpeed=SPEED_120;
+                    DecreasePulse=GET_LONG(DEC_PULSE_120);
+                    ret=0;
+                }
+                else if(!Speed90Check()){
+                    CurSpeed=SPEED_90;
+                    DecreasePulse=GET_LONG(DEC_PULSE_90);
+                    ret=0;
+                }
+                else if(!Speed60Check()){
+                    CurSpeed=SPEED_60;
+                    DecreasePulse=GET_LONG(DEC_PULSE_60);
+                    ret=0;
+                }
+				else	ret=2;
+
+                if((cF_SPEED60 == 0) && (cF_SPEED90 == 0) && (cF_SPEED120 == 0) && (cF_SPEED150 == 0))	ret=1;
+                break;     
+            case    SPEED_180:
+                if(!Speed180Check()){
+                    CurSpeed=SPEED_180;
+                    DecreasePulse=GET_LONG(DEC_PULSE_180);
+                    ret=0;
+                }
+                else if(!Speed150Check()){
+                    CurSpeed=SPEED_150;
+                    DecreasePulse=GET_LONG(DEC_PULSE_150);
+                    ret=0;
+                }
+                else if(!Speed120Check()){
+                    CurSpeed=SPEED_120;
+                    DecreasePulse=GET_LONG(DEC_PULSE_120);
+                    ret=0;
+                }
+                else if(!Speed90Check()){
+                    CurSpeed=SPEED_90;
+                    DecreasePulse=GET_LONG(DEC_PULSE_90);
+                    ret=0;
+                }
+                else if(!Speed60Check()){
+                    CurSpeed=SPEED_60;
+                    DecreasePulse=GET_LONG(DEC_PULSE_60);
+                    ret=0;
+                }
+				else	ret=2;
+                if((cF_SPEED60 == 0) && (cF_SPEED90 == 0) && (cF_SPEED120 == 0) && (cF_SPEED150 == 0)  && (cF_SPEED180 == 0))	ret=1;    
+                break;     
+            case    SPEED_210:
+                if(!Speed210Check()){
+                    CurSpeed=SPEED_210;
+                    DecreasePulse=GET_LONG(DEC_PULSE_210);
+                    ret=0;
+                }
+                else if(!Speed180Check()){
+                    CurSpeed=SPEED_180;
+                    DecreasePulse=GET_LONG(DEC_PULSE_180);
+                    ret=0;
+                }
+                else if(!Speed150Check()){
+                    CurSpeed=SPEED_150;
+                    DecreasePulse=GET_LONG(DEC_PULSE_150);
+                    ret=0;
+                }
+                else if(!Speed120Check()){
+                    CurSpeed=SPEED_120;
+                    DecreasePulse=GET_LONG(DEC_PULSE_120);
+                    ret=0;
+                }
+                else if(!Speed90Check()){
+                    CurSpeed=SPEED_90;
+                    DecreasePulse=GET_LONG(DEC_PULSE_90);
+                    ret=0;
+                }
+                else if(!Speed60Check()){
+                    CurSpeed=SPEED_60;
+                    DecreasePulse=GET_LONG(DEC_PULSE_60);
+                    ret=0;
+                }
+				else	ret=2;
+                if((cF_SPEED60 == 0) && (cF_SPEED90 == 0) && (cF_SPEED120 == 0) && (cF_SPEED150 == 0)  && (cF_SPEED180 == 0)   && (cF_SPEED210 == 0))	ret=1;
+                ret=3;      //// not use
+                break;     
+            default:
+                ret=3;
+                break;
+        }        
+    }
+
+
+    if(ret==0){
+        if(want_updn==1){           //up want
+            StopMinimumPulse=DecreasePulse + CurPulse;
+        }
+        else if(want_updn==2){           //dn want
+            StopMinimumPulse=CurPulse-DecreasePulse;
+        }
+        else    ret=3;
+    }
+    
+/*
+    if(ret){
+        switch(ret){
+            case    1:
+			    if(sRamDArry[mSysStatus] > sSpeedPortError) sRamDArry[mSysStatus]=sSpeedPortError;      
+                break;
+            case    2:
+			    if(sRamDArry[mSysStatus] > sMinLengthErr)   sRamDArry[mSysStatus]=sMinLengthErr;      
+                break;
+            case    3:
+			    if(sRamDArry[mSysStatus] > sSystemErr)      sRamDArry[mSysStatus]=sSystemErr;      
+                break;
+        }
+    }
+*/
+
+	NoStart=ret;
+    return(NoStart);
+
+//ret==1    : SpeedPortError
+//ret==2    : MinLengthErr
+//ret==3    : SystemErr
 }
 
 

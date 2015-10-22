@@ -619,28 +619,16 @@ LocalType  __attribute__((section(".usercode")))  CurFloorRead_OnOff(void)
     }
 #endif
 
-
     bD_F_FloorOn=0;
-
-/*
-    if(j == 1){
-        bD_F_FloorOn=1;        
-    }
-    else if(j >= 2){
-        bCarErr=1;
-    }
-*/
     
     if(j == 1){
         bD_F_FloorOn=1;        
-		bEqualFloorError=0;
     }
     else if(j >= 2){
 		if( !IN_AUTO){
             bEqualFloorError=1;
 			bCarErr=1;
 		}
-		else	bEqualFloorError=0;
     }
 
     return(j);
@@ -832,7 +820,9 @@ void  __attribute__((section(".usercode")))  CarCurFloorRead_OnOff(void)
 
 void  __attribute__((section(".usercode"))) 	InverterErrorCheck_IO(void)
 {
+#ifndef	DELTA_INVERTER
     bsInvCurNext=0;
+#endif
 }
 
 
@@ -869,8 +859,12 @@ void  __attribute__((section(".usercode")))    CarCurFloorRead(void)
 {
     if(INVERTER_CHECK == LG)                                CarCurFloorRead_ELEV();                                             
     else if(INVERTER_CHECK == D_F)                          CarCurFloorRead_OnOff();                                             
-    else                                                    CarCurFloorRead_IO();
-
+    else{
+    	CarCurFloorRead_IO();
+		#ifdef	DELTA_INVERTER
+		sRamDArry[mReqStopFloor] = ((InvStatus[3] - 1) | 0x20); 
+		#endif
+	}
 }
 
 

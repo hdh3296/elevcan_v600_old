@@ -186,6 +186,7 @@
 #define  	AUTO_TUNING       	216
 #define  	AUTO_TUNING_SEQ   	217
 #define  	mCurCarkey        	218
+#define  	mLuLdFloor        	219
 
 
 #define  	EndsRam           	254
@@ -203,10 +204,10 @@
 #define     SL_mCarKey17        19
 #define     SL_mCarKey25        20
 #define     SL_mSysStatus       21   //status nm
-#define     SL_OUT_OP       	22   // o_op
-#define     SL_OUT_UP       	23   // o_up_ward
-#define     SL_OUT_FAN          24   // o_fan
-#define     SL_IN_EMG           25   // i_emg
+#define     SL_OUT_OP       	22   //o_op
+#define     SL_OUT_UP       	23   //o_up_ward
+#define     SL_OUT_FAN          24   //o_fan
+#define     SL_IN_EMG           25   //i_emg
 #define     SL_IN_SU1       	26   //i_su1
 #define     SL_IN_GR       		27   //i_gr
 #define     SL_IN_FIRE       	28   //i_fire

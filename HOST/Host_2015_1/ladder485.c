@@ -677,10 +677,10 @@ const unsigned char GroupLineMessage[][17]={
                                     "ONOFF2:SftUse RL",//25
                                     "ONOFF2:Floor Sel",//26
                                     "ONOFF2:RunningOp",//27
-                                    "ONOFF2:Go Home  ",//28
+                                    "ONOFF2:Not Use  ",//28
                                     "ONOFF2:Not Use  ",//29
                                     "ONOFF2:Not Use  ",//30
-                                    "ONOFF2:Not Use  ",//31
+                                    "ONOFF2:Copy_Encd",//31
                                     "ONOFF2:Work Mode",//32
 ///////////////////////////////////////////////////////////                                                                                                           
                                     "DOOR-S:Floor01  ",//1 
@@ -1129,7 +1129,7 @@ const unsigned char ElevOnOffSetMessage[ELEV_ONOFF_MESSAGE_CNT][11]={
                                     "Reserve5   ",   
                                     "Reserve4   ",   
                                     "Reserve3   ",   
-                                    "Reserve2   ",   
+                                    "EncCopy On",   
                                     "Manual Job ",   
                                 };
 
@@ -1166,7 +1166,7 @@ const unsigned char ElevOnOffResetMessage[ELEV_ONOFF_MESSAGE_CNT][11]={
                                     "Reserve5   ",   
                                     "Reserve4   ",   
                                     "Reserve3   ",   
-                                    "Reserve2   ",   
+                                    "EncCopy Off",   
                                     "Auto Ready ",   
                                 };
 
@@ -2179,7 +2179,7 @@ void    __attribute__((section(".usercode"))) MemDsp(void)
 
 void    __attribute__((section(".usercode"))) SpeedDsp(void)
 {
-    unsigned int count;
+    unsigned int count,tmpspddsp;
     unsigned int chun,bek,sip,il;
 
     chun=bek=sip=il=0;
@@ -2199,7 +2199,10 @@ void    __attribute__((section(".usercode"))) SpeedDsp(void)
 
 	New485Ladder[2+5]=' ';
 
-	if(bCarUpMove || bCarDnMove){ 
+	if(CurMeterPerMin > 1)	tmpspddsp=1;
+	else					tmpspddsp=0;
+
+	if( (bCarUpMove || bCarDnMove) || (tmpspddsp > 0) ){ 
 	
 	    chun=(unsigned int)CurMeterPerMin;
 	
@@ -2389,8 +2392,11 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
             Rs485ComDsp();
             break;
         case    18:
-            CurEncoderPulse(FindDecTime);
-            break;
+   			CurEncoderPulse(LType_Test_Value);
+			if(iType_Test_PlusMinus)	New485Ladder[SECONDLINE_BASE]= '+';
+			else						New485Ladder[SECONDLINE_BASE]= '-';
+
+        	break;
         default:
 			j=sRamDArry[mSysStatus];
 			for(i=0;i<16;i++){

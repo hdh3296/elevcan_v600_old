@@ -5,7 +5,7 @@
 
 #define  	VERSION_0         		    '5'
 #define  	VERSION_1         		    '7'
-#define  	VERSION_2         		    '2'
+#define  	VERSION_2         		    '4'
 
 
 #define     LG                          0
@@ -234,7 +234,7 @@
 #define     bONOFF33          			27                      //ONOFF3
 #define     bONOFF34                    28                      //ONOFF3
 #define     bONOFF35                    29                      //ONOFF3
-#define     bONOFF36                    30                      //ONOFF3
+#define     bEncoderCpy                 30                      //ONOFF3
 #define     bManWorkingChk              31                      //ONOFF3
 
 /////////////BIT AREA1////////////////////////

@@ -15,6 +15,9 @@
 #include	"you_can2.h" 
 
 
+#ifdef	DELTA_INVERTER	
+
+
 #define		CAN_BASE_TIME	20		
 
 #define		HOST_SDO_0		0x60		
@@ -54,6 +57,46 @@
 
 
 
+#define		IV_READY_0		0x01
+#define		IV_ERROR_0		0x02
+#define		IV_WARNNING_0	0x04
+#define		IV_UP_0			0x08
+#define		IV_DOWN_0		0x10
+#define		IV_NORMAL_0		0x20
+#define		IV_RESERVE1_0	0x40
+#define		IV_ZERO_SPD_0	0x80
+
+#define		IV_INSPE_1		0x01
+#define		IV_RESCUE_1		0x02
+#define		IV_RELEVEL_1	0x04
+#define		IV_RESERVE2_1	0x08
+#define		IV_RESERVE3_1	0x10
+#define		IV_FST_1		0x20
+#define		IV_FSD_1		0x40
+#define		IV_BK_RELEASE_1	0x80
+
+/*
+#define		Inv_Ready_Chk			(InvStatus[0] & IV_READY_0)			?	(1) : (0)
+#define		Inv_Error_Chk			(InvStatus[0] & IV_ERROR_0)			?	(1) : (0)
+#define		Inv_Warnning_Chk		(InvStatus[0] & IV_WARNNING_0)		?	(1) : (0)
+#define		Inv_Up_Chk				(InvStatus[0] & IV_UP_0)			?	(1) : (0)
+#define		Inv_Down_Chk			(InvStatus[0] & IV_DOWN_0)			?	(1) : (0)
+#define		Inv_Normal_Chk			(InvStatus[0] & IV_NORMAL_0)		?	(1) : (0)
+#define		Inv_Reserve1_Chk		(InvStatus[0] & IV_RESERVE1_0)		?	(1) : (0)
+#define		Inv_Zero_Spd_Chk		(InvStatus[0] & IV_ZERO_SPD_0)		?	(1) : (0)
+
+#define		Inv_Inspe_Chk			(InvStatus[1] & IV_INSPE_1)			?	(1) : (0)
+#define		Inv_Rescue_Chk			(InvStatus[1] & IV_RESCUE_1)		?	(1) : (0)
+#define		Inv_Relevel_Chk			(InvStatus[1] & IV_RELEVEL_1)		?	(1) : (0)
+#define		Inv_Reserve2_Chk		(InvStatus[1] & IV_RESERVE2_1)		?	(1) : (0)
+#define		Inv_Reserve3_Chk		(InvStatus[1] & IV_RESERVE3_1)		?	(1) : (0)
+#define		Inv_FST_Chk				(InvStatus[1] & IV_FST_1)			?	(1) : (0)
+#define		Inv_FSD_Chk				(InvStatus[1] & IV_FSD_1)			?	(1) : (0)
+#define		Inv_BreakRelease_Chk	(InvStatus[1] & IV_BK_RELEASE_1)	?	(1) : (0)
+*/
+
+
+
 #define		ID_CODE			0
 #define		RD_WR_CMD		1
 #define		RD_WR_LENGTH	2
@@ -85,11 +128,7 @@
 
 
 unsigned int	DeltaNoAck=0;
-
-
-#ifdef	DELTA_INVERTER	
-
-
+unsigned int	InverterPDORxTime=0;
 unsigned int	InverterReady=0;
 unsigned int	DeltaRdWrStatus=0;
 unsigned int	DeltaRdWrStatusFhm=0;
@@ -99,7 +138,7 @@ unsigned char	IV_AckRdWrTxBuf[27];
 unsigned char	ElevStatus[8];
 unsigned char	InvStatus[8];
 unsigned char	ThisAttribute[8];
-
+unsigned char	PDO_TX_DataBuf[8];
 
 
 
@@ -191,8 +230,9 @@ LocalType __attribute__((section(".usercode"))) C2InvAckDataSort(void)
 	switch(C2ThisRxSid){
 		case	0x02:
 			for(i=0;i<8;i++)	InvStatus[i] = C2ThisRxBuf[i];
-			EV_ReqRdWrTxBuf[REQ_TIMEOUT]	  = 0;
+			EV_ReqRdWrTxBuf[REQ_TIMEOUT]	  = 0;			
 			ret=0; 	
+			InverterPDORxTime=0;
 			break;
 		case	0x50:
 			if( !((C2ThisRxBuf[0] == 0x03) || (C2ThisRxBuf[0] == 0x06)	|| (C2ThisRxBuf[0] == 0x60) || (C2ThisRxBuf[0] == 0x61) || (C2ThisRxBuf[0] == 0x62)) ){
@@ -455,38 +495,23 @@ LocalType __attribute__((section(".usercode"))) Write_SDO(void)
 }
 
 
-LocalType __attribute__((section(".usercode"))) Read_PDO(void)
+
+
+LocalType __attribute__((section(".usercode"))) PDO_DataLoad(void)
 {
 	unsigned int i;
 
-	RdWrBufInit();
-
-	C2ThisTxSid 	=HOST_PDO;
-//	C2ThisTxBuf[0] 	=0;
-	C2ThisTxBuf[1]	=0;
-//	C2ThisTxBuf[2]	=0;
-	C2ThisTxBuf[3]	=0;				
-	C2ThisTxBuf[4] 	=0;
-//	C2ThisTxBuf[5]	=0;
-	C2ThisTxBuf[6]	=0;
-	C2ThisTxBuf[7]	=0;				
-
-	if(bAuto && !bManualStop && bManualAuto){
-		C2ThisTxBuf[0]	= 0x04;
-		C2ThisTxBuf[5]	=((sRamDArry[mAckStopFloor] & ONLY_FLR) + 1);
-	}							
-	else{
-		C2ThisTxBuf[0]	=0x10;							
-		C2ThisTxBuf[5]	=0;
+	C2ThisTxSid=HOST_PDO;
+	for(i=0;i<8;i++){
+		C2ThisTxBuf[i]=PDO_TX_DataBuf[i];
 	}
-	if(CurSelOutPortChk(cF_UP))			C2ThisTxBuf[2]	=0x02;	
-	else if(CurSelOutPortChk(cF_DN))	C2ThisTxBuf[2]	=0x04;	
-	else								C2ThisTxBuf[2]	=0x0;
 	C2ThisTxDataCnt	=0x08;
-
 	C2TxAct();
 	return(0);
 }
+
+
+
 
 
 
@@ -532,8 +557,7 @@ LocalType __attribute__((section(".usercode"))) SDOReqMode(void)
 
 LocalType __attribute__((section(".usercode"))) PDOReqMode(void)
 {
-//	ThisReqSdoPdo=HOST_PDO;
-	Read_PDO();    
+	PDO_DataLoad();
 	return(0);
 }
 
@@ -929,6 +953,158 @@ IV_AckRdWrTxBuf[REQ_DATA_SEQ]=0xff;
 
 	return(ret);
 }	
+
+
+
+LocalType __attribute__((section(".usercode"))) DeltaInverterZeroHzSet(void)
+{
+	if(InvStatus[0] & IV_ZERO_SPD_0)	return(1);
+	else								return(0);
+}
+
+
+
+LocalType __attribute__((section(".usercode"))) DeltaInverterStopChk(void)
+{
+	unsigned int ret=0;
+	unsigned char InvFloor,HostFloor;
+
+	ret=0;
+
+	if( !bMoveCar){
+		if(InverterPDORxTime > 50){
+			bInvComErr=1;
+			bCarErr=1;
+		}
+		else{
+			bInvComErr=0;
+		}	
+	}
+
+	if(bAuto && !bManualStop && bManualAuto){
+		InvFloor=InvStatus[5];
+
+		if(bOnLuLd && !bMoveCar){
+			HostFloor=(sRamDArry[mcurfloor]+1);
+			if(InvFloor != HostFloor){
+				bsInvCurNext=1;
+				bCarErr=1;
+			}
+			else{
+				bsInvCurNext=0;
+			}
+		}
+
+		if(!IN_SU1 && bUpWard){
+			HostFloor=(cF_TOPFLR+1);
+			if(InvFloor != HostFloor){
+				bStrongDec=1;
+			}
+		}
+
+		if(!IN_SD1 && bDnWard){
+			HostFloor=1;
+			if(InvFloor != HostFloor){
+				bStrongDec=1;
+			}
+		}		
+	}
+
+
+	if(bStrongDec){
+		OUT_P3(1);
+		if(DeltaInverterZeroHzSet()){
+			bsInvCurNext=1;
+			bCarErr=1;
+		}
+	}	
+	else			OUT_P3(0);
+
+
+	if(!bMoveCar)	bStrongDec=0;	
+	if(IN_AUTO)		bsInvCurNext=0;	
+
+	return(ret);
+}
+
+
+
+
+LocalType __attribute__((section(".usercode"))) DeltaInvDataSortForPDO(void)
+{
+	unsigned int i,j;
+
+	PDO_TX_DataBuf[0] 	=0;
+	PDO_TX_DataBuf[1]	=0;
+	PDO_TX_DataBuf[2]	=0;
+	PDO_TX_DataBuf[3]	=0;				
+	PDO_TX_DataBuf[4] 	=0;
+	PDO_TX_DataBuf[5]	=0;
+	PDO_TX_DataBuf[6]	=0;
+	PDO_TX_DataBuf[7]	=0;				
+
+
+	DeltaInverterStopChk();
+
+	if(bAuto && !bManualStop && bManualAuto && !(InvStatus[1] & IV_FSD_1)){
+	    if((bUpWard || bDnWard) && (sRamDArry[mAckStopFloor] & UPDN_CAR_READY)){		
+			PDO_TX_DataBuf[5]	=((sRamDArry[mAckStopFloor] & ONLY_FLR) + 1);
+		}
+
+		if(bMoveCar){
+			PDO_TX_DataBuf[0]	= 0x04;
+		    if(bUpWard){
+				if(PDO_TX_DataBuf[5] < InvStatus[3]){
+					PDO_TX_DataBuf[5] = InvStatus[3]; 										
+				}
+			}
+			else{
+				if(PDO_TX_DataBuf[5] > InvStatus[3]){
+					PDO_TX_DataBuf[5] = InvStatus[3]; 										
+				}
+			}				
+		}	
+		else{
+			PDO_TX_DataBuf[5]	= 0;
+			PDO_TX_DataBuf[0]	= 0x0;
+		}
+	}
+	else{
+		if(bMoveCar){		
+			if(bSearchHome){
+				if(bOneLuOrLd){
+					PDO_TX_DataBuf[0]	=0x40;			
+				}
+				else{
+					PDO_TX_DataBuf[0]	=0x10;
+				}			
+				PDO_TX_DataBuf[5]	=((sRamDArry[mcurfloor] & ONLY_FLR) + 1);
+			}
+			else{
+				PDO_TX_DataBuf[0]	=0x10;
+				PDO_TX_DataBuf[5]	=0;
+			}
+		}
+		else	PDO_TX_DataBuf[0]	=0x0;							                                    
+	}
+
+
+	if((InvStatus[0] & IV_ERROR_0)){
+		bCarErr=1;                                                     		
+	}
+
+	if(CurSelOutPortChk(cF_UP)){
+		PDO_TX_DataBuf[2]	=0x02;
+	}	
+	else if(CurSelOutPortChk(cF_DN)){
+		PDO_TX_DataBuf[2]	=0x04;
+	}	
+	else{
+		PDO_TX_DataBuf[2]	=0x0;
+	}
+
+	return(0);
+}
 
 
 #endif

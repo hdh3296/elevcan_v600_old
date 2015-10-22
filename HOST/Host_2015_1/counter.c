@@ -131,7 +131,6 @@ unsigned int   __attribute__((section(".usercode")))  ReadEncoder(void)
 
 
 
-
 /*
 	if( TmpEncoderPulse > BefCurEncoderPulse){
 		BefCurEncoderPulse = (TmpEncoderPulse - BefCurEncoderPulse);

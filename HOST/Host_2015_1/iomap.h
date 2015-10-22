@@ -1,6 +1,5 @@
 
 #define     LocalType       unsigned int
-//#define     UserDataType    unsigned char
 #define     UserDataType    unsigned int
 
 
