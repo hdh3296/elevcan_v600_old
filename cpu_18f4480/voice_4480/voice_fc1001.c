@@ -189,7 +189,7 @@ date    :       1999,9,21
 
 #define ELE_bCAR_MOST_SERVICE   (RcvBuf[IdPt + S4_STATE] & S4_CAR_MOST_SERVICE)
 #define ELE_bFAMILY_SERVICE     (RcvBuf[IdPt + S4_STATE] & S4_FAMILY_SERVICE)
-#define ELE_bARRIVE             (RcvBuf[IdPt + S4_STATE] & S4_ARRIVE)
+//#define ELE_bARRIVE             (RcvBuf[IdPt + S4_STATE] & S4_ARRIVE)
 #define ELE_bWAIT_FLR_SERVICE   (RcvBuf[IdPt + S4_STATE] & S4_WAIT_FLR_SERVICE)
 #define ELE_bPARKING_READY      (RcvBuf[IdPt + S4_STATE] & S4_PARKING_READY)
 #define ELE_bHALLLANTERN_UP     (RcvBuf[IdPt + S4_STATE] & S4_HALLLANTERN_UP)
@@ -199,6 +199,13 @@ date    :       1999,9,21
 #define ELE_DSP2         RcvBuf[IdPt + DSP2]
 
 #define ELE_mSYSSTATUS  RcvBuf[IdPt + SL_mSysStatus]
+
+#define ELE_IN_EMG  	(RcvBuf[IdPt + SL_IN_EMG] & 0x01)
+#define ELE_IN_AT  	(RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 2)) // 입력 접점에 신호 ON = 0 
+#define ELE_IN_UB  	(RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 3))
+#define ELE_IN_DB  	(RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 4))
+
+
 
 //mSysStatus
 #define msysDOOROPEN    57
@@ -382,12 +389,14 @@ void main(void)
         if (bSetSong) TmpCurVoice = GetVoice_Song(TmpCurVoice);
         // Beef 멘트 관련
         if (TmpCurVoice != NO_MENT)	BeefDelayTimer = BEEP_DELAY;
-        if (BeefDelayTimer > BEEP_DELAY)
-        {
-            TmpCurVoice = GetVoice_Beep(TmpCurVoice);
-            if (TmpCurVoice == BEEP_MENT)	BeefDelayTimer = 0;
-        }
-
+		if(bBeepEnab)
+		{
+	        if (BeefDelayTimer > BEEP_DELAY)
+	        {
+	            TmpCurVoice = GetVoice_Beep(TmpCurVoice);
+	            if (TmpCurVoice == BEEP_MENT)	BeefDelayTimer = 0;
+	        }
+		}
 
         if (TmpCurVoice != NO_MENT)
         {
@@ -810,16 +819,12 @@ unsigned char   GetVoice_Beep(unsigned char tmpCurVoice)
     if (tmpCurVoice != 0xff) // 이미 다른 음성이 등록되어 있다면 !
         return tmpCurVoice;
 
-    if (ELE_bCAR_MOVE && ELE_bMANUAL)
+    if (ELE_IN_AT && ELE_bCAR_MOVE)
     {
-        if (!VoiceBusy() && bBeepEnab && (ELE_bUP || ELE_bDOWN))
+        if (!VoiceBusy() && ((ELE_IN_UB == 0) || (ELE_IN_DB == 0)))
         {
             tmpCurVoice = BEEP_MENT;
         }
-    }
-    else
-    {
-        bBeepEnab = TRUE;
     }
     return tmpCurVoice;
 }
@@ -862,7 +867,7 @@ unsigned char    GetVoice_State(UCHAR befVoice, UCHAR curVoice)
 
     // 비상
     // [151006] 자동시에만 EMG MENT 출력 되도록 수정
-    if (ELE_bEMG  && (curVoice != EMERGENCY_MENT) && (ELE_bMANUAL == FALSE))
+    if (ELE_bEMG  && (curVoice != EMERGENCY_MENT) && (ELE_IN_AT == 0))
     {
         if (EmergencyVoiceCnt < 10)	EmergencyVoiceCnt++;
         if (EmergencyVoiceCnt < 6)
