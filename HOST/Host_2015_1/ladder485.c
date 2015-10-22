@@ -145,9 +145,11 @@ void  __attribute__((section(".usercode"))) Pc_Command(void);
 #define     SUBNM_BASE_SCURVE_TIME      15  
 #define     SUBNM_SU2SD2_SPD           	16  
 #define     SUBNM_X0X1_SPD             	17  
-#define     SUBNM_LULD_MPM             	18  
-#define     SUBNM_AUTO_TUN             	19  
-#define     SUBNM_FHM             		20  
+#define     SUBNM_LULD_MPM             	18
+#define     SUBNM_NOTUSE             	19  
+#define     SUBNM_AUTO_LANDING          20  
+#define     SUBNM_AUTO_TUN             	21  
+#define     SUBNM_FHM             		22  
 
 #define     SUBNM_LOW_SPD_PULSE     	26  
 #define     SUBNM_MID_SPD_PULSE     	27  
@@ -192,7 +194,7 @@ void  __attribute__((section(".usercode"))) Pc_Command(void);
 
 #define     NORMAL_DSP_MESSAGE_CNT  32
 #define     INIT_MESSAGE            8 
-#define     USER_LAMP_MESSAGE_CNT   10
+#define     USER_LAMP_MESSAGE_CNT   11
 
 
 #define     IO_PORT_MESSAGE_CNT     9
@@ -209,6 +211,9 @@ void  __attribute__((section(".usercode"))) Pc_Command(void);
 
 #define     ELEV_SPEED_MESSAGE_CNT_SPD3  	5
 #define     ELEV_SPEED_MESSAGE_CNT  		9
+
+#define     AUTO_LANDING_MESSAGE_CNT  		2
+//#define     AUTO_LANDING_MESSAGE_CNT  		3
 
 
 #define     MAX_LADDER_BUF          40
@@ -584,7 +589,8 @@ const unsigned char GroupLineMessage[][17]={
                                     "TMR:Fan Off Time",// 6
                                     "TMR:Lit Off Time",// 7
                                     "TMR:OpClWaitTime",// 8
-                                    "TMR:DrJmpChkTime",// 9
+//                                    "TMR:DrJmpChkTime",// 9
+                                    "TMR:PowerRunTime",// 9
                                     "TMR:Dir Set Time",//10
                                     "TMR:Voice OnTime",//11
                                     "TMR:Brk Mgt Time",//12
@@ -732,9 +738,9 @@ const unsigned char GroupLineMessage[][17]={
                                     "I_O:MaxSuSd1 Spd",//18 
                                     "I_O:MaxSuSd2 Spd",//19 
                                     "I_O:MaxX0X1  Spd",//20                                   
-                                    "I_O:Spd1        ",//21 
-                                    "I_O:Spd2        ",//22 
-                                    "I_O:Spd3        ",//23 
+                                    "I_O:AutoLanding ",//21 
+                                    "I_O:spd2        ",//22 
+                                    "I_O:spd3        ",//23 
                                     "I_O:Spd4        ",//24 
                                     "I_O:Spd5        ",//25  
                                     "I_O:Spd6        ",//26 
@@ -1066,10 +1072,10 @@ const unsigned char GroupLineMessage[][17]={
                                     "E/L:SuSd2 Spd   ",//17 
                                     "E/L:X0X1  Spd   ",//18 
                                     "E/L:LuLd-StopMpm",//19 
-                                    "E/L:Tuning Mode ",//20  
-                                    "E/L:Fhm Mode    ",//21 
-                                    "E/L:Not Use     ",//22 
-                                    "E/L:Not Use     ",//23 
+                                    "E/L:Not Use     ",//20 
+                                    "E/L:AutoLanding ",//21 
+                                    "E/L:Tuning Mode ",//22  
+                                    "E/L:Fhm Mode    ",//23 
                                     "E/L:Not Use     ",//24 
                                     "E/L:Not Use     ",//25 
                                     "E/L:Not Use     ",//26 
@@ -1188,6 +1194,12 @@ const unsigned char ElevSpeedMessage_spd3[ELEV_SPEED_MESSAGE_CNT_SPD3][11]={
                                     "Mid_Spd    ", 
                                 };
 
+const unsigned char AUTO_LANDING_MSG[AUTO_LANDING_MESSAGE_CNT][11]={
+                                    "Not Use    ",    
+                                    "YK_ALanding",
+//                                    "DS_ALanding",
+                                };
+
 const unsigned char ElevSpeedMessage[ELEV_SPEED_MESSAGE_CNT][11]={
                                     "SPEED30    ",
                                     "SPEED45    ",
@@ -1235,6 +1247,7 @@ const unsigned char UserLampMessage[USER_LAMP_MESSAGE_CNT][11]={
                                       "VIP        ",
                                       "USE LAMP   ",
                                       "FULL LAMP  ",
+                                      "POWER SAVE ",
                                       "NOT USE    "                                      
                                     };                                       
 
@@ -1467,6 +1480,7 @@ const unsigned char BdName[][8]={
 const unsigned char SlipMessage[][11]={
 									  "UCMP Clear ",                                      
                                  };
+
 
 
 
@@ -2375,7 +2389,6 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
             Rs485ComDsp();
             break;
         case    18:
-//            CurEncoderPulse(DecreasePulse);
             CurEncoderPulse(FindDecTime);
             break;
         default:
@@ -2892,6 +2905,7 @@ void  __attribute__((section(".usercode"))) NewMenuStart(void)
 			break;
         case    DELTA_PAR_GROUP_04:
             MaxSubMenu=EL_GROUP_MAX;
+            MaxSubMenu=100;
 			break;
         case    DELTA_PAR_GROUP_05:
             MaxSubMenu=EL_GROUP_MAX;
@@ -3082,6 +3096,11 @@ void  __attribute__((section(".usercode"))) DigitStringMessage(void)
                     New485Ladder[SECONDLINE_BASE+EditBlanck+i]=ElevSpeedMessage[DigitData][i];
                 }
             }
+            else if(LadderGroupSub == 20){               
+                for(i=0;i<11;i++){
+                    New485Ladder[SECONDLINE_BASE+EditBlanck+i]=AUTO_LANDING_MSG[DigitData][i];
+                }
+            }
             break;
         case    USER_GROUP:  //save
 			switch(LadderGroupSub){
@@ -3190,6 +3209,12 @@ void  __attribute__((section(".usercode"))) DigitStringMessage(void)
 	                    New485Ladder[SECONDLINE_BASE+EditBlanck+i]=AutoTunMessage[DigitData][i];
 	                }
 					break;
+				case	SUBNM_AUTO_LANDING:
+	                for(i=0;i<11;i++){
+	                    New485Ladder[SECONDLINE_BASE+EditBlanck+i]=AUTO_LANDING_MSG[DigitData][i];
+	                }
+					break;
+
 				case	SUBNM_FHM:
 	                for(i=0;i<11;i++){
 	                    New485Ladder[SECONDLINE_BASE+EditBlanck+i]=FhmMessage[DigitData][i];
@@ -3376,6 +3401,7 @@ void  __attribute__((section(".usercode"))) FlrGroup(void)
     		DigitMinValue=0;
             DigitMaxValue=256;
 			break;
+
 #else
         case    ONE_STOP_FLR:
             DigitMaxValue=SYSTEM_TOP_FLR+1;
@@ -3971,6 +3997,14 @@ void  __attribute__((section(".usercode"))) IoGroup(void)
         DigitData=cF_FLRDSPCH((unsigned long)i);
         Integer_Digit();
     }
+    else if(LadderGroupSub == 20){               
+        ShiftCnt=0;
+        EditStatus=DIGIT_STRING_EDIT;                   
+		DigitMaxValue=AUTO_LANDING_MESSAGE_CNT;
+
+        DigitData=cF_FLRDSPCH((unsigned long)F_AutoLandingMode);
+        Integer_Digit();
+    }
     else{               
         ShiftCnt=3;
         EditBlanck=7;
@@ -3978,7 +4012,6 @@ void  __attribute__((section(".usercode"))) IoGroup(void)
         DigitData=cF_FLRDSPCH((unsigned long)i);
         Integer_Digit();
     }
-
 }
 
 
@@ -4295,7 +4328,6 @@ void  __attribute__((section(".usercode"))) UserGroup(void)
 			else if(LadderGroupSub == USER_LAMP2)	i=F_UserLamp2;
 			else if(LadderGroupSub == USER_LAMP3)	i=F_UserLamp3;
 			else if(LadderGroupSub == USER_LAMP4)	i=F_UserLamp4;
-//			else								i=F_UserLamp2;
             DigitData=cF_FLRDSPCH((unsigned long)i);
             Integer_Digit();
             break;
@@ -4662,19 +4694,21 @@ void  __attribute__((section(".usercode"))) UserGroupSave(void)
 			PassWardKeyBuf[2]=New485Ladder[SECONDLINE_BASE+EditBlanck+2];
 			PassWardKeyBuf[3]=New485Ladder[SECONDLINE_BASE+EditBlanck+3];
 
-            if(bPasswardOk){
-                i=F_Passward0;    
-                b_LdTmpBufRam((unsigned long)(i+0))=(LocalType)(PassWardKeyBuf[0]);
-                b_LdTmpBufRam((unsigned long)(i+1))=(LocalType)(PassWardKeyBuf[1]);
-                b_LdTmpBufRam((unsigned long)(i+2))=(LocalType)(PassWardKeyBuf[2]);
-                b_LdTmpBufRam((unsigned long)(i+3))=(LocalType)(PassWardKeyBuf[3]);
-                flash_write_DspChar(F_BLOCK2);
-			}
-
-			PasswardCheck();
-			if(bPasswardOk){
-                LadderGroup=0;
-                LadderGroupSub=0;
+			if( (PassWardKeyBuf[0] != '*') && (PassWardKeyBuf[1] != '*') && (PassWardKeyBuf[2] != '*') && (PassWardKeyBuf[3] != '*')){ 
+	            if(bPasswardOk){
+	                i=F_Passward0;    
+	                b_LdTmpBufRam((unsigned long)(i+0))=(LocalType)(PassWardKeyBuf[0]);
+	                b_LdTmpBufRam((unsigned long)(i+1))=(LocalType)(PassWardKeyBuf[1]);
+	                b_LdTmpBufRam((unsigned long)(i+2))=(LocalType)(PassWardKeyBuf[2]);
+	                b_LdTmpBufRam((unsigned long)(i+3))=(LocalType)(PassWardKeyBuf[3]);
+	                flash_write_DspChar(F_BLOCK2);
+				}
+	
+				PasswardCheck();
+				if(bPasswardOk){
+	                LadderGroup=0;
+	                LadderGroupSub=0;
+				}
 			}
 
 
@@ -5333,6 +5367,16 @@ void  __attribute__((section(".usercode"))) ELGroup(void)
 	        DigitData=cF_FLRDSPCH((unsigned long)F_LULD_MPM_SPD3);
 		    Integer_Digit();
             break;
+        case    SUBNM_AUTO_LANDING:
+            Cursor=0;
+            ShiftCnt=0;
+            EditBlanck=5;
+            EditStatus=DIGIT_STRING_EDIT;
+            DigitMaxValue=AUTO_LANDING_MESSAGE_CNT;
+            DigitMinValue=0;
+	        DigitData=cF_FLRDSPCH((unsigned long)F_AutoLandingMode);
+            Integer_Digit();
+			break;				
 
 ////////////////
 ///////////////////////////////
@@ -5349,7 +5393,7 @@ void  __attribute__((section(".usercode"))) ELGroup(void)
             if(sRamDArry[AUTO_TUNING] == AUTO_TUN_RUN_CMD)   	DigitData=1;
             else                                    			DigitData=0;
             Integer_Digit();
-			break;		
+			break;
         case    SUBNM_FHM:
             Cursor=0;
             ShiftCnt=0;
@@ -5401,7 +5445,14 @@ void  __attribute__((section(".usercode"))) ELGroup(void)
 		    EditStatus=NO_EDIT;		
 		    DigitMaxValue=0xffff;
 		    DigitMinValue=0;
-    		tmpPlulsex=(GET_LONG((unsigned long)BASE_DEC_PULSE));    
+
+			if(DaesungAutoLandingModeChk((unsigned char)DS_AUTOLANDING)==1){		
+	    		tmpPlulsex=(GET_LONG((unsigned long)BASE_DEC_PULSE));    
+			}
+			else{
+	    		tmpPlulsex=BaseDecPulseX;    
+			}
+
 			CurEncoderPulse(tmpPlulsex);
             break;
         case    SUBNM_MPM_VARIABLE:
@@ -5499,6 +5550,9 @@ void  __attribute__((section(".usercode"))) ELGroupSave(void)
         case    SUBNM_LULD_MPM:
 			i=((F_LULD_MPM_SPD3) % (F_BLOCK2));
 			break;
+        case    SUBNM_AUTO_LANDING:
+			i=((F_AutoLandingMode) % (F_BLOCK2));
+			break;
 
 ////////////////////////////////
         case    SUBNM_AUTO_TUN:
@@ -5537,7 +5591,7 @@ void  __attribute__((section(".usercode"))) ELGroupSave(void)
 		}
 		l_LdTmpBufRam(j)=(unsigned long)DigitData;		
 		flash_write(ENCODER_PULSE);
-	    CaluDecreasePulse();
+		CaluDecreasePulse();
 	}
 
 
@@ -5743,24 +5797,6 @@ void  __attribute__((section(".usercode"))) Delta_inverter_Par_Group(void)
 
 void  __attribute__((section(".usercode"))) Delta_inverter_Par_DataSet(unsigned int val,unsigned int dp)
 {
-/*
-    LocalType i,j;
-
-
-    for(i=0;i<16;i++){
-        New485Ladder[i+2]=INVERTER_PAR[i];
-    }
-    New485Ladder[2+14]=( (LadderGroup-DELTA_PAR_GROUP_00) / 10)+ '0';
-    New485Ladder[2+15]=( (LadderGroup-DELTA_PAR_GROUP_00) % 10)+ '0';
-
-
-	for(i=0;i<16;i++){
-	    New485Ladder[SECONDLINE_BASE+i]=INVERTER_VAL[i];
-	}
-	New485Ladder[SECONDLINE_BASE+ 0]=(LadderGroupSub / 10)+ '0';
-	New485Ladder[SECONDLINE_BASE+ 1]=(LadderGroupSub % 10)+ '0';
-
-*/
 
 	ManDsp(val);
 
@@ -5780,15 +5816,6 @@ void  __attribute__((section(".usercode"))) Delta_inverter_Par_DataSet(unsigned 
     	New485Ladder[SECONDLINE_BASE+EditBlanck+2]='.';          
 	}
 
-/*
-    Cursor=0;
-    ShiftCnt=5;
-    EditBlanck=3;
-    EditStatus=DIGIT_ALPHAR_EDIT;
-	DigitMinValue=0;
-	DigitMaxValue=65535;
-    DigitData=0;
-*/
 }
 
 
@@ -6286,35 +6313,13 @@ unsigned int  __attribute__((section(".usercode"))) MenuOnChk(void)
 				case	SUBNM_BASE_DEC_LENTH:
 				case	SUBNM_BASE_PULSE:
 				case	SUBNM_BASE_SCURVE_TIME:
-					i=1;
+					if(AutoLandingModeChk((unsigned char)DS_AUTOLANDING)){
+							i=0;
+					}
+					else	i=1;
 					break;
 			}
 			break;		
-					
-/*
-        case    EL_GROUP:
-			switch(LadderGroupSub){
-				case	SUBNM_BASE_DEC_TIME:
-					#ifndef	AUTO_DEC_LENGTH
-						i=1;
-					#endif
-					break;
-				case	SUBNM_BASE_DEC_LENTH:
-				case	SUBNM_BASE_PULSE:
-					#ifndef	AUTO_DEC_LENGTH
-						i=1;
-					#else
-					if( GET_LONG((unsigned long)BASE_DEC_TIME) ==0){
-						i=1;
-					}    
-					#endif
-					break;	
-				default:
-					break;
-			}	
-			break;
-*/
-
 		default:
 			break;	
 	}
@@ -6424,7 +6429,6 @@ unsigned int  __attribute__((section(".usercode"))) KeyCheck(void)
     newmenu=1;
 
     LadderKey = LadderBuf[C_SAVE_DATA+0];
-
 	if( !bLoaderActive)	LadderKey = 'N';	
 
 
@@ -7079,49 +7083,17 @@ unsigned int  __attribute__((section(".usercode"))) NewFlashData(void)
 
         
 	#ifdef	DELTA_INVERTER
-	if(LadderGroup < DELTA_PAR_GROUP_00){
-		DeltaRdWrStatus=0;
-	}
-
-
-	i=DeltaInverterRdWr( (unsigned char)(LadderGroup-DELTA_PAR_GROUP_00),(unsigned char)LadderGroupSub);
-	if(i==1){
-		EnterKey=0;
-	}	
-	
-
-/*
-	if(LadderGroup < DELTA_PAR_GROUP_00){
-		DeltaRdWrStatus=0;
-	}
-
-	if(DeltaRdWrStatus>0){
-		switch(DeltaRdWrStatus){
-			case	1:
-				ReadAttribute(LadderGroup,LadderGroupSub);
-				DeltaRdWrStatus=2;
-				break;
-			case	2:
-				if(
-					DeltaRdWrStatus=3;
-				}		
-				break;
-			case	3:
-				ReadParameter(LadderGroup,LadderGroupSub,1);
-				DeltaRdWrStatus=4;
-				break;
-			case	4:
-				if(
-					DeltaRdWrStatus=5;
-				}		
-				break;
-			case	5:
-				break;
-			default:
-				break;
+	if(LadderGroup >= USER_GROUP){
+		if(LadderGroup < DELTA_PAR_GROUP_00){
+			DeltaRdWrStatus=0;
 		}
+	    
+	
+		i=DeltaInverterRdWr( (unsigned char)(LadderGroup-DELTA_PAR_GROUP_00),(unsigned char)LadderGroupSub);
+		if(i==1){
+			EnterKey=0;
+		}	
 	}
-*/
 
 	#endif
 

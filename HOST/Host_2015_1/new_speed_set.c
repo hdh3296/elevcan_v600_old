@@ -577,12 +577,6 @@ unsigned int  __attribute__((section(".usercode"))) CaluDecreasePulseCommon_Auto
     unsigned long tmp_mpm,tmp_dec_time,tmp_Scurve_time,tmp_mm,tmp_var;
 
 
-	#ifndef	AUTO_DEC_LENGTH
-	parameter_mirror[BASE_DEC_TIME-ENCODER_PULSE]   =0;
-	parameter_mirror[BASE_SCURVE_TIME-ENCODER_PULSE]=0;
-	#endif
-
-
     tmp_mpm         = parameter_mirror[MPM-ENCODER_PULSE];
     tmp_dec_time    = parameter_mirror[BASE_DEC_TIME-ENCODER_PULSE];
 	tmp_Scurve_time = parameter_mirror[BASE_SCURVE_TIME-ENCODER_PULSE];
@@ -659,10 +653,7 @@ void  __attribute__((section(".usercode"))) CaluDecreasePulse_spd3(void)
 
 	SaveVerify = 0x0;
 
-
 	BaseDecPulseX=GET_LONG(BASE_DEC_PULSE);
-
-	BaseDecPulseX=0;
 
 #endif
 }                                                                     

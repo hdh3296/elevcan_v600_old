@@ -271,27 +271,13 @@ void  __attribute__((section(".usercode")))    CarLowSpeedCmd_IO(void)
             if(sRamDArry[mSysStatus] >= sSLOW_SPEED)   sRamDArry[mSysStatus]=sSLOW_SPEED;                                                     
             bVoiceReady=1;			
 
-
-
-/*
-			#ifdef	HUGI_INVERTER
+			if(AutoLandingModeChk((unsigned char)YASKAWA_AUTOLANDING)){
 				if(bUnd)	ZeroSpeedCmd_IO();
-				else		DecreaseSpeedCmd_IO();
-			#else
-	            DecreaseSpeedCmd_IO();
-			#endif
-*/
-
-
-			if(bChkAutoLanding){
-				if(bUnd)	ZeroSpeedCmd_IO();
-				else		DecreaseSpeedCmd_IO();
+				else		DecreaseSpeedCmd_IO();			
 			}
 			else{
 	            DecreaseSpeedCmd_IO();
 			}
-
-
         }
    	    else{
             sRamDArry[mCarMoveState]=0;
@@ -862,15 +848,19 @@ void   __attribute__((section(".usercode")))   CarStopCmd(void)
 
 void  __attribute__((section(".usercode")))    CarUpStartCmd(void)
 {
-    bSaveFlash=1;
-    CarUpStartCmd_IO();
+	if(bPowerSaveMoveValid){
+	    bSaveFlash=1;
+	    CarUpStartCmd_IO();
+	}
 }
 
 
 void  __attribute__((section(".usercode")))    CarDnStartCmd(void)
 {
-    bSaveFlash=1;
-    CarDnStartCmd_IO();
+	if(bPowerSaveMoveValid){
+	    bSaveFlash=1;
+	    CarDnStartCmd_IO();
+	}
 }
 
 

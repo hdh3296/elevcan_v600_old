@@ -28,7 +28,6 @@ extern void __attribute__((section(".usercode"))) HextoASCIIByte(void);
 //#define		L_K_J_TIME			1440
 
 
-//#define		AUTO_DEC_LENGTH				1
 
 
 #define     OLD_LAW_OLD_SPD			0      
@@ -36,6 +35,11 @@ extern void __attribute__((section(".usercode"))) HextoASCIIByte(void);
 #define     OLD_LAW_NEW_SPD			2      
 #define     NEW_LAW_NEW_SPD			3      
 #define     INVALID_SYSTEM			4      
+
+
+
+#define		YASKAWA_AUTOLANDING		1
+#define		DS_AUTOLANDING			2
 
 
 ////new_system
@@ -46,7 +50,6 @@ extern void __attribute__((section(".usercode"))) HextoASCIIByte(void);
 
 
 
-//#define		HUGI_INVERTER	1
 
 //#define		DELTA_INVERTER	1
 
@@ -156,13 +159,17 @@ extern void __attribute__((section(".usercode"))) HextoASCIIByte(void);
 #define		SILK_FID	46
 #define		SILK_UND	47
 
-#define		EXT_EX0	48
-#define		EXT_EX1	49
-#define		EXT_EX2	50
-#define		EXT_EX3	51
+#define		EXT_EX0		48
+#define		EXT_EX1		49
+#define		EXT_EX2		50
+#define		EXT_EX3		51
+#define		EXT_EX4		52
+#define		EXT_EX5		53
+#define		EXT_EX6		54
+#define		EXT_EX7		55
 
 
-#define		NO_USE_IN   52
+#define		NO_USE_IN   56
 ////////////////////////////////////////////
 ////////////////////////////////////////////
 
@@ -327,6 +334,7 @@ typedef  union  _long_union
 #define  sHoleDoor_Jumper     34
 #define  sCarHoleDoor_Jumper  35
 #define  sEarthquake  		  36
+#define  sDZErr  		  	  37
 
 /////////////////////////////////////
 
@@ -475,7 +483,7 @@ typedef  union  _long_union
 	#define  F_Su2Sd2_Velocity      146                     //1     
 	#define  F_X0X1_Velocity        147                     //1     
 	
-	#define  NC_IO2                 148                     //1    37
+	#define  F_AutoLandingMode      148                     //1    37
 	#define  NC_IO3                 149                     //1     
 	#define  NC_IO4                 150                     //1     
 	#define  NC_IO5                 151                     //1     
@@ -492,9 +500,9 @@ typedef  union  _long_union
 	#define  F_Speed2              	F_Speed60                     //1    
 	#define  F_Speed3              	F_Speed90                     //1    34
 	
-	#define  F_SU2SD2_V_SPD3		NC_IO2                     //1    
-	#define  F_X0X1_V_SPD3       	NC_IO3                     //1    
-	#define  F_LULD_MPM_SPD3        NC_IO4                     //1    35
+	#define  F_SU2SD2_V_SPD3		NC_IO3                     //1    
+	#define  F_X0X1_V_SPD3       	NC_IO4                     //1    
+	#define  F_LULD_MPM_SPD3        NC_IO5                     //1    35
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
@@ -1403,6 +1411,7 @@ extern	UserDataType    SaveVerify;
 extern	UserDataType    EncoderReloadTime;     
 
 
+extern	unsigned	int			PowerSaveTimer;
 extern  unsigned	int    	    NextFloorTime;
 extern  unsigned	int     	MinuteTime;
 extern  unsigned	int   	    LuLdTime;
@@ -1529,6 +1538,7 @@ extern	long_field  FlashDspCharBuf[512]    __attribute__((aligned(512) , space(p
 extern const unsigned char DftFlrName[]; 
 extern const unsigned char StatusMessage[][16];
 extern const unsigned int EncRate[];
+
 
 
 //////
@@ -1695,8 +1705,10 @@ extern const unsigned int EncRate[];
 #define  bBefbsBreakMgtOpen     GET_BITFIELD(&DoorStatus_bit).bit6
 #define  bBefbsSusErr           GET_BITFIELD(&DoorStatus_bit).bit7
 
-//#define  bPC_PRK                GET_BITFIELD(&PC1Bit).bit0 
-//#define  bPC_FIRE               GET_BITFIELD(&PC1Bit).bit1 
+
+
+#define  bDZ_Err                GET_BITFIELD(&PC1Bit).bit0 
+#define  bBefbDZ_Err            GET_BITFIELD(&PC1Bit).bit1 
 #define  bDoorOpenCmd           GET_BITFIELD(&PC1Bit).bit2 
 #define  bDoorCloseCmd          GET_BITFIELD(&PC1Bit).bit3 
 #define  bHoleDoorOpenEnd       GET_BITFIELD(&PC1Bit).bit4 
@@ -1729,7 +1741,7 @@ extern const unsigned int EncRate[];
 #define  bNextFlrChk            GET_BITFIELD(&StateBit2).bit1 
 #define  bExportData            GET_BITFIELD(&StateBit2).bit2 
 #define  bImportData            GET_BITFIELD(&StateBit2).bit3 
-//#define  bPC_FAMILY             GET_BITFIELD(&StateBit2).bit4 
+#define  bDspClr                GET_BITFIELD(&StateBit2).bit4 
 #define  bPowerChkStart         GET_BITFIELD(&StateBit2).bit5 
 #define  bWritechk              GET_BITFIELD(&StateBit2).bit6 
 #define  bOutDate               GET_BITFIELD(&StateBit2).bit7 
@@ -1767,7 +1779,7 @@ extern const unsigned int EncRate[];
 
 
 #define  bLevelOpen      		GET_BITFIELD(&StateBit6).bit0 
-#define  bTmpSec      			GET_BITFIELD(&StateBit6).bit1 
+#define  bRunningDZ      		GET_BITFIELD(&StateBit6).bit1 
 #define  bFireTimeRun    		GET_BITFIELD(&StateBit6).bit2 
 #define  bFirstFire        		GET_BITFIELD(&StateBit6).bit3 
 #define  bSecondFire         	GET_BITFIELD(&StateBit6).bit4
@@ -1783,10 +1795,7 @@ extern const unsigned int EncRate[];
 #define  bSlaveFire         	GET_BITFIELD(&StateBit6).bit4 
 #define  bSubSlaveFire       	GET_BITFIELD(&StateBit6).bit5 
 #define  bSafeFire		    	GET_BITFIELD(&StateBit7).bit6 
-
-#define  bChkAutoLanding        GET_BITFIELD(&StateBit7).bit7 
-
-//#define  bNOT_USE7        		GET_BITFIELD(&StateBit7).bit7 
+#define  bPowerSaveMoveValid    GET_BITFIELD(&StateBit7).bit7 
 
 //////////////////////////////////////////////////////////////
 #define  IN_SU1_PORT            GET_BITFIELD(&I_SU1_bit).bit0 
@@ -2239,6 +2248,8 @@ extern const unsigned int EncRate[];
 #define  cF_SPEED_HIGH_PORT   	GET_LONGFIELD(&FlashDspCharBuf[F_Speed3/4])       .byte[F_Speed3%4]
 #define  cF_LULD_MPM_SPD3     	GET_LONGFIELD(&FlashDspCharBuf[F_LULD_MPM_SPD3/4]).byte[F_LULD_MPM_SPD3%4]
 
+#define  cF_AUTO_LANDING     	GET_LONGFIELD(&FlashDspCharBuf[F_AutoLandingMode/4]).byte[F_AutoLandingMode%4]
+
 
 #define  cF_ELEV_SPEED          GET_LONGFIELD(&FlashDspCharBuf[F_ElevSpeed/4])      .byte[F_ElevSpeed%4]
 #define  cF_LIMIT_SPEED         GET_LONGFIELD(&FlashDspCharBuf[F_LimitSpeed/4])     .byte[F_LimitSpeed%4]
@@ -2561,6 +2572,9 @@ extern  UserDataType    MotorMoveTime;
 
 #ifdef	DELTA_INVERTER	
 extern	unsigned int	DeltaRdWrStatus;
+extern	unsigned int	DeltaRdWrStatusFhm;
+extern	unsigned char	InvStatus[8];
+extern	unsigned int	DeltaNoAck;
 
 /*
 extern	unsigned int	InverterReady;
@@ -2571,3 +2585,5 @@ extern	unsigned int	ThisAttribute[8];
 extern	unsigned int	DeltaRdWrStatus;
 */
 #endif
+
+extern	unsigned int	DeltaNoAck;

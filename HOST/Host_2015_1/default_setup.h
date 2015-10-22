@@ -5,7 +5,7 @@
 
 #define  	VERSION_0         		    '5'
 #define  	VERSION_1         		    '7'
-#define  	VERSION_2         		    '1'
+#define  	VERSION_2         		    '2'
 
 
 #define     LG                          0
@@ -15,7 +15,6 @@
 #define     MAN_USE                     0
 #define     BAGGAGE_USE                 4
 #define     CARLIFT_USE                 8
-
 
 
 #define     INVERTER_CHECK   	        (cF_BD_ID & 0x03)

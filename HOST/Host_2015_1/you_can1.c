@@ -694,6 +694,7 @@ unsigned int  __attribute__((section(".usercode")))  CarBoardDataReceive(void)
         sRamDArry[mDoor] = ((i & ~CAR_READY) | sRamDArry[mDoor]);
     }        
     else if(cmd==CAN_KEY_CLEAR){
+
 	        if((sRamDArry[mEqualFloor] & CAR_READY) && ((i & ONLY_FLR) == (sRamDArry[mEqualFloor] & ONLY_FLR))){
 	            sRamDArry[mEqualFloor] = (sRamDArry[mEqualFloor] & ~CAR_READY);
 	        }

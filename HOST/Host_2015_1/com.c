@@ -323,7 +323,6 @@ void _ISR_X _U1RXInterrupt(void)
 
 #endif
     }
-
     SerialTime=0;
 
 }

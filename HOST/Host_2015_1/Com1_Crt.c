@@ -354,10 +354,8 @@ void  __attribute__((section(".usercode"))) SaveReceiveData(void)
 
 
 
-//void  __attribute__((section(".usercode"))) SerialCheck(void)
 void  __attribute__((section(".usercode"))) HibHpiReqCheck(void)
 {
-
   LocalType tmp;     
 
 	if(ClrCnt > 20){
@@ -445,9 +443,10 @@ void  __attribute__((section(".usercode"))) HibHpiReqCheck(void)
   return;
 }
 
+
 UserDataType  __attribute__((section(".usercode"))) waitchk(void)
 {
-   	if(SerialTime < 4)	return(0);
+	if(SerialTime < 4)	return(0);
 	else{
 		TXEN=1;  		
 		return(1);
@@ -456,28 +455,30 @@ UserDataType  __attribute__((section(".usercode"))) waitchk(void)
 
 UserDataType  __attribute__((section(".usercode"))) Init485_Ladder(void)
 {
-	unsigned int	i;
+	unsigned int i;
+
     RxStatus = STX_CHK;
 	
    	for(NoCloseCnt=0;NoCloseCnt<30;NoCloseCnt++){	      
    		Find_Absolute(MAS_A,LOG_ADR,LOGADR_CLR);   
 
 //   		while((RxStatus != STX_CHK)){
-		SerialTime = 0;
 
+
+		SerialTime = 0;
+		
 		do{
-			i=waitchk();
+		 	i=waitchk();
             asm("CLRWDT");
 		}while(i==0);
-
-/*
+		
+/*				
    		while(SerialTime < 4){
             asm("CLRWDT");
         }
 */
 
-//		TXEN=1;  	
-	
+//		TXEN=1;  		
 		RxCurCnt=0;
       	RxStatus = STX_CHK;
 
@@ -877,7 +878,7 @@ void  __attribute__((section(".usercode"))) CrtReqCheck(void)
 void  __attribute__((section(".usercode"))) SerialCheck(void)
 {
 #ifndef		RS485_FOR_CRT	
-	HibHpiReqCheck();
+    HibHpiReqCheck();
 #else
 	CrtReqCheck();
 #endif

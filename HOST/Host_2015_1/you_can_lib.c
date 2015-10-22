@@ -16,6 +16,7 @@
 unsigned int   CAN_Buf[8];
 
 
+unsigned int tmppower;
 
 
 void LoadCanBuffer(unsigned int i)
@@ -46,9 +47,16 @@ void LoadCanBuffer(unsigned int i)
             CAN_Buf[5]=(sRamDArry[DEST_FLR]        + (unsigned char)(cF_START_FLOOR));
             CAN_Buf[6]= sRamDArry[DSP1];
             CAN_Buf[7]= sRamDArry[DSP2];
-			
+		
+/*	
 			if(sRamDArry[mSysStatus] <= 35){
             	CAN_Buf[1]= (CAN_Buf[1] & ~S1_AUTO);
+			}
+*/
+
+			if(bDspClr){
+	            CAN_Buf[6]= ' ';
+	            CAN_Buf[7]= ' ';
 			}
 
             break;

@@ -273,6 +273,27 @@ unsigned int    __attribute__((section(".usercode"))) CurSelPortIn(unsigned int 
 				else		        				retval=0;
                 if(!NcNo)           			retval=!retval;               
 				break;
+		case	EXT_EX4:
+				if(sRamDArry[mExtIN0] & 0x10)	    retval=1;		
+				else		        				retval=0;
+                if(!NcNo)           			retval=!retval;               
+				break;
+		case	EXT_EX5:
+				if(sRamDArry[mExtIN0] & 0x20)	    retval=1;		
+				else		        				retval=0;
+                if(!NcNo)           			retval=!retval;               
+				break;
+		case	EXT_EX6:
+				if(sRamDArry[mExtIN0] & 0x40)	    retval=1;		
+				else		        				retval=0;
+                if(!NcNo)           			retval=!retval;               
+				break;
+		case	EXT_EX7:
+				if(sRamDArry[mExtIN0] & 0x80)	    retval=1;		
+				else		        				retval=0;
+                if(!NcNo)           			retval=!retval;               
+				break;
+
 
 		default:
 				retval=1;
