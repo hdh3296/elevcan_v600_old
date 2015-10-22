@@ -199,17 +199,18 @@ date    :       1999,9,21
 #define ELE_DSP2         RcvBuf[IdPt + DSP2]
 
 #define ELE_mSYSSTATUS  RcvBuf[IdPt + SL_mSysStatus]
-
-#define ELE_IN_EMG  	(RcvBuf[IdPt + SL_IN_EMG] & 0x01)
-#define ELE_IN_AT  	(RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 2)) // 입력 접점에 신호 ON = 0 
-#define ELE_IN_UB  	(RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 3))
-#define ELE_IN_DB  	(RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 4))
-
-
+// I/O  : // 0x0 이면? 입력 접점에 신호 ON 
+#define ELE_bIN_EMG  	(((RcvBuf[IdPt + SL_IN_EMG] & 0x01) == 0x0)?		1:0) 
+#define ELE_bIN_PRK 	(((RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 1)) == 0x0)?		1:0) 
+#define ELE_bIN_AT  	(((RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 2)) == 0x0)?		1:0)  
+#define ELE_bIN_UB  	(((RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 3)) == 0x0)?		1:0) 
+#define ELE_bIN_DB  	(((RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 4)) == 0x0)?		1:0) 
 
 //mSysStatus
 #define msysDOOROPEN    57
 #define msysDOORCLOSE   58
+
+
 
 #define BEEP_DELAY	4000 // 단위 msec
 
@@ -819,9 +820,9 @@ unsigned char   GetVoice_Beep(unsigned char tmpCurVoice)
     if (tmpCurVoice != 0xff) // 이미 다른 음성이 등록되어 있다면 !
         return tmpCurVoice;
 
-    if (ELE_IN_AT && ELE_bCAR_MOVE)
+    if ((ELE_bIN_AT == FALSE) && ELE_bCAR_MOVE) // 접점 수동 이고 주행중일 때 !
     {
-        if (!VoiceBusy() && ((ELE_IN_UB == 0) || (ELE_IN_DB == 0)))
+        if (!VoiceBusy() && (ELE_bIN_UB || ELE_bIN_DB))
         {
             tmpCurVoice = BEEP_MENT;
         }
@@ -867,7 +868,7 @@ unsigned char    GetVoice_State(UCHAR befVoice, UCHAR curVoice)
 
     // 비상
     // [151006] 자동시에만 EMG MENT 출력 되도록 수정
-    if (ELE_bEMG  && (curVoice != EMERGENCY_MENT) && (ELE_IN_AT == 0))
+    if (ELE_bEMG  && (curVoice != EMERGENCY_MENT) && ELE_bIN_AT)
     {
         if (EmergencyVoiceCnt < 10)	EmergencyVoiceCnt++;
         if (EmergencyVoiceCnt < 6)
