@@ -219,7 +219,7 @@ date    :       1999,9,21
 
 
 
-#define BEEP_DELAY	4000 // 단위 msec
+#define BEEP_DELAY_TIME	4000 // 단위 msec
 
 
 volatile const unsigned char FloorChar[] = {"B5B4B3B2B10102030405060708091011121314151617181920212223242526272829303132"};
@@ -296,7 +296,7 @@ unsigned int    IdPt;
 bit bAfterCancel;
 bit bSetAfterCancel;
 bit bSetSong;
-bit bBeepEnab;
+bit bBeepEnabByManual;
 
 // Voice Play Seqence
 typedef enum
@@ -343,7 +343,9 @@ extern void SetDipSW();
 extern unsigned char VoiceBusy();
 extern unsigned char GetFloorMent();
 extern unsigned char   GetVoice_Song(unsigned char);
-extern unsigned char   GetVoice_Beep(unsigned char);
+extern unsigned char   GetVoice_BeepByManual(unsigned char);
+extern unsigned char  GetVoice_BeepByFirManual(unsigned char);
+
 
 
 
@@ -396,14 +398,17 @@ void main(void)
         if (bSetCarBtnVoice) TmpCurVoice = GetVoice_CarCall(TmpCurVoice, CurCarKey, BefCarKey);
         if (bSetSong) TmpCurVoice = GetVoice_Song(TmpCurVoice);
         // Beef 멘트 관련
-        if (TmpCurVoice != NO_MENT)	BeefDelayTimer = BEEP_DELAY;
-		if(bBeepEnab)
+        if (TmpCurVoice != NO_MENT)	BeefDelayTimer = BEEP_DELAY_TIME;
+		if (BeefDelayTimer > BEEP_DELAY_TIME)
 		{
-	        if (BeefDelayTimer > BEEP_DELAY)
+			TmpCurVoice = GetVoice_BeepByFirManual(TmpCurVoice);
+			
+	        if(bBeepEnabByManual)
 	        {
-	            TmpCurVoice = GetVoice_Beep(TmpCurVoice);
-	            if (TmpCurVoice == BEEP_MENT)	BeefDelayTimer = 0;
+	            TmpCurVoice = GetVoice_BeepByManual(TmpCurVoice);	            
 	        }
+			
+			if (TmpCurVoice == BEEP_MENT)	BeefDelayTimer = 0;
 		}
 
         if (TmpCurVoice != NO_MENT)
@@ -518,7 +523,7 @@ void main(void)
             if (PlaySeq == END_SEQ)
             {
                 CurVoice = NO_MENT;
-                bBeepEnab = TRUE;
+                bBeepEnabByManual = TRUE;
                 bDingdong = FALSE;
 				bFirMentEnab = TRUE;	
             }
@@ -706,7 +711,7 @@ unsigned char    GetVoice_Floor(unsigned char tmpCurVoice, unsigned char curFloo
             if (curFloorMent != befFloorMent)
             {
                 tmpCurVoice = befFloorMent = curFloorMent;
-                bBeepEnab = FALSE;
+                bBeepEnabByManual = FALSE;
             }
         }
     }
@@ -821,7 +826,7 @@ unsigned char   GetVoice_Song(unsigned char befVoice)
     return befVoice;
 }
 
-unsigned char   GetVoice_Beep(unsigned char tmpCurVoice)
+unsigned char   GetVoice_BeepByManual(unsigned char tmpCurVoice)
 {
     unsigned char tmCurVoice;
 
@@ -837,6 +842,23 @@ unsigned char   GetVoice_Beep(unsigned char tmpCurVoice)
     }
     return tmpCurVoice;
 }
+
+unsigned char  GetVoice_BeepByFirManual(unsigned char tmpCurVoice)
+	{
+		unsigned char tmCurVoice;
+	
+		if (tmpCurVoice != 0xff) // 이미 다른 음성이 등록되어 있다면 !
+			return tmpCurVoice;
+		
+		if (ELE_bIN_FIR && (ELE_bIN_AT == FALSE) && (CurVoice != BEEP_MENT)) // 화재입력 and 수동입력 
+		{
+			tmpCurVoice = BEEP_MENT;
+			bFirMentEnab = FALSE;
+		}	
+
+		return tmpCurVoice;
+	}
+
 
 
 unsigned char    GetVoice_State(UCHAR befVoice, UCHAR curVoice)
@@ -868,17 +890,11 @@ unsigned char    GetVoice_State(UCHAR befVoice, UCHAR curVoice)
         tmMent = OVERLOAD_MENT;
     }
 
-    // 화재 관련 
+    // 화재 
     if (ELE_bFIRE && (curVoice != HWAJAE_MENT) && bFirMentEnab)
     {
         tmMent = HWAJAE_MENT;
     }
-	
-	if (ELE_bIN_FIR && (ELE_bIN_AT == FALSE) && (curVoice != BEEP_MENT)) // 화재입력 and 수동입력 
-	{
-		tmMent = BEEP_MENT;
-		bFirMentEnab = FALSE;
-	}
 
     // 비상
     // [151006] 자동시에만 EMG MENT 출력 되도록 수정
