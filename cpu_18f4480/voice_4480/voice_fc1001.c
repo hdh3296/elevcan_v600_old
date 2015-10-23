@@ -210,7 +210,14 @@ date    :       1999,9,21
 #define ELE_bIN_BAT 	(((RcvBuf[IdPt + SL_IN_GR] & (0x01 << 1)) == 0x0)?		1:0) 
 #define ELE_bIN_PAS  	(((RcvBuf[IdPt + SL_IN_GR] & (0x01 << 2)) == 0x0)?		1:0)  
 #define ELE_bIN_FIR  	(((RcvBuf[IdPt + SL_IN_GR] & (0x01 << 3)) == 0x0)?		1:0) 
-#define ELE_bIN_WAT  	(((RcvBuf[IdPt + SL_IN_GR] & (0x01 << 4)) == 0x0)?		1:0) 
+#define ELE_bIN_WAT  	(((RcvBuf[IdPt + SL_IN_GR] & (0x01 << 4)) == 0x0)?		1:0)
+
+#define ELE_bIN_FAN  	(((RcvBuf[IdPt + SL_OUT_FAN] & 0x01) == 0x0)?				0:1) 
+#define ELE_bIN_LIT 	(((RcvBuf[IdPt + SL_OUT_FAN] & (0x01 << 1)) == 0x0)?		0:1) 
+#define ELE_bIN_BUZ  	(((RcvBuf[IdPt + SL_OUT_FAN] & (0x01 << 2)) == 0x0)?		0:1)  
+#define ELE_bIN_BEL  	(((RcvBuf[IdPt + SL_OUT_FAN] & (0x01 << 3)) == 0x0)?		0:1) 
+#define ELE_bIN_REL  	(((RcvBuf[IdPt + SL_OUT_FAN] & (0x01 << 4)) == 0x0)?		0:1)
+
 
 
 //mSysStatus
@@ -345,6 +352,8 @@ extern unsigned char GetFloorMent();
 extern unsigned char   GetVoice_Song(unsigned char);
 extern unsigned char   GetVoice_BeepByManual(unsigned char);
 extern unsigned char  GetVoice_BeepByFirManual(unsigned char);
+extern unsigned char  GetVoice_BeepByFirBuz(unsigned char);
+
 
 
 
@@ -398,10 +407,10 @@ void main(void)
         if (bSetCarBtnVoice) TmpCurVoice = GetVoice_CarCall(TmpCurVoice, CurCarKey, BefCarKey);
         if (bSetSong) TmpCurVoice = GetVoice_Song(TmpCurVoice);
         // Beef 멘트 관련
-        if (TmpCurVoice != NO_MENT)	BeefDelayTimer = BEEP_DELAY_TIME;
 		if (BeefDelayTimer > BEEP_DELAY_TIME)
 		{
 			TmpCurVoice = GetVoice_BeepByFirManual(TmpCurVoice);
+			TmpCurVoice = GetVoice_BeepByFirBuz(TmpCurVoice);
 			
 	        if(bBeepEnabByManual)
 	        {
@@ -524,8 +533,7 @@ void main(void)
             {
                 CurVoice = NO_MENT;
                 bBeepEnabByManual = TRUE;
-                bDingdong = FALSE;
-				bFirMentEnab = TRUE;	
+                bDingdong = FALSE;	
             }
             bVoicePlaying = FALSE;
         }
@@ -844,20 +852,46 @@ unsigned char   GetVoice_BeepByManual(unsigned char tmpCurVoice)
 }
 
 unsigned char  GetVoice_BeepByFirManual(unsigned char tmpCurVoice)
-	{
-		unsigned char tmCurVoice;
-	
-		if (tmpCurVoice != 0xff) // 이미 다른 음성이 등록되어 있다면 !
-			return tmpCurVoice;
-		
-		if (ELE_bIN_FIR && (ELE_bIN_AT == FALSE) && (CurVoice != BEEP_MENT)) // 화재입력 and 수동입력 
-		{
-			tmpCurVoice = BEEP_MENT;
-			bFirMentEnab = FALSE;
-		}	
+{
+	unsigned char tmCurVoice;
 
+	if (tmpCurVoice != 0xff) // 이미 다른 음성이 등록되어 있다면 !
 		return tmpCurVoice;
+	
+	if (ELE_bIN_FIR && (ELE_bIN_AT == FALSE)) // 화재입력 and 수동입력 
+	{
+		if(CurVoice != BEEP_MENT)	tmpCurVoice = BEEP_MENT;
+		bFirMentEnab = FALSE;
 	}
+	else
+	{
+		bFirMentEnab = TRUE;
+	}
+
+	return tmpCurVoice;
+}
+
+
+unsigned char  GetVoice_BeepByFirBuz(unsigned char tmpCurVoice)
+{
+	unsigned char tmCurVoice;
+
+	if (tmpCurVoice != 0xff) // 이미 다른 음성이 등록되어 있다면 !
+		return tmpCurVoice;
+	
+	if (ELE_bFIRE && ELE_bIN_BUZ) // 화재입력 and 수동입력 
+	{
+		if(CurVoice != BEEP_MENT)	tmpCurVoice = BEEP_MENT;
+		bFirMentEnab = FALSE;
+	}
+	else
+	{
+		bFirMentEnab = TRUE;
+	}
+
+	return tmpCurVoice;
+}
+
 
 
 
