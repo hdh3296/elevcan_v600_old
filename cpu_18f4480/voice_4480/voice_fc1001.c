@@ -200,11 +200,18 @@ date    :       1999,9,21
 
 #define ELE_mSYSSTATUS  RcvBuf[IdPt + SL_mSysStatus]
 // I/O  : // 0x0 이면? 입력 접점에 신호 ON 
-#define ELE_bIN_EMG  	(((RcvBuf[IdPt + SL_IN_EMG] & 0x01) == 0x0)?		1:0) 
+#define ELE_bIN_EMG  	(((RcvBuf[IdPt + SL_IN_EMG] & 0x01) == 0x0)?				1:0) 
 #define ELE_bIN_PRK 	(((RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 1)) == 0x0)?		1:0) 
 #define ELE_bIN_AT  	(((RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 2)) == 0x0)?		1:0)  
 #define ELE_bIN_UB  	(((RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 3)) == 0x0)?		1:0) 
 #define ELE_bIN_DB  	(((RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 4)) == 0x0)?		1:0) 
+
+#define ELE_bIN_RG  	(((RcvBuf[IdPt + SL_IN_GR] & 0x01) == 0x0)?				1:0) 
+#define ELE_bIN_BAT 	(((RcvBuf[IdPt + SL_IN_GR] & (0x01 << 1)) == 0x0)?		1:0) 
+#define ELE_bIN_PAS  	(((RcvBuf[IdPt + SL_IN_GR] & (0x01 << 2)) == 0x0)?		1:0)  
+#define ELE_bIN_FIR  	(((RcvBuf[IdPt + SL_IN_GR] & (0x01 << 3)) == 0x0)?		1:0) 
+#define ELE_bIN_WAT  	(((RcvBuf[IdPt + SL_IN_GR] & (0x01 << 4)) == 0x0)?		1:0) 
+
 
 //mSysStatus
 #define msysDOOROPEN    57
@@ -310,8 +317,8 @@ typedef enum
 tag_Sequence	PlaySeq;
 
 bit bDingdong;
-
 unsigned int BeefDelayTimer = 0;
+bit bFirMentEnab;
 
 
 
@@ -382,7 +389,7 @@ void main(void)
         DspCharRdWr(); // CAR CALL 음성을 위한 엘리베이터 각층 디스플레이 값 저장
         SetCarKeyCancel(); // CAR CALL 취소 값 셋팅
 
-        TmpCurVoice = NO_MENT;
+        TmpCurVoice = NO_MENT;		
         TmpCurVoice = GetVoice_State(TmpCurVoice, CurVoice);
         if (bDingdong == FALSE) TmpCurVoice = GetVoice_OpenCloseUpDn(TmpCurVoice);
         TmpCurVoice = GetVoice_Floor(TmpCurVoice, GetFloorMent());
@@ -513,6 +520,7 @@ void main(void)
                 CurVoice = NO_MENT;
                 bBeepEnab = TRUE;
                 bDingdong = FALSE;
+				bFirMentEnab = TRUE;	
             }
             bVoicePlaying = FALSE;
         }
@@ -860,11 +868,17 @@ unsigned char    GetVoice_State(UCHAR befVoice, UCHAR curVoice)
         tmMent = OVERLOAD_MENT;
     }
 
-    // 화재
-    if (ELE_bFIRE && (curVoice != HWAJAE_MENT))
+    // 화재 관련 
+    if (ELE_bFIRE && (curVoice != HWAJAE_MENT) && bFirMentEnab)
     {
         tmMent = HWAJAE_MENT;
     }
+	
+	if (ELE_bIN_FIR && (ELE_bIN_AT == FALSE) && (curVoice != BEEP_MENT)) // 화재입력 and 수동입력 
+	{
+		tmMent = BEEP_MENT;
+		bFirMentEnab = FALSE;
+	}
 
     // 비상
     // [151006] 자동시에만 EMG MENT 출력 되도록 수정
@@ -1474,6 +1488,7 @@ void InitVoice(void)
     HwajaeVoiceCnt = 0;
     OverLoadVoiceCnt = 0;
     bAfterCancel = FALSE;
+	bFirMentEnab = TRUE;
 }
 
 void SetVoice(void)
