@@ -15,7 +15,7 @@ date    :       1999,9,21
 
 #define START_FL	FLOOR_B7
 #define END_FL		FLOOR_NO
-#define VOICE_ADR  A_VOI;
+#define VOICE_ADR  	A_VOI
 #define VOICE_ON               0
 #define VOICE_OFF              1
 
@@ -157,11 +157,19 @@ date    :       1999,9,21
 #define ON                     1
 #endif
 
+#ifndef BAT_ON
+#define BAT_ON	1	// High 일 때 = ON
+#endif
+#ifndef BAT_OFF
+#define BAT_OFF	0
+#endif
+
+
 //
 #define ELE_nCURFLOOR          RcvBuf[IdPt + S0_FLOOR] // 층수를 10진수로 표현
 
 #define ELE_bOPEN           (((RcvBuf[IdPt + S1_STATE] & S1_OPEN) != 0x00)?		1:0)
-#define ELE_bCLOSE          (((RcvBuf[IdPt + S1_STATE] & S1_CLOSE) != 0x00)?		1:0) 
+#define ELE_bCLOSE          (((RcvBuf[IdPt + S1_STATE] & S1_CLOSE) != 0x00)?		1:0)
 #define ELE_bOVERLOAD       (((RcvBuf[IdPt + S1_STATE] & S1_OVERLOAD) != 0x00)?		1:0)
 #define ELE_bEMG            (((RcvBuf[IdPt + S1_STATE] & S1_EMG) != 0x00)?		1:0)
 #define ELE_bBAT            (((RcvBuf[IdPt + S1_STATE] & S1_BAT) != 0x00)?		1:0)
@@ -199,24 +207,27 @@ date    :       1999,9,21
 #define ELE_DSP2         RcvBuf[IdPt + DSP2]
 
 #define ELE_mSYSSTATUS  RcvBuf[IdPt + SL_mSysStatus]
-// I/O  : // 0x0 이면? 입력 접점에 신호 ON 
-#define ELE_bIN_EMG  	(((RcvBuf[IdPt + SL_IN_EMG] & 0x01) == 0x0)?				1:0) 
-#define ELE_bIN_PRK 	(((RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 1)) == 0x0)?		1:0) 
-#define ELE_bIN_AT  	(((RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 2)) == 0x0)?		1:0)  
-#define ELE_bIN_UB  	(((RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 3)) == 0x0)?		1:0) 
-#define ELE_bIN_DB  	(((RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 4)) == 0x0)?		1:0) 
+// I/O  입력 : // 0x0 이면? 입력 접점에 신호 ON
+#define ELE_bIN_EMG  	(((RcvBuf[IdPt + SL_IN_EMG] & 0x01) == 0x0)?				1:0)
+#define ELE_bIN_PRK 	(((RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 1)) == 0x0)?		1:0)
+#define ELE_bIN_AT  	(((RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 2)) == 0x0)?		1:0)
+#define ELE_bIN_UB  	(((RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 3)) == 0x0)?		1:0)
+#define ELE_bIN_DB  	(((RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 4)) == 0x0)?		1:0)
 
-#define ELE_bIN_RG  	(((RcvBuf[IdPt + SL_IN_GR] & 0x01) == 0x0)?				1:0) 
-#define ELE_bIN_BAT 	(((RcvBuf[IdPt + SL_IN_GR] & (0x01 << 1)) == 0x0)?		1:0) 
-#define ELE_bIN_PAS  	(((RcvBuf[IdPt + SL_IN_GR] & (0x01 << 2)) == 0x0)?		1:0)  
-#define ELE_bIN_FIR  	(((RcvBuf[IdPt + SL_IN_GR] & (0x01 << 3)) == 0x0)?		1:0) 
+#define ELE_bIN_RG  	(((RcvBuf[IdPt + SL_IN_GR] & 0x01) == 0x0)?				1:0)
+#define ELE_bIN_BAT 	(((RcvBuf[IdPt + SL_IN_GR] & (0x01 << 1)) == 0x0)?		1:0)
+#define ELE_bIN_PAS  	(((RcvBuf[IdPt + SL_IN_GR] & (0x01 << 2)) == 0x0)?		1:0)
+#define ELE_bIN_FIR  	(((RcvBuf[IdPt + SL_IN_GR] & (0x01 << 3)) == 0x0)?		1:0)
 #define ELE_bIN_WAT  	(((RcvBuf[IdPt + SL_IN_GR] & (0x01 << 4)) == 0x0)?		1:0)
-
-#define ELE_bIN_FAN  	(((RcvBuf[IdPt + SL_OUT_FAN] & 0x01) == 0x0)?				0:1) 
-#define ELE_bIN_LIT 	(((RcvBuf[IdPt + SL_OUT_FAN] & (0x01 << 1)) == 0x0)?		0:1) 
-#define ELE_bIN_BUZ  	(((RcvBuf[IdPt + SL_OUT_FAN] & (0x01 << 2)) == 0x0)?		0:1)  
-#define ELE_bIN_BEL  	(((RcvBuf[IdPt + SL_OUT_FAN] & (0x01 << 3)) == 0x0)?		0:1) 
+// I/O  출력
+#define ELE_bIN_FAN  	(((RcvBuf[IdPt + SL_OUT_FAN] & 0x01) == 0x0)?				0:1)
+#define ELE_bIN_LIT 	(((RcvBuf[IdPt + SL_OUT_FAN] & (0x01 << 1)) == 0x0)?		0:1)
+#define ELE_bIN_BUZ  	(((RcvBuf[IdPt + SL_OUT_FAN] & (0x01 << 2)) == 0x0)?		0:1)
+#define ELE_bIN_BEL  	(((RcvBuf[IdPt + SL_OUT_FAN] & (0x01 << 3)) == 0x0)?		0:1)
 #define ELE_bIN_REL  	(((RcvBuf[IdPt + SL_OUT_FAN] & (0x01 << 4)) == 0x0)?		0:1)
+//
+#define ELE_bIN_RELAY  	(((RcvBuf[IdPt + SL_mUnKnown26] & 0x01) != 0x0)?		1:0)
+
 
 
 
@@ -238,8 +249,9 @@ unsigned char sizex = 64;
 
 
 unsigned    char    TestMentDelayTimer;
-unsigned    char    TmpCurVoice; //
-unsigned    char    CurVoice; //
+unsigned    char    TmpCurVoice;
+unsigned 	char 	CurVoice;
+
 unsigned	char	CurFloorVoice;
 unsigned    char    RunPgm;
 unsigned    char    HwajaeVoiceCnt;
@@ -303,7 +315,7 @@ unsigned int    IdPt;
 bit bAfterCancel;
 bit bSetAfterCancel;
 bit bSetSong;
-bit bBeepEnabByManual;
+bit bBeepEnab;
 
 // Voice Play Seqence
 typedef enum
@@ -325,7 +337,6 @@ tag_Sequence	PlaySeq;
 
 bit bDingdong;
 unsigned int BeefDelayTimer = 0;
-bit bFirMentEnab;
 
 
 
@@ -343,6 +354,7 @@ extern unsigned char	GetVoice_CarCall(unsigned char, unsigned char*, unsigned ch
 extern  unsigned char    GetVoice_Floor(unsigned char, unsigned char);
 extern unsigned char	GetVoice_OpenCloseUpDn(unsigned char);
 extern unsigned char    GetVoice_State(unsigned char, unsigned char);
+extern unsigned char    GetVoice_OverLoad(unsigned char, unsigned char);
 extern void    PortInit();
 extern void InitVoice();
 void SetVoice(void);
@@ -350,9 +362,7 @@ extern void SetDipSW();
 extern unsigned char VoiceBusy();
 extern unsigned char GetFloorMent();
 extern unsigned char   GetVoice_Song(unsigned char);
-extern unsigned char   GetVoice_BeepByManual(unsigned char);
-extern unsigned char  GetVoice_BeepByFirManual(unsigned char);
-extern unsigned char  GetVoice_BeepByFirBuz(unsigned char);
+extern unsigned char  GetVoice_BeepByBuz(unsigned char);
 
 
 
@@ -397,28 +407,40 @@ void main(void)
             WaitDownLoader();
         }
 
+        if (ELE_bIN_RELAY)
+            _BATTERY = BAT_ON;
+        else
+            _BATTERY = BAT_OFF;
+
         DspCharRdWr(); // CAR CALL 음성을 위한 엘리베이터 각층 디스플레이 값 저장
         SetCarKeyCancel(); // CAR CALL 취소 값 셋팅
 
-        TmpCurVoice = NO_MENT;		
-        TmpCurVoice = GetVoice_State(TmpCurVoice, CurVoice);
-        if (bDingdong == FALSE) TmpCurVoice = GetVoice_OpenCloseUpDn(TmpCurVoice);
-        TmpCurVoice = GetVoice_Floor(TmpCurVoice, GetFloorMent());
-        if (bSetCarBtnVoice) TmpCurVoice = GetVoice_CarCall(TmpCurVoice, CurCarKey, BefCarKey);
-        if (bSetSong) TmpCurVoice = GetVoice_Song(TmpCurVoice);
+        TmpCurVoice = NO_MENT;
         // Beef 멘트 관련
-		if (BeefDelayTimer > BEEP_DELAY_TIME)
-		{
-			TmpCurVoice = GetVoice_BeepByFirManual(TmpCurVoice);
-			TmpCurVoice = GetVoice_BeepByFirBuz(TmpCurVoice);
-			
-	        if(bBeepEnabByManual)
-	        {
-	            TmpCurVoice = GetVoice_BeepByManual(TmpCurVoice);	            
-	        }
-			
-			if (TmpCurVoice == BEEP_MENT)	BeefDelayTimer = 0;
-		}
+        if (ELE_bIN_BUZ)
+        {
+            TmpCurVoice = GetVoice_OverLoad(TmpCurVoice, CurVoice);
+            TmpCurVoice = GetVoice_Floor(TmpCurVoice, GetFloorMent());
+
+            if (BeefDelayTimer > BEEP_DELAY_TIME)
+            {
+                if (bBeepEnab)
+                {
+                    TmpCurVoice = GetVoice_BeepByBuz(TmpCurVoice);
+                }
+
+                if (TmpCurVoice == BEEP_MENT)	BeefDelayTimer = 0;
+            }
+        }
+        else
+        {
+            TmpCurVoice = GetVoice_State(TmpCurVoice, CurVoice);
+            if (bDingdong == FALSE) TmpCurVoice = GetVoice_OpenCloseUpDn(TmpCurVoice);
+            TmpCurVoice = GetVoice_Floor(TmpCurVoice, GetFloorMent());
+            if (bSetCarBtnVoice) TmpCurVoice = GetVoice_CarCall(TmpCurVoice, CurCarKey, BefCarKey);
+            if (bSetSong) TmpCurVoice = GetVoice_Song(TmpCurVoice);
+        }
+
 
         if (TmpCurVoice != NO_MENT)
         {
@@ -532,8 +554,8 @@ void main(void)
             if (PlaySeq == END_SEQ)
             {
                 CurVoice = NO_MENT;
-                bBeepEnabByManual = TRUE;
-                bDingdong = FALSE;	
+                bBeepEnab = TRUE;
+                bDingdong = FALSE;
             }
             bVoicePlaying = FALSE;
         }
@@ -689,24 +711,25 @@ unsigned char GetFloorMent(void)
 }
 
 
-unsigned char    GetVoice_Floor(unsigned char tmpCurVoice, unsigned char curFloorMent)
+unsigned char    GetVoice_Floor(unsigned char xTmpCurVoice, unsigned char xCurFloorMent)
 {
     static unsigned char befFloorMent = 0;
     static bit bmentSaveEnab;
 
-    if (tmpCurVoice != 0xff)
-        return tmpCurVoice;
+    if (xTmpCurVoice != 0xff)
+        return xTmpCurVoice;
 
-    if (curFloorMent != 0xfe)
+    if (xCurFloorMent != 0xfe)
     {
         if (ELE_bAUTO)   // 자동 !
         {
             if (ELE_bFLOW)
             {
-                if (bmentSaveEnab && (curFloorMent != befFloorMent))
+                if (bmentSaveEnab && (xCurFloorMent != befFloorMent))
                 {
-                    tmpCurVoice = befFloorMent = curFloorMent;
+                    xTmpCurVoice = befFloorMent = xCurFloorMent;
                     bmentSaveEnab = FALSE;
+                    bBeepEnab = FALSE;
                 }
             }
             else
@@ -716,102 +739,103 @@ unsigned char    GetVoice_Floor(unsigned char tmpCurVoice, unsigned char curFloo
         }
         else   // 자동이 아닌 경우 !
         {
-            if (curFloorMent != befFloorMent)
+            if (xCurFloorMent != befFloorMent)
             {
-                tmpCurVoice = befFloorMent = curFloorMent;
-                bBeepEnabByManual = FALSE;
+                xTmpCurVoice = befFloorMent = xCurFloorMent;
+                bBeepEnab = FALSE;
             }
         }
     }
-    return tmpCurVoice;
+
+    return xTmpCurVoice;
 }
 
 // 문이 열립니다, 닫힙니다, 올라갑니다, 내려갑니다.
-unsigned char   GetVoice_OpenCloseUpDn(unsigned char tmpCurVoice)
+unsigned char   GetVoice_OpenCloseUpDn(unsigned char xTmpCurVoice)
 {
-    static unsigned char UpDnVoice = 0x0;
-    static bit bopened = FALSE;
-    static bit bupdned = FALSE;
+    static unsigned char xUpDnVoice = 0x0;
+    static bit xbOpened = FALSE;
+    static bit xbUpDned = FALSE;
 
-    if (tmpCurVoice != 0xff)
-        return tmpCurVoice;
+    if (xTmpCurVoice != 0xff)
+        return xTmpCurVoice;
 
     if (ELE_bPARKING_READY)
-        return tmpCurVoice;
+        return xTmpCurVoice;
 
     if (ELE_bAUTO)   // 자동 !
     {
         // Up, Down 시, 음성 처리
-        if (ELE_bOPEN && (UpDnVoiceTimer > 40) && bopened && (bupdned == FALSE))
+        if (ELE_bOPEN && (UpDnVoiceTimer > 40) && xbOpened && (xbUpDned == FALSE))
         {
             if (ELE_bUP)
             {
-                tmpCurVoice = UP_MENT; // 올라갑니다 !
-                bupdned = TRUE;
+                xTmpCurVoice = UP_MENT; // 올라갑니다 !
+                xbUpDned = TRUE;
             }
             else if (ELE_bDOWN)
             {
-                tmpCurVoice = DOWN_MENT; // 내려 갑니다 !
-                bupdned = TRUE;
+                xTmpCurVoice = DOWN_MENT; // 내려 갑니다 !
+                xbUpDned = TRUE;
             }
         }
         // Door Open 시, 음성 처리
         if (ELE_bCAR_MOVE == FALSE)
         {
-            if ((ELE_mSYSSTATUS == msysDOOROPEN) && (bopened == FALSE) && !bVoicePlaying)   //open
+            if ((ELE_mSYSSTATUS == msysDOOROPEN) && (xbOpened == FALSE) && !bVoicePlaying)   //open
             {
-                tmpCurVoice = OPEN_MENT; // 문이 열립니다 !
-                bopened = TRUE;
+                xTmpCurVoice = OPEN_MENT; // 문이 열립니다 !
+                xbOpened = TRUE;
                 UpDnVoiceTimer = 0;
             }
-            else if ((ELE_mSYSSTATUS == msysDOORCLOSE) && bopened)   //close
+            else if ((ELE_mSYSSTATUS == msysDOORCLOSE) && xbOpened)   //close
             {
-                tmpCurVoice = CLOSE_MENT; // 문이 닫힙니다 !
-                bopened = FALSE;
+                xTmpCurVoice = CLOSE_MENT; // 문이 닫힙니다 !
+                xbOpened = FALSE;
             }
         }
         else
         {
             UpDnVoiceTimer = 0;
-            bupdned = FALSE;
+            xbUpDned = FALSE;
         }
     }
     else   // 자동이 아닐 때 !
     {
         if (ELE_bCLOSE)   // 문이 닫혔을 때 !
         {
-            if (bupdned == FALSE)
+            if (xbUpDned == FALSE)
             {
-                if (ELE_bUP && (UpDnVoice != UP_MENT))
+                if (ELE_bUP && (xUpDnVoice != UP_MENT))
                 {
-                    tmpCurVoice = UpDnVoice = UP_MENT;
-                    bupdned = TRUE;
+                    xTmpCurVoice = xUpDnVoice = UP_MENT;
+                    xbUpDned = TRUE;
                 }
-                else if (ELE_bDOWN && (UpDnVoice != DOWN_MENT))
+                else if (ELE_bDOWN && (xUpDnVoice != DOWN_MENT))
                 {
-                    tmpCurVoice = UpDnVoice = DOWN_MENT;
-                    bupdned = TRUE;
+                    xTmpCurVoice = xUpDnVoice = DOWN_MENT;
+                    xbUpDned = TRUE;
                 }
             }
         }
         else
         {
-            UpDnVoice = 0;
-            bupdned = FALSE;
+            xUpDnVoice = 0;
+            xbUpDned = FALSE;
         }
     }
 
-    return(tmpCurVoice);
+    return(xTmpCurVoice);
 }
 
 
-unsigned char   GetVoice_Song(unsigned char befVoice)
+unsigned char   GetVoice_Song(unsigned char xBefVoice)
 {
     unsigned char tmCurVoice;
     static bit bSong = FALSE;
 
-    if (befVoice != 0xff)
-        return befVoice;
+    if (xBefVoice != 0xff)
+        return xBefVoice;
 
     if (ELE_bCAR_MOVE && ELE_bAUTO)
     {
@@ -831,85 +855,41 @@ unsigned char   GetVoice_Song(unsigned char befVoice)
     {
         bSong = TRUE;
     }
-    return befVoice;
+    return xBefVoice;
 }
 
-unsigned char   GetVoice_BeepByManual(unsigned char tmpCurVoice)
+
+unsigned char  GetVoice_BeepByBuz(unsigned char xTmpCurVoice)
 {
-    unsigned char tmCurVoice;
 
-    if (tmpCurVoice != 0xff) // 이미 다른 음성이 등록되어 있다면 !
-        return tmpCurVoice;
+    if (xTmpCurVoice != 0xff) // 이미 다른 음성이 등록되어 있다면 !
+        return xTmpCurVoice;
 
-    if ((ELE_bIN_AT == FALSE) && ELE_bCAR_MOVE) // 접점 수동 이고 주행중일 때 !
+    if (ELE_bIN_BUZ) // 부저 출력
     {
-        if (!VoiceBusy() && (ELE_bIN_UB || ELE_bIN_DB))
-        {
-            tmpCurVoice = BEEP_MENT;
-        }
+        if (CurVoice != BEEP_MENT)
+            xTmpCurVoice = BEEP_MENT;
     }
-    return tmpCurVoice;
-}
 
-unsigned char  GetVoice_BeepByFirManual(unsigned char tmpCurVoice)
-{
-	unsigned char tmCurVoice;
-
-	if (tmpCurVoice != 0xff) // 이미 다른 음성이 등록되어 있다면 !
-		return tmpCurVoice;
-	
-	if (ELE_bIN_FIR && (ELE_bIN_AT == FALSE)) // 화재입력 and 수동입력 
-	{
-		if(CurVoice != BEEP_MENT)	tmpCurVoice = BEEP_MENT;
-		bFirMentEnab = FALSE;
-	}
-	else
-	{
-		bFirMentEnab = TRUE;
-	}
-
-	return tmpCurVoice;
-}
-
-
-unsigned char  GetVoice_BeepByFirBuz(unsigned char tmpCurVoice)
-{
-	unsigned char tmCurVoice;
-
-	if (tmpCurVoice != 0xff) // 이미 다른 음성이 등록되어 있다면 !
-		return tmpCurVoice;
-	
-	if (ELE_bFIRE && ELE_bIN_BUZ) // 화재입력 and 수동입력 
-	{
-		if(CurVoice != BEEP_MENT)	tmpCurVoice = BEEP_MENT;
-		bFirMentEnab = FALSE;
-	}
-	else
-	{
-		bFirMentEnab = TRUE;
-	}
-
-	return tmpCurVoice;
+    return xTmpCurVoice;
 }
 
 
 
 
-unsigned char    GetVoice_State(UCHAR befVoice, UCHAR curVoice)
+unsigned char    GetVoice_State(UCHAR xTmpCurVoice, UCHAR xCurVoice)
 {
-    unsigned char tmMent;
     static unsigned char EmergencyVoiceCnt = 0;
 
-    if (befVoice != 0xff)
-        return befVoice;
+    if (xTmpCurVoice != 0xff)
+        return xTmpCurVoice;
 
-    tmMent = befVoice;
     // 파킹
-    if (ELE_bPARKING_READY  && (curVoice != PARKING_MENT))
+    if (ELE_bPARKING_READY  && (xCurVoice != PARKING_MENT))
     {
-        tmMent = PARKING_MENT;
+        xTmpCurVoice = PARKING_MENT;
     }
-    if (ELE_bPARKING  && (curVoice == PARKING_MENT))
+    if (ELE_bPARKING  && (xCurVoice == PARKING_MENT))
     {
         if (bVoicePlaying)
         {
@@ -919,83 +899,103 @@ unsigned char    GetVoice_State(UCHAR befVoice, UCHAR curVoice)
     }
 
     // 오버로드
-    if ((ELE_bOPEN || ELE_bOPEN_SUB) && ELE_bOVERLOAD && (curVoice != OVERLOAD_MENT))
+    if ((ELE_bOPEN || ELE_bOPEN_SUB) && ELE_bOVERLOAD && (xCurVoice != OVERLOAD_MENT))
     {
-        tmMent = OVERLOAD_MENT;
+        xTmpCurVoice = OVERLOAD_MENT;
     }
 
-    // 화재 
-    if (ELE_bFIRE && (curVoice != HWAJAE_MENT) && bFirMentEnab)
+    // 화재
+    if (ELE_bFIRE && (xCurVoice != HWAJAE_MENT))
     {
-        tmMent = HWAJAE_MENT;
+        xTmpCurVoice = HWAJAE_MENT;
     }
 
     // 비상
     // [151006] 자동시에만 EMG MENT 출력 되도록 수정
-    if (ELE_bEMG  && (curVoice != EMERGENCY_MENT) && ELE_bIN_AT)
+    if (ELE_bEMG  && (xCurVoice != EMERGENCY_MENT) && ELE_bIN_AT)
     {
         if (EmergencyVoiceCnt < 10)	EmergencyVoiceCnt++;
         if (EmergencyVoiceCnt < 6)
-            tmMent = EMERGENCY_MENT;
+            xTmpCurVoice = EMERGENCY_MENT;
     }
     if (ELE_bEMG == FALSE)
         EmergencyVoiceCnt = 0;
 
     // 밧데리
-    if (ELE_bBAT  && (curVoice != POWER_DOWN_MENT))
+    if (ELE_bBAT  && (xCurVoice != POWER_DOWN_MENT))
     {
-        tmMent = POWER_DOWN_MENT;
+        xTmpCurVoice = POWER_DOWN_MENT;
     }
 
-    return tmMent;
+    return xTmpCurVoice;
+
+}
+
+unsigned char    GetVoice_OverLoad(UCHAR xTmpCurVoice, UCHAR xCurVoice)
+{
+    static unsigned char EmergencyVoiceCnt = 0;
+
+    if (xTmpCurVoice != 0xff)
+        return xTmpCurVoice;
+
+    // 오버로드
+    if ((ELE_bOPEN || ELE_bOPEN_SUB) && ELE_bOVERLOAD)
+    {
+        bBeepEnab = FALSE;
+        if (xCurVoice != OVERLOAD_MENT)
+            xTmpCurVoice = OVERLOAD_MENT;
+    }
+
+    return xTmpCurVoice;
 
 }
 
 
+
 //카버튼 음성 처리
-unsigned char   GetVoice_CarCall(UCHAR tmpCurVoice, UCHAR *curkey, UCHAR *befkey)
+unsigned char   GetVoice_CarCall(UCHAR xTmpCurVoice, UCHAR *xCurkey, UCHAR *xBefkey)
 {
     unsigned char j;
     unsigned char iFloor; // 0~31
     unsigned char bitKey;
 
-    if (tmpCurVoice != 0xff)
-        return tmpCurVoice;
+    if (xTmpCurVoice != 0xff)
+        return xTmpCurVoice;
     if (!ELE_bAUTO || ELE_bFLOW)
-        return tmpCurVoice;
+        return xTmpCurVoice;
     if (!ELE_bUP && !ELE_bDOWN)
-        return tmpCurVoice;
+        return xTmpCurVoice;
     if (CurVoice != 0xff)
-        return tmpCurVoice;
+        return xTmpCurVoice;
 
     bitKey = 0x01;
     j = 0;
     for (iFloor = 0; iFloor < 32; iFloor++)
     {
-        if (curkey[j] != befkey[j])   //8개의 카키 상태 비교
+        if (xCurkey[j] != xBefkey[j])   //8개의 카키 상태 비교
         {
             // 한 개의 카키 상태 비교
-            if ((curkey[j] & bitKey) &&  !(befkey[j] & bitKey)) // 카콜 등록이면? (참 && !거짓)
+            if ((xCurkey[j] & bitKey) &&  !(xBefkey[j] & bitKey)) // 카콜 등록이면? (참 && !거짓)
             {
                 if (iFloor != (ELE_nCURFLOOR - 1)) // 카콜 등록 층이 현재 층과 같지 않을 때 ! (즉, 같을 땐 무시)
                 {
-                    befkey[j] = (befkey[j] | bitKey);
-                    tmpCurVoice = GetCarCallMent(iFloor);
+                    xBefkey[j] = (xBefkey[j] | bitKey);
+                    xTmpCurVoice = GetCarCallMent(iFloor);
                 }
                 break;
             }
-            else if (!(curkey[j] & bitKey) && (befkey[j] & bitKey)) //카콜 취소이면? (!거짓 && 참)
+            else if (!(xCurkey[j] & bitKey) && (xBefkey[j] & bitKey)) //카콜 취소이면? (!거짓 && 참)
             {
-                befkey[j] = (befkey[j] & ~bitKey);
+                xBefkey[j] = (xBefkey[j] & ~bitKey);
 
                 if (bSetAfterCancel)
                 {
                     bAfterCancel = TRUE;
-                    tmpCurVoice = GetCarCallMent(iFloor);
+                    xTmpCurVoice = GetCarCallMent(iFloor);
                 }
                 else
                 {
-                    tmpCurVoice = CANCLE_MENT;
+                    xTmpCurVoice = CANCLE_MENT;
                 }
                 break;
             }
@@ -1014,7 +1014,7 @@ unsigned char   GetVoice_CarCall(UCHAR tmpCurVoice, UCHAR *curkey, UCHAR *befkey
             iFloor = (iFloor + 7);
         }
     }
-    return tmpCurVoice;
+    return xTmpCurVoice;
 }
 
 
@@ -1508,9 +1508,9 @@ void InitVoice(void)
     _BATTERY = ON;
     while (!_POWER_DOWN)
     {
-        _BATTERY = ON;
+        _BATTERY = BAT_ON;
     }
-    _BATTERY = OFF;
+    _BATTERY = BAT_OFF;
     BatteryRun = 0;
 
     MyAddress = VOICE_ADR;
@@ -1538,7 +1538,7 @@ void InitVoice(void)
     HwajaeVoiceCnt = 0;
     OverLoadVoiceCnt = 0;
     bAfterCancel = FALSE;
-	bFirMentEnab = TRUE;
+    bBeepEnab = TRUE;
 }
 
 void SetVoice(void)
