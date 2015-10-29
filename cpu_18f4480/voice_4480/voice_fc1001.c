@@ -1063,7 +1063,11 @@ unsigned char    GetCarCallMent(unsigned char Call_Floor)
     if (bValid)
     {
         cDotDsp = FloorChar[i + 1];
-        if (cDotDsp == '0')
+		if (cDotDsp == 'L')
+		{
+			tmMent = CARBTN_L;
+		}
+        else if (cDotDsp == '0')
         {
             if (tmMent < (10 + CARBTN_B1))
                 tmMent = 0xff;
