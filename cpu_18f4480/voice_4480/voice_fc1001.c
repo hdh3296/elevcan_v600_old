@@ -118,7 +118,8 @@ date    :       1999,9,21
 #define         SILENCE_MENT            FLOOR_B7+87 //95
 #define         SONG_MENT               FLOOR_B7+88 //96
 #define         BEEP_MENT               FLOOR_B7+89 //97 삐 소리
-
+#define			CARBTN_L				FLOOR_B7+90 //98	
+	
 #define NO_MENT 0xff // 멘트 없음
 
 
@@ -614,7 +615,7 @@ void interrupt isr(void)
 
 
 //##################################//
-// 일반 함수들                      //
+// 일반 함수들                      				//
 //##################################//
 
 
@@ -695,6 +696,10 @@ unsigned char GetFloorMent(void)
         {
             tmMent = FLOOR_PH;
         }
+        else if (cDotDsp == 'L')
+        {
+            tmMent = FLOOR_L;
+        }		
         else if ((cDotDsp >= '1') && (cDotDsp <= '9'))
         {
             if (tmMent == FLOOR_F1)
