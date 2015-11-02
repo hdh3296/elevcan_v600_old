@@ -151,6 +151,8 @@ unsigned    char  DspFlr[3];
 unsigned    char  xDspCharBuf[100];
 unsigned    char  ThisStstus,BefStstus=0xff,shiftpt;
 
+unsigned    char  befDspChar[2];
+
 bit	bErrorCar; 
 bit	bNew_Law=0;
 
@@ -259,14 +261,29 @@ unsigned char   Lamp(unsigned char id)
  
 ////////////////dot type dsp hib,hpi////////////////////////////////////////////
 #if defined(__DSP_DOT)
-    if((CurFloor > BefCurFloor) || (CurFloor < BefCurFloor)){
+
+    if((RcvBuf[IdPt+DSP1]!= befDspChar[0]) || (RcvBuf[IdPt+DSP2] != befDspChar[1])){
         FloorChange=1;   
         BefCurFloor=CurFloor;
 		BefStstus=0xff;
-////////////////////////////
 		shift=0;
-    }
 
+		befDspChar[0]=RcvBuf[IdPt+DSP1];
+		befDspChar[1]=RcvBuf[IdPt+DSP2];
+
+	    if( (RcvBuf[IdPt+DSP1] == ' ') && (RcvBuf[IdPt+DSP2] == ' ')){
+			RcvBuf[IdPt+DSP1] = 0x3d;
+			RcvBuf[IdPt+DSP2] = 0x3d;
+	    }	
+	    else if( (RcvBuf[IdPt+DSP1] < '0') || (RcvBuf[IdPt+DSP1] > 'Z')){
+			RcvBuf[IdPt+DSP1] = 0x30;
+			RcvBuf[IdPt+DSP2] = 0x30;
+	    }
+	    else if( (RcvBuf[IdPt+DSP2] < '0') || (RcvBuf[IdPt+DSP2] > 'Z')){
+			RcvBuf[IdPt+DSP1] = 0x30;
+			RcvBuf[IdPt+DSP2] = 0x30;
+	    }
+	}
     Floor_Char_load(0,RcvBuf[IdPt+DSP1],RcvBuf[IdPt+DSP2]);
 
 
@@ -409,6 +426,11 @@ unsigned char   Lamp(unsigned char id)
         dsplamp0 = 0x0;
         dsplamp1=P_SEG;
    }
+
+
+	if( (RcvBuf[IdPt+DSP1] == ' ') && (RcvBuf[IdPt+DSP2] == ' ')){
+      dsplamp1=0;
+	} 
 
 
    P0=dsplamp1;
