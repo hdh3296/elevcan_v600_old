@@ -118,7 +118,9 @@ date    :       1999,9,21
 #define         SILENCE_MENT            FLOOR_B7+87 //95
 #define         SONG_MENT               FLOOR_B7+88 //96
 #define         BEEP_MENT               FLOOR_B7+89 //97 삐 소리
-#define			CARBTN_L				FLOOR_B7+90 //98	
+#define			CARBTN_L				FLOOR_B7+90 //98
+#define			OPPOSITE_OPEN_MENT		FLOOR_B7+91 //99
+
 	
 #define NO_MENT 0xff // 멘트 없음
 
@@ -339,6 +341,9 @@ tag_Sequence	PlaySeq;
 bit bDingdong;
 unsigned int BeefDelayTimer = 0;
 
+bit bSetOppositeDoor;
+bit bOppositeDoor_Enab;
+
 
 
 // 함수의 원형
@@ -395,7 +400,7 @@ void main(void)
 
     InitVoice();
     SetDipSW();
-    SetVoice();
+    SetVoice(); // 각종 셋팅 여부 
     if (bSetSong) bSetCarBtnVoice = FALSE;
 
     while (1)
@@ -509,6 +514,7 @@ void main(void)
         case CURFLOORVOICE_PLAY_SEQ:
             SPI_Play(CurFloorVoice);
             bDingdong = FALSE;
+			if(bSetOppositeDoor)	bOppositeDoor_Enab = TRUE;
             PlaySeq = CURVOICE_PLAYING_SEQ;
             break;
         case CURVOICE_PLAY_SEQ:
@@ -789,7 +795,15 @@ unsigned char   GetVoice_OpenCloseUpDn(unsigned char xTmpCurVoice)
         {
             if ((ELE_mSYSSTATUS == msysDOOROPEN) && (xbOpened == FALSE) && !bVoicePlaying)   //open
             {
-                xTmpCurVoice = OPEN_MENT; // 문이 열립니다 !
+				if (bOppositeDoor_Enab)	
+				{
+					bOppositeDoor_Enab = FALSE;
+					xTmpCurVoice = OPPOSITE_OPEN_MENT; // 반대편 문이 열립니다.
+				}
+				else	
+				{
+					xTmpCurVoice = OPEN_MENT; // 문이 열립니다 !
+				}
                 xbOpened = TRUE;
                 UpDnVoiceTimer = 0;
             }
@@ -1548,12 +1562,14 @@ void InitVoice(void)
     OverLoadVoiceCnt = 0;
     bAfterCancel = FALSE;
     bBeepEnab = TRUE;
+	bOppositeDoor_Enab = FALSE;
 }
 
 void SetVoice(void)
 {
-    bSetAfterCancel = TRUE;
-    bSetSong = FALSE;
+    bSetAfterCancel = TRUE; // 카콜 취소시 층멘트 후 취소 나오게 할지 여부 
+    bSetSong = FALSE; // 주행 중 음악 
+	bSetOppositeDoor = FALSE; // 반대편 문이 열립니다.
 }
 
 
