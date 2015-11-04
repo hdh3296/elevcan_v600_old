@@ -344,6 +344,9 @@ unsigned int BeefDelayTimer = 0;
 bit bSetOppositeDoor;
 bit bOppositeDoor_Enab;
 
+unsigned int RealayTestTimer = 0;
+
+
 
 
 // 함수의 원형
@@ -417,7 +420,7 @@ void main(void)
             _BATTERY = BAT_ON;
         else
             _BATTERY = BAT_OFF;
-
+	
         DspCharRdWr(); // CAR CALL 음성을 위한 엘리베이터 각층 디스플레이 값 저장
         SetCarKeyCancel(); // CAR CALL 취소 값 셋팅
 
@@ -590,6 +593,7 @@ void interrupt isr(void)
         shiftTime++;
 
         if (BeefDelayTimer < 0xffff) BeefDelayTimer++;
+		if (RealayTestTimer < 0xffff) RealayTestTimer++;
 
         abctimer++;
         if (abctimer > 100)
@@ -1361,6 +1365,17 @@ void    TestVoicePlay(void)
         {
             TestMentDelayTimer = 0;
         }
+
+		// Realay 테스트
+		if (RealayTestTimer > 1000)
+		{
+			RealayTestTimer = 0;
+			
+			if(_BATTERY)
+				_BATTERY = BAT_OFF;
+			else
+				_BATTERY = BAT_ON;			
+		}
     }
 
 }
@@ -1528,14 +1543,6 @@ void InitVoice(void)
     _VOICE_ACT = VOICE_OFF;
     SPI_Stop_Play();
 
-    _BATTERY = ON;
-    while (!_POWER_DOWN)
-    {
-        _BATTERY = BAT_ON;
-    }
-    _BATTERY = BAT_OFF;
-    BatteryRun = 0;
-
     MyAddress = VOICE_ADR;
     RunPgm = 0x55;
     CanDatacnt0 = 2;
@@ -1563,6 +1570,7 @@ void InitVoice(void)
     bAfterCancel = FALSE;
     bBeepEnab = TRUE;
 	bOppositeDoor_Enab = FALSE;
+	_BATTERY = BAT_OFF;
 }
 
 void SetVoice(void)
