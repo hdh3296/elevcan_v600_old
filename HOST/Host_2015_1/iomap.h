@@ -18,15 +18,36 @@
 #define  ABS_ADDRESS        76
 
 
-#define  AUTO_TUN_RUN_CMD     0x55
+#define  AUTOTUN_SEQ_0     0
+#define  AUTOTUN_SEQ_1     1
+#define  AUTOTUN_SEQ_2     2
+#define  AUTOTUN_SEQ_3     3
+#define  AUTOTUN_SEQ_4     4
+#define  AUTOTUN_SEQ_5     5
+#define  AUTOTUN_SEQ_6     6
+#define  AUTOTUN_SEQ_7     7
+#define  AUTOTUN_SEQ_8     8
+#define  AUTOTUN_SEQ_9     9
+#define  AUTOTUN_SEQ_10    10
+#define  AUTOTUN_SEQ_11    11
+#define  AUTOTUN_SEQ_12    12
+#define  AUTOTUN_SEQ_13    13
+#define  AUTOTUN_SEQ_14    14
+#define  AUTOTUN_SEQ_15    15
 
-#define  FHM_RUN_CMD          0x5a
-#define  FHM_SEQ_0            0xa1
-#define  FHM_SEQ_1            0xa2
-#define  FHM_SEQ_2            0xa3
-#define  FHM_SEQ_3            0xa4
-#define  FHM_SEQ_4            0xa5
-#define  FHM_SEQ_5            0xa6
+#define  AUTOTUN_SUCCESS	AUTOTUN_SEQ_12    
+
+
+
+#define  FHM_SEQ_0            0x0
+#define  FHM_SEQ_1            0x1
+#define  FHM_SEQ_2            0x2
+#define  FHM_SEQ_3            0x3
+#define  FHM_SEQ_4            0x4
+#define  FHM_SEQ_5            0x5
+#define  FHM_SEQ_6            0x6
+#define  FHM_SEQ_7            0x7
+#define  FHM_SEQ_8            0x8
 
 
 #define  BASE_ADDR            0                         

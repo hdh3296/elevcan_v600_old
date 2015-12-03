@@ -256,42 +256,42 @@ unsigned int    __attribute__((section(".usercode"))) CurSelPortIn(unsigned int 
 		case	EXT_EX0:
 				if(sRamDArry[mExtIN0] & 0x01)	    retval=1;		
 				else		        				retval=0;
-                if(!NcNo)           			retval=!retval;               
+                if(!NcNo)           				retval=!retval;               
 				break;
 		case	EXT_EX1:
 				if(sRamDArry[mExtIN0] & 0x02)	    retval=1;		
 				else		        				retval=0;
-                if(!NcNo)           			retval=!retval;               
+                if(!NcNo)           				retval=!retval;               
 				break;
 		case	EXT_EX2:
 				if(sRamDArry[mExtIN0] & 0x04)	    retval=1;		
 				else		        				retval=0;
-                if(!NcNo)           			retval=!retval;               
+                if(!NcNo)           				retval=!retval;               
 				break;
 		case	EXT_EX3:
 				if(sRamDArry[mExtIN0] & 0x08)	    retval=1;		
 				else		        				retval=0;
-                if(!NcNo)           			retval=!retval;               
+                if(!NcNo)           				retval=!retval;               
 				break;
 		case	EXT_EX4:
 				if(sRamDArry[mExtIN0] & 0x10)	    retval=1;		
 				else		        				retval=0;
-                if(!NcNo)           			retval=!retval;               
+                if(!NcNo)           				retval=!retval;               
 				break;
 		case	EXT_EX5:
 				if(sRamDArry[mExtIN0] & 0x20)	    retval=1;		
 				else		        				retval=0;
-                if(!NcNo)           			retval=!retval;               
+                if(!NcNo)           				retval=!retval;               
 				break;
 		case	EXT_EX6:
 				if(sRamDArry[mExtIN0] & 0x40)	    retval=1;		
 				else		        				retval=0;
-                if(!NcNo)           			retval=!retval;               
+                if(!NcNo)           				retval=!retval;               
 				break;
 		case	EXT_EX7:
 				if(sRamDArry[mExtIN0] & 0x80)	    retval=1;		
 				else		        				retval=0;
-                if(!NcNo)           			retval=!retval;               
+                if(!NcNo)           				retval=!retval;               
 				break;
 
 
@@ -589,12 +589,12 @@ unsigned int       __attribute__((section(".usercode"))) CurSelOutPort(unsigned 
 			OUT_CL_PORT=port_val;
             retval=0;
             break;
-        case    SILK_S_OP:
+        case    SILK_OP_S:
             if(!NcNo)  port_val=!port_val;               
 			OUT_OP_S_PORT=port_val;
             retval=0;
             break;
-        case    SILK_S_CL:
+        case    SILK_CL_S:
             if(!NcNo)  port_val=!port_val;               
 			OUT_CL_S_PORT=port_val;
             retval=0;
@@ -616,7 +616,7 @@ unsigned int       __attribute__((section(".usercode"))) CurSelOutPort(unsigned 
             break;
         case    SILK_BK1:
             if(!NcNo)  port_val=!port_val;               
-			OUT_BRK_PORT=port_val;
+			OUT_BK1_PORT=port_val;
             retval=0;
             break;
         case    SILK_FAN:
@@ -624,7 +624,7 @@ unsigned int       __attribute__((section(".usercode"))) CurSelOutPort(unsigned 
 			OUT_FAN_PORT=port_val;
             retval=0;
             break;
-        case    SILK_LIGHT:
+        case    SILK_LIT:
             if(!NcNo)  port_val=!port_val;               
 			OUT_LIT_PORT=port_val;
             retval=0;
@@ -685,11 +685,75 @@ unsigned int       __attribute__((section(".usercode"))) CurSelOutPort(unsigned 
             break;
         case    SILK_DAC:
             if(!NcNo)  port_val=!port_val;               
-//            if(!bitChk_FLRDSPCH(F_NcNoBit8,7))  port_val=!port_val;               
 			OUT_DAC_PORT=port_val;		
             break;
+
+        case    SILK_SLOW_DOOR:
+            if(!NcNo)  port_val=!port_val;               
+			OUT_SLOW_DOOR_PORT=port_val;		
+            break;
+        case    SILK_VIRTUAL_Y1:
+            if(!NcNo)  port_val=!port_val;               
+			OUT_VIRTUAL_Y1_PORT=port_val;		
+            break;
+        case    SILK_VIRTUAL_Y2:
+            if(!NcNo)  port_val=!port_val;               
+			OUT_VIRTUAL_Y2_PORT=port_val;		
+            break;
+        case    SILK_VIRTUAL_Y3:
+            if(!NcNo)  port_val=!port_val;               
+			OUT_VIRTUAL_Y3_PORT=port_val;		
+            break;
+        case    SILK_VIRTUAL_Y4:
+            if(!NcNo)  port_val=!port_val;               
+			OUT_VIRTUAL_Y4_PORT=port_val;		
+            break;
+        case    SILK_VIRTUAL_Y5:
+            if(!NcNo)  port_val=!port_val;               
+			OUT_VIRTUAL_Y5_PORT=port_val;		
+            break;
+        case    SILK_VIRTUAL_Y6:
+            if(!NcNo)  port_val=!port_val;               
+			OUT_VIRTUAL_Y6_PORT=port_val;		
+            break;
+        case    SILK_VIRTUAL_Y7:
+            if(!NcNo)  port_val=!port_val;               
+			OUT_VIRTUAL_Y7_PORT=port_val;		
+            break;
+        case    SILK_EXT_Y0:
+            if(!NcNo)  port_val=!port_val;   
+			OUT_EXT_Y0_PORT=port_val;		
+            break;
+        case    SILK_EXT_Y1:
+            if(!NcNo)  port_val=!port_val;               
+			OUT_EXT_Y1_PORT=port_val;		
+            break;
+        case    SILK_EXT_Y2:
+            if(!NcNo)  port_val=!port_val;               
+			OUT_EXT_Y2_PORT=port_val;		
+            break;
+        case    SILK_EXT_Y3:
+            if(!NcNo)  port_val=!port_val;               
+			OUT_EXT_Y3_PORT=port_val;		
+            break;
+        case    SILK_EXT_Y4:
+            if(!NcNo)  port_val=!port_val;               
+			OUT_EXT_Y4_PORT=port_val;		
+            break;
+        case    SILK_EXT_Y5:
+            if(!NcNo)  port_val=!port_val;               
+			OUT_EXT_Y5_PORT=port_val;		
+            break;
+        case    SILK_EXT_Y6:
+            if(!NcNo)  port_val=!port_val;               
+			OUT_EXT_Y6_PORT=port_val;		
+            break;
+        case    SILK_EXT_Y7:
+            if(!NcNo)  port_val=!port_val;               
+			OUT_EXT_Y7_PORT=port_val;		
+            break;
         default:
-            retval=1;
+            retval=0;
             break;
     }
 
@@ -715,7 +779,7 @@ unsigned int       __attribute__((section(".usercode"))) CurSelOutPortChk(unsign
 			else		        retval=0;
             if(!NcNo)           retval=!retval;               
             break;
-        case    SILK_LIGHT:
+        case    SILK_LIT:
 			if(OUT_LIT_PORT)	retval=1;		
 			else		        retval=0;
             if(!NcNo)           retval=!retval;               
@@ -760,12 +824,12 @@ unsigned int       __attribute__((section(".usercode"))) CurSelOutPortChk(unsign
 			else		        retval=0;
             if(!NcNo)           retval=!retval;               
             break;
-        case    SILK_S_OP:
+        case    SILK_OP_S:
 			if(OUT_OP_S_PORT)	retval=1;		
 			else		        retval=0;
             if(!NcNo)           retval=!retval;               
             break;
-        case    SILK_S_CL:
+        case    SILK_CL_S:
 			if(OUT_CL_S_PORT)	retval=1;		
 			else		        retval=0;
             if(!NcNo)           retval=!retval;               
@@ -786,7 +850,7 @@ unsigned int       __attribute__((section(".usercode"))) CurSelOutPortChk(unsign
             if(!NcNo)           retval=!retval;               
             break;
         case    SILK_BK1:
-			if(OUT_BRK_PORT)	retval=1;		
+			if(OUT_BK1_PORT)	retval=1;		
 			else		        retval=0;
             if(!NcNo)           retval=!retval;               
             break;
@@ -825,12 +889,230 @@ unsigned int       __attribute__((section(".usercode"))) CurSelOutPortChk(unsign
 			else		        retval=0;
             if(!NcNo)           retval=!retval;               
             break;
+
+        case    SILK_SLOW_DOOR:
+			if(OUT_SLOW_DOOR_PORT)	retval=1;		
+			else		        	retval=0;
+            if(!NcNo)           	retval=!retval;               
+            break;
+        case    SILK_VIRTUAL_Y1:
+			if(OUT_VIRTUAL_Y1_PORT)	retval=1;		
+			else		        	retval=0;
+            if(!NcNo)           	retval=!retval;               
+            break;
+        case    SILK_VIRTUAL_Y2:
+			if(OUT_VIRTUAL_Y2_PORT)	retval=1;		
+			else		        	retval=0;
+            if(!NcNo)           	retval=!retval;               
+            break;
+        case    SILK_VIRTUAL_Y3:
+			if(OUT_VIRTUAL_Y3_PORT)	retval=1;		
+			else		        	retval=0;
+            if(!NcNo)           	retval=!retval;               
+            break;
+        case    SILK_VIRTUAL_Y4:
+			if(OUT_VIRTUAL_Y4_PORT)	retval=1;		
+			else		        	retval=0;
+            if(!NcNo)           	retval=!retval;               
+            break;
+        case    SILK_VIRTUAL_Y5:
+			if(OUT_VIRTUAL_Y5_PORT)	retval=1;		
+			else		        	retval=0;
+            if(!NcNo)           	retval=!retval;               
+            break;
+        case    SILK_VIRTUAL_Y6:
+			if(OUT_VIRTUAL_Y6_PORT)	retval=1;		
+			else		        	retval=0;
+            if(!NcNo)           	retval=!retval;               
+            break;
+        case    SILK_VIRTUAL_Y7:
+			if(OUT_VIRTUAL_Y7_PORT)	retval=1;		
+			else		        	retval=0;
+            if(!NcNo)           	retval=!retval;               
+            break;
+        case    SILK_EXT_Y0:
+			if(OUT_EXT_Y0_PORT)		retval=1;		
+			else					retval=0;	
+            if(!NcNo)           	retval=!retval;               
+            break;
+        case    SILK_EXT_Y1:
+			if(OUT_EXT_Y1_PORT)		retval=1;		
+			else					retval=0;	
+            if(!NcNo)           	retval=!retval;               
+            break;
+        case    SILK_EXT_Y2:
+			if(OUT_EXT_Y2_PORT)		retval=1;		
+			else					retval=0;	
+            if(!NcNo)           	retval=!retval;               
+            break;
+        case    SILK_EXT_Y3:
+			if(OUT_EXT_Y3_PORT)		retval=1;		
+			else					retval=0;	
+            if(!NcNo)           	retval=!retval;               
+            break;
+        case    SILK_EXT_Y4:
+			if(OUT_EXT_Y4_PORT)		retval=1;		
+			else					retval=0;	
+            if(!NcNo)           	retval=!retval;               
+            break;
+        case    SILK_EXT_Y5:
+			if(OUT_EXT_Y5_PORT)		retval=1;		
+			else					retval=0;	
+            if(!NcNo)           	retval=!retval;               
+            break;
+        case    SILK_EXT_Y6:
+			if(OUT_EXT_Y6_PORT)		retval=1;		
+			else					retval=0;	
+            if(!NcNo)           	retval=!retval;               
+            break;
+        case    SILK_EXT_Y7:
+			if(OUT_EXT_Y7_PORT)		retval=1;		
+			else					retval=0;	
+            if(!NcNo)           	retval=!retval;               
+            break;
+
         default:
-           retval=1;
+           retval=0;
            break;
     }
     return(retval);
 }
+
+
+
+unsigned int       __attribute__((section(".usercode"))) CurSelPortIDRead(unsigned int port_sel)
+{
+	unsigned int cur_port_val;
+
+    switch(port_sel){
+        case    SILK_FAN:
+			cur_port_val=cF_FAN;
+            break;
+        case    SILK_LIT:
+			cur_port_val=cF_LIT;
+            break;
+        case    SILK_BUZ:
+			cur_port_val=cF_BUZ;
+            break;
+        case    SILK_BELL:
+			cur_port_val=cF_BELL;
+            break;
+        case    SILK_RST:
+			cur_port_val=cF_RST;
+            break;
+        case    SILK_ERR:
+			cur_port_val=cF_ERR;
+            break;
+        case    SILK_HOP:
+			cur_port_val=cF_HOP;
+            break;
+        case    SILK_HCL:
+			cur_port_val=cF_HCL;
+            break;
+        case    SILK_OP:
+			cur_port_val=cF_OP;
+            break;
+        case    SILK_CL:
+			cur_port_val=cF_CL;
+            break;
+        case    SILK_OP_S:
+			cur_port_val=cF_OP_S;
+            break;
+        case    SILK_CL_S:
+			cur_port_val=cF_CL_S;
+            break;
+        case    SILK_BK2:
+			cur_port_val=cF_BK2;
+            break;
+        case    SILK_D_S:
+			cur_port_val=cF_D_S;
+            break;
+        case    SILK_GBR:
+			cur_port_val=cF_GBR;
+            break;
+        case    SILK_BK1:
+			cur_port_val=cF_BK1;
+            break;
+        case    SILK_UP:
+			cur_port_val=cF_UP;
+            break;
+        case    SILK_DN:
+			cur_port_val=cF_DN;
+            break;
+        case    SILK_P1:
+			cur_port_val=cF_P1;
+            break;
+        case    SILK_P2:
+			cur_port_val=cF_P2;
+            break;
+        case    SILK_P3:
+			cur_port_val=cF_P3;
+            break;
+        case    SILK_P4:
+			cur_port_val=cF_P4;
+            break;
+        case    SILK_DAC:
+			cur_port_val=cF_DAC;
+            break;
+        case    SILK_SLOW_DOOR:
+			cur_port_val=cF_SLOW_DOOR;
+            break;
+        case    SILK_VIRTUAL_Y1:
+			cur_port_val=cF_VIRTUAL_Y1;
+            break;
+        case    SILK_VIRTUAL_Y2:
+			cur_port_val=cF_VIRTUAL_Y2;
+            break;
+        case    SILK_VIRTUAL_Y3:
+			cur_port_val=cF_VIRTUAL_Y3;
+            break;
+        case    SILK_VIRTUAL_Y4:
+			cur_port_val=cF_VIRTUAL_Y4;
+            break;
+        case    SILK_VIRTUAL_Y5:
+			cur_port_val=cF_VIRTUAL_Y5;
+            break;
+        case    SILK_VIRTUAL_Y6:
+			cur_port_val=cF_VIRTUAL_Y6;
+            break;
+        case    SILK_VIRTUAL_Y7:
+			cur_port_val=cF_VIRTUAL_Y7;
+            break;
+/*
+///////////////////////////////////
+        case    SILK_EXT_Y0:
+			cur_port_val=cF_EXT_Y0;
+            break;
+        case    SILK_EXT_Y1:
+			cur_port_val=cF_EXT_Y1;
+            break;
+        case    SILK_EXT_Y2:
+			cur_port_val=cF_EXT_Y2;
+            break;
+        case    SILK_EXT_Y3:
+			cur_port_val=cF_EXT_Y3;
+            break;
+        case    SILK_EXT_Y4:
+			cur_port_val=cF_EXT_Y4;
+            break;
+        case    SILK_EXT_Y5:
+			cur_port_val=cF_EXT_Y5;
+            break;
+        case    SILK_EXT_Y6:
+			cur_port_val=cF_EXT_Y6;
+            break;
+        case    SILK_EXT_Y7:
+			cur_port_val=cF_EXT_Y7;
+            break;
+*/
+        default:
+			cur_port_val=0xff;
+           break;
+    }
+
+    return(cur_port_val);
+}
+
 
 
 

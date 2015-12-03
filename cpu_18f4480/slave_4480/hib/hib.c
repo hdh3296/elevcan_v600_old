@@ -1,6 +1,7 @@
 
 
 
+//#define		MOTEL	1
 
 
 #include    <pic18.h>
@@ -349,6 +350,45 @@ void	spd_dsp(unsigned char id)
 
 
 
+#ifdef	MOTEL
+unsigned char MotelButton(unsigned char id)
+{
+    unsigned int    IdPt;
+	IdPt=IsBufferPt(id);
+
+	if( !(RcvBuf[IdPt + SL_IN_X0] & 0x08)){
+		if((RcvBuf[IdPt+3] & S3_OPEN_SUB) || (RcvBuf[IdPt+1] & S1_OPEN)){
+			if(CurFloor == MyAddress){
+				if(bIamXSubDoor){
+			        if(RcvBuf[IdPt+3] & S3_OPEN_SUB){
+						if(UpMove)		DnKeyBit=0;	
+						else if(DnMove)	UpKeyBit=0;	
+						return(0);
+					}
+					else	return(1);
+			    }
+			    else{
+			        if(RcvBuf[IdPt+1] & S1_OPEN){
+						if(UpMove)		DnKeyBit=0;	
+						else if(DnMove)	UpKeyBit=0;	
+						return(0);
+					}
+					else	return(1);
+			    }    
+			}
+			else	return(1);
+		}
+		else if(UpMove || DnMove || CarMove){
+			return(1);
+		}
+	}
+
+	return(0);
+}
+
+#endif
+
+
 
 void	xxx(void)
 {
@@ -491,15 +531,16 @@ void main(void)
         Lamp(LocalNumber);                  
 
 
+
         UpDownBlink(LocalNumber);        
         ButtonLampClrChk();                  
         UpDownKey();
 
-
+/*
 		if(bToggleOn){
 			ButtonType = 0;
 		}
-
+*/
 
         if(CanTxAct){
 			MyConfigSet();
@@ -517,12 +558,15 @@ void main(void)
                 HostCallMe=0;
             }
             
-            else if(bToggleOn){
+            else if(bToggleOn && Up_Key_Clear){
 	            if(Up_Key_Clear && Tx1ConfirmCnt){
 	                SelHostAdr=ReceiveAdr;
 	                CanCmd=CAN_KEY_CLEAR;
 	                confirmkey=(MyAddress-1);
-	                CanKeyValue[1] = (confirmkey | UP_READY);                
+
+					if(ButtonType>0)	CanKeyValue[1] = (confirmkey | CAR_READY);                
+					else				CanKeyValue[1] = (confirmkey | UP_READY);
+		
 	                CanTx1();
 	                HostCallMe=0;
 	            }            
@@ -547,7 +591,7 @@ void main(void)
             }
 
 
-			else if(bToggleOn){ 
+			else if(bToggleOn && Dn_Key_Clear && (ButtonType==0)){ 
 	            if(Dn_Key_Clear && Tx0ConfirmCnt){
 	                SelHostAdr=ReceiveAdr;
 	                CanCmd=CAN_KEY_CLEAR;
@@ -597,6 +641,7 @@ void main(void)
             ShiftData();
             shiftTime=0;         
         }
+
     }
 }
 
@@ -770,8 +815,18 @@ void interrupt isr(void)
 	    if(!DN_KEY) 	DnKeyBit=1;
 	}
 #else
+
+
 	if(!UP_KEY)		UpKeyBit=1;
 	if(!DN_KEY)		DnKeyBit=1;
+
+
+#ifdef	MOTEL
+	if(MotelButton(LocalNumber)){
+		UpKeyBit=0;
+		DnKeyBit=0;
+	}	
+#endif
 
 
 /*

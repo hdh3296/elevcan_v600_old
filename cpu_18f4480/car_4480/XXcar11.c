@@ -1,13 +1,9 @@
 
 
 
-
-//#define		CARLIFT		1						
-
-
 //#define		FLOOR_32_USE	1						
 
-
+//#define		CARLIFT		1
 
 unsigned    char  MyTmpAddress=0;
 
@@ -184,6 +180,7 @@ bit   bDoorOpenSub=0;
 
 bit   bOtherCarClear=0;
 
+
 #ifdef	CPU65K80
 bit		LIVE_LAMP=0;
 bit		WR_CLK=0;
@@ -191,7 +188,6 @@ bit		DSP_OFF=0;
 unsigned char P1=0;
 unsigned char P2=0;
 #endif
-
 
 
 
@@ -211,7 +207,6 @@ unsigned int  CarOneButtonSetCheck(void)
 
 
 
-
 unsigned int  ButtonCloseSet(void)
 { 
 	if( Fire && bNew_Law){
@@ -226,13 +221,10 @@ unsigned int  ButtonCloseSet(void)
 }
 
 
-
-
-
 unsigned int  OtherKeyClear(void)
-{
- 
-	if( (Fire && bNew_Law)){
+{ 
+
+	if( Fire && bNew_Law){
 		CarKey[0] 		= 0;
 		ToggleKey[0]  	= 0xff;
 		CarKey[1] 		= 0;
@@ -243,7 +235,6 @@ unsigned int  OtherKeyClear(void)
 		ToggleKey[3]  	= 0xff;
 		return(1);
 	}
-
 
 	return(0);
 }
@@ -458,7 +449,6 @@ void    MyLampCheck(void)
             if(j==1){    
                 OtherDoorKey[0]  = (OtherDoorKey[1]   | OtherDoorKey[2]   | OtherDoorKey[3]   | OtherDoorKey[4]);
             }
-
 		}
 		
 		OtherCarButtonOn();	
@@ -716,14 +706,13 @@ unsigned char NoKeyClr(unsigned char srcflr)
         k=(0x01 << j);
         if( (!(CarKey[i] & k)) && (ToggleKey[i] & k) ){
 			CarKeyCancle=(srcflr & ONLY_FLR);
-//			ToggleKey[i] = (ToggleKey[i] & ~k);
+			ToggleKey[i] = (ToggleKey[i] & ~k);
 			ret=1;
         }
     }
     return(ret);
 
 #else
-/*
     if(srcflr & CAR_READY){          
         i=(srcflr & ONLY_FLR)/8;                              
         j=(srcflr & ONLY_FLR)%8;
@@ -731,34 +720,6 @@ unsigned char NoKeyClr(unsigned char srcflr)
         if( (!(CarKey[i] & k)) && (ToggleKey[i] & k) ){
             srcflr =  (srcflr  &  ~CAR_READY);
 			ToggleKey[i] = (ToggleKey[i] & ~k);
-			ret=1;
-        }
-    }
-    return(srcflr);
-*/
-
-
-    if( srcflr & CAR_READY){   		
-		if(UpMove){
-	       if(srcflr & UP_READY){         
-				return(srcflr);
-		   }
-		}
-		else if(DnMove){
-	       if(srcflr & DN_READY){         
-				return(srcflr);
-		   }
-		}
-		else{
-			return(srcflr);
-		}
-
-        i=(srcflr & ONLY_FLR)/8;                              
-        j=(srcflr & ONLY_FLR)%8;
-        k=(0x01 << j);
-        if( (!(CarKey[i] & k)) && (ToggleKey[i] & k) ){
-            srcflr =  (srcflr  &  ~CAR_READY);
-//			ToggleKey[i] = (ToggleKey[i] & ~k);
 			ret=1;
         }
     }
@@ -984,13 +945,6 @@ int KeyLoad(unsigned char id)
     }
 
 #endif
-
-	if(CanCmd != CAN_KEY_CLEAR){
-		ToggleKey[0] = 0;
-		ToggleKey[1] = 0;
-		ToggleKey[2] = 0;
-		ToggleKey[3] = 0;
-	}
 
 
     if((!bNew_Law && Fire)){
@@ -1463,9 +1417,10 @@ unsigned char   CarLampNormal(unsigned char id)
 
 
 
-unsigned int  SetKey(unsigned char    pt,unsigned char tfloor)
+void    SetKey(unsigned char    pt,unsigned char tfloor)
 {
     unsigned char i,st;
+
 	
 	tfloor=(tfloor + MyBaseFlr);
       
@@ -1473,6 +1428,7 @@ unsigned int  SetKey(unsigned char    pt,unsigned char tfloor)
     for(i=0;i<8;i++){      
         if((oldscan[pt] & st) && ((TopFloor+1) >= (tfloor+i))){     			
             if(!(ClrKey[pt] & st) && !CarOneButtonSetCheck()){
+//            if(!(ClrKey[pt] & st)){
                 ClrKey[pt]   = ClrKey[pt] | st;
 				BellTime=0;               
                 Car_Key_Valid=1;
@@ -1507,7 +1463,6 @@ unsigned int  SetKey(unsigned char    pt,unsigned char tfloor)
         st=st << 1;
     }
    
-	return(0);
 }
 
 
@@ -2167,7 +2122,6 @@ void main(void)
 //////////////////////    SetupBit=0;                     //2
 	ChangeSetup=0;
 	LocalNumber=SelHostAdr;
-
 
    while(1){
 	    if(ChangeSetup){

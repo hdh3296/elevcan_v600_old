@@ -75,16 +75,6 @@ void _ISR_X _QEIInterrupt(void)
 { 
     if(QEIIF){ 
       QEIIF=0;
-//	  TestPulse1=0x10000;
-
-
-/*		 		
-      if(UPDN)    CurPulse++;
-      else{
-        if(CurPulse > 0)    CurPulse--;
-      }
-*/
-//      CounterTime=0;
     }
 }
 
@@ -128,38 +118,6 @@ unsigned int   __attribute__((section(".usercode")))  ReadEncoder(void)
 			}				
 		}
 	}
-
-
-
-/*
-	if( TmpEncoderPulse > BefCurEncoderPulse){
-		BefCurEncoderPulse = (TmpEncoderPulse - BefCurEncoderPulse);
-	
-	    if(UPDN){
-    		CurPulse=(CurPulse + BefCurEncoderPulse);
-			rry=1;
-		}
-		else{
-			BefCurEncoderPulse = ((unsigned long)0xffff - BefCurEncoderPulse);
-	    	CurPulse=(CurPulse - BefCurEncoderPulse);
-			rry=1;
-		}
-   		CounterTime=0;
-	}
-	else if(TmpEncoderPulse < BefCurEncoderPulse){
-		BefCurEncoderPulse = (BefCurEncoderPulse - TmpEncoderPulse);
-	    if(UPDN){
-			BefCurEncoderPulse = ((unsigned long)0xffff - BefCurEncoderPulse);
-	    	CurPulse=(CurPulse + BefCurEncoderPulse);
-			rry=1;
-		}
-		else{
-   			CurPulse=(CurPulse - BefCurEncoderPulse);
-			rry=1;
-		}
-  		CounterTime=0;
-	}
-*/
 
 	if(rry==1){
 		BefCurEncoderPulse=TmpEncoderPulse;

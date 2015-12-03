@@ -52,11 +52,7 @@ extern void __attribute__((section(".usercode"))) HextoASCIIByte(void);
 
 //#define		DELTA_INVERTER	1
 
-//#define			SHORT_FLOOR		1
-
-
 //#define			FIX_FLOOR		1
-
 
 
 ////////////////////////////////////////////
@@ -67,7 +63,14 @@ extern void __attribute__((section(".usercode"))) HextoASCIIByte(void);
 ////////////////////////////////////////////
 ////////////////////////////////////////////
 
+#define		LU_ON_LD_ON			0
+#define		LU_OFF_LD_ON		1
+#define		LU_OFF_LD_OFF		2
+#define		LU_ON_LD_OFF		3
 
+
+
+#define  ULSDLS_LENGTH  100
 
 #define  SLIP_MM    	100
 
@@ -80,7 +83,7 @@ extern void __attribute__((section(".usercode"))) HextoASCIIByte(void);
 //outport
 
 #define		SILK_FAN	0
-#define		SILK_LIGHT	1
+#define		SILK_LIT	1
 #define		SILK_BUZ	2
 #define		SILK_BELL	3
 #define		SILK_RST	4
@@ -89,8 +92,8 @@ extern void __attribute__((section(".usercode"))) HextoASCIIByte(void);
 #define		SILK_HCL	7
 #define		SILK_OP		8
 #define		SILK_CL		9
-#define		SILK_S_OP	10
-#define		SILK_S_CL	11
+#define		SILK_OP_S	10
+#define		SILK_CL_S	11
 #define		SILK_BK2	12
 #define		SILK_D_S	13
 #define		SILK_GBR	14
@@ -102,7 +105,27 @@ extern void __attribute__((section(".usercode"))) HextoASCIIByte(void);
 #define		SILK_P3	    20
 #define		SILK_P4	    21
 #define		SILK_DAC	22
-#define		NO_USE_OUT  23
+///////////////////////////////////////////newio insert
+#define		SILK_SLOW_DOOR		23
+#define		SILK_VIRTUAL_Y1		24
+#define		SILK_VIRTUAL_Y2		25
+#define		SILK_VIRTUAL_Y3		26
+#define		SILK_VIRTUAL_Y4		27
+#define		SILK_VIRTUAL_Y5		28
+#define		SILK_VIRTUAL_Y6		29
+#define		SILK_VIRTUAL_Y7		30
+
+#define		SILK_EXT_Y0			31
+#define		SILK_EXT_Y1			32
+#define		SILK_EXT_Y2			33
+#define		SILK_EXT_Y3			34
+#define		SILK_EXT_Y4			35
+#define		SILK_EXT_Y5			36
+#define		SILK_EXT_Y6			37
+#define		SILK_EXT_Y7			38
+///////////////////////////////////////////newio insert
+
+#define		NO_USE_OUT  39
 
 
 //inport
@@ -168,7 +191,6 @@ extern void __attribute__((section(".usercode"))) HextoASCIIByte(void);
 #define		EXT_EX5		53
 #define		EXT_EX6		54
 #define		EXT_EX7		55
-
 
 #define		NO_USE_IN   56
 ////////////////////////////////////////////
@@ -311,26 +333,14 @@ typedef  union  _long_union
 #define  sHDS_RUN_OFF         12
 #define  sCLE_RUN_OFF         13
 #define  sRelevelError        14
-/////////////////////////////////////
 #define  sEncoderErr          15
 #define  sEncoderABErr        16 
-
 #define  sSpeedPortError      17 
 #define  sMinLengthErr        18
 #define  sSystemErr           19
-#define  sNotuse20            20 
+#define  sAutoOff             20 
 #define  sEqualFloorError     21 
 #define  sInvCommErr          22
-
-/*
-#define  sSpeedSetError       17 
-#define  sSpeedPortError      18 
-#define  sNoUseSpeed          19 
-#define  sMinLengthErr        20 
-#define  sEqualFloorError     21 
-#define  sSystemErr           22
-*/
-
 #define  sBreakMgtOpen        23  
 #define  sBreakOpen           24  
 #define  sSusErr              25  
@@ -347,19 +357,23 @@ typedef  union  _long_union
 #define  sCarHoleDoor_Jumper  35
 #define  sEarthquake  		  36
 #define  sDZErr  		  	  37
+#define  sCLE_NO_ON           38
 
 /////////////////////////////////////
 
 #define  sTuning              42
 #define  sFhmError            43
 //////////////////////////////////////
-#define  sHDS_NO_ON           44
-#define  sCLE_NO_ON           45
+//							  44	
+//                            45
+//////////////////////////////////////
 #define  sOVL                 46 
 #define  sPARKING             47   
 #define  sFireOn              48         
 #define  sWaterSense          49         
-#define  sOPE_NO_ON           50                                                                            
+//////////////////////////////////////
+//							  50	
+//////////////////////////////////////
 #define  sVIP                 51
 #define  sFHM_MODE			  52
 #define  sMANUAL_UP           53         
@@ -371,9 +385,9 @@ typedef  union  _long_union
 #define  sUP                  59         
 #define  sDN                  60         
 #define  sSLOW_SPEED          61         
-#define  sWAIT_LULD           62         
-#define  sSTOP                63        
-#define  sHOME                64         
+//                            62         
+//                            63        
+#define  sNoDefine            64 
 #define  sREADY               65
          
 
@@ -727,8 +741,8 @@ typedef  union  _long_union
 
 #define  OP_PORT                328         //1     
 #define  CL_PORT                329         //1     
-#define  S_OP_PORT              330         //1     
-#define  S_CL_PORT              331         //1     
+#define  OP_S_PORT              330         //1     
+#define  CL_S_PORT              331         //1     
 
 #define  BK2_PORT               332         //1
 #define  D_S_PORT               333         //1     
@@ -743,6 +757,32 @@ typedef  union  _long_union
 #define	 P3_PORT	            340
 #define	 P4_PORT	            341
 #define	 DAC_PORT	            342
+///////////////////////////////////////////newio insert
+#define	 SLOW_DOOR_PORT	        343
+#define	 VIRTUAL_Y1_PORT	    344
+#define	 VIRTUAL_Y2_PORT	    345
+#define	 VIRTUAL_Y3_PORT	    346
+
+#define	 VIRTUAL_Y4_PORT	    347
+#define	 VIRTUAL_Y5_PORT	    348
+#define	 VIRTUAL_Y6_PORT	    349
+#define	 VIRTUAL_Y7_PORT	    350
+
+/*
+#define	EXT_Y0_PORT				351
+#define	EXT_Y1_PORT				352
+#define	EXT_Y2_PORT				353
+#define	EXT_Y3_PORT				354
+#define	EXT_Y4_PORT				355
+#define	EXT_Y5_PORT				356
+#define	EXT_Y6_PORT				357
+#define	EXT_Y7_PORT				358
+*/
+
+///////////////////////////////////////////newio insert
+
+///////////////////////////////////////////newio insert
+
 
 
 ///////////////////////////////////////////////////////////////
@@ -923,6 +963,51 @@ typedef  union  _long_union
 #define  F_xx5					F_BLOCK_X0+18
 #define  F_xx6					F_BLOCK_X0+19
 
+/////////////////////////////////////////////
+#define  F_E_CurPulse0			F_BLOCK_X0+20   
+#define  F_E_CurPulse1			F_BLOCK_X0+21
+#define  F_E_CurPulse2			F_BLOCK_X0+22
+#define  F_E_CurPulse3			F_BLOCK_X0+23
+#define  F_E_NotUse_L0			F_BLOCK_X0+24   
+#define  F_E_NotUse_L1			F_BLOCK_X0+25
+#define  F_E_NotUse_L2			F_BLOCK_X0+26
+#define  F_E_NotUse_L3			F_BLOCK_X0+27
+#define  F_E_Mpm0				F_BLOCK_X0+28
+#define  F_E_Mpm1				F_BLOCK_X0+29
+#define  F_E_NotUse_Int0		F_BLOCK_X0+30
+#define  F_E_NotUse_Int1		F_BLOCK_X0+31
+#define  F_E_OUT_UP				F_BLOCK_X0+32
+#define  F_E_OUT_OP				F_BLOCK_X0+33
+#define  F_E_OUT_FAN			F_BLOCK_X0+34
+#define  F_E_OUT_NotUse35		F_BLOCK_X0+35
+
+#define  F_E_IN_EMG				F_BLOCK_X0+36
+#define  F_E_IN_SUS				F_BLOCK_X0+37
+#define  F_E_IN_RG				F_BLOCK_X0+38
+#define  F_E_IN_FR1				F_BLOCK_X0+39
+
+#define  F_E_IN_X0				F_BLOCK_X0+40
+#define  F_E_IN_FS0				F_BLOCK_X0+41
+#define  F_E_NotUse42			F_BLOCK_X0+42
+#define  F_E_ErrNum				F_BLOCK_X0+43
+
+#define  F_E_CurFloor			F_BLOCK_X0+44
+#define  F_E_StartFloor			F_BLOCK_X0+45
+#define  F_E_DestFloor			F_BLOCK_X0+46
+#define  F_E_LuLdFloor			F_BLOCK_X0+47
+
+
+#define  F_E_InvFloor			F_BLOCK_X0+48
+#define  F_E_NotUse49			F_BLOCK_X0+49
+#define  F_E_CurYear			F_BLOCK_X0+50
+#define  F_E_CurMonth			F_BLOCK_X0+51
+
+#define  F_E_CurDay				F_BLOCK_X0+52
+#define  F_E_CurHour			F_BLOCK_X0+53
+#define  F_E_CurMin				F_BLOCK_X0+54
+#define  F_E_CurSec				F_BLOCK_X0+55
+
+/////////////////////////////////////////////
 
 
 #define  F_SysErSavePt1_Mon		F_BLOCK_X1+0
@@ -1224,6 +1309,7 @@ typedef  union  _long_union
 
 
 
+
 /*
 #define  F_CurPulse0			F_BLOCK_X+256   //F_BLOCK14
 #define  F_CurPulse1			F_BLOCK_X+257
@@ -1330,6 +1416,7 @@ extern  UserDataType    RxStatus2;
 extern  UserDataType    RxCurCnt2;
 extern  UserDataType    SerialTime2;
 extern  UserDataType    Chksum2;
+extern	UserDataType    BefDspMode;
 
 
 extern  UserDataType    errbd[12];
@@ -1397,7 +1484,6 @@ extern  UserDataType    ManualStopTime;
 extern  UserDataType    WarmingUpTime; 
 extern  UserDataType    FixFlrTimeCnt; 
 extern  UserDataType    errtime;
-extern  UserDataType    FhmTime;
 extern  UserDataType    CurFTime;
 extern  UserDataType    NextFTime;
 extern  UserDataType    RestartTime;
@@ -1417,10 +1503,8 @@ extern  UserDataType    ElevMoveTime;
 extern  UserDataType    PowerOnTime;
 extern  UserDataType    NewDoorSelect;
 extern  UserDataType    CurDoorSelect;
-//extern  UserDataType    SaveMoveCounter;
 extern  UserDataType    LoopTime;
 extern	UserDataType    SaveVerify;
-extern	UserDataType    EncoderReloadTime;     
 
 
 extern	unsigned	int			PowerSaveTimer;
@@ -1434,8 +1518,8 @@ extern  unsigned	int    	    LightTime;
 extern  unsigned	int    	    AutoNoMoveTime;
 extern	unsigned	int    	    ExIOTimer;
 extern	unsigned	int    	    BreakTime;
-
-extern  unsigned int   CAN_Buf[8];
+extern  unsigned 	int   		CAN_Buf[8];
+extern	unsigned	int			SensorPositionBuf[20];
 
 
 
@@ -1461,7 +1545,7 @@ extern	UserDataType    StateBit5;
 extern	UserDataType    StateBit6;   
 extern	UserDataType    StateBit7;   
 extern	UserDataType    StateBit8;   
-
+extern	UserDataType    StateBit9;   
 extern  UserDataType    Vip_Floor;   
 
 
@@ -1480,6 +1564,9 @@ extern  UserDataType    I_X0_bit;
 extern  UserDataType    O_OP_bit;
 extern  UserDataType    O_U_W_bit;
 extern  UserDataType    O_Y_0_bit;
+extern	UserDataType    Virtual_OUT_bit;
+extern	UserDataType    EXT_OUT0_bit;
+
 extern  UserDataType    DoorStatus_bit;
 extern  UserDataType    FhmToggle;
 extern  UserDataType    FhmSeq;
@@ -1560,6 +1647,7 @@ extern const unsigned int EncRate[];
 
 extern	unsigned int    iType_Test_PlusMinus;
 extern	unsigned long   LType_Test_Value;
+extern	unsigned int 	AutotunUpDn;
 
 
 //////
@@ -1606,6 +1694,7 @@ extern	unsigned long   LType_Test_Value;
 
 
 
+
 #define  bAuto         		    GET_BITFIELD(&AutoBit).bit0 
 #define  bMoveOk           	    GET_BITFIELD(&AutoBit).bit1
 #define  bMoveUpOk         	    GET_BITFIELD(&AutoBit).bit2 
@@ -1630,7 +1719,7 @@ extern	unsigned long   LType_Test_Value;
 #define  bsOpeNoOn         	    GET_BITFIELD(&SlipBit).bit3 
 #define  bsLuLdNoOff       	    GET_BITFIELD(&SlipBit).bit4
 #define  bsNextFloor    	    GET_BITFIELD(&SlipBit).bit5 
-#define  bsHdsNoOn      	    GET_BITFIELD(&SlipBit).bit6 
+#define  bAutoButtonErr        	GET_BITFIELD(&SlipBit).bit6 
 #define  bsCleNoOn      	    GET_BITFIELD(&SlipBit).bit7
 
 #define  bBefbRelevelErr        GET_BITFIELD(&LuLdBit).bit0 
@@ -1660,7 +1749,7 @@ extern	unsigned long   LType_Test_Value;
 #define  bBefbsOpeNoOn     	    GET_BITFIELD(&BefDlsBit).bit3 
 #define  bBefbsLuLdNoOff   	    GET_BITFIELD(&BefDlsBit).bit4
 #define  bBefbsNextFloor   	    GET_BITFIELD(&BefDlsBit).bit5 
-#define  bBefbsHdsNoOn     	    GET_BITFIELD(&BefDlsBit).bit6 
+#define  bBefbAutoButtonErr     GET_BITFIELD(&BefDlsBit).bit6 
 #define  bBefbsCleNoOn     	    GET_BITFIELD(&BefDlsBit).bit7
 
 #define  bBefbsDestFloor   	    GET_BITFIELD(&BefDestFBit).bit0 
@@ -1678,9 +1767,9 @@ extern	unsigned long   LType_Test_Value;
 #define  bCarService         	GET_BITFIELD(&EepRWBit).bit1
 #define  bD_F_FloorOn           GET_BITFIELD(&EepRWBit).bit2
 #define  bDoorJumper            GET_BITFIELD(&EepRWBit).bit3
-#define  bFhmRunReset           GET_BITFIELD(&EepRWBit).bit4
+#define  bAutoTunning           GET_BITFIELD(&EepRWBit).bit4
 #define  bBefbPowerFail         GET_BITFIELD(&EepRWBit).bit5
-#define  bManualStop      	    GET_BITFIELD(&EepRWBit).bit6
+#define  bMotorRestartOn      	GET_BITFIELD(&EepRWBit).bit6
 #define  bFhmRun         	    GET_BITFIELD(&EepRWBit).bit7
 
 #define  bSearchHome       	    GET_BITFIELD(&Etc1Bit).bit0
@@ -1688,8 +1777,8 @@ extern	unsigned long   LType_Test_Value;
 #define  bCarDnMove             GET_BITFIELD(&Etc1Bit).bit2 
 #define  bFhmCount              GET_BITFIELD(&Etc1Bit).bit3 
 #define  bSaveFlash             GET_BITFIELD(&Etc1Bit).bit4 
-#define  bWaterSen              GET_BITFIELD(&Etc1Bit).bit5 
-//#define  bxxxxxxxxxxx         GET_BITFIELD(&Etc1Bit).bit6 
+#define  bWaterAndArrive        GET_BITFIELD(&Etc1Bit).bit5 
+#define  bInPortErr         	GET_BITFIELD(&Etc1Bit).bit6 
 #define  bCarOnceStop           GET_BITFIELD(&Etc1Bit).bit7 
 
 
@@ -1759,13 +1848,13 @@ extern	unsigned long   LType_Test_Value;
 
 
 #define  bOnceVip               GET_BITFIELD(&StateBit2).bit0 
-#define  bNextFlrChk            GET_BITFIELD(&StateBit2).bit1 
+//#define  bNextFlrChk            GET_BITFIELD(&StateBit2).bit1 
 #define  bExportData            GET_BITFIELD(&StateBit2).bit2 
 #define  bImportData            GET_BITFIELD(&StateBit2).bit3 
 #define  bDspClr                GET_BITFIELD(&StateBit2).bit4 
 #define  bPowerChkStart         GET_BITFIELD(&StateBit2).bit5 
 #define  bWritechk              GET_BITFIELD(&StateBit2).bit6 
-#define  bOutDate               GET_BITFIELD(&StateBit2).bit7 
+#define  bWaterSensing          GET_BITFIELD(&StateBit2).bit7 
 
 
 #define  bFirstOnLuLd           GET_BITFIELD(&StateBit3).bit0 
@@ -1786,7 +1875,7 @@ extern	unsigned long   LType_Test_Value;
 #define  bBefDoorJumper         GET_BITFIELD(&StateBit4).bit4 
 #define  bHibSet       			GET_BITFIELD(&StateBit4).bit5 
 #define  bRunningOpenOn		    GET_BITFIELD(&StateBit4).bit6 
-#define  bFhmEncoder        	GET_BITFIELD(&StateBit4).bit7 
+//#define  bFhmEncoder        	GET_BITFIELD(&StateBit4).bit7 
 
 
 #define  bSlavePrk      		GET_BITFIELD(&StateBit5).bit0 
@@ -1800,7 +1889,7 @@ extern	unsigned long   LType_Test_Value;
 
 
 #define  bLevelOpen      		GET_BITFIELD(&StateBit6).bit0 
-#define  bRunningDZ      		GET_BITFIELD(&StateBit6).bit1 
+///////#define  bFhmEncoderSDS      	GET_BITFIELD(&StateBit6).bit1 
 #define  bFireTimeRun    		GET_BITFIELD(&StateBit6).bit2 
 #define  bFirstFire        		GET_BITFIELD(&StateBit6).bit3 
 #define  bSecondFire         	GET_BITFIELD(&StateBit6).bit4
@@ -1825,9 +1914,19 @@ extern	unsigned long   LType_Test_Value;
 #define  bBefbEqualFloorError   GET_BITFIELD(&StateBit8).bit2 
 #define  bReLoadEncoderExe      GET_BITFIELD(&StateBit8).bit3 
 #define  bFlrMatchErr			GET_BITFIELD(&StateBit8).bit4 
-#define  bNOTUSE5       		GET_BITFIELD(&StateBit8).bit5 
-#define  bNOTUSE6		    	GET_BITFIELD(&StateBit8).bit6 
-#define  bNOTUSE7    			GET_BITFIELD(&StateBit8).bit7 
+#define  bDoorSlowExe       	GET_BITFIELD(&StateBit8).bit5 
+#define  bCalcuMpmOn		    GET_BITFIELD(&StateBit8).bit6 
+#define  bFinalErrSaveChk		GET_BITFIELD(&StateBit8).bit7 
+
+
+#define  bDeltaGroupEdit      	GET_BITFIELD(&StateBit9).bit0 
+#define  bAutoRunningErr      	GET_BITFIELD(&StateBit9).bit1 
+#define  bErrSaveFlag   		GET_BITFIELD(&StateBit9).bit2 
+#define  bZeroHzSet      		GET_BITFIELD(&StateBit9).bit3 
+#define  bNC9_4					GET_BITFIELD(&StateBit9).bit4 
+#define  bNC9_5       			GET_BITFIELD(&StateBit9).bit5 
+#define  bNC9_6		    		GET_BITFIELD(&StateBit9).bit6 
+#define  bNC9_7					GET_BITFIELD(&StateBit9).bit7 
 
 
 //////////////////////////////////////////////////////////////
@@ -1897,7 +1996,7 @@ extern	unsigned long   LType_Test_Value;
 #define  OUT_BK2_PORT           GET_BITFIELD(&O_OP_bit).bit4  
 #define  OUT_D_S_PORT           GET_BITFIELD(&O_OP_bit).bit5  
 #define  OUT_GBR_PORT           GET_BITFIELD(&O_OP_bit).bit6   
-#define  OUT_BRK_PORT           GET_BITFIELD(&O_OP_bit).bit7   
+#define  OUT_BK1_PORT           GET_BITFIELD(&O_OP_bit).bit7   
 
 
 #define  OUT_U_W_PORT            GET_BITFIELD(&O_U_W_bit).bit0 
@@ -1917,6 +2016,26 @@ extern	unsigned long   LType_Test_Value;
 #define  OUT_HOP_PORT            GET_BITFIELD(&O_Y_0_bit).bit6
 #define  OUT_HCL_PORT            GET_BITFIELD(&O_Y_0_bit).bit7
 
+///////////////////////////////////////////newio insert
+#define  OUT_SLOW_DOOR_PORT		GET_BITFIELD(&Virtual_OUT_bit).bit0  
+#define  OUT_VIRTUAL_Y1_PORT	GET_BITFIELD(&Virtual_OUT_bit).bit1  
+#define  OUT_VIRTUAL_Y2_PORT	GET_BITFIELD(&Virtual_OUT_bit).bit2   
+#define  OUT_VIRTUAL_Y3_PORT	GET_BITFIELD(&Virtual_OUT_bit).bit3
+#define  OUT_VIRTUAL_Y4_PORT	GET_BITFIELD(&Virtual_OUT_bit).bit4
+#define  OUT_VIRTUAL_Y5_PORT	GET_BITFIELD(&Virtual_OUT_bit).bit5
+#define  OUT_VIRTUAL_Y6_PORT	GET_BITFIELD(&Virtual_OUT_bit).bit6
+#define  OUT_VIRTUAL_Y7_PORT	GET_BITFIELD(&Virtual_OUT_bit).bit7
+
+
+
+#define  OUT_EXT_Y0_PORT	GET_BITFIELD(&EXT_OUT0_bit).bit0
+#define  OUT_EXT_Y1_PORT	GET_BITFIELD(&EXT_OUT0_bit).bit1
+#define  OUT_EXT_Y2_PORT	GET_BITFIELD(&EXT_OUT0_bit).bit2
+#define  OUT_EXT_Y3_PORT	GET_BITFIELD(&EXT_OUT0_bit).bit3
+#define  OUT_EXT_Y4_PORT	GET_BITFIELD(&EXT_OUT0_bit).bit4
+#define  OUT_EXT_Y5_PORT	GET_BITFIELD(&EXT_OUT0_bit).bit5
+#define  OUT_EXT_Y6_PORT	GET_BITFIELD(&EXT_OUT0_bit).bit6
+#define  OUT_EXT_Y7_PORT	GET_BITFIELD(&EXT_OUT0_bit).bit7
 
 ///////////////////////////////////////////////////////////////
 
@@ -2225,12 +2344,12 @@ extern	unsigned long   LType_Test_Value;
 ////out test
 #define  cF_OP                  GET_LONGFIELD(&FlashDspCharBuf[OP_PORT/4])          .byte[OP_PORT%4]
 #define  cF_CL                  GET_LONGFIELD(&FlashDspCharBuf[CL_PORT/4])          .byte[CL_PORT%4]
-#define  cF_OP_S                GET_LONGFIELD(&FlashDspCharBuf[S_OP_PORT/4])        .byte[S_OP_PORT%4]
-#define  cF_CL_S                GET_LONGFIELD(&FlashDspCharBuf[S_CL_PORT/4])        .byte[S_CL_PORT%4]
+#define  cF_OP_S                GET_LONGFIELD(&FlashDspCharBuf[OP_S_PORT/4])        .byte[OP_S_PORT%4]
+#define  cF_CL_S                GET_LONGFIELD(&FlashDspCharBuf[CL_S_PORT/4])        .byte[CL_S_PORT%4]
 #define  cF_BK2                 GET_LONGFIELD(&FlashDspCharBuf[BK2_PORT/4])         .byte[BK2_PORT%4]
 #define  cF_D_S                 GET_LONGFIELD(&FlashDspCharBuf[D_S_PORT/4])         .byte[D_S_PORT%4]
 #define  cF_GBR                 GET_LONGFIELD(&FlashDspCharBuf[GBR_PORT/4])         .byte[GBR_PORT%4]
-#define  cF_BRK                 GET_LONGFIELD(&FlashDspCharBuf[BK1_PORT/4])         .byte[BK1_PORT%4]
+#define  cF_BK1                 GET_LONGFIELD(&FlashDspCharBuf[BK1_PORT/4])         .byte[BK1_PORT%4]
  
                                 
 #define  cF_FAN                 GET_LONGFIELD(&FlashDspCharBuf[FAN_PORT/4])         .byte[FAN_PORT%4]
@@ -2250,6 +2369,28 @@ extern	unsigned long   LType_Test_Value;
 #define  cF_P4                  GET_LONGFIELD(&FlashDspCharBuf[P4_PORT/4])          .byte[P4_PORT%4]
 #define  cF_DAC                 GET_LONGFIELD(&FlashDspCharBuf[DAC_PORT/4])         .byte[DAC_PORT%4]
 
+
+///////////////////////////////////////////newio insert
+#define  cF_SLOW_DOOR		GET_LONGFIELD(&FlashDspCharBuf[SLOW_DOOR_PORT/4])       .byte[SLOW_DOOR_PORT%4]
+#define  cF_VIRTUAL_Y1		GET_LONGFIELD(&FlashDspCharBuf[VIRTUAL_Y1_PORT/4])		.byte[VIRTUAL_Y1_PORT%4]
+#define  cF_VIRTUAL_Y2		GET_LONGFIELD(&FlashDspCharBuf[VIRTUAL_Y2_PORT/4])		.byte[VIRTUAL_Y2_PORT%4]
+#define  cF_VIRTUAL_Y3		GET_LONGFIELD(&FlashDspCharBuf[VIRTUAL_Y3_PORT/4])		.byte[VIRTUAL_Y3_PORT%4]
+#define  cF_VIRTUAL_Y4		GET_LONGFIELD(&FlashDspCharBuf[VIRTUAL_Y4_PORT/4])		.byte[VIRTUAL_Y4_PORT%4]
+#define  cF_VIRTUAL_Y5		GET_LONGFIELD(&FlashDspCharBuf[VIRTUAL_Y5_PORT/4])		.byte[VIRTUAL_Y5_PORT%4]
+#define  cF_VIRTUAL_Y6		GET_LONGFIELD(&FlashDspCharBuf[VIRTUAL_Y6_PORT/4])		.byte[VIRTUAL_Y6_PORT%4]
+#define  cF_VIRTUAL_Y7		GET_LONGFIELD(&FlashDspCharBuf[VIRTUAL_Y7_PORT/4])		.byte[VIRTUAL_Y7_PORT%4]
+
+/*
+#define  cF_EXT_Y0			GET_LONGFIELD(&FlashDspCharBuf[EXT_Y0_PORT/4])		.byte[EXT_Y0_PORT%4]
+#define  cF_EXT_Y1			GET_LONGFIELD(&FlashDspCharBuf[EXT_Y1_PORT/4])		.byte[EXT_Y1_PORT%4]
+#define  cF_EXT_Y2			GET_LONGFIELD(&FlashDspCharBuf[EXT_Y2_PORT/4])		.byte[EXT_Y2_PORT%4]
+#define  cF_EXT_Y3			GET_LONGFIELD(&FlashDspCharBuf[EXT_Y3_PORT/4])		.byte[EXT_Y3_PORT%4]
+#define  cF_EXT_Y4			GET_LONGFIELD(&FlashDspCharBuf[EXT_Y4_PORT/4])		.byte[EXT_Y4_PORT%4]
+#define  cF_EXT_Y5			GET_LONGFIELD(&FlashDspCharBuf[EXT_Y5_PORT/4])		.byte[EXT_Y5_PORT%4]
+#define  cF_EXT_Y6			GET_LONGFIELD(&FlashDspCharBuf[EXT_Y6_PORT/4])		.byte[EXT_Y6_PORT%4]
+#define  cF_EXT_Y7			GET_LONGFIELD(&FlashDspCharBuf[EXT_Y7_PORT/4])		.byte[EXT_Y7_PORT%4]
+*/
+///////////////////////////////////////////newio insert
 
 
 /////////////////////////////////
@@ -2391,7 +2532,7 @@ extern	unsigned long   LType_Test_Value;
 #define  OUT_BK2(x)             CurSelOutPort(cF_BK2,x)  
 #define  OUT_D_S(x)             CurSelOutPort(cF_D_S,x)  
 #define  OUT_GBR(x)             CurSelOutPort(cF_GBR,x)   
-#define  OUT_BRK(x)             CurSelOutPort(cF_BRK,x)   
+#define  OUT_BK1(x)             CurSelOutPort(cF_BK1,x)   
 
 #define  OUT_FAN(x)             CurSelOutPort(cF_FAN,x)  
 #define  OUT_LIT(x)             CurSelOutPort(cF_LIT,x)  
@@ -2402,6 +2543,29 @@ extern	unsigned long   LType_Test_Value;
 #define  OUT_HOP(x)             CurSelOutPort(cF_HOP,x)
 #define  OUT_HCL(x)             CurSelOutPort(cF_HCL,x)
 
+
+///////////////////////////////////////////newio insert
+#define  OUT_SLOW_DOOR(x)		CurSelOutPort(cF_SLOW_DOOR,x)  
+#define  OUT_VIRTUAL_Y1(x)		CurSelOutPort(cF_VIRTUAL_Y1,x)  
+#define  OUT_VIRTUAL_Y2(x)		CurSelOutPort(cF_VIRTUAL_Y2,x)  
+#define  OUT_VIRTUAL_Y3(x) 		CurSelOutPort(cF_VIRTUAL_Y3,x)  
+#define  OUT_VIRTUAL_Y4(x)   	CurSelOutPort(cF_VIRTUAL_Y4,x)  
+#define  OUT_VIRTUAL_Y5(x)  	CurSelOutPort(cF_VIRTUAL_Y5,x)  
+#define  OUT_VIRTUAL_Y6(x)   	CurSelOutPort(cF_VIRTUAL_Y6,x)  
+#define  OUT_VIRTUAL_Y7(x)  	CurSelOutPort(cF_VIRTUAL_Y7,x)  
+
+
+/*
+#define  OUT_EXT_Y0(x)			CurSelOutPort(cF_EXT_Y0,x)  
+#define  OUT_EXT_Y1(x)			CurSelOutPort(cF_EXT_Y1,x)  
+#define  OUT_EXT_Y2(x)			CurSelOutPort(cF_EXT_Y2,x)  
+#define  OUT_EXT_Y3(x) 			CurSelOutPort(cF_EXT_Y3,x)  
+#define  OUT_EXT_Y4(x)   		CurSelOutPort(cF_EXT_Y4,x)  
+#define  OUT_EXT_Y5(x)  		CurSelOutPort(cF_EXT_Y5,x)  
+#define  OUT_EXT_Y6(x)   		CurSelOutPort(cF_EXT_Y6,x)  
+#define  OUT_EXT_Y7(x)  		CurSelOutPort(cF_EXT_Y7,x)  
+*/
+///////////////////////////////////////////newio insert
 
 
 
@@ -2607,13 +2771,11 @@ extern  UserDataType    MotorMoveTime;
 
 
 #ifdef	DELTA_INVERTER	
-
 extern	unsigned int	DeltaNoAck;
 extern	unsigned int	InverterPDORxTime;
 extern	unsigned int	InverterReady;
 extern	unsigned int	DeltaRdWrStatus;
 extern	unsigned int	DeltaRdWrStatusFhm;
-////////extern	unsigned int   	DeltaCmdTimer;
 
 extern	unsigned char	EV_ReqRdWrTxBuf[27];
 extern	unsigned char	IV_AckRdWrTxBuf[27];
@@ -2621,16 +2783,7 @@ extern	unsigned char	ElevStatus[8];
 extern	unsigned char	InvStatus[8];
 extern	unsigned char	ThisAttribute[8];
 extern	unsigned char	PDO_TX_DataBuf[8];
+extern	unsigned int	IV_This_Attrv,IV_This_Min,IV_This_Max,IV_This_Value;
 
-
-/*
-extern	unsigned int	InverterReady;
-extern	unsigned int	EV_ReqRdWrTxBuf[27];
-extern	unsigned int	IV_AckRdWrTxBuf[27];
-extern	unsigned int	ElevStatus[8];
-extern	unsigned int	ThisAttribute[8];
-extern	unsigned int	DeltaRdWrStatus;
-*/
 #endif
 
-extern	unsigned int	DeltaNoAck;

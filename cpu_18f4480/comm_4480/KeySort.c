@@ -1081,13 +1081,13 @@ void    UpDownKey(void)
             TogDnKeyBitSet=0;
             TogDnKeyBitReset=0;
 
-			if( !bToggleOn){
+//			if( !bToggleOn){
             	if(ButtonType){
 					DownButtonLampClear();
                 	Dn_Key_Clear=0;
                 	Tx0ConfirmCnt=0;
             	}                        
-			}	
+//			}	
         }
     }
     else{
@@ -1563,6 +1563,8 @@ void    UpDownBlink(unsigned char id)
 
 #endif
 #endif
+
+
 
 
 

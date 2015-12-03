@@ -17,6 +17,8 @@
 
 #ifdef	DELTA_INVERTER	
 
+extern UserDataType    EnterKey;
+
 
 #define		CAN_BASE_TIME	20		
 
@@ -55,6 +57,9 @@
 #define		FHM_CMD_SUCCESS		(IV_FHM_SUCCESS 				| IV_POWER_ON_CHK)
 
 
+#define		AUTO_TUN_STOPPING	0x02
+#define		AUTO_TUN_RUNNING	0x03
+
 
 
 #define		IV_READY_0		0x01
@@ -71,7 +76,7 @@
 #define		IV_RELEVEL_1	0x04
 #define		IV_RESERVE2_1	0x08
 #define		IV_RESERVE3_1	0x10
-#define		IV_FST_1		0x20
+#define		IV_DECREASE_1	0x20
 #define		IV_FSD_1		0x40
 #define		IV_BK_RELEASE_1	0x80
 
@@ -126,7 +131,6 @@
 #define		REQ_DATA_SEQ	26
 
 
-
 unsigned int	DeltaNoAck=0;
 unsigned int	InverterPDORxTime=0;
 unsigned int	InverterReady=0;
@@ -140,6 +144,8 @@ unsigned char	InvStatus[8];
 unsigned char	ThisAttribute[8];
 unsigned char	PDO_TX_DataBuf[8];
 
+
+unsigned int	IV_This_Attrv,IV_This_Min,IV_This_Max,IV_This_Value;
 
 
 void     __attribute__((section(".usercode"))) C2RxSidEidDataLoad(void)
@@ -181,7 +187,14 @@ LocalType __attribute__((section(".usercode"))) Receive_All(void)
 		for(i=0;i<8;i++)	ThisAttribute[i]= IV_AckRdWrTxBuf[i+5];
 	} 
 
-	IV_AckRdWrTxBuf[REQ_DATA_SEQ]	=0;		// receive all good
+	IV_AckRdWrTxBuf[REQ_DATA_SEQ]=0;		// receive all good
+	EV_ReqRdWrTxBuf[REQ_DATA_SEQ]=0;
+	EV_ReqRdWrTxBuf[REQ_TIMEOUT]=0;
+	DeltaNoAck=0;
+
+	C2Time = CAN_BASE_TIME;
+
+	return(0);
 }
 
 
@@ -230,7 +243,6 @@ LocalType __attribute__((section(".usercode"))) C2InvAckDataSort(void)
 	switch(C2ThisRxSid){
 		case	0x02:
 			for(i=0;i<8;i++)	InvStatus[i] = C2ThisRxBuf[i];
-			EV_ReqRdWrTxBuf[REQ_TIMEOUT]	  = 0;			
 			ret=0; 	
 			InverterPDORxTime=0;
 			break;
@@ -358,6 +370,11 @@ LocalType __attribute__((section(".usercode"))) RdWrBufInit(void)
 }
 
 
+LocalType __attribute__((section(".usercode"))) RxTxReqToInveterInit(void)
+{
+	EV_ReqRdWrTxBuf[REQ_DATA_SEQ]=0;
+	IV_AckRdWrTxBuf[REQ_DATA_SEQ]=0;
+}
 
 
 LocalType __attribute__((section(".usercode"))) Read_SDO(void)
@@ -372,23 +389,16 @@ LocalType __attribute__((section(".usercode"))) Read_SDO(void)
 	C2ThisTxBuf[3]	=EV_ReqRdWrTxBuf[BASE_ADDR_L];
 
 	C2ThisTxDataCnt	=0x04;
-	
+
 	if( !C2TxAct()){
-		EV_ReqRdWrTxBuf[REQ_TIMEOUT]=0;
-		EV_ReqRdWrTxBuf[REQ_DATA_SEQ]--;
-		IV_AckRdWrTxBuf[REQ_DATA_SEQ]=1;
+		EV_ReqRdWrTxBuf[REQ_TIMEOUT]++;
+		DeltaNoAck=0;
+		EV_ReqRdWrTxBuf[REQ_DATA_SEQ]=0;
 	}
-
-/*
-	EV_ReqRdWrTxBuf[REQ_TIMEOUT]++;
-	if(EV_ReqRdWrTxBuf[REQ_TIMEOUT] > 200){
-		EV_ReqRdWrTxBuf[ID_CODE]		=0;
-		EV_ReqRdWrTxBuf[REQ_TIMEOUT]	=0;
-	}
-*/
-
+	
 	return(0);
 }
+
 
 
 
@@ -413,7 +423,6 @@ LocalType __attribute__((section(".usercode"))) Write_SDO(void)
 			if(EV_ReqRdWrTxBuf[RD_WR_LENGTH] > 2){
 				C2ThisTxDataCnt	=8;
 				EV_ReqRdWrTxBuf[ID_CODE]++;
-				C2Time=CAN_BASE_TIME;
 			}
 			else{
 				C2ThisTxDataCnt	=(EV_ReqRdWrTxBuf[RD_WR_LENGTH] * 2) + 4;
@@ -434,7 +443,6 @@ LocalType __attribute__((section(".usercode"))) Write_SDO(void)
 			if(EV_ReqRdWrTxBuf[RD_WR_LENGTH] > 6){
 				C2ThisTxDataCnt	=8;
 				EV_ReqRdWrTxBuf[ID_CODE]++;
-				C2Time=CAN_BASE_TIME;
 			}
 			else{
 				EV_ReqRdWrTxBuf[ID_CODE]=0;
@@ -479,16 +487,16 @@ LocalType __attribute__((section(".usercode"))) Write_SDO(void)
 				C2ThisTxDataCnt	=8;
 			}
 			break;
-
 	}
 
 
-	C2TxAct();
 
-	EV_ReqRdWrTxBuf[REQ_TIMEOUT]++;
-	if(EV_ReqRdWrTxBuf[REQ_TIMEOUT] > 200){
-		EV_ReqRdWrTxBuf[ID_CODE]		=0;
-		EV_ReqRdWrTxBuf[REQ_TIMEOUT]	=0;
+	if( !C2TxAct()){
+		if(EV_ReqRdWrTxBuf[ID_CODE]==0){
+			EV_ReqRdWrTxBuf[REQ_TIMEOUT]++;
+			EV_ReqRdWrTxBuf[REQ_DATA_SEQ]=0;
+			DeltaNoAck=0;
+		}
 	}
 
 	return(0);
@@ -547,6 +555,7 @@ LocalType __attribute__((section(".usercode"))) SDOReqMode(void)
 				ret=0;
 				break;
 			default:
+				RxTxReqToInveterInit();
 				break;
 		}
 	}
@@ -601,10 +610,6 @@ LocalType __attribute__((section(".usercode"))) ReadAttribute(unsigned char addr
 	EV_ReqRdWrTxBuf[BASE_ADDR_L]	=addressL;
 	EV_ReqRdWrTxBuf[REQ_DATA_SEQ]	=1;
 	IV_AckRdWrTxBuf[REQ_DATA_SEQ]	=1;
-
-	C2Time = CAN_BASE_TIME;
-	DeltaNoAck=0;
-
 }
 
 LocalType __attribute__((section(".usercode"))) ReadParameter(unsigned char addressH,unsigned char addressL,unsigned char ReadWordNm)
@@ -616,33 +621,27 @@ LocalType __attribute__((section(".usercode"))) ReadParameter(unsigned char addr
 	EV_ReqRdWrTxBuf[BASE_ADDR_L]	=addressL;
 	EV_ReqRdWrTxBuf[REQ_DATA_SEQ]	=1;
 	IV_AckRdWrTxBuf[REQ_DATA_SEQ]	=1;
-
-	C2Time = CAN_BASE_TIME;
-	DeltaNoAck=0;
-
 }
 
 
-/*
-LocalType __attribute__((section(".usercode"))) WriteParameter(unsigned char addressH,unsigned char addressL,unsigned char ReadWordNm,unsigned char valH,unsigned char valL)
+
+
+LocalType __attribute__((section(".usercode"))) AddrWriteParameter(unsigned char addressH,unsigned char addressL,unsigned char WriteWordNm,unsigned char valH,unsigned char valL)
 {    
 	EV_ReqRdWrTxBuf[ID_CODE]		=HOST_SDO_0;
 	EV_ReqRdWrTxBuf[RD_WR_CMD]		=WR_SDO_INV_REG;
 	EV_ReqRdWrTxBuf[RD_WR_LENGTH]	=WriteWordNm;
 	EV_ReqRdWrTxBuf[BASE_ADDR_H]	=addressH;
 	EV_ReqRdWrTxBuf[BASE_ADDR_L]	=addressL;
-
 	EV_ReqRdWrTxBuf[DATA_0_H]		=valH;
 	EV_ReqRdWrTxBuf[DATA_0_L]		=valL;
-
 	EV_ReqRdWrTxBuf[REQ_DATA_SEQ]	=1;
 	IV_AckRdWrTxBuf[REQ_DATA_SEQ]	=1;
-
-	C2Time = CAN_BASE_TIME;
 }
-*/
 
 
+
+/*
 LocalType __attribute__((section(".usercode"))) EqualAddrWriteParameter(unsigned char WriteWordNm,unsigned char valH,unsigned char valL)
 {    
 	EV_ReqRdWrTxBuf[ID_CODE]		=HOST_SDO_0;
@@ -656,19 +655,23 @@ LocalType __attribute__((section(".usercode"))) EqualAddrWriteParameter(unsigned
 
 	EV_ReqRdWrTxBuf[REQ_DATA_SEQ]	=1;
 	IV_AckRdWrTxBuf[REQ_DATA_SEQ]	=1;
+}
+*/
 
-	C2Time = CAN_BASE_TIME;
-	DeltaNoAck=0;
+LocalType __attribute__((section(".usercode"))) WaitAckTimeOutChk(void)
+{    
+	if((EV_ReqRdWrTxBuf[REQ_DATA_SEQ]==0) && (DeltaNoAck > 30))	return(1);
+	else														return(0);
 }
 
 
 
 
-
-LocalType __attribute__((section(".usercode"))) DeltaInverterRdWr(unsigned char addressH,unsigned char addressL)
+LocalType __attribute__((section(".usercode"))) DeltaInverterRdWr(unsigned char addressH,unsigned char addressL,unsigned char WriteWordNm,unsigned char valH,unsigned char valL)
 {    
 	unsigned int val,dp;
 	unsigned int ret;
+	unsigned int b_data0,b_data1;
 
 	ret=0;
 
@@ -682,6 +685,9 @@ LocalType __attribute__((section(".usercode"))) DeltaInverterRdWr(unsigned char 
 				if(IV_AckRdWrTxBuf[REQ_DATA_SEQ]==0){
 					DeltaRdWrStatus=3;
 				}		
+				else{
+					if(WaitAckTimeOutChk())	DeltaRdWrStatus=1;	
+				}
 				break;
 			case	3:
 				ReadParameter(addressH,addressL,1);
@@ -689,19 +695,64 @@ LocalType __attribute__((section(".usercode"))) DeltaInverterRdWr(unsigned char 
 				break;
 			case	4:
 				if(IV_AckRdWrTxBuf[REQ_DATA_SEQ]==0){
-					Delta_inverter_Par_DataSort( &ThisAttribute[0], &IV_AckRdWrTxBuf[0]);					
-					DeltaRdWrStatus=5;
+
+					b_data0=(unsigned int)(IV_AckRdWrTxBuf[5]);
+					b_data0=(unsigned int)(b_data0 << 8);
+					b_data0=(unsigned int)(b_data0 & 0xff00);
+					b_data1=(unsigned int)(IV_AckRdWrTxBuf[6]);
+					b_data1=(unsigned int)(b_data1 & 0x00ff);
+					IV_This_Value=(b_data0 | b_data1); 
+
+
+					b_data0=(unsigned int)(ThisAttribute[0]);
+					b_data0=(unsigned int)(b_data0 << 8);
+					b_data0=(unsigned int)(b_data0 & 0xff00);
+					b_data1=(unsigned int)(ThisAttribute[1]);
+					b_data1=(unsigned int)(b_data1 & 0x00ff);
+					IV_This_Attrv=(b_data0 | b_data1); 
+
+					b_data0=(unsigned int)(ThisAttribute[2]);
+					b_data0=(unsigned int)(b_data0 << 8);
+					b_data0=(unsigned int)(b_data0 & 0xff00);
+					b_data1=(unsigned int)(ThisAttribute[3]);
+					b_data1=(unsigned int)(b_data1 & 0x00ff);
+					IV_This_Min=(b_data0 | b_data1); 
+
+					b_data0=(unsigned int)(ThisAttribute[4]);
+					b_data0=(unsigned int)(b_data0 << 8);
+					b_data0=(unsigned int)(b_data0 & 0xff00);
+					b_data1=(unsigned int)(ThisAttribute[5]);
+					b_data1=(unsigned int)(b_data1 & 0x00ff);
+					IV_This_Max=(b_data0 | b_data1); 
+
+					Delta_inverter_Par_DataSort(IV_This_Value);					
+					DeltaRdWrStatus=0;
 				}		
+				else{
+					if(WaitAckTimeOutChk())	DeltaRdWrStatus=3;	
+				}
 				break;
 			case	5:
+				AddrWriteParameter(addressH,addressL,WriteWordNm,valH,valL);
+				DeltaRdWrStatus=6;
 				break;
 			case	6:
 				if(IV_AckRdWrTxBuf[REQ_DATA_SEQ]==0){
-					DeltaRdWrStatus=0;
-					ret=1;
+					if(bsInvCurNext)	DeltaRdWrStatus=0;
+					if(bDeltaGroupEdit){
+						DeltaRdWrStatus=1;
+						EnterKey=0;
+					}
 				}		
+				else{
+					if(WaitAckTimeOutChk()){
+						AddrWriteParameter(addressH,addressL,WriteWordNm,valH,valL);
+					}
+				}
 				break;
 			default:
+				DeltaRdWrStatus=0;
+				RxTxReqToInveterInit();
 				break;
 		}
 	}	
@@ -725,16 +776,15 @@ LocalType __attribute__((section(".usercode"))) DeltaInverterRdWrFhm(unsigned ch
 			case	1:
 				ReadParameter(addressH,addressL,1);
 				DeltaRdWrStatusFhm=2;
-IV_AckRdWrTxBuf[REQ_DATA_SEQ]=0xff;
 				break;
 			case	2:
-//				if(IV_AckRdWrTxBuf[REQ_DATA_SEQ]==0){
-				if(IV_AckRdWrTxBuf[REQ_DATA_SEQ] != 0xff){
-					EqualAddrWriteParameter(1,0,FHM_CMD_EXCUT);
+				if(IV_AckRdWrTxBuf[REQ_DATA_SEQ]==0){
+					AddrWriteParameter(addressH,addressL,1,0,FHM_CMD_EXCUT);
+//					EqualAddrWriteParameter(1,0,FHM_CMD_EXCUT);
 					DeltaRdWrStatusFhm=3;
 				}
 				else{
-					if(DeltaNoAck > 20)	DeltaRdWrStatusFhm=1;	
+					if(WaitAckTimeOutChk())	DeltaRdWrStatusFhm=1;	
 				}		
 				break;
 			case	3:
@@ -743,13 +793,14 @@ IV_AckRdWrTxBuf[REQ_DATA_SEQ]=0xff;
 					DeltaRdWrStatusFhm=4;
 				}		
 				else{
-					if(DeltaNoAck > 20)	DeltaRdWrStatusFhm=1;	
+					if(WaitAckTimeOutChk())	DeltaRdWrStatusFhm=1;	
 				}		
 				break;
 			case	4:
 				if(IV_AckRdWrTxBuf[REQ_DATA_SEQ]==0){
 					if(IV_AckRdWrTxBuf[6] == FHM_CMD_EXCUT){
-						EqualAddrWriteParameter(1,0,FHM_CMD_P_RESET_H);
+						AddrWriteParameter(addressH,addressL,1,0,FHM_CMD_P_RESET_H);
+//						EqualAddrWriteParameter(1,0,FHM_CMD_P_RESET_H);
 						DeltaRdWrStatusFhm=5;
 					}
 					else{
@@ -757,7 +808,7 @@ IV_AckRdWrTxBuf[REQ_DATA_SEQ]=0xff;
 					}					
 				}		
 				else{
-					if(DeltaNoAck > 20)	DeltaRdWrStatusFhm=1;	
+					if(WaitAckTimeOutChk())	DeltaRdWrStatusFhm=1;	
 				}		
 				break;
 			case	5:
@@ -766,13 +817,14 @@ IV_AckRdWrTxBuf[REQ_DATA_SEQ]=0xff;
 					DeltaRdWrStatusFhm=6;
 				}		
 				else{
-					if(DeltaNoAck > 20)	DeltaRdWrStatusFhm=1;	
+					if(WaitAckTimeOutChk())	DeltaRdWrStatusFhm=1;	
 				}		
 				break;
 			case	6:
 				if(IV_AckRdWrTxBuf[REQ_DATA_SEQ]==0){
 					if(IV_AckRdWrTxBuf[6] == FHM_CMD_P_RESET_H){
-						EqualAddrWriteParameter(1,0,FHM_CMD_P_RESET_L);
+						AddrWriteParameter(addressH,addressL,1,0,FHM_CMD_P_RESET_L);
+//						EqualAddrWriteParameter(1,0,FHM_CMD_P_RESET_L);
 						DeltaRdWrStatusFhm=7;
 					}
 					else{
@@ -780,7 +832,7 @@ IV_AckRdWrTxBuf[REQ_DATA_SEQ]=0xff;
 					}					
 				}		
 				else{
-					if(DeltaNoAck > 20)	DeltaRdWrStatusFhm=1;	
+					if(WaitAckTimeOutChk())	DeltaRdWrStatusFhm=1;	
 				}		
 				break;
 			case	7:
@@ -789,7 +841,7 @@ IV_AckRdWrTxBuf[REQ_DATA_SEQ]=0xff;
 					DeltaRdWrStatusFhm=8;
 				}
 				else{
-					if(DeltaNoAck > 20)	DeltaRdWrStatusFhm=1;	
+					if(WaitAckTimeOutChk())	DeltaRdWrStatusFhm=1;	
 				}		
 				break;
 			case	8:
@@ -803,23 +855,24 @@ IV_AckRdWrTxBuf[REQ_DATA_SEQ]=0xff;
 					}
 				}		
 				else{
-					if(DeltaNoAck > 20)	DeltaRdWrStatusFhm=1;	
+					if(WaitAckTimeOutChk())	DeltaRdWrStatusFhm=1;	
 				}		
 				break;
 			case	9:
+				ret=1;
 				break;
-
 			case	10:
 				ReadParameter(addressH,addressL,1);
 				DeltaRdWrStatusFhm=11;
 				break;
 			case	11:
 				if(IV_AckRdWrTxBuf[REQ_DATA_SEQ]==0){
-					EqualAddrWriteParameter(1,0,FHM_CMD_P_RECORD_H);
+					AddrWriteParameter(addressH,addressL,1,0,FHM_CMD_P_RECORD_H);
+//					EqualAddrWriteParameter(1,0,FHM_CMD_P_RECORD_H);
 					DeltaRdWrStatusFhm=12;
 				}		
 				else{
-					if(DeltaNoAck > 20)	DeltaRdWrStatusFhm=10;	
+					if(WaitAckTimeOutChk())	DeltaRdWrStatusFhm=10;	
 				}		
 				break;
 			case	12:
@@ -828,15 +881,16 @@ IV_AckRdWrTxBuf[REQ_DATA_SEQ]=0xff;
 					DeltaRdWrStatusFhm=13;
 				}		
 				else{
-					if(DeltaNoAck > 20)	DeltaRdWrStatusFhm=10;	
+					if(WaitAckTimeOutChk())	DeltaRdWrStatusFhm=10;	
 				}		
 				break;
 			case	13:
 				if(IV_AckRdWrTxBuf[REQ_DATA_SEQ]==0){
 					if(IV_AckRdWrTxBuf[6] == FHM_CMD_P_RECORD_H){
 						if(DeltaNoAck > 10){
-						EqualAddrWriteParameter(1,0,FHM_CMD_P_RECORD_L);
-						DeltaRdWrStatusFhm=14;
+							AddrWriteParameter(addressH,addressL,1,0,FHM_CMD_P_RECORD_L);
+//							EqualAddrWriteParameter(1,0,FHM_CMD_P_RECORD_L);
+							DeltaRdWrStatusFhm=14;
 						}
 					}
 					else{
@@ -844,7 +898,7 @@ IV_AckRdWrTxBuf[REQ_DATA_SEQ]=0xff;
 					}					
 				}		
 				else{
-					if(DeltaNoAck > 20)	DeltaRdWrStatusFhm=10;	
+					if(WaitAckTimeOutChk())	DeltaRdWrStatusFhm=10;	
 				}		
 				break;
 			case	14:
@@ -853,14 +907,15 @@ IV_AckRdWrTxBuf[REQ_DATA_SEQ]=0xff;
 					DeltaRdWrStatusFhm=15;
 				}		
 				else{
-					if(DeltaNoAck > 20)	DeltaRdWrStatusFhm=10;	
+					if(WaitAckTimeOutChk())	DeltaRdWrStatusFhm=10;	
 				}		
 				break;
 
 			case	15:
 				if(IV_AckRdWrTxBuf[REQ_DATA_SEQ]==0){
 					if(IV_AckRdWrTxBuf[6] == FHM_CMD_P_RECORD_L){
-						EqualAddrWriteParameter(1,0, (IV_AckRdWrTxBuf[6] & (~IV_FHM_EXCUTE)));   // dsb excute
+						AddrWriteParameter(addressH,addressL,1,0, (IV_AckRdWrTxBuf[6] & (~IV_FHM_EXCUTE)));
+//						EqualAddrWriteParameter(1,0, (IV_AckRdWrTxBuf[6] & (~IV_FHM_EXCUTE)));   // dsb excute
 						DeltaRdWrStatusFhm=16;
 					}
 					else{
@@ -868,7 +923,7 @@ IV_AckRdWrTxBuf[REQ_DATA_SEQ]=0xff;
 					}					
 				}		
 				else{
-					if(DeltaNoAck > 20)	DeltaRdWrStatusFhm=10;	
+					if(WaitAckTimeOutChk())	DeltaRdWrStatusFhm=10;	
 				}		
 				break;
 			case	16:
@@ -877,7 +932,7 @@ IV_AckRdWrTxBuf[REQ_DATA_SEQ]=0xff;
 					DeltaRdWrStatusFhm=17;
 				}		
 				else{
-					if(DeltaNoAck > 20)	DeltaRdWrStatusFhm=10;	
+					if(WaitAckTimeOutChk())	DeltaRdWrStatusFhm=10;	
 				}		
 				break;
 /*
@@ -892,7 +947,7 @@ IV_AckRdWrTxBuf[REQ_DATA_SEQ]=0xff;
 					}					
 				}		
 				else{
-					if(DeltaNoAck > 20)	DeltaRdWrStatusFhm=10;	
+					if(WaitAckTimeOutChk()	DeltaRdWrStatusFhm=10;	
 				}		
 				break;
 			case	18:
@@ -901,7 +956,7 @@ IV_AckRdWrTxBuf[REQ_DATA_SEQ]=0xff;
 					DeltaRdWrStatusFhm=17;
 				}		
 				else{
-					if(DeltaNoAck > 20)	DeltaRdWrStatusFhm=10;	
+					if(WaitAckTimeOutChk()	DeltaRdWrStatusFhm=10;	
 				}		
 				break;
 
@@ -910,7 +965,8 @@ IV_AckRdWrTxBuf[REQ_DATA_SEQ]=0xff;
 			case	17:
 				if(IV_AckRdWrTxBuf[REQ_DATA_SEQ]==0){
 					if( !(IV_AckRdWrTxBuf[6] & IV_FHM_EXCUTE)){
-						EqualAddrWriteParameter(1,0,FHM_CMD_SUCCESS);
+						AddrWriteParameter(addressH,addressL,1,0,FHM_CMD_SUCCESS);
+//						EqualAddrWriteParameter(1,0,FHM_CMD_SUCCESS);
 						DeltaRdWrStatusFhm=18;
 					}
 					else{
@@ -918,7 +974,7 @@ IV_AckRdWrTxBuf[REQ_DATA_SEQ]=0xff;
 					}					
 				}		
 				else{
-					if(DeltaNoAck > 20)	DeltaRdWrStatusFhm=10;	
+					if(WaitAckTimeOutChk())	DeltaRdWrStatusFhm=10;	
 				}		
 				break;
 			case	18:
@@ -927,7 +983,7 @@ IV_AckRdWrTxBuf[REQ_DATA_SEQ]=0xff;
 					DeltaRdWrStatusFhm=19;
 				}		
 				else{
-					if(DeltaNoAck > 20)	DeltaRdWrStatusFhm=10;	
+					if(WaitAckTimeOutChk())	DeltaRdWrStatusFhm=10;	
 				}		
 				break;
 			case	19:
@@ -941,12 +997,14 @@ IV_AckRdWrTxBuf[REQ_DATA_SEQ]=0xff;
 					}					
 				}		
 				else{
-					if(DeltaNoAck > 20)	DeltaRdWrStatusFhm=10;	
+					if(WaitAckTimeOutChk())	DeltaRdWrStatusFhm=10;	
 				}		
 				break;
 			case	20:
+				ret=1;
 				break;
 			default:
+				RxTxReqToInveterInit();
 				break;
 		}
 	}	
@@ -954,6 +1012,29 @@ IV_AckRdWrTxBuf[REQ_DATA_SEQ]=0xff;
 	return(ret);
 }	
 
+
+
+
+
+
+
+
+
+
+
+
+LocalType __attribute__((section(".usercode"))) DeltaInverterDecCheck(void)
+{
+	if(InvStatus[1] & IV_DECREASE_1)	return(1);
+	else								return(0);
+}
+
+
+LocalType __attribute__((section(".usercode"))) BreakReleaseCheck(void)
+{
+	if(InvStatus[1] & IV_BK_RELEASE_1)		return(1);
+	else									return(0);
+}
 
 
 LocalType __attribute__((section(".usercode"))) DeltaInverterZeroHzSet(void)
@@ -964,6 +1045,38 @@ LocalType __attribute__((section(".usercode"))) DeltaInverterZeroHzSet(void)
 
 
 
+LocalType __attribute__((section(".usercode"))) DeltaInvertFloorResetting(void)
+{
+	if(!bUnd)	bUnd=DeltaInverterDecCheck();
+
+	if( (InvStatus[5] != sRamDArry[S0_FLOOR]) && (DeltaRdWrStatus==0)){
+		AddrWriteParameter(4,23,1,0,sRamDArry[S0_FLOOR]);  // current floor reset
+		bsInvCurNext=1;
+		DeltaRdWrStatus=6;
+	} 	
+	return(0);
+}
+
+
+
+LocalType __attribute__((section(".usercode"))) DeltaInverterReqStopFloor(void)
+{
+	if(InvStatus[3] > 0){
+		sRamDArry[mReqStopFloor] = (InvStatus[3] - 1); 
+		
+//		if( !DeltaInverterZeroHzSet()){
+			sRamDArry[mReqStopFloor] = (sRamDArry[mReqStopFloor] | CAR_READY);
+//		}
+	}
+	else{
+		sRamDArry[mReqStopFloor] = InvStatus[5]-1; 
+	}
+	return(0);
+}
+
+
+
+
 LocalType __attribute__((section(".usercode"))) DeltaInverterStopChk(void)
 {
 	unsigned int ret=0;
@@ -971,38 +1084,40 @@ LocalType __attribute__((section(".usercode"))) DeltaInverterStopChk(void)
 
 	ret=0;
 
+	InvFloor=InvStatus[5];
+	sRamDArry[mInvFloor] = (InvFloor-1);  		      
+
 	if( !bMoveCar){
 		if(InverterPDORxTime > 50){
 			bInvComErr=1;
-			bCarErr=1;
+			bsInvCurNext=0;
 		}
 		else{
 			bInvComErr=0;
-		}	
-	}
-
-	if(bAuto && !bManualStop && bManualAuto){
-		InvFloor=InvStatus[5];
-
-		if(bOnLuLd && !bMoveCar){
 			HostFloor=(sRamDArry[mcurfloor]+1);
-			if(InvFloor != HostFloor){
-				bsInvCurNext=1;
-				bCarErr=1;
+			if( (InvFloor != HostFloor) && (WarmingUpTime > 20) && !IN_AUTO ){
+				DeltaInvertFloorResetting();
 			}
 			else{
 				bsInvCurNext=0;
 			}
-		}
+		}	
+	}
+	else{
+		bInvComErr=0;
+		bsInvCurNext=0;
+	}
 
-		if(!IN_SU1 && bUpWard){
+
+	if(PerfectAuto()){ 					
+		if(!IN_SU1 && (bCarUpMove)){
 			HostFloor=(cF_TOPFLR+1);
 			if(InvFloor != HostFloor){
 				bStrongDec=1;
 			}
 		}
 
-		if(!IN_SD1 && bDnWard){
+		if(!IN_SD1 && (bCarDnMove)){
 			HostFloor=1;
 			if(InvFloor != HostFloor){
 				bStrongDec=1;
@@ -1014,7 +1129,6 @@ LocalType __attribute__((section(".usercode"))) DeltaInverterStopChk(void)
 	if(bStrongDec){
 		OUT_P3(1);
 		if(DeltaInverterZeroHzSet()){
-			bsInvCurNext=1;
 			bCarErr=1;
 		}
 	}	
@@ -1022,7 +1136,6 @@ LocalType __attribute__((section(".usercode"))) DeltaInverterStopChk(void)
 
 
 	if(!bMoveCar)	bStrongDec=0;	
-	if(IN_AUTO)		bsInvCurNext=0;	
 
 	return(ret);
 }
@@ -1046,19 +1159,19 @@ LocalType __attribute__((section(".usercode"))) DeltaInvDataSortForPDO(void)
 
 	DeltaInverterStopChk();
 
-	if(bAuto && !bManualStop && bManualAuto && !(InvStatus[1] & IV_FSD_1)){
-	    if((bUpWard || bDnWard) && (sRamDArry[mAckStopFloor] & UPDN_CAR_READY)){		
+	if( (PerfectAuto()) && !(InvStatus[1] & IV_FSD_1)){ 					
+	    if((bCarUpMove || bCarDnMove) && (sRamDArry[mAckStopFloor] & UPDN_CAR_READY)){		
 			PDO_TX_DataBuf[5]	=((sRamDArry[mAckStopFloor] & ONLY_FLR) + 1);
 		}
 
 		if(bMoveCar){
 			PDO_TX_DataBuf[0]	= 0x04;
-		    if(bUpWard){
+		    if(bCarUpMove){
 				if(PDO_TX_DataBuf[5] < InvStatus[3]){
 					PDO_TX_DataBuf[5] = InvStatus[3]; 										
 				}
 			}
-			else{
+			else{       
 				if(PDO_TX_DataBuf[5] > InvStatus[3]){
 					PDO_TX_DataBuf[5] = InvStatus[3]; 										
 				}
@@ -1105,6 +1218,149 @@ LocalType __attribute__((section(".usercode"))) DeltaInvDataSortForPDO(void)
 
 	return(0);
 }
+
+
+
+
+
+
+
+
+LocalType __attribute__((section(".usercode"))) DeltaAutoTunningRun(unsigned char addressH,unsigned char addressL)
+{    
+
+		switch(sRamDArry[AUTO_TUNING]){
+			case	AUTOTUN_SEQ_1:
+				AddrWriteParameter(addressH,addressL,1,0,(unsigned char)(AUTO_TUN_STOPPING));
+				sRamDArry[AUTO_TUNING]=AUTOTUN_SEQ_2;
+				break;
+			case	AUTOTUN_SEQ_2:
+				if(IV_AckRdWrTxBuf[REQ_DATA_SEQ]==0){
+					ReadParameter(addressH,addressL,1);
+					sRamDArry[AUTO_TUNING]=AUTOTUN_SEQ_3;
+				}		
+				else{
+					if(WaitAckTimeOutChk())	sRamDArry[AUTO_TUNING]=AUTOTUN_SEQ_1;	
+				}		
+				break;		
+			case	AUTOTUN_SEQ_3:
+				if(IV_AckRdWrTxBuf[REQ_DATA_SEQ]==0){
+					if(IV_AckRdWrTxBuf[DATA_0_L] == (unsigned char)(AUTO_TUN_STOPPING)){
+						sRamDArry[AUTO_TUNING]=AUTOTUN_SEQ_4;
+					}
+					else{
+						sRamDArry[AUTO_TUNING]=AUTOTUN_SEQ_1;
+					}
+				}		
+				else{
+					if(WaitAckTimeOutChk())	sRamDArry[AUTO_TUNING]=AUTOTUN_SEQ_1;	
+				}
+				break;		
+
+			case	AUTOTUN_SEQ_4:				
+				if(AutotunUpDn==1){		// up
+			    	OUT_U_W(1);
+				    OUT_D_W(0);
+			    	OUT_BK1(0);
+				}
+				else if(AutotunUpDn==2){
+			    	OUT_U_W(0);
+				    OUT_D_W(1);
+			    	OUT_BK1(0);
+				}
+				else{
+			    	OUT_U_W(0);
+				    OUT_D_W(0);
+			    	OUT_BK1(0);
+				}
+				if((InvStatus[0] & IV_WARNNING_0)){
+					sRamDArry[AUTO_TUNING]=AUTOTUN_SEQ_5;
+				}
+				break;
+			case	AUTOTUN_SEQ_5:
+				if( !(InvStatus[0] & IV_WARNNING_0)){
+				    OUT_U_W(0);
+				    OUT_D_W(0);
+				    OUT_BK1(0);
+					sRamDArry[AUTO_TUNING]=AUTOTUN_SEQ_6;
+				}
+				break;
+			case	AUTOTUN_SEQ_6:
+					sRamDArry[AUTO_TUNING]=AUTOTUN_SEQ_7;
+				break;
+//////////////////////////////////////////////////////////////////
+
+			case	AUTOTUN_SEQ_7:
+				AddrWriteParameter(addressH,addressL,1,0,(unsigned char)(AUTO_TUN_RUNNING));
+				sRamDArry[AUTO_TUNING]=AUTOTUN_SEQ_8;
+				break;
+			case	AUTOTUN_SEQ_8:
+				if(IV_AckRdWrTxBuf[REQ_DATA_SEQ]==0){
+					ReadParameter(addressH,addressL,1);
+					sRamDArry[AUTO_TUNING]=AUTOTUN_SEQ_9;
+				}		
+				else{
+					if(WaitAckTimeOutChk())	sRamDArry[AUTO_TUNING]=AUTOTUN_SEQ_7;	
+				}		
+				break;		
+			case	AUTOTUN_SEQ_9:
+				if(IV_AckRdWrTxBuf[REQ_DATA_SEQ]==0){
+					if(IV_AckRdWrTxBuf[DATA_0_L] == (unsigned char)(AUTO_TUN_RUNNING)){
+						sRamDArry[AUTO_TUNING]=AUTOTUN_SEQ_10;
+					}
+					else{
+						sRamDArry[AUTO_TUNING]=AUTOTUN_SEQ_7;
+					}
+				}		
+				else{
+					if(WaitAckTimeOutChk())	sRamDArry[AUTO_TUNING]=AUTOTUN_SEQ_7;	
+				}
+				break;		
+
+			case	AUTOTUN_SEQ_10:				
+				if(AutotunUpDn==1){		// up
+			    	OUT_U_W(1);
+				    OUT_D_W(0);
+			    	OUT_BK1(1);
+				}
+				else if(AutotunUpDn==2){
+			    	OUT_U_W(0);
+				    OUT_D_W(1);
+			    	OUT_BK1(1);
+				}
+				else{
+			    	OUT_U_W(0);
+				    OUT_D_W(0);
+			    	OUT_BK1(0);
+				}
+
+				if((InvStatus[0] & IV_WARNNING_0)){
+					sRamDArry[AUTO_TUNING]=AUTOTUN_SEQ_11;
+				}
+				break;
+			case	AUTOTUN_SEQ_11:
+				if( !(InvStatus[0] & IV_WARNNING_0)){
+				    OUT_U_W(0);
+				    OUT_D_W(0);
+				    OUT_BK1(0);
+					sRamDArry[AUTO_TUNING]=AUTOTUN_SEQ_12;
+				}
+				break;
+			case	AUTOTUN_SEQ_12:
+			    OUT_U_W(0);
+			    OUT_D_W(0);
+			    OUT_BK1(0);
+				break;
+			default:
+			    OUT_U_W(0);
+			    OUT_D_W(0);
+			    OUT_BK1(0);
+				sRamDArry[AUTO_TUNING]=AUTOTUN_SEQ_0;
+				break;
+		}
+
+	return(0);
+}	
 
 
 #endif

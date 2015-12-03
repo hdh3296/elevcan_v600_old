@@ -5,6 +5,7 @@
 #include  "you_can2.h" 
 
 
+void  __attribute__((section(".usercode"))) Delta_inverter_Par_DataSort(unsigned int this_data);
 
 void  __attribute__((section(".usercode"))) Pc_Command(void);
 
@@ -44,6 +45,8 @@ void  __attribute__((section(".usercode"))) Pc_Command(void);
 
 
 #define SECONDLINE_CURSOR           1
+
+#define FIRSTLINE_BASE           	2
 #define SECONDLINE_BASE             18
 
 
@@ -80,6 +83,7 @@ void  __attribute__((section(".usercode"))) Pc_Command(void);
 #define GROUP_29               		29		// 11
 #define GROUP_30               		30		// 12
 #define GROUP_31               		31		// 13
+#define GROUP_32               		32		// 14
 
 
 
@@ -122,7 +126,8 @@ void  __attribute__((section(".usercode"))) Pc_Command(void);
 #define DELTA_PAR_GROUP_11          30
 #define DELTA_PAR_GROUP_12          31
 #define DELTA_PAR_GROUP_13          32
-
+#define DELTA_PAR_GROUP_14          33
+#define DELTA_PAR_GROUP_END			34
 
 
 
@@ -182,10 +187,12 @@ void  __attribute__((section(".usercode"))) Pc_Command(void);
 #define OPEN_WAIT_GROUP_MAX         4
 #define NCNO1_GROUP_MAX             32
 #define NCNO2_GROUP_MAX             16
-#define NCNO3_GROUP_MAX             23
+//#define NCNO3_GROUP_MAX             23
+#define NCNO3_GROUP_MAX             SILK_EXT_Y0
 #define INPORT1_GROUP_MAX           32
 #define INPORT2_GROUP_MAX           16
-#define OUTPORT_GROUP_MAX           23
+#define OUTPORT_GROUP_MAX           SILK_EXT_Y0
+//#define OUTPORT_GROUP_MAX           23
 #define ERROR_GROUP_MAX             40
 #define EL_GROUP_MAX         		32
 
@@ -197,16 +204,19 @@ void  __attribute__((section(".usercode"))) Pc_Command(void);
 #define     USER_LAMP_MESSAGE_CNT   11
 
 
-#define     IO_PORT_MESSAGE_CNT     9
-#define     ELEV_BD_ID_MESSAGE_CNT  10
-#define     ELEV_ONOFF_MESSAGE_CNT  32
-#define     ENCODERRATE_MESSAGE_CNT 4
+#define     IO_PORT_MESSAGE_CNT     	9
+#define     ELEV_BD_ID_MESSAGE_CNT  	10
+#define     ELEV_ONOFF_MESSAGE_CNT  	32
+#define     ENCODERRATE_MESSAGE_CNT 	4
 
-#define     INPORT1_SEL_MESSAGE_CNT 32
-#define     INPORT2_SEL_MESSAGE_CNT 32
-#define     OUTPORT_SEL_MESSAGE_CNT 32
-#define     DOOR_SEL_MESSAGE_CNT 	4
-#define     SYSTEM_SET_MESSAGE_CNT  4
+#define     INPORT1_SEL_MESSAGE_CNT 	32
+#define     INPORT2_SEL_MESSAGE_CNT 	32
+#define     OUTPORT_SEL_MESSAGE_CNT 	(NO_USE_OUT+1)
+#define     DOOR_SEL_MESSAGE_CNT 		4
+#define     FINAL_ERR_DSP_MESSAGE_CNT   15
+#define     SYSTEM_SET_MESSAGE_CNT  	4
+#define     SENSOR_POSITION_MESSAGE_CNT 10
+
 
 
 #define     ELEV_SPEED_MESSAGE_CNT_SPD3  	5
@@ -289,14 +299,13 @@ void  __attribute__((section(".usercode"))) Pc_Command(void);
 #define     USER_LAMP3              22
 #define     USER_LAMP4              23
 #define     HALL_IND_SET            24
-#define     SLIP_INIT               25
+#define     User_G4                25
 #define     User_G5                 26
 #define     User_G6                 27
-#define     User_G7                 28
-#define     User_G8                 29
+#define     FINAL_ERR_DSP           28
+#define     SENSOR_POSITION         29
 #define     SYSTEM_SET              30
-#define     ENCODER_RATE            31
-
+#define     ENCODER_RATE          	31
   
 
 
@@ -397,7 +406,7 @@ unsigned int   DigitMinValue;
 unsigned int   OrgNcNo;
 
 
-
+/*
 const unsigned char ErrStatusMessage[][16]={
                                       "Inspection      ",      //000                               
                                       "Inverter        ",      //001                               
@@ -466,7 +475,7 @@ const unsigned char ErrStatusMessage[][16]={
                                       "Wait... Home !  ",      //064
                                       "Auto Ready      ",      //065
                                     };                                       
-
+*/
 
 
 const unsigned char BdName485[][4]={"000"," 01"," 02"," 03"," 04"," 05"," 06"," 07"," 08"," 09"," 10",
@@ -507,11 +516,11 @@ const unsigned char GroupLineMessage[][17]={
                                     "USER:UserLamp3  ",//23  
                                     "USER:UserLamp4  ",//24  
                                     "USER:C-K-H-O-B-R",//25  //cancle,openkey,halllantern,offset,button type,reserve
-                                    "USER:UCMP Clear ",//26 
+                                    "USER:User4      ",//26 
                                     "USER:User5      ",//27 
                                     "USER:User6      ",//28 
-                                    "USER:User7      ",//29 
-                                    "USER:User8      ",//30 
+                                    "USER:F-Error(00)",//29 
+                                    "USER:SenPosi(00)",//30 
                                     "USER:System Mode",//31  
                                     "USER: Stop Pulse",//32 
 ///////////////////////////////////////////////////////////                                    
@@ -908,6 +917,19 @@ const unsigned char GroupLineMessage[][17]={
                                     "NcNo3:P3        ",//21 
                                     "NcNo3:P4        ",//22 
                                     "NcNo3:DAC       ",//23 
+///////////////////////////////////////////newio insert
+                                    "NcNo3:SLOW_DOOR ",//24 
+                                    "NcNo3:VIRTUAL_Y1",//25 
+                                    "NcNo3:VIRTUAL_Y2",//26 
+                                    "NcNo3:VIRTUAL_Y3",//27 
+                                    "NcNo3:VIRTUAL_Y4",//28 
+                                    "NcNo3:VIRTUAL_Y5",//29 
+                                    "NcNo3:VIRTUAL_Y6",//30 
+                                    "NcNo3:VIRTUAL_Y7",//31 
+///////////////////////////////////////////newio insert
+
+
+/*
                                     "NcNo3:nc        ",//24
                                     "NcNo3:nc        ",//25 
                                     "NcNo3:nc        ",//26
@@ -915,8 +937,10 @@ const unsigned char GroupLineMessage[][17]={
                                     "NcNo3:nc        ",//28
                                     "NcNo3:nc        ",//29 
                                     "NcNo3:nc        ",//30
-                                    "NcNo3:nc        ",//31 
-                                    "NcNo3:nc        ",//32 
+                                    "NcNo3:nc        ",//31
+*/ 
+                                    "NcNo3:nc        ",//32
+ 
 ///////////////////////////////////////////////////////////                                                                                                           
                                     "INP1:EMG        ",//1  
                                     "INP1:PRK        ",//2  
@@ -1008,6 +1032,17 @@ const unsigned char GroupLineMessage[][17]={
                                     "OUTP:P3         ",//21 
                                     "OUTP:P4         ",//22 
                                     "OUTP:DAC        ",//23 
+///////////////////////////////////////////newio insert
+                                    "OUTP:SLOW_DOOR  ",//24
+                                    "OUTP:VIRTUAL_Y1 ",//25
+                                    "OUTP:VIRTUAL_Y2 ",//26
+                                    "OUTP:VIRTUAL_Y3 ",//27
+                                    "OUTP:VIRTUAL_Y4 ",//28
+                                    "OUTP:VIRTUAL_Y5 ",//29
+                                    "OUTP:VIRTUAL_Y6 ",//30
+                                    "OUTP:VIRTUAL_Y7 ",//31
+///////////////////////////////////////////newio insert
+/*
                                     "OUTP:nc         ",//24
                                     "OUTP:nc         ",//25 
                                     "OUTP:nc         ",//26
@@ -1015,8 +1050,10 @@ const unsigned char GroupLineMessage[][17]={
                                     "OUTP:nc         ",//28
                                     "OUTP:nc         ",//29 
                                     "OUTP:nc         ",//30
-                                    "OUTP:nc         ",//31 
-                                    "OUTP:nc         ",//32 
+                                    "OUTP:nc         ",//31
+*/ 
+                                    "OUTP:Not Use    ",//32 
+
 ///////////////////////////////////////////////////////////                                                                                                           
 ///////////////////////////////////////////////////////////                    
 ///////////////////////////////////////////////////////////                                                                                                   
@@ -1095,7 +1132,8 @@ const unsigned char DOOR_MAIN_SUB[]	={"DOOR-S:Floor01  "};
 #endif
 						
 			   
-const unsigned char FhmSuccessMsg[17]="  FHM Success   "; 
+const unsigned char FhmSuccessMsg[16]     ="  FHM Success   "; 
+const unsigned char AutoTun_SuccessMsg[16]="Tunning Success "; 
 
 //digitData == 1 
 const unsigned char ElevOnOffSetMessage[ELEV_ONOFF_MESSAGE_CNT][11]={   
@@ -1237,6 +1275,42 @@ const unsigned char SystemSetMessage[SYSTEM_SET_MESSAGE_CNT][13]={
                                 };
 
 
+const unsigned char SensorPositionMessage[SENSOR_POSITION_MESSAGE_CNT][16]={		
+                                    "29.ULS:0000-0000",  //0
+                                    "29.SUS:0000-0000",  //1
+                                    "29.SU1:0000-0000",  //2
+                                    "29.X0 :0000-0000",  //3
+                                    "29.DLS:0000-0000",  //3
+                                    "29.SDS:0000-0000",  //1
+                                    "29.SD1:0000-0000",  //2
+                                    "29.X1 :0000-0000",  //3
+                                    "29.nu :0000-0000",  //1
+                                    "29.nu :0000-0000",  //2
+                                };
+
+
+
+
+const unsigned char FinalErrMessage[FINAL_ERR_DSP_MESSAGE_CNT][16]={		
+                                    "28.00/00-00.    ",  //0
+                                    "28.No Error     ",  //1
+                                    "28.00/00        ",  //2
+                                    "28.Puls:00000000",  //3
+                                    "28.mpm :000.0   ",  //4
+                                    "28.D/T:0000/0000",  //5
+                                    "28.Up  :00000000",  //6
+                                    "28.Op  :00000000",  //7
+                                    "28.FAN :00000000",  //8
+                                    "28.Emg :00000000",  //9
+                                    "28.SUS :00000000",  //10
+                                    "28.RG  :00000000",  //11
+                                    "28.FR1 :00000000",  //12
+                                    "28.X0  :00000000",  //13
+                                    "28.FS0 :00000000",  //14
+                                };
+
+
+
 const unsigned char UserLampMessage[USER_LAMP_MESSAGE_CNT][11]={
                                       "AUTO       ",                                      
                                       "INSPECTION ",                                      
@@ -1272,10 +1346,23 @@ const unsigned char FhmMessage[][11]={
                                     };                                       
 
 
-const unsigned char AutoTunMessage[][12]={
-                                      "Tuning Stop ",                                      
-                                      "Tuning Start",                                       
+#ifdef	DELTA_INVERTER
+const unsigned char AutoTunMessage[][16]={
+                                      "Tuning Stop    ",                                      
+                                      "Tuning Up Start",                                       
+                                      "Tuning Dn Start",                                       
                                     };                                       
+
+
+#else
+const unsigned char AutoTunMessage[][16]={
+                                      "Tuning Stop    ",                                      
+                                      "Tuning Start   ",                                       
+                                    };                                       
+
+#endif
+
+
 
 
 const unsigned char PcbTypeMessage[2][11]={
@@ -1396,11 +1483,11 @@ const unsigned char InputPort1SelMessage[][11]={
                                       "EXT_X1     ",
                                       "EXT_X2     ",
                                       "EXT_X3     ",
+                                      "EXT_X4     ",
+                                      "EXT_X5     ",
+                                      "EXT_X6     ",
+                                      "EXT_X7     ",
                                       "Not Use    ",
-                                      "SILK_NC    ",
-                                      "SILK_NC    ",
-                                      "SILK_NC    ",
-                                      "SILK_NC    ",
                                       "SILK_NC    ",
                                       "SILK_NC    ",
                                       "SILK_NC    ",
@@ -1453,16 +1540,24 @@ const unsigned char OutputPortSelMessage[OUTPORT_SEL_MESSAGE_CNT][11]={
                                       "SILK_P2    ",
                                       "SILK_P3    ",
                                       "SILK_P4    ",
-                                      "SILK_DAC   ",
+                                      "SILK_DAC   ",	                                    
+									  "SLOW_DOOR  ",
+	                                  "VIRTUAL_Y1 ",
+	                                  "VIRTUAL_Y2 ",
+	                                  "VIRTUAL_Y3 ",
+	                                  "VIRTUAL_Y4 ",
+	                                  "VIRTUAL_Y5 ",
+	                                  "VIRTUAL_Y6 ",
+	                                  "VIRTUAL_Y7 ",
+                                      "EXT_Y0     ",
+                                      "EXT_Y1     ",
+                                      "EXT_Y2     ",
+                                      "EXT_Y3     ",
+                                      "EXT_Y4     ",
+                                      "EXT_Y5     ",
+                                      "EXT_Y6     ",
+                                      "EXT_Y7     ",
                                       "Not Use    ",
-                                      "SILK_NC    ",
-                                      "SILK_NC    ",
-                                      "SILK_NC    ",
-                                      "SILK_NC    ",
-                                      "SILK_NC    ",
-                                      "SILK_NC    ",
-                                      "SILK_NC    ",
-                                      "SILK_NC    ",
                                     };                                       
 
 
@@ -1476,12 +1571,13 @@ const unsigned char BdName[][8]={
                                  };
 
 
+/*
    
 const unsigned char SlipMessage[][11]={
 									  "UCMP Clear ",                                      
                                  };
 
-
+*/
 
 
 const unsigned char InputName[6][3]={
@@ -1538,158 +1634,120 @@ void    __attribute__((section(".usercode"))) VirtualMoveCntReDsp(void)
 }
 
 
-
-void    __attribute__((section(".usercode"))) ChunDsp(unsigned int i)
+unsigned int  __attribute__((section(".usercode"))) Deciml_Dsp(unsigned int total_dig,unsigned int dp)
 {
-    unsigned int chun,bek,sip,il;
-	
-	chun=i;
+    unsigned int i,j;
+    unsigned char tempbuf[10];
+		
+	if(dp == 0)			return(0);
+	if(dp >= total_dig)	return(0);
 
-    il=(chun%10);
+	for(i=0;i<total_dig;i++){
+		tempbuf[i]=New485Ladder[SECONDLINE_BASE+EditBlanck+i];                       
+	}
 
-    sip=(chun/10);
-    sip=(sip%10);
 
-    bek=(chun/100);
-    bek=(bek%10);
-
-    chun=chun/1000;
-    chun=(chun%10);
-
-	New485Ladder[SECONDLINE_BASE+0] = chun + '0';                     
-	New485Ladder[SECONDLINE_BASE+1] = bek  + '0';                       
-	New485Ladder[SECONDLINE_BASE+2] = sip  + '0';                      
-	New485Ladder[SECONDLINE_BASE+3] = '.';                             
-	New485Ladder[SECONDLINE_BASE+4] = il   + '0';
+	j=(total_dig-dp);
+	New485Ladder[SECONDLINE_BASE+EditBlanck+j]='.';            
+           
+	for(i=j;i<total_dig;i++){
+		New485Ladder[SECONDLINE_BASE+EditBlanck+i+1]=tempbuf[i];                       
+	}
+	return(0);
 }
 
 
-
-void    __attribute__((section(".usercode"))) ManDsp(unsigned int i)
+void    __attribute__((section(".usercode"))) Il_Dsp(unsigned int val,unsigned int dp)
 {
-	unsigned int value;
+    unsigned int il;
+		
+    il  =(val % 10);
+	New485Ladder[SECONDLINE_BASE+EditBlanck+0] = il   + '0';                      
+}
+
+
+void    __attribute__((section(".usercode"))) Sip_Dsp(unsigned int val,unsigned int dp)
+{
+    unsigned int sip,il;
+		
+    sip =(val / 10);
+    il  =(val % 10);
+
+	New485Ladder[SECONDLINE_BASE+EditBlanck+0] = sip  + '0';                       
+	New485Ladder[SECONDLINE_BASE+EditBlanck+1] = il   + '0';                      
+	Deciml_Dsp(2,dp);
+}
+
+
+void    __attribute__((section(".usercode"))) Bek_Dsp(unsigned int val,unsigned int dp)
+{
+    unsigned int bek,sip,il;
+		
+    bek =(val / 100);
+    val =(val % 100);
+    sip =(val / 10);
+    il  =(val % 10);
+
+	New485Ladder[SECONDLINE_BASE+EditBlanck+0] = bek  + '0';                     
+	New485Ladder[SECONDLINE_BASE+EditBlanck+1] = sip  + '0';                       
+	New485Ladder[SECONDLINE_BASE+EditBlanck+2] = il   + '0';                      
+
+	Deciml_Dsp(3,dp);
+}
+
+
+void    __attribute__((section(".usercode"))) Chun_Dsp(unsigned int val,unsigned int dp)
+{
+
+    unsigned int chun,bek,sip,il;
+		
+	chun=(val / 1000);
+    val =(val % 1000);
+
+    bek =(val / 100);
+    val =(val % 100);
+
+    sip =(val / 10);
+    il  =(val % 10);
+
+	New485Ladder[SECONDLINE_BASE+EditBlanck+0] = (unsigned)(chun + '0');                     
+	New485Ladder[SECONDLINE_BASE+EditBlanck+1] = (unsigned)(bek  + '0');                     
+	New485Ladder[SECONDLINE_BASE+EditBlanck+2] = (unsigned)(sip  + '0');                       
+	New485Ladder[SECONDLINE_BASE+EditBlanck+3] = (unsigned)(il   + '0');                      
+
+	Deciml_Dsp(4,dp);
+}
+
+
+void    __attribute__((section(".usercode"))) Man_Dsp(unsigned int val,unsigned int dp)
+{
+
     unsigned int man,chun,bek,sip,il;
 
-	value=i;
+	man =(val / 10000);
+    val =(val % 10000);		
+	chun=(val / 1000);
+    val =(val % 1000);
+    bek =(val / 100);
+    val =(val % 100);
+    sip =(val / 10);
+    il  =(val % 10);
 
+	New485Ladder[SECONDLINE_BASE+EditBlanck+0] = man + '0';                     
+	New485Ladder[SECONDLINE_BASE+EditBlanck+1] = chun + '0';                     
+	New485Ladder[SECONDLINE_BASE+EditBlanck+2] = bek  + '0';                     
+	New485Ladder[SECONDLINE_BASE+EditBlanck+3] = sip  + '0';                       
+	New485Ladder[SECONDLINE_BASE+EditBlanck+4] = il   + '0';                      
 
-	man=(value/10000);
-
-    value=(value % 10000);
-    chun =(value / 1000);
- 
-    value=(value % 1000);
-    bek  =(value / 100);
-
-    value=(value % 100);
-    sip  =(value / 10);
-
-    il   =(value % 10);
-
-
-    New485Ladder[SECONDLINE_BASE+EditBlanck+0]=(man  + '0');
-    New485Ladder[SECONDLINE_BASE+EditBlanck+1]=(chun + '0');
-    New485Ladder[SECONDLINE_BASE+EditBlanck+2]=(bek  + '0');
-    New485Ladder[SECONDLINE_BASE+EditBlanck+3]=(sip  + '0');          
-    New485Ladder[SECONDLINE_BASE+EditBlanck+4]=(il   + '0');          
-
-	
+	Deciml_Dsp(5,dp);
 }
 
 
-/*
-void    __attribute__((section(".usercode"))) ManDsp(unsigned int i)
-{
-	unsigned int value;
-
-    New485Ladder[SECONDLINE_BASE+EditBlanck+0]=(value/10000)    + '0';
-    value=value%10000;              
-    New485Ladder[SECONDLINE_BASE+EditBlanck+1]=(value/1000)     + '0';
-    value=value%1000;              
-    New485Ladder[SECONDLINE_BASE+EditBlanck+2]=(value/100)      + '0';
-    value=value%100;                        
-    New485Ladder[SECONDLINE_BASE+EditBlanck+3]=(value/10)       + '0';          
-    New485Ladder[SECONDLINE_BASE+EditBlanck+4]=(value%10)       + '0';          
-}
-*/
-
-
-	
-void    __attribute__((section(".usercode"))) RpmDsp485(void)
-{
-    unsigned int chun;
-    unsigned long tmpcalu;
-
-
-
-//    tmpcalu=(PulsePer100Msec * 8);
-//    tmpcalu=tmpcalu * 600 * 10;
-//    tmpcalu=(tmpcalu/(unsigned long)SET_ENCODER_PULSE);
-
-    tmpcalu=(PulsePer100Msec >> 2); // 4x
-    tmpcalu=tmpcalu * 600 * 10;
-    tmpcalu=(tmpcalu/(unsigned long)FlashDspCharBuf[ENCODER_PULSE].long_data);
-
-
-    chun=(unsigned int)tmpcalu;
-
-
-	ChunDsp(chun);
-
-/*
-    il=(chun%10);
-
-    sip=(chun/10);
-    sip=(sip%10);
-
-    bek=(chun/100);
-    bek=(bek%10);
-
-    chun=chun/1000;
-    chun=(chun%10);
-
-	New485Ladder[SECONDLINE_BASE+0] = chun + '0';                     
-	New485Ladder[SECONDLINE_BASE+1] = bek  + '0';                       
-	New485Ladder[SECONDLINE_BASE+2] = sip  + '0';                      
-	New485Ladder[SECONDLINE_BASE+3] = '.';                             
-	New485Ladder[SECONDLINE_BASE+4] = il   + '0';
-*/
-
-	New485Ladder[SECONDLINE_BASE+5] = ' ';
-	New485Ladder[SECONDLINE_BASE+6] = 'R';
-	New485Ladder[SECONDLINE_BASE+7] = 'p';
-	New485Ladder[SECONDLINE_BASE+8] = 'm';
-
-}
-
-
-
-void    __attribute__((section(".usercode"))) MpmDsp485(void)
-{
-    unsigned int chun;
-
-    chun=(unsigned int)CurMeterPerMin;
-	ChunDsp(chun);
-
-	New485Ladder[SECONDLINE_BASE+5] = ' ';
-	New485Ladder[SECONDLINE_BASE+6] = 'm';
-	New485Ladder[SECONDLINE_BASE+7] = 'p';
-	New485Ladder[SECONDLINE_BASE+8] = 'm';
-
-}
-
-
-void    __attribute__((section(".usercode"))) CurEncoderPulse(unsigned long vx)
+void    __attribute__((section(".usercode"))) Chunman_Dsp(unsigned long vx,unsigned int dp)
 {
     unsigned long value;
 	value=vx;
 	
-
-//    if(cF_NormalDsp==6)	    value=CurPulse;
-//    else    				value=DecreasePulse;
-
-
-
     New485Ladder[SECONDLINE_BASE+EditBlanck+0]=(value/10000000)  + '0';
     value=value%10000000;              
     New485Ladder[SECONDLINE_BASE+EditBlanck+1]=(value/1000000)   + '0';
@@ -1705,6 +1763,58 @@ void    __attribute__((section(".usercode"))) CurEncoderPulse(unsigned long vx)
     New485Ladder[SECONDLINE_BASE+EditBlanck+6]=(value/10)       + '0';          
     New485Ladder[SECONDLINE_BASE+EditBlanck+7]=(value%10)       + '0';          
 
+	Deciml_Dsp(7,dp);
+}
+
+
+
+
+
+	
+void    __attribute__((section(".usercode"))) RpmDsp485(void)
+{
+    unsigned int chun;
+    unsigned long tmpcalu;
+
+    tmpcalu=(PulsePer100Msec >> 2); // 4x
+    tmpcalu=tmpcalu * 600 * 10;
+    tmpcalu=(tmpcalu/(unsigned long)FlashDspCharBuf[ENCODER_PULSE].long_data);
+
+    chun=(unsigned int)tmpcalu;
+
+	Chun_Dsp(chun,1);
+
+	New485Ladder[SECONDLINE_BASE+EditBlanck+5] = ' ';
+	New485Ladder[SECONDLINE_BASE+EditBlanck+6] = 'R';
+	New485Ladder[SECONDLINE_BASE+EditBlanck+7] = 'p';
+	New485Ladder[SECONDLINE_BASE+EditBlanck+8] = 'm';
+
+}
+
+
+
+void    __attribute__((section(".usercode"))) MpmDsp485(unsigned int val)
+{
+    unsigned int chun;
+	
+	chun=val;
+	Chun_Dsp(chun,1);
+
+	New485Ladder[SECONDLINE_BASE+EditBlanck+5] = ' ';
+	New485Ladder[SECONDLINE_BASE+EditBlanck+6] = 'm';
+	New485Ladder[SECONDLINE_BASE+EditBlanck+7] = 'p';
+	New485Ladder[SECONDLINE_BASE+EditBlanck+8] = 'm';
+}
+
+
+
+
+
+void    __attribute__((section(".usercode"))) CurEncoderPulse(unsigned long vx)
+{
+
+	Chunman_Dsp(vx,0);
+
     New485Ladder[SECONDLINE_BASE+EditBlanck+8] ='p';          
     New485Ladder[SECONDLINE_BASE+EditBlanck+9] ='u';          
     New485Ladder[SECONDLINE_BASE+EditBlanck+10]='l';          
@@ -1715,24 +1825,6 @@ void    __attribute__((section(".usercode"))) CurEncoderPulse(unsigned long vx)
 
 
 
-/*
-void    __attribute__((section(".usercode"))) MoveCounterDsp(void)
-{
-    LocalType  value;
-
-    value=(eDArry[eMvCounter+1] << 8) & 0xff00;
-    value=((eDArry[eMvCounter]) & 0x00ff) | value;
-
-	ManDsp(value);
-
-
-    New485Ladder[SECONDLINE_BASE+EditBlanck+5] =' ';          
-    New485Ladder[SECONDLINE_BASE+EditBlanck+6] ='m';          
-    New485Ladder[SECONDLINE_BASE+EditBlanck+7] ='o';          
-    New485Ladder[SECONDLINE_BASE+EditBlanck+8] ='v';          
-    New485Ladder[SECONDLINE_BASE+EditBlanck+9] ='e';          
-}
-*/
 
 
 void    __attribute__((section(".usercode"))) MoveCounterDsp(void)
@@ -1771,18 +1863,7 @@ void    __attribute__((section(".usercode"))) ErrCounterDsp(void)
 
     value=eDArry[eErrCntPt];
 
-	ManDsp(value);
-
-/*
-    New485Ladder[SECONDLINE_BASE+EditBlanck+0]=(value/10000)    + '0';
-    value=value%10000;              
-    New485Ladder[SECONDLINE_BASE+EditBlanck+1]=(value/1000)     + '0';
-    value=value%1000;              
-    New485Ladder[SECONDLINE_BASE+EditBlanck+2]=(value/100)      + '0';
-    value=value%100;                        
-    New485Ladder[SECONDLINE_BASE+EditBlanck+3]=(value/10)       + '0';          
-    New485Ladder[SECONDLINE_BASE+EditBlanck+4]=(value%10)       + '0';          
-*/
+	Man_Dsp(value,0);
 
     New485Ladder[SECONDLINE_BASE+EditBlanck+5]  =' ';          
     New485Ladder[SECONDLINE_BASE+EditBlanck+6]  ='E';          
@@ -1988,114 +2069,76 @@ void    __attribute__((section(".usercode"))) CanComDsp(void)
 
 void    __attribute__((section(".usercode"))) SetBitData(LocalType  pt)
 {
-    if(pt & 0x01)  New485Ladder[SECONDLINE_BASE+EditBlanck+5] = '1';
-    else           New485Ladder[SECONDLINE_BASE+EditBlanck+5] = '0';
-    if(pt & 0x02)  New485Ladder[SECONDLINE_BASE+EditBlanck+6] = '1';
-    else           New485Ladder[SECONDLINE_BASE+EditBlanck+6] = '0';
-    if(pt & 0x04)  New485Ladder[SECONDLINE_BASE+EditBlanck+7] = '1';
-    else           New485Ladder[SECONDLINE_BASE+EditBlanck+7] = '0';
-    if(pt & 0x08)  New485Ladder[SECONDLINE_BASE+EditBlanck+8] = '1';
-    else           New485Ladder[SECONDLINE_BASE+EditBlanck+8] = '0';
-    if(pt & 0x10)  New485Ladder[SECONDLINE_BASE+EditBlanck+9] = '1';
-    else           New485Ladder[SECONDLINE_BASE+EditBlanck+9] = '0';
-    if(pt & 0x20)  New485Ladder[SECONDLINE_BASE+EditBlanck+10]= '1';
-    else           New485Ladder[SECONDLINE_BASE+EditBlanck+10]= '0';
-    if(pt & 0x40)  New485Ladder[SECONDLINE_BASE+EditBlanck+11]= '1';
-    else           New485Ladder[SECONDLINE_BASE+EditBlanck+11]= '0';
-    if(pt & 0x80)  New485Ladder[SECONDLINE_BASE+EditBlanck+12]= '1';
-    else           New485Ladder[SECONDLINE_BASE+EditBlanck+12]= '0';
+    if(pt & 0x01)  New485Ladder[SECONDLINE_BASE+EditBlanck+0] = '1';
+    else           New485Ladder[SECONDLINE_BASE+EditBlanck+0] = '0';
+    if(pt & 0x02)  New485Ladder[SECONDLINE_BASE+EditBlanck+1] = '2';
+    else           New485Ladder[SECONDLINE_BASE+EditBlanck+1] = '0';
+    if(pt & 0x04)  New485Ladder[SECONDLINE_BASE+EditBlanck+2] = '3';
+    else           New485Ladder[SECONDLINE_BASE+EditBlanck+2] = '0';
+    if(pt & 0x08)  New485Ladder[SECONDLINE_BASE+EditBlanck+3] = '4';
+    else           New485Ladder[SECONDLINE_BASE+EditBlanck+3] = '0';
+    if(pt & 0x10)  New485Ladder[SECONDLINE_BASE+EditBlanck+4] = '5';
+    else           New485Ladder[SECONDLINE_BASE+EditBlanck+4] = '0';
+    if(pt & 0x20)  New485Ladder[SECONDLINE_BASE+EditBlanck+5]= '6';
+    else           New485Ladder[SECONDLINE_BASE+EditBlanck+5]= '0';
+    if(pt & 0x40)  New485Ladder[SECONDLINE_BASE+EditBlanck+6]= '7';
+    else           New485Ladder[SECONDLINE_BASE+EditBlanck+6]= '0';
+    if(pt & 0x80)  New485Ladder[SECONDLINE_BASE+EditBlanck+7]= '8';
+    else           New485Ladder[SECONDLINE_BASE+EditBlanck+7]= '0';
 }
 
 
 void    __attribute__((section(".usercode"))) Input(LocalType  pt)
 {
-    LocalType  i;
+    LocalType  i,tmpedit;
 
     pt=pt-7;
 
 	for(i=0;i<3;i++)	New485Ladder[SECONDLINE_BASE+EditBlanck+i]=InputName[pt][i]; 
 
-/*
-    switch(pt){
-        case    0:
-            New485Ladder[SECONDLINE_BASE+EditBlanck+0]= 'E';
-            New485Ladder[SECONDLINE_BASE+EditBlanck+1]= 'M';
-            New485Ladder[SECONDLINE_BASE+EditBlanck+2]= 'G';
-            break;
-        case    1:
-            New485Ladder[SECONDLINE_BASE+EditBlanck+0]= 'S';
-            New485Ladder[SECONDLINE_BASE+EditBlanck+1]= 'U';
-            New485Ladder[SECONDLINE_BASE+EditBlanck+2]= '1';
-            break;
-        case    2:
-            New485Ladder[SECONDLINE_BASE+EditBlanck+0]= 'R';
-            New485Ladder[SECONDLINE_BASE+EditBlanck+1]= 'G';
-            New485Ladder[SECONDLINE_BASE+EditBlanck+2]= ' ';
-            break;
-        case    3:
-            New485Ladder[SECONDLINE_BASE+EditBlanck+0]= 'F';
-            New485Ladder[SECONDLINE_BASE+EditBlanck+1]= 'R';
-            New485Ladder[SECONDLINE_BASE+EditBlanck+2]= '1';
-            break;
-        case    4:
-            New485Ladder[SECONDLINE_BASE+EditBlanck+0]= 'X';
-            New485Ladder[SECONDLINE_BASE+EditBlanck+1]= '0';
-            New485Ladder[SECONDLINE_BASE+EditBlanck+2]= ' ';
-            break;
-        case    5:
-            New485Ladder[SECONDLINE_BASE+EditBlanck+0]= 'F';
-            New485Ladder[SECONDLINE_BASE+EditBlanck+1]= 'S';
-            New485Ladder[SECONDLINE_BASE+EditBlanck+2]= '0';
-            break;
-
-    }
-*/
 
     New485Ladder[SECONDLINE_BASE+EditBlanck+3]= ' ';
     New485Ladder[SECONDLINE_BASE+EditBlanck+4]= ' ';
 
+	tmpedit=EditBlanck;
+	EditBlanck=(EditBlanck+5);
 	switch(pt){
 		case	0:
-			SetBitData((LocalType)sRamDArry[I_EMG]);
+			i=(LocalType)sRamDArry[I_EMG];
+			i= ~i;
+			SetBitData(i);
 			break;
 		case	1:
-			SetBitData((LocalType)sRamDArry[I_SU1]);
+			i=(LocalType)sRamDArry[I_SU1];
+			i= ~i;
+			SetBitData(i);
 			break;
 		case	2:
-			SetBitData((LocalType)sRamDArry[I_GR]);
+			i=(LocalType)sRamDArry[I_GR];
+			i= ~i;
+			SetBitData(i);
 			break;
 		case	3:
-			SetBitData((LocalType)sRamDArry[I_FIRE]);
+			i=(LocalType)sRamDArry[I_FIRE];
+			i= ~i;
+			SetBitData(i);
 			break;
 		case	4:
-			SetBitData((LocalType)sRamDArry[I_X_0]);
+			i=(LocalType)sRamDArry[I_X_0];
+			i= ~i;
+			SetBitData(i);
 			break;
 		case	5:
-			SetBitData((LocalType)sRamDArry[I_FS0]);
+			i=(LocalType)sRamDArry[I_FS0];
+			i= ~i;
+			SetBitData(i);
 			break;
 	}
-														
-
-/*
-    if(sRamDArry[I_EMG+pt] & 0x01)  New485Ladder[SECONDLINE_BASE+EditBlanck+5]= '0';
-    else                            New485Ladder[SECONDLINE_BASE+EditBlanck+5]= '1';
-    if(sRamDArry[I_EMG+pt] & 0x02)  New485Ladder[SECONDLINE_BASE+EditBlanck+6]= '0';
-    else                            New485Ladder[SECONDLINE_BASE+EditBlanck+6]= '1';
-    if(sRamDArry[I_EMG+pt] & 0x04)  New485Ladder[SECONDLINE_BASE+EditBlanck+7]= '0';
-    else                            New485Ladder[SECONDLINE_BASE+EditBlanck+7]= '1';
-    if(sRamDArry[I_EMG+pt] & 0x08)  New485Ladder[SECONDLINE_BASE+EditBlanck+8]= '0';
-    else                            New485Ladder[SECONDLINE_BASE+EditBlanck+8]= '1';
-    if(sRamDArry[I_EMG+pt] & 0x10)  New485Ladder[SECONDLINE_BASE+EditBlanck+9]= '0';
-    else                            New485Ladder[SECONDLINE_BASE+EditBlanck+9]= '1';
-    if(sRamDArry[I_EMG+pt] & 0x20)  New485Ladder[SECONDLINE_BASE+EditBlanck+10]= '0';
-    else                            New485Ladder[SECONDLINE_BASE+EditBlanck+10]= '1';
-    if(sRamDArry[I_EMG+pt] & 0x40)  New485Ladder[SECONDLINE_BASE+EditBlanck+11]= '0';
-    else                            New485Ladder[SECONDLINE_BASE+EditBlanck+11]= '1';
-    if(sRamDArry[I_EMG+pt] & 0x80)  New485Ladder[SECONDLINE_BASE+EditBlanck+12]= '0';
-    else                            New485Ladder[SECONDLINE_BASE+EditBlanck+12]= '1';
-*/
-
+													
+	EditBlanck=tmpedit;
 }
+
+
 
 /*
 void    __attribute__((section(".usercode"))) VirtualCall(void)
@@ -2137,7 +2180,7 @@ void    __attribute__((section(".usercode"))) VirtualCall(void)
 
 void    __attribute__((section(".usercode"))) MemDsp(void)
 {
-    LocalType  value;
+    LocalType  value,tmpedit;
 
     New485Ladder[SECONDLINE_BASE+EditBlanck+0]= 'M';
     New485Ladder[SECONDLINE_BASE+EditBlanck+1]= ' ';
@@ -2152,27 +2195,13 @@ void    __attribute__((section(".usercode"))) MemDsp(void)
     New485Ladder[SECONDLINE_BASE+EditBlanck+2]=(value/10)       + '0';          
     New485Ladder[SECONDLINE_BASE+EditBlanck+3]=(value%10)       + '0';          
 
+	tmpedit=EditBlanck;
+	EditBlanck=(EditBlanck+5);
 
 	SetBitData((LocalType)sRamDArry[MemPointer]);
 
-/*
-    if(sRamDArry[MemPointer] & 0x01)  New485Ladder[SECONDLINE_BASE+EditBlanck+5] = '1';
-    else                              New485Ladder[SECONDLINE_BASE+EditBlanck+5] = '0';
-    if(sRamDArry[MemPointer] & 0x02)  New485Ladder[SECONDLINE_BASE+EditBlanck+6] = '1';
-    else                              New485Ladder[SECONDLINE_BASE+EditBlanck+6] = '0';
-    if(sRamDArry[MemPointer] & 0x04)  New485Ladder[SECONDLINE_BASE+EditBlanck+7] = '1';
-    else                              New485Ladder[SECONDLINE_BASE+EditBlanck+7] = '0';
-    if(sRamDArry[MemPointer] & 0x08)  New485Ladder[SECONDLINE_BASE+EditBlanck+8] = '1';
-    else                              New485Ladder[SECONDLINE_BASE+EditBlanck+8] = '0';
-    if(sRamDArry[MemPointer] & 0x10)  New485Ladder[SECONDLINE_BASE+EditBlanck+9] = '1';
-    else                              New485Ladder[SECONDLINE_BASE+EditBlanck+9] = '0';
-    if(sRamDArry[MemPointer] & 0x20)  New485Ladder[SECONDLINE_BASE+EditBlanck+10]= '1';
-    else                              New485Ladder[SECONDLINE_BASE+EditBlanck+10]= '0';
-    if(sRamDArry[MemPointer] & 0x40)  New485Ladder[SECONDLINE_BASE+EditBlanck+11]= '1';
-    else                              New485Ladder[SECONDLINE_BASE+EditBlanck+11]= '0';
-    if(sRamDArry[MemPointer] & 0x80)  New485Ladder[SECONDLINE_BASE+EditBlanck+12]= '1';
-    else                              New485Ladder[SECONDLINE_BASE+EditBlanck+12]= '0';
-*/
+	EditBlanck=tmpedit;
+
 }
 
 
@@ -2219,7 +2248,7 @@ void    __attribute__((section(".usercode"))) SpeedDsp(void)
         
 
    		if(New_Spd_SystemChk()){
-        	if(bAuto && !bManualStop && bManualAuto){ 
+			if(PerfectAuto()){
 	            New485Ladder[2+6] =chun + '0';
 	            New485Ladder[2+7] =bek  + '0';
 	            New485Ladder[2+8]=sip   + '0';
@@ -2292,6 +2321,121 @@ void    __attribute__((section(".usercode"))) SpeedDsp(void)
 
 
 
+unsigned int __attribute__((section(".usercode"))) TunningMessage(void)
+{
+	unsigned int i,j;
+
+	#ifdef	DELTA_INVERTER
+	if(sRamDArry[AUTO_TUNING] == AUTOTUN_SEQ_12){          
+           for(i=0;i<16;i++)	New485Ladder[SECONDLINE_BASE+i] =AutoTun_SuccessMsg[i];
+	}
+	else{
+        j=sRamDArry[mSysStatus];
+        for(i=0;i<16;i++)	New485Ladder[SECONDLINE_BASE+i] =StatusMessage[j][i];
+		New485Ladder[SECONDLINE_BASE+14]=(unsigned char)((sRamDArry[AUTO_TUNING]/10) + '0');
+		New485Ladder[SECONDLINE_BASE+15]=(unsigned char)((sRamDArry[AUTO_TUNING]%10) + '0');
+	}
+	#else
+    j=sRamDArry[mSysStatus];
+    for(i=0;i<16;i++)	New485Ladder[SECONDLINE_BASE+i] =StatusMessage[j][i];
+	#endif
+	           
+	return(0);
+}
+
+
+
+unsigned int __attribute__((section(".usercode"))) FHM_SuccessDisplay(void)
+{
+	unsigned int i;
+	for(i=0;i<16;i++){
+		New485Ladder[SECONDLINE_BASE+i] = FhmSuccessMsg[i];          
+	}
+	return(0);
+}
+
+unsigned int __attribute__((section(".usercode"))) BlinkDisplay(void)
+{	
+
+ 	if( (sRamDArry[mSysStatus]==sFhmError) && bFhmRun)								return(1);  // blink
+	else if(bAutoTunning)															return(0);  // no blink
+ 	else if(bFhmRun)																return(0);  // no blink
+	else if(sRamDArry[mSysStatus] <= sCLE_NO_ON)									return(0);  // no blink
+
+
+	if(!IN_AUTO){
+		if(sRamDArry[mSysStatus]==sREADY){
+			if(sRamDArry[mEV_LastErr] != 0xff)	return(1);	// blink
+			else								return(0);  // no blink
+		}	
+		else{
+			if((sRamDArry[mSysStatus]==sFireOn) || (sRamDArry[mSysStatus]==sWaterSense) || (sRamDArry[mSysStatus]==sVIP)){
+				if(S1_OVERLOAD1)		return(2);  // blink
+				else if(bSafety_scrSft)	return(3);  // blink
+				else					return(0);  // no blink
+			}
+		}
+	}
+	else{
+		return(0);  // no blink
+	}
+}
+
+
+
+unsigned int __attribute__((section(".usercode"))) Default_Cur_State_Display(void)
+{
+	unsigned int i,j;
+
+/*
+	if(bAutoTunning){
+		if(sRamDArry[AUTO_TUNING] == AUTOTUN_SEQ_12){          
+            for(i=0;i<16;i++)	New485Ladder[SECONDLINE_BASE+i] =AutoTun_SuccessMsg[i];
+		}
+		else{
+            j=sRamDArry[mSysStatus];
+            for(i=0;i<16;i++)	New485Ladder[SECONDLINE_BASE+i] =StatusMessage[j][i];
+			New485Ladder[SECONDLINE_BASE+14]=(unsigned char)((sRamDArry[AUTO_TUNING]/10) + '0');
+			New485Ladder[SECONDLINE_BASE+15]=(unsigned char)((sRamDArry[AUTO_TUNING]%10) + '0');
+		}	           
+	}
+	else{
+*/
+		i=BlinkDisplay();
+		if( i>0){
+			if(i==1){
+				if(!bDspSeq)	j=sRamDArry[mEV_LastErr];
+				else			j=sRamDArry[mSysStatus];
+			}
+			else if(i==2){
+				if(!bDspSeq)	j=sOVL;
+				else			j=sRamDArry[mSysStatus];				
+			}
+			else if(i==3){
+				if(!bDspSeq)	j=sSFT;
+				else			j=sRamDArry[mSysStatus];				
+			}
+			else				j=sRamDArry[mSysStatus];
+
+	        for(i=0;i<16;i++)	New485Ladder[SECONDLINE_BASE+i] =StatusMessage[j][i];          		
+		}
+		else{
+			if(bAutoTunning){
+				TunningMessage();
+			}
+			else if( bFhmRun && (sRamDArry[FHM_SEQ] == FHM_SEQ_5)){
+				FHM_SuccessDisplay();
+			}
+			else{
+	            j=sRamDArry[mSysStatus];
+	            for(i=0;i<16;i++)	New485Ladder[SECONDLINE_BASE+i] =StatusMessage[j][i];          
+			}
+		}
+//	}
+	return(0);
+}
+
+
 unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
 {
     LocalType  i,j,k;
@@ -2299,23 +2443,27 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
 
     k=cF_NormalDsp;
 
-    if(bCarErr || bCarStopNoRun)    k=0;
-    
+    if(bCarErr || bCarStopNoRun || bFhmRun)    k=0;
+
+	if(LadderGroup != 0)	k=0;    
+
+	EditBlanck=0;
+
+
+	if(BefDspMode != k){
+		BefDspMode = k;
+        for(i=0;i<16;i++){
+            New485Ladder[SECONDLINE_BASE+i] =' ';          
+        }
+	}
+	
+
     switch(k){
         case    0:
-            j=sRamDArry[mSysStatus];
-            for(i=0;i<16;i++){
-                New485Ladder[SECONDLINE_BASE+i] =StatusMessage[j][i];          
-            }
-
-			if( !FhmSuccessCheck()){
-				for(i=0;i<16;i++){
-					New485Ladder[SECONDLINE_BASE+i] = FhmSuccessMsg[i];          
-				}
-			}		
+			Default_Cur_State_Display();
             break;
         case    1:
-            MpmDsp485();
+            MpmDsp485((unsigned int)CurMeterPerMin);
             break;
         case    2:
             RpmDsp485();
@@ -2384,7 +2532,7 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
             break;
         case    15:
             ErrCounterDsp();
-            break;
+			break;
         case    16:
             CanComDsp();
             break;
@@ -2395,19 +2543,9 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
    			CurEncoderPulse(LType_Test_Value);
 			if(iType_Test_PlusMinus)	New485Ladder[SECONDLINE_BASE]= '+';
 			else						New485Ladder[SECONDLINE_BASE]= '-';
-
         	break;
         default:
-			j=sRamDArry[mSysStatus];
-			for(i=0;i<16;i++){
-				New485Ladder[SECONDLINE_BASE+i] =StatusMessage[j][i];          
-			}
-
-			if( !FhmSuccessCheck()){
-				for(i=0;i<16;i++){
-					New485Ladder[SECONDLINE_BASE+i] = FhmSuccessMsg[i];          
-				}
-			}		
+			Default_Cur_State_Display();
             break;
     }
 
@@ -2480,6 +2618,182 @@ void  __attribute__((section(".usercode"))) CalendarChk(void)
     }
 }
 
+
+
+
+unsigned int __attribute__((section(".usercode"))) SensorPositionDisplay(unsigned int pt)
+{
+    LocalType  i,val;
+
+	New485Ladder[FIRSTLINE_BASE+13]=(unsigned char)((pt/10) + '0');
+	New485Ladder[FIRSTLINE_BASE+14]=(unsigned char)((pt%10) + '0');
+
+	EditBlanck=7;
+
+	i=(pt * 2);
+	val=SensorPositionBuf[i];
+	if(val > 9999)	val = 9999;	
+	Chun_Dsp(val,0);
+
+	i++;
+	EditBlanck=(EditBlanck + 5);
+	val=SensorPositionBuf[i];
+	if(val > 9999)	val = 9999;	
+	Chun_Dsp(val,0);
+
+	EditBlanck=0;
+
+	return(0);		
+}
+
+
+
+unsigned int __attribute__((section(".usercode"))) FinalErrDisplay(unsigned int pt)
+{
+
+    LocalType  i,val;
+	
+	New485Ladder[FIRSTLINE_BASE+13]=(unsigned char)((pt/10) + '0');
+	New485Ladder[FIRSTLINE_BASE+14]=(unsigned char)((pt%10) + '0');
+
+	EditBlanck=8;
+
+    switch(pt){
+        case    0:
+			EditBlanck=3;
+
+			i= cF_FLRDSPCH((unsigned long)(F_E_StartFloor));
+			i=(i * 2);
+
+            New485Ladder[SECONDLINE_BASE+EditBlanck+0] = cF_FLRDSPCH((unsigned long)i);          
+            New485Ladder[SECONDLINE_BASE+EditBlanck+1] = cF_FLRDSPCH((unsigned long)(i+1));          
+
+
+			i= cF_FLRDSPCH((unsigned long)(F_E_DestFloor));
+			i=(i * 2);
+
+            New485Ladder[SECONDLINE_BASE+EditBlanck+3] = cF_FLRDSPCH((unsigned long)i);          
+            New485Ladder[SECONDLINE_BASE+EditBlanck+4] = cF_FLRDSPCH((unsigned long)(i+1));          
+
+
+			i= cF_FLRDSPCH((unsigned long)(F_E_CurFloor));
+			i=(i * 2);
+
+            New485Ladder[SECONDLINE_BASE+EditBlanck+6] = cF_FLRDSPCH((unsigned long)i);          
+            New485Ladder[SECONDLINE_BASE+EditBlanck+7] = cF_FLRDSPCH((unsigned long)(i+1));          
+
+
+			i= cF_FLRDSPCH((unsigned long)(F_E_ErrNum));
+            New485Ladder[SECONDLINE_BASE+EditBlanck+10] = 'E';          
+            New485Ladder[SECONDLINE_BASE+EditBlanck+11] = (unsigned char)((i/10) + '0');          
+            New485Ladder[SECONDLINE_BASE+EditBlanck+12] = (unsigned char)((i%10) + '0');          
+
+            break;
+        case    1:
+			EditBlanck=3;
+			val= cF_FLRDSPCH((unsigned long)(F_E_ErrNum));
+            for(i=0;i<13;i++){
+                New485Ladder[SECONDLINE_BASE+EditBlanck+i] =StatusMessage[val][i];          
+            }
+            break;
+        case    2:
+			EditBlanck=3;
+
+			i= cF_FLRDSPCH((unsigned long)(F_E_LuLdFloor));
+			i=(i * 2);
+
+            New485Ladder[SECONDLINE_BASE+EditBlanck+0] = cF_FLRDSPCH((unsigned long)i);          
+            New485Ladder[SECONDLINE_BASE+EditBlanck+1] = cF_FLRDSPCH((unsigned long)(i+1));          
+
+
+			i= cF_FLRDSPCH((unsigned long)(F_E_InvFloor));
+			i=(i * 2);
+
+            New485Ladder[SECONDLINE_BASE+EditBlanck+3] = cF_FLRDSPCH((unsigned long)i);          
+            New485Ladder[SECONDLINE_BASE+EditBlanck+4] = cF_FLRDSPCH((unsigned long)(i+1));          
+            break;
+        case    3:
+			Chunman_Dsp( GET_LONG_BYTE((unsigned long)(F_E_CurPulse0)),0 );
+            break;
+        case    4:
+			val=iF_FLRDSPCH((unsigned long)(F_E_Mpm0));
+			Chun_Dsp(val,1);
+            break;
+        case    5:			
+			EditBlanck=7;
+
+			i= cF_FLRDSPCH((unsigned long)(F_E_CurMonth));
+			i=(i & 0x00ff);
+            New485Ladder[SECONDLINE_BASE+EditBlanck+0] = (unsigned char)((i >> 4)      + '0');          
+            New485Ladder[SECONDLINE_BASE+EditBlanck+1] = (unsigned char)((i &  0x0f)   + '0');          
+
+
+			i= cF_FLRDSPCH((unsigned long)(F_E_CurDay));
+			i=(i & 0x00ff);
+            New485Ladder[SECONDLINE_BASE+EditBlanck+2] = (unsigned char)((i >> 4)      + '0');         
+            New485Ladder[SECONDLINE_BASE+EditBlanck+3] = (unsigned char)((i &  0x0f)   + '0');          
+
+            New485Ladder[SECONDLINE_BASE+EditBlanck+4] = '/';
+
+          
+			i= cF_FLRDSPCH((unsigned long)(F_E_CurHour));
+			i=(i & 0x00ff);
+            New485Ladder[SECONDLINE_BASE+EditBlanck+5] = (unsigned char)((i >> 4)      + '0');          
+            New485Ladder[SECONDLINE_BASE+EditBlanck+6] = (unsigned char)((i &  0x0f)   + '0');          
+
+			i= cF_FLRDSPCH((unsigned long)(F_E_CurMin));
+			i=(i & 0x00ff);
+            New485Ladder[SECONDLINE_BASE+EditBlanck+7] = (unsigned char)((i >> 4)      + '0');          
+            New485Ladder[SECONDLINE_BASE+EditBlanck+8] = (unsigned char)((i &  0x0f)   + '0');          
+
+            break;
+
+        case    6:
+			SetBitData((LocalType)(cF_FLRDSPCH((unsigned long)(F_E_OUT_UP))) );
+			break;
+        case    7:			// 
+			SetBitData((LocalType)(cF_FLRDSPCH((unsigned long)(F_E_OUT_OP))) );
+			break;
+        case    8:
+			SetBitData((LocalType)(cF_FLRDSPCH((unsigned long)(F_E_OUT_FAN))) );
+			break;	
+        case    9:
+			i=(LocalType)(cF_FLRDSPCH((unsigned long)(F_E_IN_EMG)));
+			i= ~i;
+			SetBitData((LocalType)(i));
+			break;	
+        case    10:
+			i=(LocalType)(cF_FLRDSPCH((unsigned long)(F_E_IN_SUS)));
+			i= ~i;
+			SetBitData((LocalType)(i));
+			break;	
+        case    11:
+			i=(LocalType)(cF_FLRDSPCH((unsigned long)(F_E_IN_RG)));
+			i= ~i;
+			SetBitData((LocalType)(i));
+			break;	
+        case    12:
+			i=(LocalType)(cF_FLRDSPCH((unsigned long)(F_E_IN_FR1)));
+			i= ~i;
+			SetBitData((LocalType)(i));
+			break;	
+        case    13:
+			i=(LocalType)(cF_FLRDSPCH((unsigned long)(F_E_IN_X0)));
+			i= ~i;
+			SetBitData((LocalType)(i));
+			break;	
+        case    14:
+			i=(LocalType)(cF_FLRDSPCH((unsigned long)(F_E_IN_FS0)));
+			i= ~i;
+			SetBitData((LocalType)(i));
+            break;
+
+	}
+
+	EditBlanck=0;
+
+	return(0);		
+}
 
 
 
@@ -2715,6 +3029,9 @@ void  __attribute__((section(".usercode"))) GroupSelect(void)
 	        case    GROUP_30:
 				LadderGroup=DELTA_PAR_GROUP_13;
 				break;
+	        case    GROUP_31:
+				LadderGroup=DELTA_PAR_GROUP_14;
+				break;
 #endif
 
 			default:
@@ -2817,6 +3134,9 @@ void  __attribute__((section(".usercode"))) GroupSelect(void)
 				break;
 	        case    GROUP_31:
 				LadderGroup=DELTA_PAR_GROUP_13;
+				break;
+	        case    GROUP_32:
+				LadderGroup=DELTA_PAR_GROUP_14;
 				break;
 #endif
 
@@ -2940,6 +3260,9 @@ void  __attribute__((section(".usercode"))) NewMenuStart(void)
         case    DELTA_PAR_GROUP_13:
             MaxSubMenu=EL_GROUP_MAX;
 			break;
+        case    DELTA_PAR_GROUP_14:
+            MaxSubMenu=EL_GROUP_MAX;
+			break;
 #endif
 
 
@@ -2951,7 +3274,7 @@ void  __attribute__((section(".usercode"))) NewMenuStart(void)
 
 void  __attribute__((section(".usercode"))) DigitStringMessage(void)
 {
-    LocalType i;
+    LocalType i,value;
 
     switch(LadderGroup){
 /*
@@ -3162,12 +3485,28 @@ void  __attribute__((section(".usercode"))) DigitStringMessage(void)
 	                    New485Ladder[SECONDLINE_BASE+EditBlanck+i]=SystemSetMessage[DigitData][i];
 	                }
 					break;
-				case	SLIP_INIT:
-	                for(i=0;i<11;i++){
-	                    New485Ladder[SECONDLINE_BASE+EditBlanck+i]=SlipMessage[0][i];
+				case	SENSOR_POSITION:
+	                for(i=0;i<16;i++){
+	                    New485Ladder[SECONDLINE_BASE+i]=SensorPositionMessage[DigitData][i];
 	                }
+
+	                New485Ladder[SECONDLINE_BASE+0]= (unsigned char)((SENSOR_POSITION/10) + '0');
+	                New485Ladder[SECONDLINE_BASE+1]= (unsigned char)((SENSOR_POSITION%10) + '0');
+
+					SensorPositionDisplay(DigitData);
 					break;
-			}
+				case	FINAL_ERR_DSP:
+	                for(i=0;i<16;i++){
+	                    New485Ladder[SECONDLINE_BASE+i]=FinalErrMessage[DigitData][i];
+	                }
+	                New485Ladder[SECONDLINE_BASE+0]= (unsigned char)((FINAL_ERR_DSP/10) + '0');
+	                New485Ladder[SECONDLINE_BASE+1]= (unsigned char)((FINAL_ERR_DSP%10) + '0');
+					
+					i= cF_FLRDSPCH((unsigned long)(F_E_ErrNum));
+					if(i >0)	FinalErrDisplay(DigitData);
+				
+					break;
+ 			}
             break;
         case    INPORT1_GROUP:
             for(i=0;i<11;i++){
@@ -3298,6 +3637,12 @@ void  __attribute__((section(".usercode"))) Integer_Digit(void)
         New485Ladder[SECONDLINE_BASE+EditBlanck+3]=(value/10)       + '0';          
         New485Ladder[SECONDLINE_BASE+EditBlanck+4]=(value%10)       + '0';          
     }
+
+	#ifdef	DELTA_INVERTER
+	if( (LadderGroup >= DELTA_PAR_GROUP_00) && (LadderGroup < DELTA_PAR_GROUP_END)){
+		Delta_inverter_Par_DataSort(value);					
+	}
+	#endif
 
     DigitStringMessage();
 
@@ -3954,7 +4299,12 @@ void  __attribute__((section(".usercode"))) InNcNoGroupSave(void)
 
 void  __attribute__((section(".usercode"))) OutNcNoGroupSave(void)
 {
-    LocalType i,j;
+    LocalType i,j,selID,real_val;
+
+
+	selID=CurSelPortIDRead(LadderGroupSub);
+	real_val=CurSelOutPortChk(selID);
+
 
     i=(LadderGroupSub + GroupBaseAddr);
 
@@ -3968,7 +4318,11 @@ void  __attribute__((section(".usercode"))) OutNcNoGroupSave(void)
     }
     flash_write_DspChar(F_BLOCK5);
 
+
+	selID=CurSelPortIDRead(LadderGroupSub);
+	CurSelOutPort(selID,real_val);
 }
+
 
 
 void  __attribute__((section(".usercode"))) IoGroup(void)
@@ -4474,9 +4828,8 @@ void  __attribute__((section(".usercode"))) UserGroup(void)
             EditStatus=DIGIT_STRING_EDIT;
             DigitMaxValue=2;
             DigitMinValue=0;
-            if(sRamDArry[FHM_RUN] == FHM_RUN_CMD)   DigitData=1;
-            else                                    DigitData=0;
 
+			DigitData=0;
             Integer_Digit();
             break;
         case    LG_INV_IN_BD:
@@ -4546,7 +4899,6 @@ void  __attribute__((section(".usercode"))) UserGroup(void)
             New485Ladder[SECONDLINE_BASE+EditBlanck+6] ='-';          
             New485Ladder[SECONDLINE_BASE+EditBlanck+7] =(sRamDArry[mVFlr2] / 10)	+ '0';          
             New485Ladder[SECONDLINE_BASE+EditBlanck+8] =(sRamDArry[mVFlr2] % 10)    + '0';         
- 
             break;
 
         case    HALL_IND_SET:
@@ -4567,20 +4919,29 @@ void  __attribute__((section(".usercode"))) UserGroup(void)
             New485Ladder[SECONDLINE_BASE+EditBlanck+9]  ='-';          
             New485Ladder[SECONDLINE_BASE+EditBlanck+10] =HibSet[5] + '0';
             break;
-		case    SLIP_INIT:
-            Cursor=0;
-            ShiftCnt=0;
-            EditBlanck=5;
-            EditStatus=DIGIT_STRING_EDIT;
-            DigitMaxValue=2;
-            DigitMinValue=0;
-			DigitData=0;
-            Integer_Digit();
-			break;
+		case    User_G4:
 		case    User_G5:
 		case    User_G6:
-		case    User_G7:
-		case    User_G8:
+				break;
+		case    FINAL_ERR_DSP:			
+            Cursor=0;
+            ShiftCnt=0;
+            EditBlanck=0;
+            EditStatus=DIGIT_STRING_EDIT;
+            DigitMaxValue=FINAL_ERR_DSP_MESSAGE_CNT;
+            DigitMinValue=0;
+            DigitData=0;
+            Integer_Digit();
+			break;
+		case    SENSOR_POSITION:
+            Cursor=0;
+            ShiftCnt=0;
+            EditBlanck=0;
+            EditStatus=DIGIT_STRING_EDIT;
+            DigitMaxValue=SENSOR_POSITION_MESSAGE_CNT;
+            DigitMinValue=0;
+            DigitData=0;
+            Integer_Digit();
 			break;
 		case    ENCODER_RATE: 
             Cursor=0;
@@ -5069,13 +5430,11 @@ void  __attribute__((section(".usercode"))) UserGroupSave(void)
 			ShadowsRamDArry[FLR_ON_OFF7]=cF_NONSERVICE7;
             break;
         case    FHM_RUN_CHK:
-            if((sRamDArry[FHM_RUN] != FHM_RUN_CMD) && (DigitData==1)){
-                sRamDArry[FHM_RUN] = FHM_RUN_CMD;
-                LadderKey=0xff;
-            }
-            else{
-                sRamDArry[FHM_RUN] = 0;
-            }
+            if(DigitData==1){
+				sRamDArry[FHM_SEQ]=FHM_SEQ_0;
+				LadderKey = 0xff;
+			}
+			else		sRamDArry[FHM_SEQ]=FHM_SEQ_8;
 
             LadderGroup=0;
             LadderGroupSub=0;
@@ -5150,16 +5509,6 @@ void  __attribute__((section(".usercode"))) UserGroupSave(void)
 				if(HibSet[5] > 9)	HibSet[5]=0;
 				bHibSet=1;
 			}	
-			break;
-		case    SLIP_INIT:
-		    bsSlip=0;	
-		    bsLope=0;	
-			bBefbsSlip=0;
-			bBefbsLope=0;
-        	bCarStopNoRun=0;
-			NotRecoveryData=(NotRecoveryData & ~0x03);
-			bSaveFlash=1;
-			bSlipCheckStart=0;
 			break;
         default:
             break;
@@ -5349,7 +5698,7 @@ void  __attribute__((section(".usercode"))) ELGroup(void)
 	    	EditBlanck=5;
 	        EditStatus=DIGIT_STRING_EDIT;   
 	    	DigitMinValue=0;
-			DigitMaxValue=ELEV_SPEED_MESSAGE_CNT;
+			DigitMaxValue=ELEV_SPEED_MESSAGE_CNT_SPD3;
 	        DigitData=cF_FLRDSPCH((unsigned long)F_Su2Sd2_Velocity);
 	        Integer_Digit();
             break;
@@ -5359,7 +5708,7 @@ void  __attribute__((section(".usercode"))) ELGroup(void)
 	    	EditBlanck=5;
 	        EditStatus=DIGIT_STRING_EDIT;   
 	    	DigitMinValue=0;
-			DigitMaxValue=ELEV_SPEED_MESSAGE_CNT;
+			DigitMaxValue=ELEV_SPEED_MESSAGE_CNT_SPD3;
 	        DigitData=cF_FLRDSPCH((unsigned long)F_X0X1_Velocity);
 	        Integer_Digit();
             break;
@@ -5389,15 +5738,20 @@ void  __attribute__((section(".usercode"))) ELGroup(void)
 /////////////bit type data////////////////////
 ///////////////////////////////////////////////
         case    SUBNM_AUTO_TUN:
+			#ifdef	DELTA_INVERTER
+            	DigitMaxValue=3;
+			#else
+            	DigitMaxValue=2;
+			#endif
+
             Cursor=0;
             ShiftCnt=0;
             EditBlanck=3;
             EditStatus=DIGIT_STRING_EDIT;
-            DigitMaxValue=2;
             DigitMinValue=0;			
 			DigitData=0;
-            if(sRamDArry[AUTO_TUNING] == AUTO_TUN_RUN_CMD)   	DigitData=1;
-            else                                    			DigitData=0;
+			AutotunUpDn=0;
+			sRamDArry[AUTO_TUNING]=AUTOTUN_SEQ_0;
             Integer_Digit();
 			break;
         case    SUBNM_FHM:
@@ -5407,8 +5761,7 @@ void  __attribute__((section(".usercode"))) ELGroup(void)
             EditStatus=DIGIT_STRING_EDIT;
             DigitMaxValue=2;
             DigitMinValue=0;
-            if(sRamDArry[FHM_RUN] == FHM_RUN_CMD)   DigitData=1;
-            else                                    DigitData=0;
+			DigitData=0;	
             Integer_Digit();
 			break;		
 ///////////////////////////////////////////////
@@ -5562,26 +5915,25 @@ void  __attribute__((section(".usercode"))) ELGroupSave(void)
 
 ////////////////////////////////
         case    SUBNM_AUTO_TUN:
-            if((sRamDArry[AUTO_TUNING] != AUTO_TUN_RUN_CMD) && (DigitData==1)){
-                sRamDArry[AUTO_TUNING] = AUTO_TUN_RUN_CMD;
+            if((sRamDArry[AUTO_TUNING] == AUTOTUN_SEQ_0) && (DigitData > 0)){
+                sRamDArry[AUTO_TUNING] = AUTOTUN_SEQ_1;
+				AutotunUpDn=DigitData;
                 LadderKey=0xff;
             }
             else{
-                sRamDArry[AUTO_TUNING] = 0;
+				sRamDArry[AUTO_TUNING] = AUTOTUN_SEQ_0;
+				AutotunUpDn=0;
             }
 
             LadderGroup=0;
             LadderGroupSub=0;
             break;
         case    SUBNM_FHM:
-            if((sRamDArry[FHM_RUN] != FHM_RUN_CMD) && (DigitData==1)){
-                sRamDArry[FHM_RUN] = FHM_RUN_CMD;
-                LadderKey=0xff;
-            }
-            else{
-                sRamDArry[FHM_RUN] = 0;
-            }
-
+            if(DigitData==1){
+				sRamDArry[FHM_SEQ]=FHM_SEQ_0;
+				LadderKey = 0xff;
+			}
+			else				sRamDArry[FHM_SEQ]=FHM_SEQ_8;
             LadderGroup=0;
             LadderGroupSub=0;
             break;
@@ -5718,6 +6070,26 @@ void  __attribute__((section(".usercode"))) InportSave(void)
 }
 
 
+/*
+unsigned int  __attribute__((section(".usercode"))) SpecialOutPortSelReload(unsigned int updn)
+{    
+	return(0);
+
+	if( LadderGroup != OUTPORT_GROUP)	return(0);
+ 	if(LadderGroupSub >= SILK_SLOW_DOOR)	return(0);
+	if(DigitData >= NO_USE_OUT)			return(0);
+
+	if(DigitData >= SILK_SLOW_DOOR){
+		if(updn==1){					// up
+			DigitData=NO_USE_OUT;	
+		}
+		else{
+			DigitData=(SILK_SLOW_DOOR-1);	
+		}	
+	}
+	return(0);
+}
+*/
 
 
 void  __attribute__((section(".usercode"))) OutportGroup(void)
@@ -5730,9 +6102,8 @@ void  __attribute__((section(".usercode"))) OutportGroup(void)
     ShiftCnt=2;
     EditBlanck=4;
     EditStatus=DIGIT_STRING_EDIT;
-
-    DigitMaxValue=24;
     DigitMinValue=0;
+    DigitMaxValue= (NO_USE_OUT+1);
 
     DigitData=cF_FLRDSPCH((unsigned long)i);
 
@@ -5745,6 +6116,7 @@ void  __attribute__((section(".usercode"))) OutportGroup(void)
 
 
 
+
 void  __attribute__((section(".usercode"))) OutportSave(void)
 {
     LocalType i,j,k,ChangeDisable;
@@ -5753,10 +6125,14 @@ void  __attribute__((section(".usercode"))) OutportSave(void)
     GetFlashDataToBufRam(F_BLOCK5);
     
     ChangeDisable=0;
-    for(k=0;k < (DigitMaxValue-1);k++){
+
+
+    for(k=0;k < SILK_EXT_Y0;k++){
         j=b_LdTmpBufRam(k); //
         j=(j & 0x7f);       //
-        if(j == DigitData)  ChangeDisable=1;
+        if(j == DigitData){
+  			ChangeDisable=1;
+		}
     }
     
     if((ChangeDisable==0) || (DigitData == NO_USE_OUT) ){
@@ -5766,6 +6142,8 @@ void  __attribute__((section(".usercode"))) OutportSave(void)
         b_LdTmpBufRam(i)=(LocalType)(DigitData);
         flash_write_DspChar(F_BLOCK5);
     }
+
+
 }
 
 
@@ -5801,10 +6179,12 @@ void  __attribute__((section(".usercode"))) Delta_inverter_Par_Group(void)
 }
 
 
+/*
+
 void  __attribute__((section(".usercode"))) Delta_inverter_Par_DataSet(unsigned int val,unsigned int dp)
 {
 
-	ManDsp(val);
+	Man_Dsp(val,0);
 
 	if(dp==1){
     	New485Ladder[SECONDLINE_BASE+EditBlanck+5]=New485Ladder[SECONDLINE_BASE+EditBlanck+4];          
@@ -5821,8 +6201,9 @@ void  __attribute__((section(".usercode"))) Delta_inverter_Par_DataSet(unsigned 
     	New485Ladder[SECONDLINE_BASE+EditBlanck+3]=New485Ladder[SECONDLINE_BASE+EditBlanck+2];          
     	New485Ladder[SECONDLINE_BASE+EditBlanck+2]='.';          
 	}
-
+	Cursor=0;
 }
+*/
 
 
 void  __attribute__((section(".usercode"))) Delta_inverter_Par_GroupSave(void)
@@ -5830,10 +6211,12 @@ void  __attribute__((section(".usercode"))) Delta_inverter_Par_GroupSave(void)
 	unsigned int val;
 
 	val=(DigitData >> 8);
-	EqualAddrWriteParameter(1, (unsigned char)(val),(unsigned char)(DigitData));
+	AddrWriteParameter((unsigned char)(LadderGroup-DELTA_PAR_GROUP_00),(unsigned char)LadderGroupSub,1,(unsigned char)(val),(unsigned char)(DigitData));
 	DeltaRdWrStatus=6;
 
-EnterKey=1;
+
+////////	AddrWriteParameter((unsigned char)(LadderGroup-DELTA_PAR_GROUP_00),(unsigned char)LadderGroupSub,1,(unsigned char)(val),(unsigned char)(DigitData));
+
 
 /*
     LocalType i,j;
@@ -5854,56 +6237,50 @@ EnterKey=1;
 }
 
 
-void  __attribute__((section(".usercode"))) Delta_inverter_Par_DataSort(unsigned char *attribute,unsigned char *rd_data)
+void  __attribute__((section(".usercode"))) Delta_inverter_Par_DataSort(unsigned int this_data)
 {
-	unsigned int val,dp;
+	unsigned int dp;
 	
-	val=(unsigned int)( (*(rd_data+5)) << 8);
-	val=(val | (unsigned int)(*(rd_data+6)));
-	DigitData=val;
-
-	if( *(attribute+0)      == 0x01)	dp=1;
-	else if( *(attribute+0) == 0x02)	dp=2;
-	else if( *(attribute+0) == 0x03)	dp=3;
-	else								dp=0;
-
-	if( *(attribute+1)      == 0x08)	EditStatus=DIGIT_ALPHAR_EDIT;	
+	dp=IV_This_Attrv;	
+	dp=(dp & 0x0300);
+	if( 	 dp == 0x0100)	dp=1;
+	else if( dp == 0x0200)	dp=2;
+	else if( dp == 0x0300)	dp=3;
+	else					dp=0;
 
 
-	val=(unsigned int)( (*(attribute+2)) << 8);
-	val=(val | (unsigned int)(*(attribute+3)));
-	DigitMinValue=val;
+//	if( IV_This_Attrv  & 0x0100)	
+	EditStatus=DIGIT_EDIT;	
 
-	val=(unsigned int)( (*(attribute+4)) << 8);
-	val=(val | (unsigned int)(*(attribute+5)));
-	DigitMaxValue=val;
+	DigitMinValue=IV_This_Min;
+	DigitMaxValue=IV_This_Max;
+	DigitData=this_data;
 
-
-	if(DigitMaxValue < 10){
-	    Cursor=0;
-	    ShiftCnt=5;
+	if( (DigitMaxValue < 10) && (dp==0)){
+	    ShiftCnt=1;
+		Il_Dsp(DigitData,dp);
 	}
-	else if(DigitMaxValue < 100){
-	    Cursor=0;
-	    ShiftCnt=5;
+	else if( (DigitMaxValue < 100) && (dp < 2)){
+	    ShiftCnt=2;
+		if(dp > 0 )	ShiftCnt++;
+
+		Sip_Dsp(DigitData,dp);
+	}
+	else if( (DigitMaxValue < 1000) && (dp < 3)){
+	    ShiftCnt=3;
+		if(dp > 0 )	ShiftCnt++;
+		Bek_Dsp(DigitData,dp);
+	}
+	else if(DigitMaxValue < 10000){
+	    ShiftCnt=4;
+		if(dp > 0 )	ShiftCnt++;
+		Chun_Dsp(DigitData,dp);
 	}
 	else{
-	    Cursor=0;
 	    ShiftCnt=5;
+		if(dp > 0 )	ShiftCnt++;
+		Man_Dsp(DigitData,dp);
 	}
-
-	Delta_inverter_Par_DataSet(DigitData,dp);
-
-
-/*
-	val=(IV_AckRdWrTxBuf[5] << 8);
-	val=(val | (unsigned int)(IV_AckRdWrTxBuf[6]));
-				
-	if(ThisAttribute[0] == 0x01)		dp=1;
-	else if(ThisAttribute[0] == 0x02)	dp=2;
-	else if(ThisAttribute[0] == 0x03)	dp=3;
-	else								dp=0;
-*/
 }
 
 
@@ -5954,7 +6331,8 @@ void  __attribute__((section(".usercode"))) ErrorGroup(LocalType offset)
     
         j=eDArry[eSysErCnt + 3 + offset];
         for(i=0;i<13;i++){
-            New485Ladder[SECONDLINE_BASE+i+4] =ErrStatusMessage[j][i];          //error status
+            New485Ladder[SECONDLINE_BASE+i+4] =StatusMessage[j][i];          //error status
+//            New485Ladder[SECONDLINE_BASE+i+4] =ErrStatusMessage[j][i];          //error status
         }
     }
     else{
@@ -6059,6 +6437,7 @@ unsigned int  __attribute__((section(".usercode"))) SaveData(void)
         case    DELTA_PAR_GROUP_11:
         case    DELTA_PAR_GROUP_12:
         case    DELTA_PAR_GROUP_13:
+        case    DELTA_PAR_GROUP_14:
 			Delta_inverter_Par_GroupSave();
 			ret=1;
 			break;
@@ -6303,9 +6682,6 @@ unsigned int  __attribute__((section(".usercode"))) MenuOnChk(void)
 	switch(LadderGroup){
     	case    USER_GROUP:
 			switch(LadderGroupSub){
-				case	SLIP_INIT:
-					if(Old_Law_SystemChk())		i=1;
-					break;
         		case    LG_INV_IN_BD:
         			if(INVERTER_CHECK != LG)	i=1;                                             
 					break;	
@@ -6427,7 +6803,7 @@ unsigned int  __attribute__((section(".usercode"))) KeyCheck(void)
 	else						max_group_sel=MAX_GROUP;
 
 	#ifdef	DELTA_INVERTER
-	max_group_sel= (max_group_sel + 14);
+	max_group_sel= (max_group_sel + (DELTA_PAR_GROUP_END - DELTA_PAR_GROUP_00));
 	#endif
 
 
@@ -6437,6 +6813,7 @@ unsigned int  __attribute__((section(".usercode"))) KeyCheck(void)
     LadderKey = LadderBuf[C_SAVE_DATA+0];
 	if( !bLoaderActive)	LadderKey = 'N';	
 
+	if(LadderGroup == 0)	LadderGroupSelect=LadderGroup;
 
     switch(LadderKey){
         case    MENUKEY:
@@ -6610,9 +6987,30 @@ unsigned int  __attribute__((section(".usercode"))) KeyCheck(void)
         }
 	}
 
+	if( (LadderKeyTime < 2) && (LadderKey != 0xff)){
+		sRamDArry[mEV_LastErr]=0xff;
+		if(sRamDArry[FHM_SEQ] <= FHM_SEQ_7){
+			EnterKey=0;
+			LadderGroupSelect=0;
+			LadderGroup=0;
+			LadderGroupSub=0;
+			NewMenuStart();
+			CursorOff();
+			sRamDArry[FHM_SEQ] = FHM_SEQ_8;
+			
+		} 
 
-    if(LadderKey != 0xff){
-		if(!FhmSuccessCheck())	sRamDArry[FHM_SEQ]=0;
+		if(sRamDArry[AUTO_TUNING] > AUTOTUN_SEQ_0){
+			EnterKey=0;
+			LadderGroupSelect=0;
+			LadderGroup=0;
+			LadderGroupSub=0;
+			NewMenuStart();
+			CursorOff();
+
+			AutotunUpDn=0;
+			sRamDArry[AUTO_TUNING] = AUTOTUN_SEQ_0;			
+		} 
 	}
 
     return(0);
@@ -6699,122 +7097,9 @@ unsigned int  __attribute__((section(".usercode"))) NewFlashData(void)
 {
     LocalType i,j;
 
-/*
-    unsigned int count;
-    unsigned int chun,bek,sip,il;
-
-    chun=bek=sip=il=0;
-
-
-    if( (LadderGroup==0) || (bMoveCar)){
-
-		if(bMoveCar && (LadderGroup !=0)){
-			bSpeedDsp=1;
-		}
-
-		bExportData=0;
-		bImportData=0;
-
-		if(sRamDArry[DSP1] == 0)	sRamDArry[DSP1] = '?';	
-		if(sRamDArry[DSP2] == 0)	sRamDArry[DSP2] = '?';	
-        New485Ladder[2+3]=sRamDArry[DSP1];
-        New485Ladder[2+4]=sRamDArry[DSP2];
-
-
-        if(bCarUpMove || bCarDnMove){ 
-        
-            chun=(unsigned int)CurMeterPerMin;
-
-            if(chun)    il=(chun%10);
-            
-            if(chun)    sip=(chun/10);
-            if(sip)     sip=(sip%10);
-
-            if(chun)    bek=(chun/100);
-            if(bek)     bek=(bek%10);;
-
-            if(chun)    chun=chun/1000;
-            if(chun)    chun=(chun%10);
-        
-
-    		if(New_Spd_SystemChk()){
-	        	if(bAuto && !bManualStop && bManualAuto){ 
-		            New485Ladder[2+6] =chun + '0';
-		            New485Ladder[2+7] =bek  + '0';
-		            New485Ladder[2+8]=sip   + '0';
-		            New485Ladder[2+9]='.';
-		            New485Ladder[2+10]=il   + '0';
-		            New485Ladder[2+11]='m';
-		            New485Ladder[2+12]='p';
-		            New485Ladder[2+13]='m';
-		            New485Ladder[2+14]=' ';
-		            New485Ladder[2+15]=' ';
-	
-		            New485Ladder[2+14]='-';
-		            New485Ladder[2+15]=' ';
-		\
-					if(bUnd){
-		            	New485Ladder[2+15]='D';
-					}
-					else if(CurSpeed==SPEED_LOW){
-		            	New485Ladder[2+15]='L';
-					}
-					else if(CurSpeed==SPEED_MID){
-		            	New485Ladder[2+15]='M';
-					}
-					else if(CurSpeed==SPEED_HIGH){
-		            	New485Ladder[2+15]='H';
-					}
-					else{
-		            	New485Ladder[2+15]='Z';
-					}
-				}
-				else{
-		            New485Ladder[2+6]=' ';
-		            New485Ladder[2+7]=' ';
-		            New485Ladder[2+8] =chun + '0';
-		            New485Ladder[2+9] =bek  + '0';
-		            New485Ladder[2+10]=sip  + '0';
-		            New485Ladder[2+11]='.';
-		            New485Ladder[2+12]=il   + '0';
-		            New485Ladder[2+13]='m';
-		            New485Ladder[2+14]='p';
-		            New485Ladder[2+15]='m';
-				}
-			}
-			else{
-	            New485Ladder[2+6]=' ';
-	            New485Ladder[2+7]=' ';
-	            New485Ladder[2+8] =chun + '0';
-	            New485Ladder[2+9] =bek  + '0';
-	            New485Ladder[2+10]=sip  + '0';
-	            New485Ladder[2+11]='.';
-	            New485Ladder[2+12]=il   + '0';
-	            New485Ladder[2+13]='m';
-	            New485Ladder[2+14]='p';
-	            New485Ladder[2+15]='m';
-			}	
-        }    
-        else{
-            New485Ladder[2+6]=' ';
-            New485Ladder[2+7]=' ';
-            New485Ladder[2+8]='E';
-            New485Ladder[2+9]='/';
-            New485Ladder[2+10]='L';
-            New485Ladder[2+11]='.';
-            New485Ladder[2+12]='S';
-            New485Ladder[2+13]='t';
-            New485Ladder[2+14]='o';
-            New485Ladder[2+15]='p';
-        }
-    }
-
-
-	if(bSpeedDsp && !bMoveCar){
-		bSpeedDsp=0;
-		EnterKey=0;
-	}			
-*/
+	#ifdef	DELTA_INVERTER
+	LocalType	delta_rdwr_valid=0;
+	#endif
 
     if((LadderKeyTime > 36000) && (LadderKeyTime < 36002)){        
 		LadderKeyTime=36012;
@@ -7019,6 +7304,7 @@ unsigned int  __attribute__((section(".usercode"))) NewFlashData(void)
 	        case    DELTA_PAR_GROUP_11:
 	        case    DELTA_PAR_GROUP_12:
 	        case    DELTA_PAR_GROUP_13:
+	        case    DELTA_PAR_GROUP_14:
 				Delta_inverter_Par_Group();
 				DeltaRdWrStatus=1;
 				break;
@@ -7035,44 +7321,33 @@ unsigned int  __attribute__((section(".usercode"))) NewFlashData(void)
    	LadderBuf[C_OFFSET_MEMORY]=LadderGroupSub;          
 
 
-    if(LadderGroup==0){
+
+	if(bMoveCar){
+		SpeedDsp();
+       	DefaultDisplay();
+		EnterKey=0;
+	}
+    else if(LadderGroup==0){
 		SpeedDsp();
         DefaultDisplay();
-    }
-	else{
-		if(bMoveCar || ((bCarErr || bCarStopNoRun) && !IN_AUTO)){	
-			SpeedDsp();
-        	DefaultDisplay();
-			bSpeedDsp=1;
-		}
-		else{
-			if(bSpeedDsp){
-				bSpeedDsp=0;
-				EnterKey=0;
-			}			
-		}
 	}
 
 
     LadderTime=0;
 
-    if(sRamDArry[FHM_RUN] == FHM_RUN_CMD)                   FhmLoaderTime=0;
-    else                                                    FhmLoaderTime=10;
-                                    
-    if((sRamDArry[FHM_RUN] == FHM_RUN_CMD) && (LadderKey != 0xff)){
-        FhmLoaderTime=10;
-        sRamDArry[FHM_RUN] =0;
-    }
+
+
+	if(sRamDArry[FHM_SEQ] <= FHM_SEQ_7){
+		FhmLoaderTime=0;
+	}
+	else{
+		FhmLoaderTime=15;
+	}
 
 
     if(New_Spd_SystemChk()){
-	    if(sRamDArry[AUTO_TUNING] == AUTO_TUN_RUN_CMD)          TuningLoaderTime=0;
-	    else                                                    TuningLoaderTime=10;
-	                                    
-	    if((sRamDArry[AUTO_TUNING] == AUTO_TUN_RUN_CMD) && (LadderKey != 0xff)){
-	        TuningLoaderTime=10;
-	        sRamDArry[AUTO_TUNING] =0;
-	    }
+	    if(sRamDArry[AUTO_TUNING] > AUTOTUN_SEQ_0)          TuningLoaderTime=0;
+	    else                                                TuningLoaderTime=15;	                                    
 	}
 
 
@@ -7089,16 +7364,31 @@ unsigned int  __attribute__((section(".usercode"))) NewFlashData(void)
 
         
 	#ifdef	DELTA_INVERTER
-	if(LadderGroup >= USER_GROUP){
-		if(LadderGroup < DELTA_PAR_GROUP_00){
-			DeltaRdWrStatus=0;
-		}
-	    
+
+	bDeltaGroupEdit=0;	
+	delta_rdwr_valid=0;
+
+	if(bsInvCurNext){		    	
+		delta_rdwr_valid=1;
+		DeltaInverterRdWr( (unsigned char)(4),(unsigned char)(23),1,0,sRamDArry[S0_FLOOR]);
+	}
+	else if( (LadderGroup >= DELTA_PAR_GROUP_00) && (LadderGroup < DELTA_PAR_GROUP_END) && (DeltaRdWrStatus > 0)){
+		bDeltaGroupEdit=1;
+		DeltaInverterRdWr( (unsigned char)(LadderGroup-DELTA_PAR_GROUP_00),(unsigned char)LadderGroupSub,0,0,0);
+
+//		if(DeltaRdWrStatus==0)	EnterKey=1;            
+
+		delta_rdwr_valid=1;
+	}
+	else if( (LadderGroup == USER_GROUP) && (LadderGroupSub == FHM_RUN_CHK) ){		    	
+		delta_rdwr_valid=1;
+	}
+	else{
+		delta_rdwr_valid=0;
+	}
 	
-		i=DeltaInverterRdWr( (unsigned char)(LadderGroup-DELTA_PAR_GROUP_00),(unsigned char)LadderGroupSub);
-		if(i==1){
-			EnterKey=0;
-		}	
+	if(delta_rdwr_valid==0){
+		DeltaRdWrStatus=0;
 	}
 
 	#endif

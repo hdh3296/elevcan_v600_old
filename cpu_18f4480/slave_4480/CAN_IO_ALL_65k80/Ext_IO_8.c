@@ -17,14 +17,6 @@
 #if   defined(NEW_CAN_IO_8) 
 
 
-#define  OUT_FAN	IO_00         
-#define  OUT_LIT	IO_01        
-#define  OUT_BUZ	IO_02
-#define  OUT_BELL   IO_03
-
-
-
-
 #define	CHARTER_TIME	20	// 20 msec
 
 unsigned char	charter_IO_08;
@@ -58,15 +50,6 @@ bit	Bef_IO_15=0;
 bit	Cur_IO_15=0;	
 
 unsigned	int 	Flr_OnOff_TxTmer;
-
-
-
-
-#define  IN_SAFETY	Cur_IO_08         
-#define  IN_OVL		Cur_IO_09        
-#define  IN_VIP		Cur_IO_10
-#define  IN_FULL   	Cur_IO_11
-
 
 
 
@@ -229,17 +212,29 @@ unsigned int  MyFunc(void)
     IdPt=(LocalNumber * HOST_DATA_RECOD) + RCV_DATA;
 
 
-	if(RcvBuf[IdPt + SL_OUT_FAN] & 0x01)	OUT_FAN=1;
-	else									OUT_FAN=0;
+	if(RcvBuf[IdPt + SL_S5_STATE_37] & 0x01)	IO_00=1;
+	else										IO_00=0;
 
-	if(RcvBuf[IdPt + SL_OUT_FAN] & 0x02)	OUT_LIT=1;
-	else									OUT_LIT=0;
+	if(RcvBuf[IdPt + SL_S5_STATE_37] & 0x02)	IO_01=1;
+	else										IO_01=0;
 	
-	if(RcvBuf[IdPt + SL_OUT_FAN] & 0x04)	OUT_BUZ=1;
-	else									OUT_BUZ=0;
+	if(RcvBuf[IdPt + SL_S5_STATE_37] & 0x04)	IO_02=1;
+	else										IO_02=0;
 
-	if(RcvBuf[IdPt + SL_OUT_FAN] & 0x08)	OUT_BELL=1;
-	else									OUT_BELL=0;
+	if(RcvBuf[IdPt + SL_S5_STATE_37] & 0x08)	IO_03=1;
+	else										IO_03=0;
+
+	if(RcvBuf[IdPt + SL_S5_STATE_37] & 0x10)	IO_04=1;
+	else										IO_04=0;
+
+	if(RcvBuf[IdPt + SL_S5_STATE_37] & 0x20)	IO_05=1;
+	else										IO_05=0;
+	
+	if(RcvBuf[IdPt + SL_S5_STATE_37] & 0x40)	IO_06=1;
+	else										IO_06=0;
+
+	if(RcvBuf[IdPt + SL_S5_STATE_37] & 0x80)	IO_07=1;
+	else										IO_07=0;
 
 
 

@@ -7,6 +7,48 @@
 #include  "com.h"
 #include  "counter.h"
 
+/*
+unsigned int  __attribute__((section(".usercode")))   FireTwoBuzStart(void)
+{
+	if(bFirstFire && bSecondFire){
+		S3_CUR_KEY1=1;       
+		if((sRamDArry[mHighFloor] > 0) || (sRamDArry[mLowFloor] > 0)){
+			bFireTimeRun=1;
+			if((RestartTime/5) % 2) OUT_BUZ(1);
+			else                    OUT_BUZ(0);
+			if(RestartTime > 50){
+				bDoorCloseCmd=1;
+				bOpenDoorOk=0;
+				bDoorCloseOk=1;
+				bFR2Start1=1;
+				OUT_BUZ(0);
+				StartFireFloor();
+			}
+		}
+	}
+///////////////////
+
+	if(bFirstFire && bSecondFire){
+		if((sRamDArry[mHighFloor] > 0) || (sRamDArry[mLowFloor] > 0)){
+			bFireTimeRun=1;
+			if((RestartTime/5) % 2) OUT_BUZ(1);
+			else                    OUT_BUZ(0);
+			if(RestartTime > 50){
+				bDoorCloseCmd=1;
+				bOpenDoorOk=0;
+				bDoorCloseOk=1;
+				bFR2Start1=1;
+				OUT_BUZ(0);
+				if( !StartFireFloor())	sRamDArry[mFireSeq]=FIRE_THREE;
+			}
+		}
+	}
+
+///////////////////
+}
+*/
+
+
 
 unsigned int  __attribute__((section(".usercode")))   FireOneTwoClear(void)
 {
@@ -73,9 +115,7 @@ unsigned int  __attribute__((section(".usercode")))   Safe_Fire_Service(void)
 		if(sRamDArry[mDoor] | SUB_CLOSE_KEY)	return(0);
                             
 		if(bOnLuLd && bDoorOpenEnd && (ElevStopTime < 200)){
-			ClrUpDnWard();       
-			NextFloorTime=0;
-			
+			ClrUpDnWard();       			
 			sRamDArry[mDoor]    = (sRamDArry[mDoor] & MAIN_SUB_OPEN_KEY_CLEAR);   
 			if(bSubSlaveFire)	sRamDArry[mDoor]=( sRamDArry[mDoor] | SUB_OPEN_KEY);                            
 			else				sRamDArry[mDoor]=( sRamDArry[mDoor] | MAIN_OPEN_KEY);                           
@@ -144,7 +184,6 @@ unsigned int  __attribute__((section(".usercode")))   Normal_Fire_Service(void)
 			else{
 				if(bOnLuLd && bDoorOpenEnd){
 					ClrUpDnWard();       
-					NextFloorTime=0;
 					if(sRamDArry[mDoorSeq] >= DOOR_REOPEN_CHECK){
 						if(NewDoorSelect == MAIN_SUB_DOOR){
 							if( (CurDoorSelect == SUB_DOOR) && bSubSlaveFire){
@@ -246,14 +285,22 @@ unsigned int  __attribute__((section(".usercode")))   Fire_Service(void)
             if(!bDoorCloseOk){
                 sRamDArry[mFireSeq]=FIRE_THREE;
                 S3_CUR_KEY1=0;
+                bCarErr=1;
+            	bFR2Start1=0;
 
+
+/*
 				if( !bFR2Start1){
                 	bCarErr=1;
 				}
             	bFR2Start1=0;
+*/
+
             }
             break;
         case    FIRE_THREE:
+			bFR2Start1=0;
+
             if(bFirstFire){
 				S3_CUR_KEY1=1;       
               	ClrUpDnWard();       
@@ -272,6 +319,10 @@ unsigned int  __attribute__((section(".usercode")))   Fire_Service(void)
                 if(bFirstFire && bSecondFire){
 					S3_CUR_KEY1=1;       
 					if((sRamDArry[mHighFloor] > 0) || (sRamDArry[mLowFloor] > 0)){
+						StartFireFloor();
+
+/*
+
 						bFireTimeRun=1;
 						if((RestartTime/5) % 2) OUT_BUZ(1);
 						else                    OUT_BUZ(0);
@@ -283,6 +334,8 @@ unsigned int  __attribute__((section(".usercode")))   Fire_Service(void)
 							OUT_BUZ(0);
 							StartFireFloor();
 						}
+*/
+
 					}
 				}
 
@@ -291,11 +344,18 @@ unsigned int  __attribute__((section(".usercode")))   Fire_Service(void)
                 	DoorCloseTime=0;
                 	sRamDArry[mFireSeq]=FIRE_ONE;     
               	}			
-              	else if(bDoorCloseOk){                 
+              	else if(bDoorCloseOk){   
+					StartFireFloor();
+
+/*
             		if(bFirstFire){
 						StartFireFloor();
                     }
+*/
               	}
+
+
+
             }
             else{
               S3_CUR_KEY1=0;
@@ -372,18 +432,7 @@ void  __attribute__((section(".usercode")))     CommonFireKeyCheck(void)
 			FireOneTwoClear();
 		}
 
-
-		if(sRamDArry[mSysStatus] > sFireOn)   	sRamDArry[mSysStatus]=sFireOn; 
-     
-
 		FireBaseFloor=cF_FIRESAFEFLR;
-
-/*
-		if(!New_Law_SystemChk()){
-			if( !SubFireCheck())    	FireBaseFloor=cF_FIRESAFEFLR;
-		}
-		else	    					FireBaseFloor=cF_FIRESAFEFLR;
-*/
 
 				
 		if(S2_FIRE1){
@@ -411,7 +460,8 @@ void  __attribute__((section(".usercode")))     CommonFireKeyCheck(void)
 void  __attribute__((section(".usercode")))     FireKeyCheck(void)
 {
 
-   	if(bAuto && !bManualStop && bManualAuto){     	
+
+	if(PerfectAuto()){
 		CommonFireKeyCheck();
     }
 	else{

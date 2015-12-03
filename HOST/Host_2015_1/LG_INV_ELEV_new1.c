@@ -12,7 +12,6 @@
 #include  "default_setup.h"
 
 
-///void    DspFloorSet(void);
 
 void    CarStopCmd(void);
 void    CarUpStartCmd(void);
@@ -37,7 +36,6 @@ const   unsigned        int    seg0[]={0x3f,0x06,0xdb,0xcf,0xe6,0xed,0xfd,0x27,0
 void __attribute__((section(".usercode")))   DspFloorSet(void)
 {
     LocalType i,j;  
-//    unsigned int dsp_mpm;  
 
 
     if( !bDspSeq && (bCarErr || bCarStopNoRun || bCarStop) ){
@@ -55,54 +53,44 @@ void __attribute__((section(".usercode")))   DspFloorSet(void)
     }
     else{
 /*
-		if(bMoveCar && bDspSeq && (INVERTER_CHECK == IO)){
-			dsp_mpm=(unsigned int)(CurMeterPerMin/10);
+    	sRamDArry[S0_FLOOR]  = sRamDArry[mcurfloor]+1;
 
-	        i=(unsigned int)(dsp_mpm%10);    
-	        dsp_mpm=(unsigned int)(dsp_mpm/10);    
-	        SegData0=~seg0[i];
-	        SegData0=(SegData0 | 0x80);
+        i=(UserDataType)(sRamDArry[mcurfloor] * 2);	        
+		i=(i + F_FlrDspCh);
+	            
+        sRamDArry[DSP1]  = cF_FLRDSPCH((unsigned long)i);
+        sRamDArry[DSP2]  = cF_FLRDSPCH((unsigned long)(i+1)); 
 
-	        i=(unsigned int)(dsp_mpm%10);    
-	        dsp_mpm=(unsigned int)(dsp_mpm/10);    
-	        SegData1=~seg0[i];
-	        SegData1=(SegData1 | 0x80);
-
-	        i=(unsigned int)(dsp_mpm%10);    
-	        dsp_mpm=(unsigned int)(dsp_mpm/10);    
-	        SegData2=~seg0[i];			
-	        SegData2=(SegData2 | 0x80);
+		if( bFhmRun && (sRamDArry[FHM_SEQ] < FHM_SEQ_3)){
+	        sRamDArry[DSP1]  = '0';
+	        sRamDArry[DSP2]  = '0'; 
 		}
-		else{
-*/
-	    	sRamDArry[S0_FLOOR]  = sRamDArry[mcurfloor]+1;
-
-	        i=(UserDataType)(sRamDArry[mcurfloor] * 2);	        
-			i=(i + F_FlrDspCh);
-		            
-	        sRamDArry[DSP1]  = cF_FLRDSPCH((unsigned long)i);
-	        sRamDArry[DSP2]  = cF_FLRDSPCH((unsigned long)(i+1)); 
-
-			if( bFhmRun && (sRamDArry[FHM_SEQ] <= FHM_SEQ_3)){
-		        sRamDArry[DSP1]  = '0';
-		        sRamDArry[DSP2]  = '0'; 
-			}
-	    
-	        j=sRamDArry[mcurfloor]+1;
-	    
-	        i=(j%10);    
-	        SegData0=~seg0[i];
-	        SegData0=(SegData0 | 0x80);
-	    
-	        i=(j/10);
-	        SegData1=~seg0[i];
-	        SegData1=(SegData1 | 0x80);
-	    
-	        SegData2=0xff;
-//		}
+  */
+  
+        j=sRamDArry[mcurfloor]+1;
+    
+        i=(j%10);    
+        SegData0=~seg0[i];
+        SegData0=(SegData0 | 0x80);
+    
+        i=(j/10);
+        SegData1=~seg0[i];
+        SegData1=(SegData1 | 0x80);
+    
+        SegData2=0xff;
     }    
 
 
+   	sRamDArry[S0_FLOOR]  = sRamDArry[mcurfloor]+1;
+	i=(UserDataType)(sRamDArry[mcurfloor] * 2);	        		
+	i=(i + F_FlrDspCh);   
+	sRamDArry[DSP1]  = cF_FLRDSPCH((unsigned long)i);
+	sRamDArry[DSP2]  = cF_FLRDSPCH((unsigned long)(i+1)); 
+
+	if( bFhmRun && (sRamDArry[FHM_SEQ] < FHM_SEQ_3)){
+        sRamDArry[DSP1]  = '0';
+        sRamDArry[DSP2]  = '0'; 
+	}
 }
 
 
@@ -211,7 +199,6 @@ void __attribute__((section(".usercode")))    BatterySpeedCmd_IO(void)
 void __attribute__((section(".usercode")))    DecreaseSpeedCmd_IO(void)
 {
     CurSelSpeed(cF_DECREASESPEED);     
-    CounterTime=0;                   
 }
 
 
@@ -235,8 +222,8 @@ void  __attribute__((section(".usercode")))  CarCurFloorRead_ELEV(void)
         NextFTime=0;		
     }         
     else{
-        sRamDArry[mcurfloor] = (I_FS0_bit & 0x1f);  		      
-        DspFloorSet();
+        sRamDArry[mcurfloor] = (I_FS0_bit & 0x1f);
+		sRamDArry[mInvFloor] = sRamDArry[mcurfloor];  		      
         CurFTime=0;
     }
     
@@ -268,9 +255,7 @@ void  __attribute__((section(".usercode")))    CarLowSpeedCmd_IO(void)
 {        
     if(bAuto && bManualAuto){
         if(bMoveDnOk && bMoveUpOk){
-            if(sRamDArry[mSysStatus] >= sSLOW_SPEED)   sRamDArry[mSysStatus]=sSLOW_SPEED;                                                     
             bVoiceReady=1;			
-
 			if(AutoLandingModeChk((unsigned char)YASKAWA_AUTOLANDING)){
 				if(bUnd)	ZeroSpeedCmd_IO();
 				else		DecreaseSpeedCmd_IO();			
@@ -304,12 +289,10 @@ void  __attribute__((section(".usercode")))   CarStopCmd_IO(void)
             bFourStep=0;               
             break;
         case  2:
-            CounterTime=0;
             ZeroSpeedCmd_IO();
-
             if(LuLdTime>iF_Bk1OffTime){
                 bOneStep=1;               
-                OUT_BRK(0);                     
+                OUT_BK1(0);                     
             }              
 
             if(LuLdTime>iF_Bk2OffTime){
@@ -335,7 +318,7 @@ void  __attribute__((section(".usercode")))   CarStopCmd_IO(void)
                 OUT_P4(0);
                 OUT_U_W(0);                                                               
                 OUT_D_W(0);                                                        
-                OUT_BRK(0);
+                OUT_BK1(0);
                 OUT_BK2(0);
 
 				if(New_Law_SystemChk())	OUT_RST(0);
@@ -382,43 +365,27 @@ void  __attribute__((section(".usercode")))  UpDnRunOut(void)
             Mnanual_Speed_Sel();
         }
     } 
-   
-	if(bNextFlrChk==0){
-		bNextFlrChk=1;
-		NextFloorTime=0;
-   		CounterTime=0;
-	}
 }
 
 
 
 void  __attribute__((section(".usercode")))   CarUpStartCmd_IO(void)
 {
-//    bManualStop=0;
     if(bMoveUpOk){
         UpWard();
 
         if(sRamDArry[mcurfloor]< cF_TOPFLR)  sRamDArry[mReqStopFloor]  = sRamDArry[mcurfloor]+1;
         else                                 sRamDArry[mReqStopFloor]  = cF_TOPFLR;
-
-        if(bAuto){
-            if(sRamDArry[mSysStatus] > sUP)   sRamDArry[mSysStatus]=sUP;      
-        }		   
-        else{       
-            if(sRamDArry[mSysStatus] > sMANUAL_UP)   sRamDArry[mSysStatus]=sMANUAL_UP;               	
-        }              
-		
      	
         switch(sRamDArry[mCarMoveState]){
              case  0:
                 ZeroSpeedCmd_IO();
                 OUT_U_W(0);                                                               
                 OUT_D_W(0);                                                        
-                OUT_BRK(0);                     
+                OUT_BK1(0);                     
                 OUT_BK2(0);
                 OUT_P4(0);    
 
-				bNextFlrChk=0;
                 sRamDArry[mCarMoveState]=1;
                 break;
              case  1:
@@ -437,7 +404,7 @@ void  __attribute__((section(".usercode")))   CarUpStartCmd_IO(void)
                     OUT_BK2(1);
                 }              
                 if(ElevMoveTime > cF_STTM4){
-                     OUT_BRK(1);                     
+                     OUT_BK1(1);                     
                 }
                 if(ElevMoveTime > cF_STTM5){
                     UpDnRunOut();
@@ -462,23 +429,16 @@ void  __attribute__((section(".usercode")))   CarDnStartCmd_IO(void)
         if(sRamDArry[mcurfloor]>0)  sRamDArry[mReqStopFloor]  = sRamDArry[mcurfloor]-1;
         else                        sRamDArry[mReqStopFloor]  = 0;
 
-        if(bAuto){
-            if(sRamDArry[mSysStatus] > sDN)   sRamDArry[mSysStatus]=sDN;      
-        }		   
-        else{       
-            if(sRamDArry[mSysStatus] > sMANUAL_DN)   sRamDArry[mSysStatus]=sMANUAL_DN;               	
-        }              
 
         switch(sRamDArry[mCarMoveState]){
             case  0:
                 ZeroSpeedCmd_IO();
                 OUT_U_W(0);                                                               
                 OUT_D_W(0);                                                        
-                OUT_BRK(0);                     
+                OUT_BK1(0);                     
                 OUT_BK2(0);
                 OUT_P4(0);    
 
-				bNextFlrChk=0;
                 sRamDArry[mCarMoveState]=1;
                 break;
              case  1:
@@ -497,7 +457,7 @@ void  __attribute__((section(".usercode")))   CarDnStartCmd_IO(void)
                     OUT_BK2(1);
                 }              
                 if(ElevMoveTime > cF_STTM4){
-                    OUT_BRK(1);                     
+                    OUT_BK1(1);                     
                 }
                 if(ElevMoveTime > cF_STTM5){
                     UpDnRunOut();
@@ -524,60 +484,6 @@ LocalType  __attribute__((section(".usercode")))  CurFloorRead_OnOff(void)
     j=0;
 
 
-
-
-#ifdef	SHORT_FLOOR
-
-    if(!IN_SU1 && !IN_EMG){               //modify ?
-        sRamDArry[mcurfloor]=cF_TOPFLR;
-        j++;
-    }
-
-
-    if(!IN_X1 && (cF_TOPFLR >= 3)){
-        sRamDArry[mcurfloor]=2;
-        j++;
-    }
-    if(!IN_X2 && (cF_TOPFLR >= 4)){
-        sRamDArry[mcurfloor]=3;
-        j++;
-    }
-    if(!IN_X3 && (cF_TOPFLR >= 5)){
-        sRamDArry[mcurfloor]=4;
-        j++;
-    }
-    if(!IN_X4 && (cF_TOPFLR >= 6)){
-        sRamDArry[mcurfloor]=5;
-        j++;
-    }
-    if(!IN_X5 && (cF_TOPFLR >= 7)){
-        sRamDArry[mcurfloor]=6;
-        j++;
-    }
-
-    if(!IN_SD1 && !IN_X0){
-		if(bCarUpMove){				
-	        sRamDArry[mcurfloor]=1;
-	        j++;
-			if(IN_LU && IN_LD){
-	        	sRamDArry[mReqStopFloor]  = (sRamDArry[mcurfloor] | CAR_READY);                
-			}
-		}
-		else if(bCarDnMove){				
-	        sRamDArry[mcurfloor]=0;
-	        j++;
-		}
-    }
-    else if(!IN_SD1 && IN_X0){				
-        sRamDArry[mcurfloor]=0;
-        j++;
-    }
-    else if(IN_SD1 && !IN_X0){				
-        sRamDArry[mcurfloor]=1;
-        j++;
-    }
-
-#else
     if(!IN_SD1 && !IN_EMG){				//modify ?
         sRamDArry[mcurfloor]=0;
         j++;
@@ -617,7 +523,6 @@ LocalType  __attribute__((section(".usercode")))  CurFloorRead_OnOff(void)
         sRamDArry[mcurfloor]=7;
         j++;
     }
-#endif
 
     bD_F_FloorOn=0;
     
@@ -812,7 +717,6 @@ void  __attribute__((section(".usercode")))  CarCurFloorRead_OnOff(void)
         sRamDArry[mReqStopFloor]  = sRamDArry[mcurfloor];            
     }
 
-    DspFloorSet();    
 }
 
 
@@ -862,7 +766,7 @@ void  __attribute__((section(".usercode")))    CarCurFloorRead(void)
     else{
     	CarCurFloorRead_IO();
 		#ifdef	DELTA_INVERTER
-		sRamDArry[mReqStopFloor] = ((InvStatus[3] - 1) | 0x20); 
+		DeltaInverterReqStopFloor();
 		#endif
 	}
 }

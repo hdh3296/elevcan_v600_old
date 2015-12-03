@@ -139,11 +139,11 @@ unsigned char LoadBefCheck(unsigned char id,unsigned char UpDnKey)
     else{
         if(UpDnKey){
             if(IsCarUpWard(xIdPt))      						i=0;
-			if(!bToggleOn){
+//			if(!bToggleOn){
 		    	if(ButtonType){
-		        	if(IsCarDnWard(xIdPt))       					i=0;
+		        	if(IsCarDnWard(xIdPt))       				i=0;
 		        }
-			}
+//			}
         }
         else{
             if(IsCarDnWard(xIdPt))           					i=0;
@@ -356,7 +356,8 @@ unsigned char KeyCancleCheck(unsigned char id)
 
 	GetElevPointer((unsigned int)id);
 
-	if( !bToggleOn){
+
+//	if( !bToggleOn){
 		if(ButtonType==1){
 	        if(IsCarMove(xIdPt)){			
 	            if(IsYouFlrEqualMe(xdestflr,xtmpadr))   	i=1;
@@ -370,7 +371,7 @@ unsigned char KeyCancleCheck(unsigned char id)
 	            }            
 	        }
 	    }
-	}	
+//	}	
 
     return(i);
 }        

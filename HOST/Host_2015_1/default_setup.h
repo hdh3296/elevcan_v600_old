@@ -3,9 +3,9 @@
 #include  "iodef.h"
 
 
-#define  	VERSION_0         		    '5'
-#define  	VERSION_1         		    '7'
-#define  	VERSION_2         		    '4'
+#define  	VERSION_0         		    '6'
+#define  	VERSION_1         		    '0'
+#define  	VERSION_2         		    '0'
 
 
 #define     LG                          0

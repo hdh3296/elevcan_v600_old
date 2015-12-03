@@ -540,12 +540,7 @@ void	__attribute__((section(".usercode"))) SelectDoorOpen_abc(void)
     else if(CurDoorSelect == SUB_DOOR){
         OUT_D_S(1);                     //sel door          
 		SubDoorOpenCmd_abc();	
-    }
-
-    if(!bMoveCar){
-        if(sRamDArry[mSysStatus] > sOPEN)   sRamDArry[mSysStatus]=sOPEN;      
-    }
-		
+    }		
 }
 
 
@@ -560,10 +555,6 @@ void	__attribute__((section(".usercode"))) SelectDoorClose_abc(void)
         OUT_D_S(1);                     //sel door          
     }
     MainDoorCloseCmd_abc();
-
-    if(!bMoveCar){
-    	if(sRamDArry[mSysStatus] >= sCLOSE)   sRamDArry[mSysStatus]=sCLOSE;      
-    }
 }
 
 
@@ -648,7 +639,8 @@ void    __attribute__((section(".usercode"))) HoleDoorCloseEndCheck(UserDataType
 	if(i==0){
       	if(movecar){
 			if( !bRunningOpenOn){
-				if( !bManualStop)	bsHdsRunOff=1;
+				bsHdsRunOff=1;
+//				if( !bManualStop)	bsHdsRunOff=1;
 			}
         }
    		bHoleDoorCloseEnd=0;
@@ -685,7 +677,8 @@ void    __attribute__((section(".usercode"))) CarDoorCloseEndCheck(UserDataType 
 	if(i==0){
       	if(movecar){
 			if( !bRunningOpenOn){
-				if( !bManualStop)	bsCleRunOff=1;
+				bsCleRunOff=1;
+//				if( !bManualStop)	bsCleRunOff=1;
 			}	
         }
    		bCarDoorCloseEnd=0;

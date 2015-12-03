@@ -626,7 +626,7 @@ void  __attribute__((section(".usercode"))) NormalDataReturn_485(void)
 	RxBuffer[38]= sRamDArry[mExtIN0];
 	RxBuffer[39]= sRamDArry[I_X_0];     
 	RxBuffer[40]= sRamDArry[I_FS0];
-	RxBuffer[41]= sRamDArry[mUnKnown26];
+	RxBuffer[41]= sRamDArry[S5_STATE_37];
 	RxBuffer[42]= sRamDArry[mCrtExtMoveFlr];
 	RxBuffer[43]= sRamDArry[mCallMe];
 	RxBuffer[43]= ThisCmd;

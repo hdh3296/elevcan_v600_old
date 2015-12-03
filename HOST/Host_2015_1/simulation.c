@@ -12,8 +12,6 @@
 
 #ifdef	TEST_SIMULATION
 
-////extern void   DspFloorSet(void);
-
 UserDataType    MotorMoveTime;
 UserDataType    IncFlr;
 UserDataType    xxCnt=0;
@@ -312,7 +310,6 @@ void  CarCurFloorReadSimulation(void)
         bUnd=0;
     }
     
-    DspFloorSet();
 	DspCharTest();
           
     if(bAuto && (bUpWard || bDnWard) && (sRamDArry[mDoorSeq] == WAIT_NEXT_LULD) && ((sRamDArry[mAckStopFloor] & ONLY_FLR)==sRamDArry[mcurfloor])){        

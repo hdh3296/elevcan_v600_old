@@ -134,8 +134,7 @@ void LoadCanBuffer(unsigned int i)
             CAN_Buf[2]= sRamDArry[mExtIN0];
             CAN_Buf[3]= sRamDArry[I_X_0];     
             CAN_Buf[4]= sRamDArry[I_FS0];
-            CAN_Buf[5]= sRamDArry[mUnKnown26];
-
+            CAN_Buf[5]= sRamDArry[S5_STATE_37];
             CAN_Buf[6]= sRamDArry[mCrtExtMoveFlr];
             CAN_Buf[7]= sRamDArry[mCallMe];
             break;

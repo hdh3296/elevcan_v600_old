@@ -527,7 +527,7 @@ void main(void)
 				HostCallMe=0;              
 
             }            
-            else if(bToggleOn){
+            else if(bToggleOn && Up_Key_Clear){
 	            if(Up_Key_Clear && Tx1ConfirmCnt){
 	                SelHostAdr=ReceiveAdr;
 	                CanCmd=CAN_KEY_CLEAR;
@@ -551,7 +551,7 @@ void main(void)
                 CanTx0();
 				HostCallMe=0;              
             }
-			else if(bToggleOn){ 
+			else if(bToggleOn && Dn_Key_Clear){ 
 	            if(Dn_Key_Clear && Tx0ConfirmCnt){
 	                SelHostAdr=ReceiveAdr;
 	                CanCmd=CAN_KEY_CLEAR;

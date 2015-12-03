@@ -93,6 +93,7 @@
 
 
 
+
 #define  	S0_FLOOR       		0                       //StatusBuf + 0
 #define  	S1_STATE        	1                       //StatusBuf + 1 
 #define  	S2_STATE        	2                       //StatusBuf + 2 
@@ -130,7 +131,7 @@
 #define  	mExtIN0         	34
 #define  	I_X_0           	35
 #define  	I_FS0           	36
-#define  	mUnKnown26      	37
+#define  	S5_STATE_37      	37
 #define  	mCrtExtMoveFlr  	38	
 #define  	mCallMe         	39												
 #define  	FLR_ON_OFF4       	40                       
@@ -176,17 +177,20 @@
 #define  	mDoorSeq          	206
 #define  	mBefErrCntPt      	207
 #define  	LD_INSP           	208
-#define  	FHM_RUN           	209
-#define  	FHM_SEQ           	210
-#define  	SelDoorStatus     	211
-#define  	mFireSeq          	212
-#define  	mVFlrCnt          	213
-#define  	mVFlr1            	214
-#define  	mVFlr2            	215
-#define  	AUTO_TUNING       	216
-#define  	AUTO_TUNING_SEQ   	217
-#define  	mCurCarkey        	218
-#define  	mLuLdFloor			219
+#define  	FHM_SEQ           	209
+#define  	SelDoorStatus     	210
+#define  	mFireSeq          	211
+#define  	mVFlrCnt          	212
+#define  	mVFlr1            	213
+#define  	mVFlr2            	214
+#define  	AUTO_TUNING       	215
+#define  	AUTO_TUNING_SEQ   	216
+#define  	mCurCarkey        	217
+#define  	mLuLdFloor        	218
+#define  	mRunFloor    		219
+#define  	mInvFloor    		220
+#define  	mEV_LastErr   		221
+//#define  	mLoader_mSysStatus  222
 
 #define  	EndsRam           	254
 #define  	END_SRAM          EndsRam+1
@@ -203,10 +207,10 @@
 #define     SL_mCarKey17        19
 #define     SL_mCarKey25        20
 #define     SL_mSysStatus       21   //status nm
-#define     SL_OUT_OP       	22   // o_op
-#define     SL_OUT_UP       	23   // o_up_ward
-#define     SL_OUT_FAN          24   // o_fan
-#define     SL_IN_EMG           25   // i_emg
+#define     SL_OUT_OP       	22   //o_op
+#define     SL_OUT_UP       	23   //o_up_ward
+#define     SL_OUT_FAN          24   //o_fan
+#define     SL_IN_EMG           25   //i_emg
 #define     SL_IN_SU1       	26   //i_su1
 #define     SL_IN_GR       		27   //i_gr
 #define     SL_IN_FIRE       	28   //i_fire
@@ -218,7 +222,7 @@
 #define     SL_mEXT_IN0       	34    
 #define     SL_IN_X0       		35  //i_x0 
 #define     SL_IN_FS0       	36	//i_fs0
-#define     SL_mUnKnown26       37
+#define     SL_S5_STATE_37      37
 #define     SL_mCrtExtMoveFlr   38
 #define     SL_mCallMe          39
 
@@ -311,6 +315,32 @@
 #define  B_PC           73
 #define  C_PC           74
 #define  D_PC           75
+
+
+
+
+#define  	SET_ULS_POSITION    0
+#define  	REAL_ULS_POSITION   1
+#define  	SET_SUS_POSITION    2
+#define  	REAL_SUS_POSITION   3
+#define  	SET_SUS1_POSITION   4
+#define  	REAL_SUS1_POSITION  5
+#define  	SET_X0_POSITION    	6
+#define  	REAL_X0_POSITION    7
+#define  	SET_DLS_POSITION    8
+#define  	REAL_DLS_POSITION   9
+#define  	SET_SDS_POSITION    10
+#define  	REAL_SDS_POSITION   11
+#define  	SET_SDS1_POSITION   12
+#define  	REAL_SDS2_POSITION  13
+#define  	SET_X1_POSITION    	14
+#define  	REAL_X1_POSITION    15
+#define  	NC00_POSITION      	16
+#define  	NC01_POSITION      	17
+#define  	NC02_POSITION      	18
+#define  	NC03_POSITION      	19
+#define  	POSITION_END      	20
+
 
 
 #define  BUT_CANLE_T          220

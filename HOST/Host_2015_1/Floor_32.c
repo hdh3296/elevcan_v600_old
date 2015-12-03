@@ -172,7 +172,6 @@ void   __attribute__((section(".usercode"))) NewFloorLoad(void)
 				sRamDArry[mMostLongDst] = 0;        
 			}				
    		}
-   		if(sRamDArry[mSysStatus] > sUP)   sRamDArry[mSysStatus]=sUP;      
    	}
    	else if(bCarDnMove){
    		if(sRamDArry[DEST_FLR] != sRamDArry[mLowFloor]){
@@ -183,7 +182,6 @@ void   __attribute__((section(".usercode"))) NewFloorLoad(void)
 				sRamDArry[mMostLongDst] = 0;        			
 			}	
    		}
-   		if(sRamDArry[mSysStatus] > sDN)   sRamDArry[mSysStatus]=sDN;                  
    	}                        
 
 	if(!(sRamDArry[mAckStopFloor] & UPDN_CAR_READY)){

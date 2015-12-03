@@ -271,6 +271,8 @@ unsigned char   Lamp(unsigned char id)
 		befDspChar[0]=RcvBuf[IdPt+DSP1];
 		befDspChar[1]=RcvBuf[IdPt+DSP2];
 
+
+
 	    if( (RcvBuf[IdPt+DSP1] == ' ') && (RcvBuf[IdPt+DSP2] == ' ')){
 			RcvBuf[IdPt+DSP1] = 0x3d;
 			RcvBuf[IdPt+DSP2] = 0x3d;
@@ -284,7 +286,9 @@ unsigned char   Lamp(unsigned char id)
 			RcvBuf[IdPt+DSP2] = 0x30;
 	    }
 	}
+
     Floor_Char_load(0,RcvBuf[IdPt+DSP1],RcvBuf[IdPt+DSP2]);
+
 
 
 #ifdef	__COUNT_CAR
@@ -431,7 +435,6 @@ unsigned char   Lamp(unsigned char id)
 	if( (RcvBuf[IdPt+DSP1] == ' ') && (RcvBuf[IdPt+DSP2] == ' ')){
       dsplamp1=0;
 	} 
-
 
    P0=dsplamp1;
 
@@ -617,6 +620,7 @@ unsigned char   Lamp(unsigned char id)
    MANUAL_LAMP=0;
    if(RcvBuf[IdPt+1] & S1_MANUAL)           MANUAL_LAMP=1;
 
+
 /*
 	if(bErrorCar){
    		AUTO_LAMP=1;
@@ -728,6 +732,8 @@ void  ArrowUpDown(void)
 
 void  ShiftData(void)
 {
+
+
    unsigned char  i;
 
 #ifndef	__COUNT_CAR
@@ -743,18 +749,6 @@ void  ShiftData(void)
 				LoadMessage( &DspFlr[0],0);
 
 				if(Emg)				LoadMessage( &EMG_buf[0],14);				
-/*					
-				else if(bErrorCar){
-					LoadMessage( &ETC_ERR_buf[0],14);
-					Dsp_Char_load((BefStstus/10),&xDspCharBuf[20]);
-					xDspCharBuf[25]=0x0;
-					Dsp_Char_load((BefStstus%10),&xDspCharBuf[26]);
-					xDspCharBuf[31]=0x0;
-					xDspCharBuf[32]=0x0;
-					xDspCharBuf[33]=0x0;
-					shiftpt=34;
-				}
-*/
 				else if(StopBit)	LoadMessage( &STOP1_buf[0],14);
 				else if(!Auto)		LoadMessage( &INS_buf[0],14);
 				else if(Parking)	LoadMessage( &PARKING_buf[0],14);
@@ -769,6 +763,7 @@ void  ShiftData(void)
 		}
       	ManualToggle=1;
 	}
+
 
 	else{
       if(ManualToggle){
