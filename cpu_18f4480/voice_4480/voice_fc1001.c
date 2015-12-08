@@ -12,6 +12,7 @@ date    :       1999,9,21
 #include        "..\comm_4480\setup.h"
 #include        "..\comm_4480\spi.h"
 
+#include        "Voice_Ext_IO_8.h"
 
 #define START_FL	FLOOR_B7
 #define END_FL		FLOOR_NO
@@ -118,9 +119,9 @@ date    :       1999,9,21
 #define         SILENCE_MENT            FLOOR_B7+87 //95
 #define         SONG_MENT               FLOOR_B7+88 //96
 #define         BEEP_MENT               FLOOR_B7+89 //97 삐 소리
-#define			CARBTN_L				FLOOR_B7+90 //98
+#define			CARBTN_L				FLOOR_B7+90 //98	
 #define			OPPOSITE_OPEN_MENT		FLOOR_B7+91 //99
-
+	
 	
 #define NO_MENT 0xff // 멘트 없음
 
@@ -229,7 +230,7 @@ date    :       1999,9,21
 #define ELE_bIN_BEL  	(((RcvBuf[IdPt + SL_OUT_FAN] & (0x01 << 3)) == 0x0)?		0:1)
 #define ELE_bIN_REL  	(((RcvBuf[IdPt + SL_OUT_FAN] & (0x01 << 4)) == 0x0)?		0:1)
 //
-#define ELE_bIN_RELAY  	(((RcvBuf[IdPt + SL_mUnKnown26] & 0x01) != 0x0)?		1:0)
+#define ELE_bIN_RELAY  	(((RcvBuf[IdPt + SL_S5_STATE_37] & 0x01) != 0x0)?		1:0)
 
 
 
@@ -406,9 +407,15 @@ void main(void)
     SetVoice(); // 각종 셋팅 여부 
     if (bSetSong) bSetCarBtnVoice = FALSE;
 
+	Ext_IO_8_Init();
+
+
     while (1)
     {
         CLRWDT();
+
+	Ext_IO_8_Func();
+
 
         // Voice Downlod 중...
         if (_VOICE_DOWNLOAD_PIN)
@@ -420,7 +427,7 @@ void main(void)
             _BATTERY = BAT_ON;
         else
             _BATTERY = BAT_OFF;
-	
+
         DspCharRdWr(); // CAR CALL 음성을 위한 엘리베이터 각층 디스플레이 값 저장
         SetCarKeyCancel(); // CAR CALL 취소 값 셋팅
 
@@ -606,6 +613,9 @@ void interrupt isr(void)
 
 
         }
+
+		Ext_IO_8_Timer_1msec();
+
     }
 
 
@@ -806,7 +816,7 @@ unsigned char   GetVoice_OpenCloseUpDn(unsigned char xTmpCurVoice)
 				}
 				else	
 				{
-					xTmpCurVoice = OPEN_MENT; // 문이 열립니다 !
+                xTmpCurVoice = OPEN_MENT; // 문이 열립니다 !
 				}
                 xbOpened = TRUE;
                 UpDnVoiceTimer = 0;
@@ -1493,7 +1503,7 @@ void SetDipSW()
 {
     if (_DIPSW3 && _DIPSW4)         LocalNumber = 0;
     else if (!_DIPSW3 && _DIPSW4)   LocalNumber = 1;
-    else if (_DIPSW3 && !_DIPSW4)  LocalNumber = 2;
+    else if (_DIPSW3 && !_DIPSW4)   LocalNumber = 2;
     else if (!_DIPSW3 && !_DIPSW4)  LocalNumber = 3;
 
     IdPt = (LocalNumber * HOST_DATA_RECOD) + RCV_DATA;

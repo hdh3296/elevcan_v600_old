@@ -5,9 +5,9 @@
 
 
 //#define		NEW_CAR						1
-#define		NEW_HIB_HPI					1
+//#define		NEW_HIB_HPI					1
 //#define		NEW_ES15					1
-//#define		NEW_VOICE					1
+#define		NEW_VOICE					1
 //#define		NEW_CAN_IO_32_BCD			1
 //#define		NEW_CAN_IO_32_FLR_ONOFF		1
 //#define		NEW_CAN_IO_8				1
