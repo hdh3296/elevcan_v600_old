@@ -44,6 +44,4 @@ cpu_18f4480/voice_4480/voice.X/Makefile
 *.mk
 *.properties
 *.orig
-/cpu_18f4480/voice_4480/insProj_Voice/voice.mcp.lnk
-/cpu_18f4480/voice_4480/insProj_Voice_Ext_IO_8/*.lnk
-/cpu_18f4480/voice_4480/*.lnk
+*.lnk

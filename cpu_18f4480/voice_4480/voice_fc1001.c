@@ -15,7 +15,7 @@ date    :       1999,9,21
 #include        "Voice_Ext_IO_8.h"
 
 #define START_FL	FLOOR_B7
-#define END_FL		FLOOR_NO
+#define END_FL		FLOOR_B
 #define VOICE_ADR  	A_VOI
 #define VOICE_ON               0
 #define VOICE_OFF              1
@@ -72,7 +72,7 @@ date    :       1999,9,21
 #define         FLOOR_M                 FLOOR_B7+40	//48
 #define         FLOOR_L                 FLOOR_B7+41	//49
 #define         FLOOR_PH                FLOOR_B7+42	//50
-#define         FLOOR_NO                FLOOR_B7+43	//51
+#define         FLOOR_B                	FLOOR_B7+43	//51
 #define         CARBTN_B7          		FLOOR_B7+44	//52
 #define         CARBTN_B6          		FLOOR_B7+45	//53
 #define         CARBTN_B5          		FLOOR_B7+46	//54
@@ -719,6 +719,10 @@ unsigned char GetFloorMent(void)
         else if (cDotDsp == 'L')
         {
             tmMent = FLOOR_L;
+        }
+        else if (cDotDsp == 'B')
+        {
+            tmMent = FLOOR_B;
         }		
         else if ((cDotDsp >= '1') && (cDotDsp <= '9'))
         {
