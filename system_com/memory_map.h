@@ -60,7 +60,7 @@
 #define  	S1_EMG            		0x08
 #define  	S1_BAT            		0x10
 #define  	S1_AUTO           		0x20
-#define  	S1_MANUAL         		0x40
+#define  	S1_MANUAL         		0x40 // user lamp 2 로 사용
 #define  	S1_UP             		0x80
 
 #define  	S2_DN             		0x01
@@ -70,7 +70,7 @@
 #define  	S2_FIRE           		0x10
 #define  	S2_CAR_BUT_CLR    		0x20
 #define  	S2_OPEN_LAMP_ON   		0x40    
-#define  	S2_LAMP_USER      		0x80
+#define  	S2_LAMP_USER      		0x80 // user lamp 1 로 사용
 
 #define  	S3_VIP            		0x01
 #define  	S3_PARKING        		0x02

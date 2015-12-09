@@ -300,8 +300,95 @@ unsigned char   Lamp(unsigned char id)
 ////////////////dot type es15////////////////////////////////////////////
 #elif defined(__TYPE_ES15)
 
-#if defined(__TYPE_DIRECT)
+#if defined(__TYPE_DIRECT_BCD)
+	// Direct 방식이면 1:1 출력 
+	// BCD 방식이면 이진수 방식으로
+	switch(RcvBuf[IdPt])
+	{
+		case	1:
+			BCD1_LAMP=1;
+			BCD2_LAMP=0;
+			BCD3_LAMP=0;
+			BCD4_LAMP=0;
+			BCD5_LAMP=0;
+			BCD6_LAMP=0;
+			BCD7_LAMP=0;
+			BCD8_LAMP=0;			
+			break;
+		case	2:
+			BCD1_LAMP=0;
+			BCD2_LAMP=1;
+			BCD3_LAMP=0;
+			BCD4_LAMP=0;
+			BCD5_LAMP=0;
+			BCD6_LAMP=0;
+			BCD7_LAMP=0;
+			BCD8_LAMP=0;
+			break;
+		case	3:
+			BCD1_LAMP=0;
+			BCD2_LAMP=0;
+			BCD3_LAMP=1;
+			BCD4_LAMP=0;
+			BCD5_LAMP=0;
+			BCD6_LAMP=0;
+			BCD7_LAMP=0;
+			BCD8_LAMP=0;
 
+			break;
+		case	4:
+			BCD1_LAMP=0;
+			BCD2_LAMP=0;
+			BCD3_LAMP=0;
+			BCD4_LAMP=1;
+			BCD5_LAMP=0;
+			BCD6_LAMP=0;
+			BCD7_LAMP=0;
+			BCD8_LAMP=0;
+			break;
+		case	5:
+			BCD1_LAMP=0;
+			BCD2_LAMP=0;
+			BCD3_LAMP=0;
+			BCD4_LAMP=0;
+			BCD5_LAMP=1;
+			BCD6_LAMP=0;
+			BCD7_LAMP=0;
+			BCD8_LAMP=0;
+			break;
+		case	6:
+			BCD1_LAMP=0;
+			BCD2_LAMP=0;
+			BCD3_LAMP=0;
+			BCD4_LAMP=0;
+			BCD5_LAMP=0;
+			BCD6_LAMP=1;
+			BCD7_LAMP=0;
+			BCD8_LAMP=0;
+			break;
+		case	7:
+			BCD1_LAMP=0;
+			BCD2_LAMP=0;
+			BCD3_LAMP=0;
+			BCD4_LAMP=0;
+			BCD5_LAMP=0;
+			BCD6_LAMP=0;
+			BCD7_LAMP=1;
+			BCD8_LAMP=0;
+			break;
+		case	8:
+			BCD1_LAMP=0;
+			BCD2_LAMP=0;
+			BCD3_LAMP=0;
+			BCD4_LAMP=0;
+			BCD5_LAMP=0;
+			BCD6_LAMP=0;
+			BCD7_LAMP=0;
+			BCD8_LAMP=1;
+			break;
+	}	
+/*	
+	// BCD 방식으로 출력 
 	switch(RcvBuf[IdPt])
 	{
 		case	1:
@@ -394,15 +481,19 @@ unsigned char   Lamp(unsigned char id)
 			BCD3_LAMP=1;
 			BCD4_LAMP=1;
 			break;
-	}	
+	}
+*/	
 
 
-
-	DOOR_OPEN_LAMP= !Open;
-	PARKING_LAMP= !Parking;
-	MANUAL_LAMP=  !Auto;
-	EMG_LAMP_B=   Emg;
-	EMG_LAMP  =   !Emg;
+	
+/* 예전 
+DOOR_OPEN_LAMP= !Open;
+PARKING_LAMP= !Parking;
+MANUAL_LAMP=  !Auto;
+EMG_LAMP_B=   Emg;
+EMG_LAMP  =   !Emg;
+*/
+	
 
 #else
 
@@ -632,6 +723,12 @@ unsigned char   Lamp(unsigned char id)
 	}
 */
 
+#elif defined(__TYPE_DIRECT_BCD)
+	// AT, MT 출력을 자동일때와 자동이 아닐때(즉, 수동일때) 로 구분하여 출력 
+	AUTO_LAMP=0;
+	if(RcvBuf[IdPt+1] & S1_AUTO)		 AUTO_LAMP=1; 
+	MANUAL_LAMP=1;
+	if(RcvBuf[IdPt+1] & S1_AUTO)			 MANUAL_LAMP=0;
 #else
    AUTO_LAMP=0;
    if(RcvBuf[IdPt+2] & S2_LAMP_USER)        AUTO_LAMP=1;
