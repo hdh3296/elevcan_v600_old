@@ -50,11 +50,13 @@ void    UserBaudRate(void)
 		case	0:	
 			Com1BaudRate=9600;
 			break;
-		case	1:	
+		case	1:	// 대성 감시반용 
 			Com1BaudRate=19200;
+			TX_DATA_CNT = 40; 
 			break;
-		case	2:	
+		case	2:	// 정진 감시반용 
 			Com1BaudRate=38400;
+			TX_DATA_CNT = 88; 
 			break;
 		case	3:	
 			Com1BaudRate=57600;

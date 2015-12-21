@@ -2,7 +2,11 @@
 
 
 #define	HOST_COMPANY	'A'
-#define	TX_DATA_CNT		40     
+
+/*-->2015-12-21 딥스위치로 대성 / 정진 감시반용으로 구분<---*/
+// 딥스위치 1번 ON: 대성용 / 2번 ON: 정진용 
+unsigned char TX_DATA_CNT = 0;
+//#define	TX_DATA_CNT		40     
 //#define	TX_DATA_CNT		88     
 
 
