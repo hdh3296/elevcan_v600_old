@@ -121,6 +121,8 @@ date    :       1999,9,21
 #define         BEEP_MENT               FLOOR_B7+89 //97 »ß ¼Ò¸®
 #define			CARBTN_L				FLOOR_B7+90 //98	
 #define			OPPOSITE_OPEN_MENT		FLOOR_B7+91 //99
+#define         FLOOR_P                	FLOOR_B7+92	//100 ÆÄÅ· Floor
+
 	
 	
 #define NO_MENT 0xff // ¸àÆ® ¾øÀ½
@@ -723,6 +725,10 @@ unsigned char GetFloorMent(void)
         else if (cDotDsp == 'B')
         {
             tmMent = FLOOR_B;
+        }
+        else if (cDotDsp == 'P')
+        {
+            tmMent = FLOOR_P;
         }		
         else if ((cDotDsp >= '1') && (cDotDsp <= '9'))
         {
