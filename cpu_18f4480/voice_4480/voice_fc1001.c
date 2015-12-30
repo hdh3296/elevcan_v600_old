@@ -121,6 +121,7 @@ date    :       1999,9,21
 #define         BEEP_MENT               FLOOR_B7+89 //97 삐 소리
 #define			CARBTN_L				FLOOR_B7+90 //98	
 #define			OPPOSITE_OPEN_MENT		FLOOR_B7+91 //99
+/* --> 주의 : 층도착 멘트에 대해서는 딩동 조건을 넣어 줘야 하므로 <--*/
 #define         FLOOR_P                	FLOOR_B7+92	//100 파킹 Floor
 
 	
@@ -479,7 +480,8 @@ void main(void)
             }
             else
             {
-                if ((CurVoice >= START_FL) && (CurVoice <= END_FL))   // 층 도착 !
+				/* --> 주의 이 조건안에 들어가야 딩동이 나온다. <--*/
+                if (((CurVoice >= START_FL) && (CurVoice <= END_FL)) || (CurVoice == FLOOR_P))   // 층 도착 !
                 {
                     PlaySeq = DINGDONG_PLAY_SEQ;
                     CurFloorVoice = CurVoice;
