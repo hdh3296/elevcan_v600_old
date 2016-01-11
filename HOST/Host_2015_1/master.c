@@ -36,7 +36,7 @@
 ///////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////
-//ver 5.75-->5.76  modify
+//ver 5.75-->5.76 -> 6.00 modify
 // bFlrMatchErr delete 
 // encoderAB error  -> start시  Lu,Ld off  후 check
 // 확장 i/o  8점  추가
@@ -54,6 +54,17 @@
 
 
 ///////////////////////////////////////////////////
+//ver 6.00 --> 6.01  modify
+//door stop modify 
+// 1).door stop input  select
+// 2).door stop and wait time menu  insert( timer group 12번 "Op Hold Time"
+// 3).op hold time > 30sec 보다크면  외부 hib에  stop 표시
+//                 <=30sec 보다 작거나 같으면 open 후 설정타임동안 open 후  close  
+//encoder slip 100mm -> 200mm
+//door open 후 200mm 이상의 encoder pulse 가 들어오면  slip error(UCMP) 로 간주    
+///////////////////////////////////////////////////
+
+
 //  ----------
 //  ----------
 //  ----------
@@ -331,6 +342,8 @@ UserDataType    O_Y_0_bit=0;
 ///////////////////////////////////////////newio insert
 UserDataType    Virtual_OUT_bit=0;
 UserDataType    EXT_OUT0_bit=0;
+
+UserDataType    Virtual_IN_bit=0;
 ///////////////////////////////////////////newio insert
 
 UserDataType    Comm_O_OP_bit=0;
@@ -1484,16 +1497,16 @@ UserDataType  __attribute__((section(".usercode"))) ReadInitSetupData(void)
         b_LdTmpBufRam(VIRTUAL_Y6_PORT)  =(SILK_VIRTUAL_Y6	| BIT_NORMAL_OPEN);     
         b_LdTmpBufRam(VIRTUAL_Y7_PORT)  =(SILK_VIRTUAL_Y7	| BIT_NORMAL_OPEN);     
 
-/*
-        b_LdTmpBufRam(EXT_Y0_PORT)   	=(NO_USE_OUT		| BIT_NORMAL_OPEN);
-        b_LdTmpBufRam(EXT_Y1_PORT)   	=(NO_USE_OUT		| BIT_NORMAL_OPEN);
-        b_LdTmpBufRam(EXT_Y2_PORT)   	=(NO_USE_OUT		| BIT_NORMAL_OPEN);
-        b_LdTmpBufRam(EXT_Y3_PORT)   	=(NO_USE_OUT		| BIT_NORMAL_OPEN);
-        b_LdTmpBufRam(EXT_Y4_PORT)   	=(NO_USE_OUT		| BIT_NORMAL_OPEN);
-        b_LdTmpBufRam(EXT_Y5_PORT)   	=(NO_USE_OUT		| BIT_NORMAL_OPEN);
-        b_LdTmpBufRam(EXT_Y6_PORT)   	=(NO_USE_OUT		| BIT_NORMAL_OPEN);
-        b_LdTmpBufRam(EXT_Y7_PORT)   	=(NO_USE_OUT		| BIT_NORMAL_OPEN);
-*/
+
+        b_LdTmpBufRam(DOOR_HOLD_PORT)   =(SILK_DOOR_HOLD	| BIT_NORMAL_OPEN);
+        b_LdTmpBufRam(VIRTUAL_X1_PORT)  =(SILK_VIRTUAL_X1	| BIT_NORMAL_OPEN);
+        b_LdTmpBufRam(VIRTUAL_X2_PORT) 	=(SILK_VIRTUAL_X2	| BIT_NORMAL_OPEN);
+        b_LdTmpBufRam(VIRTUAL_X3_PORT) 	=(SILK_VIRTUAL_X3	| BIT_NORMAL_OPEN);
+        b_LdTmpBufRam(VIRTUAL_X4_PORT)	=(SILK_VIRTUAL_X4	| BIT_NORMAL_OPEN);
+        b_LdTmpBufRam(VIRTUAL_X5_PORT)	=(SILK_VIRTUAL_X5	| BIT_NORMAL_OPEN);
+        b_LdTmpBufRam(VIRTUAL_X6_PORT)	=(SILK_VIRTUAL_X6	| BIT_NORMAL_OPEN);
+        b_LdTmpBufRam(VIRTUAL_X7_PORT)	=(SILK_VIRTUAL_X7	| BIT_NORMAL_OPEN);
+
 
         flash_write_DspChar(FAN_PORT);
 ////////////////////////////////////////////////
@@ -4248,6 +4261,40 @@ void __attribute__((section(".usercode")))  FullCheck(void)
 }
 
 
+
+void __attribute__((section(".usercode")))  DoorOpenAndHoldCheck(void)
+{
+	unsigned int door_stop;
+
+	if(!AutoRunReady())	bDoorOpenHold=0;
+	else{
+		if(bDoorCloseOk || bMoveCar){
+			bDoorOpenHold=0;
+		}
+		else{
+			door_stop=0;
+			if(cF_TOPFLR < 31){
+				if(sRamDArry[mDoor] & 0x10){
+					sRamDArry[mDoor]=(sRamDArry[mDoor] & 0xef);
+					door_stop=1;
+				}
+			}
+
+			if( !IN_DOOR_HOLD || (door_stop==1)){
+				if(cF_REOPTM > 0){
+					bDoorOpenHold=1;
+					DoorOpenTime=0;
+					if(sRamDArry[mDoorSeq] >= DOOR_REOPEN_CHECK){
+	               		sRamDArry[mDoorSeq]=DOOR_OPEN_START;
+					}
+				}
+			}
+		}			
+    }
+}
+
+
+
 /*
 UserDataType __attribute__((section(".usercode")))  SubDoorTimer(void)
 {
@@ -4692,6 +4739,7 @@ void __attribute__((section(".usercode")))  InputCheck(void)
 	MyFamilyServiceCheck();
 	VipCheck();
     FullCheck();
+	DoorOpenAndHoldCheck();
     LuLdOnCheck();      
     BatCheck();
 	SensorPositionRead();
@@ -4776,6 +4824,11 @@ unsigned int  __attribute__((section(".usercode")))   Auto_Manual_Key_Check(void
 
 		if(!bCarUpMove && !bCarDnMove && !bManualUpKey && !bManualDnKey ){
 			ClrUpDnWard();
+		}
+
+
+        if(bDoorCloseOk && (DoorCloseOnTime > 2)){
+			CurDoorSelect=NO_DOOR;
 		}
 
 
@@ -5137,7 +5190,7 @@ void  __attribute__((section(".usercode"))) AutoDoorSystem(void)
          if(sRamDArry[mDoorSeq] < DOOR_CLOSE_START){
 	         if(bOpenDoorOk || (sRamDArry[mDoorSeq] >= DOOR_OPEN_WAIT) ){
 				if( !DoorOpenEndWaitChk()){
-	                DoorOpenTime = cF_OPWTTM+cF_REOPTM+1;
+	                DoorOpenTime = cF_OPWTTM + DEFAULT_REOPTM + 1;
 		         	sRamDArry[mDoorSeq]=DOOR_CLOSE_START;
 					DoorCloseTime=0;      
 				}     	          
@@ -5238,9 +5291,14 @@ void __attribute__((section(".usercode")))  TuningRunCheck(void)
     if( IN_AUTO && (sRamDArry[AUTO_TUNING] > AUTOTUN_SEQ_0) && (TuningLoaderTime < 10) && (INVERTER_CHECK == IO) ){	
 		if( !bManualUpKey && !bManualDnKey && !bMoveCar && !bCarUpMove && !bCarDnMove){
 			i=1;
-			OUT_P4(1);
-			OUT_BK1(1);
-			OUT_BK2(1);
+			if(AutotunUpDn==1){
+				OUT_P4(1);
+			}
+			else{
+				OUT_P4(1);
+				OUT_BK1(1);
+				OUT_BK2(1);
+			}	
 			bAutoTunning=1;
 		} 
 	}
@@ -6107,15 +6165,15 @@ void __attribute__((section(".usercode")))  DoorOpenCloseSeq(void)
                 DoorOpenTime	= 0;
 
                 if(USE_CHECK == MAN_USE){
-	                if(bReOpen){
+	                if(bReOpen && !bDoorOpenHold){
 	                    DoorOpenTime = cF_OPWTTM;    //car
 	                }
 	                else{
-	                    DoorOpenTime = cF_REOPTM;    //hib
+	                    DoorOpenTime = DEFAULT_REOPTM;    //hib
 	                }
 				}
                 else{
-                    DoorOpenTime = cF_REOPTM;    //hib
+                    DoorOpenTime = DEFAULT_REOPTM;    //hib
                 }
 
                 bReOpen=0;
@@ -6124,14 +6182,16 @@ void __attribute__((section(".usercode")))  DoorOpenCloseSeq(void)
             else if(DoorOpenTime > cF_OPTTTM){
                 if(OpenTotalUseChk){
                     sRamDArry[mDoorSeq] = DOOR_OPEN_WAIT;            
-                    DoorOpenTime = cF_REOPTM;   
+                    DoorOpenTime = DEFAULT_REOPTM;   
                 }
             }
 
+/*
             if((DoorOpenTime > 60) && (bDoorCloseOk)){
                 sRamDArry[mDoorSeq] = DOOR_OPEN_WAIT;            
-   	            DoorOpenTime 	= cF_OPWTTM + cF_REOPTM;
+   	            DoorOpenTime 	= cF_OPWTTM + DEFAULT_REOPTM;
             }
+*/
 
             if(DoorOpenTime > 10){
                 bCarUpDnChButClr=0;
@@ -6151,7 +6211,10 @@ void __attribute__((section(".usercode")))  DoorOpenCloseSeq(void)
 			OutDateCheck();
 
 			if(bDoorJumper==0){
-				if((DoorOpenTime > (cF_OPWTTM + cF_REOPTM))){
+				if(bDoorOpenHold)	TmpTime=(unsigned int)(cF_OPWTTM + DEFAULT_REOPTM + cF_REOPTM);
+				else				TmpTime=(unsigned int)(cF_OPWTTM + DEFAULT_REOPTM);
+
+				if(DoorOpenTime > TmpTime){
 	                if(OpenWaitUseChk){    
 	    				sRamDArry[mDoorSeq] = DOOR_REOPEN_CHECK;
 						DoorOpenTime=0;   ///
@@ -6181,7 +6244,7 @@ void __attribute__((section(".usercode")))  DoorOpenCloseSeq(void)
                     UpDnRstCheck();            		
                 }
 	            else{
-                    if(DoorOpenTime > cF_REOPTM){             ////
+                    if(DoorOpenTime > DEFAULT_REOPTM){             ////
         		        sRamDArry[mDoorSeq] = DOOR_CLOSE_START;
                     }
                 }                               
@@ -6265,9 +6328,6 @@ void __attribute__((section(".usercode")))  DoorOpClSystem(void)
 
 	unsigned long tmp_p;
 /*
-	unsigned long tmp_p2;
-	unsigned long tmp_p3;
-*/
     if(bUnd && bDac){
         if((VoiceTime > cF_DIRTIME) &&  (sRamDArry[mDoorSeq] >= WAIT_NEXT_LULD)){
             if(cF_DIRTIME>0){
@@ -6275,7 +6335,9 @@ void __attribute__((section(".usercode")))  DoorOpClSystem(void)
             }
         }
     }                
-                                                                           
+  
+*/
+                                                                         
     HighLowCallClear();
     UpDnDirectionSet();
     
@@ -6283,15 +6345,7 @@ void __attribute__((section(".usercode")))  DoorOpClSystem(void)
         UpDnCallClear();           
 		AutoDoorSystem();   
     }
-    
-/*    													//abcd
-    if(sRamDArry[mDoorSeq] <= DOOR_REOPEN_CHECK){
-        if(!bOpenDoorOk){ 
-            SelectDoorOpen_you();      
-        }               
-    }
-*/
-                     
+                         
 	switch(sRamDArry[mDoorSeq]){
 
 		case  READY_ELEVATOR:		
@@ -6322,7 +6376,7 @@ void __attribute__((section(".usercode")))  DoorOpClSystem(void)
    				DoorCloseTime=0;               
 			}
 			else{
-                CurDoorSelect=0;
+				CurDoorSelect=NO_DOOR;
 				#ifdef	FLOOR_64
 				if((sRamDArry[mNewAckStopFloor] > 0) && ((sRamDArry[mNewAckStopFloor] & ONLY_FLR) != sRamDArry[mcurfloor])){					
 				#else
@@ -6732,6 +6786,7 @@ void __attribute__((section(".usercode")))  DoorOpClSystem(void)
                         sRamDArry[mDoorSeq] = READY_ELEVATOR;
                    	}
                     else{
+						CurDoorSelect=NO_DOOR;
 						KidsKeyCheck();
 						sRamDArry[mDoorSeq] = DOOR_OPEN_START;
 						TestArriveEncoderValueReload();
@@ -8325,7 +8380,8 @@ void  __attribute__((section(".usercode")))  EtcStopSet(void)
     S3_STOP1=0;    
 
 	if(!IN_AUTO && !bMoveCar){
-		if( (sRamDArry[mDoor] & 0x10))			S3_STOP1=1;
+//		if( (sRamDArry[mDoor] & 0x10))			S3_STOP1=1;
+		if(bDoorOpenHold && (cF_REOPTM > 300))	S3_STOP1=1;
 		if(DoorOpenEndWaitChk())				S3_STOP1=1;
 	}
 
@@ -9700,6 +9756,9 @@ CmdFixFlrTime=cF_FIXFLOORTIME;
 		NotRecoveryData= (NotRecoveryData & ~0x03);
 	}
 
+
+	DOOR_STOP_PORT_Inport_Init();  // old version -> new version menu insert init
+	Virtual_IN_bit=0xff;
 
     do{
 

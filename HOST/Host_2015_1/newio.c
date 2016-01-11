@@ -253,6 +253,48 @@ unsigned int    __attribute__((section(".usercode"))) CurSelPortIn(unsigned int 
 				else		        retval=0;
                 if(!NcNo)           retval=!retval;               
 				break;
+/////////////////////////////////////////////////
+		case	SILK_DOOR_HOLD:
+				if(IN_DOOR_HOLD_PORT)	    retval=1;		
+				else		        		retval=0;
+                if(!NcNo)           		retval=!retval;               
+				break;
+		case	SILK_VIRTUAL_X1:
+				if(IN_VIRTUAL_X1_PORT)	    retval=1;		
+				else		        		retval=0;
+                if(!NcNo)           		retval=!retval;               
+				break;
+		case	SILK_VIRTUAL_X2:
+				if(IN_VIRTUAL_X2_PORT)	    retval=1;		
+				else		        		retval=0;
+                if(!NcNo)           		retval=!retval;               
+				break;
+		case	SILK_VIRTUAL_X3:
+				if(IN_VIRTUAL_X3_PORT)	    retval=1;		
+				else		        		retval=0;
+                if(!NcNo)           		retval=!retval;               
+				break;
+		case	SILK_VIRTUAL_X4:
+				if(IN_VIRTUAL_X4_PORT)	    retval=1;		
+				else		        		retval=0;
+                if(!NcNo)           		retval=!retval;               
+				break;
+		case	SILK_VIRTUAL_X5:
+				if(IN_VIRTUAL_X5_PORT)	    retval=1;		
+				else		        		retval=0;
+                if(!NcNo)           		retval=!retval;               
+				break;
+		case	SILK_VIRTUAL_X6:
+				if(IN_VIRTUAL_X6_PORT)	    retval=1;		
+				else		        		retval=0;
+                if(!NcNo)           		retval=!retval;               
+				break;
+		case	SILK_VIRTUAL_X7:
+				if(IN_VIRTUAL_X7_PORT)	    retval=1;		
+				else		        		retval=0;
+                if(!NcNo)           		retval=!retval;               
+				break;
+///////////////////////////////////
 		case	EXT_EX0:
 				if(sRamDArry[mExtIN0] & 0x01)	    retval=1;		
 				else		        				retval=0;

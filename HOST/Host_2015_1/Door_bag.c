@@ -775,28 +775,32 @@ void	__attribute__((section(".usercode"))) DoorCloseEndCheck(UserDataType moveca
     
     if((USE_CHECK == BAGGAGE_USE) || (USE_CHECK == CARLIFT_USE)){
         if(bDoorCloseOkSensor){
+
+/*
             if(bDoorCloseOk == 0){
                 CurDoorSelect=0;
                 bDoorCloseOk=1;    
             }
+*/
+            bDoorCloseOk=1;    
             AllDoorCloseClrCmd_abcdefg();   			
     	}		
     }
     else{
         if(bDoorCloseOkSensor){
        		if(DoorCloseOnTime>2){
+            	bDoorCloseOk=1;    
+
+/*
                 if(bDoorCloseOk == 0){
                     CurDoorSelect=0;
                     bDoorCloseOk=1;    
                 }
+*/
             }    
        		if(DoorCloseOnTime>30){
     			AllDoorCloseClrCmd_abcdefg();   			
-       		}
-						
-
-	//		if(S2_FIRE1)	bDoorCloseOk=1;
-					
+       		}											
     	}		
     			
 

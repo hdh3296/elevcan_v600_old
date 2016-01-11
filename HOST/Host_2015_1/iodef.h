@@ -72,7 +72,7 @@ extern void __attribute__((section(".usercode"))) HextoASCIIByte(void);
 
 #define  ULSDLS_LENGTH  100
 
-#define  SLIP_MM    	100
+#define  SLIP_MM    	200
 
 
 #define  I_AM_MASTER    0x2000
@@ -183,6 +183,28 @@ extern void __attribute__((section(".usercode"))) HextoASCIIByte(void);
 #define		SILK_FID	46
 #define		SILK_UND	47
 
+#define		SILK_DOOR_HOLD		48
+#define		SILK_VIRTUAL_X1		49
+#define		SILK_VIRTUAL_X2		50
+#define		SILK_VIRTUAL_X3		51
+#define		SILK_VIRTUAL_X4		52
+#define		SILK_VIRTUAL_X5		53
+#define		SILK_VIRTUAL_X6		54
+#define		SILK_VIRTUAL_X7		55
+
+
+#define		EXT_EX0		56
+#define		EXT_EX1		57
+#define		EXT_EX2		58
+#define		EXT_EX3		59
+#define		EXT_EX4		60
+#define		EXT_EX5		61
+#define		EXT_EX6		62
+#define		EXT_EX7		63
+
+#define		NO_USE_IN   64
+
+/*
 #define		EXT_EX0		48
 #define		EXT_EX1		49
 #define		EXT_EX2		50
@@ -192,7 +214,9 @@ extern void __attribute__((section(".usercode"))) HextoASCIIByte(void);
 #define		EXT_EX6		54
 #define		EXT_EX7		55
 
+
 #define		NO_USE_IN   56
+*/
 ////////////////////////////////////////////
 ////////////////////////////////////////////
 
@@ -767,6 +791,18 @@ typedef  union  _long_union
 #define	 VIRTUAL_Y5_PORT	    348
 #define	 VIRTUAL_Y6_PORT	    349
 #define	 VIRTUAL_Y7_PORT	    350
+
+
+#define	 DOOR_HOLD_PORT			351
+#define	 VIRTUAL_X1_PORT	    352
+#define	 VIRTUAL_X2_PORT	    353
+#define	 VIRTUAL_X3_PORT	    354
+
+#define	 VIRTUAL_X4_PORT	    355
+#define	 VIRTUAL_X5_PORT	    356
+#define	 VIRTUAL_X6_PORT	    357
+#define	 VIRTUAL_X7_PORT	    358
+
 
 /*
 #define	EXT_Y0_PORT				351
@@ -1566,6 +1602,7 @@ extern  UserDataType    O_U_W_bit;
 extern  UserDataType    O_Y_0_bit;
 extern	UserDataType    Virtual_OUT_bit;
 extern	UserDataType    EXT_OUT0_bit;
+extern	UserDataType    Virtual_IN_bit;
 
 extern  UserDataType    DoorStatus_bit;
 extern  UserDataType    FhmToggle;
@@ -1923,7 +1960,7 @@ extern	unsigned int 	AutotunUpDn;
 #define  bAutoRunningErr      	GET_BITFIELD(&StateBit9).bit1 
 #define  bErrSaveFlag   		GET_BITFIELD(&StateBit9).bit2 
 #define  bZeroHzSet      		GET_BITFIELD(&StateBit9).bit3 
-#define  bNC9_4					GET_BITFIELD(&StateBit9).bit4 
+#define  bDoorOpenHold			GET_BITFIELD(&StateBit9).bit4 
 #define  bNC9_5       			GET_BITFIELD(&StateBit9).bit5 
 #define  bNC9_6		    		GET_BITFIELD(&StateBit9).bit6 
 #define  bNC9_7					GET_BITFIELD(&StateBit9).bit7 
@@ -1986,6 +2023,16 @@ extern	unsigned int 	AutotunUpDn;
 #define  IN_X5_PORT             GET_BITFIELD(&I_X0_bit).bit5   
 #define  IN_X6_PORT             GET_BITFIELD(&I_X0_bit).bit6   
 #define  IN_X7_PORT             GET_BITFIELD(&I_X0_bit).bit7   
+
+
+#define  IN_DOOR_HOLD_PORT		GET_BITFIELD(&Virtual_IN_bit).bit0  
+#define  IN_VIRTUAL_X1_PORT		GET_BITFIELD(&Virtual_IN_bit).bit1  
+#define  IN_VIRTUAL_X2_PORT		GET_BITFIELD(&Virtual_IN_bit).bit2   
+#define  IN_VIRTUAL_X3_PORT		GET_BITFIELD(&Virtual_IN_bit).bit3
+#define  IN_VIRTUAL_X4_PORT		GET_BITFIELD(&Virtual_IN_bit).bit4
+#define  IN_VIRTUAL_X5_PORT		GET_BITFIELD(&Virtual_IN_bit).bit5
+#define  IN_VIRTUAL_X6_PORT		GET_BITFIELD(&Virtual_IN_bit).bit6
+#define  IN_VIRTUAL_X7_PORT		GET_BITFIELD(&Virtual_IN_bit).bit7
 
 
 
@@ -2186,6 +2233,7 @@ extern	unsigned int 	AutotunUpDn;
 #define  cF_STTM4               (cF_STTM4msec * 1)
 #define  cF_STTM5               (cF_STTM5msec * 1)
 
+#define  DEFAULT_REOPTM         0     
 
 
 //////////////////////////////////////////////////////
@@ -2339,6 +2387,19 @@ extern	unsigned int 	AutotunUpDn;
 #define  cF_X5                  GET_LONGFIELD(&FlashDspCharBuf[X5_PORT/4])          .byte[X5_PORT%4]   
 #define  cF_X6                  GET_LONGFIELD(&FlashDspCharBuf[X6_PORT/4])          .byte[X6_PORT%4]   
 #define  cF_X7                  GET_LONGFIELD(&FlashDspCharBuf[X7_PORT/4])          .byte[X7_PORT%4]   
+
+#define  cF_DOOR_HOLD			GET_LONGFIELD(&FlashDspCharBuf[DOOR_HOLD_PORT/4])		.byte[DOOR_HOLD_PORT%4]
+#define  cF_VIRTUAL_X1			GET_LONGFIELD(&FlashDspCharBuf[VIRTUAL_X1_PORT/4])		.byte[VIRTUAL_X1_PORT%4]
+#define  cF_VIRTUAL_X2			GET_LONGFIELD(&FlashDspCharBuf[VIRTUAL_X2_PORT/4])		.byte[VIRTUAL_X2_PORT%4]
+#define  cF_VIRTUAL_X3			GET_LONGFIELD(&FlashDspCharBuf[VIRTUAL_X3_PORT/4])		.byte[VIRTUAL_X3_PORT%4]
+#define  cF_VIRTUAL_X4			GET_LONGFIELD(&FlashDspCharBuf[VIRTUAL_X4_PORT/4])		.byte[VIRTUAL_X4_PORT%4]
+#define  cF_VIRTUAL_X5			GET_LONGFIELD(&FlashDspCharBuf[VIRTUAL_X5_PORT/4])		.byte[VIRTUAL_X5_PORT%4]
+#define  cF_VIRTUAL_X6			GET_LONGFIELD(&FlashDspCharBuf[VIRTUAL_X6_PORT/4])		.byte[VIRTUAL_X6_PORT%4]
+#define  cF_VIRTUAL_X7			GET_LONGFIELD(&FlashDspCharBuf[VIRTUAL_X7_PORT/4])		.byte[VIRTUAL_X7_PORT%4]
+/////////////cc
+
+
+
 //////TEST
 
 ////out test
@@ -2513,6 +2574,14 @@ extern	unsigned int 	AutotunUpDn;
 #define  IN_X7                  CurSelPortIn(cF_X7)   
 
 
+#define  IN_DOOR_HOLD			CurSelPortIn(cF_DOOR_HOLD)
+#define  IN_VIRTUAL_X1			CurSelPortIn(cF_VIRTUAL_X1)
+#define  IN_VIRTUAL_X2			CurSelPortIn(cF_VIRTUAL_X2)
+#define  IN_VIRTUAL_X3			CurSelPortIn(cF_VIRTUAL_X3)
+#define  IN_VIRTUAL_X4			CurSelPortIn(cF_VIRTUAL_X4)
+#define  IN_VIRTUAL_X5			CurSelPortIn(cF_VIRTUAL_X5)
+#define  IN_VIRTUAL_X6			CurSelPortIn(cF_VIRTUAL_X6)
+#define  IN_VIRTUAL_X7			CurSelPortIn(cF_VIRTUAL_X7)
 
 
 

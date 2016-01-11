@@ -186,11 +186,13 @@ void  __attribute__((section(".usercode"))) Pc_Command(void);
 #define PARAMETER_GROUP_MAX         32
 #define OPEN_WAIT_GROUP_MAX         4
 #define NCNO1_GROUP_MAX             32
-#define NCNO2_GROUP_MAX             16
+#define NCNO2_GROUP_MAX             24
+//#define NCNO2_GROUP_MAX             16
 //#define NCNO3_GROUP_MAX             23
 #define NCNO3_GROUP_MAX             SILK_EXT_Y0
 #define INPORT1_GROUP_MAX           32
-#define INPORT2_GROUP_MAX           16
+//#define INPORT2_GROUP_MAX           16
+#define INPORT2_GROUP_MAX           24
 #define OUTPORT_GROUP_MAX           SILK_EXT_Y0
 //#define OUTPORT_GROUP_MAX           23
 #define ERROR_GROUP_MAX             40
@@ -603,7 +605,7 @@ const unsigned char GroupLineMessage[][17]={
                                     "TMR:Dir Set Time",//10
                                     "TMR:Voice OnTime",//11
                                     "TMR:Brk Mgt Time",//12
-                                    "TMR:ReOpen  Time",//13
+                                    "TMR:Op Hold Time",//13
                                     "TMR:P4  On  Time",//14
                                     "TMR:U/D On  Time",//15
                                     "TMR:Bk2 On  Time",//16
@@ -876,14 +878,14 @@ const unsigned char GroupLineMessage[][17]={
                                     "NcNo2:DER       ",//14 
                                     "NcNo2:FID       ",//15 
                                     "NcNo2:UND       ",//16 
-                                    "NcNo2:nc        ",//17 
-                                    "NcNo2:nc        ",//18 
-                                    "NcNo2:nc        ",//19 
-                                    "NcNo2:nc        ",//20 
-                                    "NcNo2:nc        ",//21 
-                                    "NcNo2:nc        ",//22 
-                                    "NcNo2:nc        ",//23 
-                                    "NcNo2:nc        ",//24
+                                    "NcNo2:DOOR_HOLD ",//17 
+                                    "NcNo2:VIRTUAL_X1",//18 
+                                    "NcNo2:VIRTUAL_X2",//19 
+                                    "NcNo2:VIRTUAL_X3",//20 
+                                    "NcNo2:VIRTUAL_X4",//21 
+                                    "NcNo2:VIRTUAL_X5",//22 
+                                    "NcNo2:VIRTUAL_X6",//23 
+                                    "NcNo2:VIRTUAL_X7",//24
                                     "NcNo2:nc        ",//25 
                                     "NcNo2:nc        ",//26
                                     "NcNo2:nc        ",//27 
@@ -991,6 +993,15 @@ const unsigned char GroupLineMessage[][17]={
                                     "INP2:DER        ",//14 
                                     "INP2:FID        ",//15 
                                     "INP2:UND        ",//16 
+                                    "NcNo2:DOOR_HOLD ",//17 
+                                    "NcNo2:VIRTUAL_X2",//18 
+                                    "NcNo2:VIRTUAL_X2",//19 
+                                    "NcNo2:VIRTUAL_X3",//20 
+                                    "NcNo2:VIRTUAL_X4",//21 
+                                    "NcNo2:VIRTUAL_X5",//22 
+                                    "NcNo2:VIRTUAL_X6",//23 
+                                    "NcNo2:VIRTUAL_X7",//24
+/*
                                     "INP2:nc         ",//17 
                                     "INP2:nc         ",//18 
                                     "INP2:nc         ",//19 
@@ -999,6 +1010,7 @@ const unsigned char GroupLineMessage[][17]={
                                     "INP2:nc         ",//22 
                                     "INP2:nc         ",//23 
                                     "INP2:nc         ",//24
+*/
                                     "INP2:nc         ",//25 
                                     "INP2:nc         ",//26
                                     "INP2:nc         ",//27 
@@ -1348,16 +1360,17 @@ const unsigned char FhmMessage[][11]={
 
 #ifdef	DELTA_INVERTER
 const unsigned char AutoTunMessage[][16]={
-                                      "Tuning Stop    ",                                      
-                                      "Tuning Up Start",                                       
-                                      "Tuning Dn Start",                                       
+                                      "Tuning Stop   ",                                      
+                                      "Tuning Up On  ",                                       
+                                      "Tuning Dn On  ",                                       
                                     };                                       
 
 
 #else
 const unsigned char AutoTunMessage[][16]={
-                                      "Tuning Stop    ",                                      
-                                      "Tuning Start   ",                                       
+                                      "Tuning Stop   ",                                      
+                                      "StopTuning On ",                                       
+                                      "RunTuning  On ",                                       
                                     };                                       
 
 #endif
@@ -1479,6 +1492,14 @@ const unsigned char InputPort1SelMessage[][11]={
                                       "SILK_DER   ",
                                       "SILK_FID   ",
                                       "SILK_UND   ",
+									  "DOOR_HOLD  ",
+									  "VIRTUAL_X1 ",
+									  "VIRTUAL_X2 ",
+									  "VIRTUAL_X3 ",
+									  "VIRTUAL_X4 ",
+									  "VIRTUAL_X5 ",
+									  "VIRTUAL_X6 ",
+									  "VIRTUAL_X7 ",
                                       "EXT_X0     ",
                                       "EXT_X1     ",
                                       "EXT_X2     ",
@@ -1488,13 +1509,6 @@ const unsigned char InputPort1SelMessage[][11]={
                                       "EXT_X6     ",
                                       "EXT_X7     ",
                                       "Not Use    ",
-                                      "SILK_NC    ",
-                                      "SILK_NC    ",
-                                      "SILK_NC    ",
-                                      "SILK_NC    ",
-                                      "SILK_NC    ",
-                                      "SILK_NC    ",
-                                      "SILK_NC    ",
 
 /*
                                       "Not Use    ",
@@ -3550,7 +3564,7 @@ void  __attribute__((section(".usercode"))) DigitStringMessage(void)
 	                New485Ladder[SECONDLINE_BASE+EditBlanck+ShiftCnt+2]='m';          
 					break;
 				case	SUBNM_AUTO_TUN:
-	                for(i=0;i<12;i++){
+	                for(i=0;i<14;i++){
 	                    New485Ladder[SECONDLINE_BASE+EditBlanck+i]=AutoTunMessage[DigitData][i];
 	                }
 					break;
@@ -3957,12 +3971,12 @@ void  __attribute__((section(".usercode"))) TimerGroup(void)
             Integer_Digit();
             break;
 
+        case    12:
         case    18:
         case    19:
         case    20:
         case    21:
         case    22:
-
 //            Cursor=0;
 //            ShiftCnt=5;
 //            EditBlanck=5;
@@ -4072,7 +4086,6 @@ void  __attribute__((section(".usercode"))) TimerGroup(void)
             break;
         case    7:
         case    11:
-        case    12:
             i=(LadderGroupSub + F_OpWtTm);
             Cursor=0;
             ShiftCnt=2;
@@ -4258,8 +4271,14 @@ void  __attribute__((section(".usercode"))) NcNoGroup(void)
 
     i=(LadderGroupSub + GroupBaseAddr);
 
-//    j=(offset%8);
-//    BitValue=(0x01 << j);
+	if     (i==F_SubDoorFlr1)	i=DOOR_HOLD_PORT;	
+	else if(i==F_SubDoorFlr2)	i=VIRTUAL_X1_PORT;
+	else if(i==F_SubDoorFlr3)	i=VIRTUAL_X2_PORT;	
+	else if(i==F_SubDoorFlr4)	i=VIRTUAL_X3_PORT;	
+	else if(i==F_SubDoorFlr5)	i=VIRTUAL_X4_PORT;	
+	else if(i==F_SubDoorFlr6)	i=VIRTUAL_X5_PORT;	
+	else if(i==F_SubDoorFlr7)	i=VIRTUAL_X6_PORT;	
+	else if(i==F_SubDoorFlr8)	i=VIRTUAL_X7_PORT;	
 
     Cursor=0;
     ShiftCnt=0;
@@ -4284,16 +4303,39 @@ void  __attribute__((section(".usercode"))) InNcNoGroupSave(void)
 
     i=(LadderGroupSub + GroupBaseAddr);
 
-    GetFlashDataToBufRam(F_BLOCK4);
+	if ( (i >= F_SubDoorFlr1) && (i <= F_SubDoorFlr8)){
+		if     (i==F_SubDoorFlr1)	i=DOOR_HOLD_PORT;	
+		else if(i==F_SubDoorFlr2)	i=VIRTUAL_X1_PORT;
+		else if(i==F_SubDoorFlr3)	i=VIRTUAL_X2_PORT;	
+		else if(i==F_SubDoorFlr4)	i=VIRTUAL_X3_PORT;	
+		else if(i==F_SubDoorFlr5)	i=VIRTUAL_X4_PORT;	
+		else if(i==F_SubDoorFlr6)	i=VIRTUAL_X5_PORT;	
+		else if(i==F_SubDoorFlr7)	i=VIRTUAL_X6_PORT;	
+		else if(i==F_SubDoorFlr8)	i=VIRTUAL_X7_PORT;	
 
-    if(DigitData){
-        b_LdTmpBufRam(i)=(LocalType)(b_LdTmpBufRam(i) | 0x80);
-    }
-    else{
-        b_LdTmpBufRam(i)=(LocalType)(b_LdTmpBufRam(i) & 0x7f);
-    }
-    flash_write_DspChar(F_BLOCK4);
 
+	    GetFlashDataToBufRam(F_BLOCK5);
+	
+	    if(DigitData){
+	        b_LdTmpBufRam(i)=(LocalType)(b_LdTmpBufRam(i) | 0x80);
+	    }
+	    else{
+	        b_LdTmpBufRam(i)=(LocalType)(b_LdTmpBufRam(i) & 0x7f);
+	    }
+	    flash_write_DspChar(F_BLOCK5);
+	}	
+	else{
+
+	    GetFlashDataToBufRam(F_BLOCK4);
+	
+	    if(DigitData){
+	        b_LdTmpBufRam(i)=(LocalType)(b_LdTmpBufRam(i) | 0x80);
+	    }
+	    else{
+	        b_LdTmpBufRam(i)=(LocalType)(b_LdTmpBufRam(i) & 0x7f);
+	    }
+	    flash_write_DspChar(F_BLOCK4);
+	}
 }
 
 
@@ -5738,12 +5780,15 @@ void  __attribute__((section(".usercode"))) ELGroup(void)
 /////////////bit type data////////////////////
 ///////////////////////////////////////////////
         case    SUBNM_AUTO_TUN:
+            DigitMaxValue=3;
+
+/*
 			#ifdef	DELTA_INVERTER
             	DigitMaxValue=3;
 			#else
             	DigitMaxValue=2;
 			#endif
-
+*/
             Cursor=0;
             ShiftCnt=0;
             EditBlanck=3;
@@ -6024,6 +6069,15 @@ void  __attribute__((section(".usercode"))) InportGroup(void)
 
     i=(LadderGroupSub + GroupBaseAddr);
 
+	if     (i==F_SubDoorFlr1)	i=DOOR_HOLD_PORT;	
+	else if(i==F_SubDoorFlr2)	i=VIRTUAL_X1_PORT;
+	else if(i==F_SubDoorFlr3)	i=VIRTUAL_X2_PORT;	
+	else if(i==F_SubDoorFlr4)	i=VIRTUAL_X3_PORT;	
+	else if(i==F_SubDoorFlr5)	i=VIRTUAL_X4_PORT;	
+	else if(i==F_SubDoorFlr6)	i=VIRTUAL_X5_PORT;	
+	else if(i==F_SubDoorFlr7)	i=VIRTUAL_X6_PORT;	
+	else if(i==F_SubDoorFlr8)	i=VIRTUAL_X7_PORT;	
+
     Cursor=0;
     ShiftCnt=2;
     EditBlanck=4;
@@ -6044,6 +6098,148 @@ void  __attribute__((section(".usercode"))) InportGroup(void)
 
 
 
+unsigned int  __attribute__((section(".usercode"))) InportSave(void)
+{
+    LocalType i,j,k,ChangeDisable;
+
+    ChangeDisable=0;
+
+    i=(LadderGroupSub + GroupBaseAddr);
+
+    for(k=EMG_PORT;k <= UND_PORT;k++){
+    	j=cF_FLRDSPCH((unsigned long)(k));
+        j=(j & 0x7f);       //
+        if(j == DigitData)  ChangeDisable=1;
+    }
+
+    for(k=DOOR_HOLD_PORT;k <= VIRTUAL_X7_PORT;k++){
+    	j=cF_FLRDSPCH((unsigned long)(k));
+        j=(j & 0x7f);       //
+        if(j == DigitData)  ChangeDisable=1;
+    }
+
+
+	if((ChangeDisable==0) || (DigitData == NO_USE_IN) ){    
+		if ( (i >= F_SubDoorFlr1) && (i <= F_SubDoorFlr8)){
+			if     (i==F_SubDoorFlr1)	i=DOOR_HOLD_PORT;	
+			else if(i==F_SubDoorFlr2)	i=VIRTUAL_X1_PORT;
+			else if(i==F_SubDoorFlr3)	i=VIRTUAL_X2_PORT;	
+			else if(i==F_SubDoorFlr4)	i=VIRTUAL_X3_PORT;	
+			else if(i==F_SubDoorFlr5)	i=VIRTUAL_X4_PORT;	
+			else if(i==F_SubDoorFlr6)	i=VIRTUAL_X5_PORT;	
+			else if(i==F_SubDoorFlr7)	i=VIRTUAL_X6_PORT;	
+			else if(i==F_SubDoorFlr8)	i=VIRTUAL_X7_PORT;	
+			else	return(0);
+			    
+	    	GetFlashDataToBufRam(F_BLOCK5);
+	        if(DigitData == NO_USE_IN)  DigitData=(DigitData | 0x80);       //
+	        else                        DigitData=(DigitData | OrgNcNo);    //
+	
+	        b_LdTmpBufRam(i)=(LocalType)(DigitData);
+	        flash_write_DspChar(F_BLOCK5);
+		}	
+		else{	    
+	    	GetFlashDataToBufRam(F_BLOCK4);	
+	        if(DigitData == NO_USE_IN)  DigitData=(DigitData | 0x80);       //
+	        else                        DigitData=(DigitData | OrgNcNo);    //
+	
+	        b_LdTmpBufRam(i)=(LocalType)(DigitData);
+	        flash_write_DspChar(F_BLOCK4);
+		}
+	}
+
+	return(0);
+}
+
+
+
+unsigned int  __attribute__((section(".usercode"))) DOOR_STOP_PORT_Inport_Init(void)
+{
+    LocalType j,k;
+    LocalType pt,pt_dt,init;
+
+	init=0;
+
+	for(pt=DOOR_HOLD_PORT;pt <= VIRTUAL_X7_PORT;pt++){
+	    pt_dt=cF_FLRDSPCH((unsigned long)(pt));
+		if( (pt_dt == 0) || (pt_dt == 0xff)){
+			init=1;
+			pt=(VIRTUAL_X7_PORT + 1);
+		}
+		else{		
+			pt_dt=(pt_dt & 0x7f);	
+		    for(k=EMG_PORT;k <= UND_PORT;k++){
+		    	j=cF_FLRDSPCH((unsigned long)(k));
+		        j=(j & 0x7f);       
+		        if(j == pt_dt){
+  					init=1;
+					pt=(VIRTUAL_X7_PORT + 1);
+					k =(UND_PORT + 1);
+				}
+		    }
+		}
+	}	
+
+
+	if ( init > 0){			    
+    	GetFlashDataToBufRam(F_BLOCK5);
+
+        b_LdTmpBufRam(SLOW_DOOR_PORT)   =(SILK_SLOW_DOOR	| BIT_NORMAL_OPEN);
+        b_LdTmpBufRam(VIRTUAL_Y1_PORT)  =(SILK_VIRTUAL_Y1	| BIT_NORMAL_OPEN);     
+        b_LdTmpBufRam(VIRTUAL_Y2_PORT)  =(SILK_VIRTUAL_Y2	| BIT_NORMAL_OPEN);     
+        b_LdTmpBufRam(VIRTUAL_Y3_PORT)  =(SILK_VIRTUAL_Y3	| BIT_NORMAL_OPEN);     
+        b_LdTmpBufRam(VIRTUAL_Y4_PORT)  =(SILK_VIRTUAL_Y4	| BIT_NORMAL_OPEN);     
+        b_LdTmpBufRam(VIRTUAL_Y5_PORT)  =(SILK_VIRTUAL_Y5	| BIT_NORMAL_OPEN);     
+        b_LdTmpBufRam(VIRTUAL_Y6_PORT)  =(SILK_VIRTUAL_Y6	| BIT_NORMAL_OPEN);     
+        b_LdTmpBufRam(VIRTUAL_Y7_PORT)  =(SILK_VIRTUAL_Y7	| BIT_NORMAL_OPEN);     
+
+
+        b_LdTmpBufRam(DOOR_HOLD_PORT)   =(SILK_DOOR_HOLD	| BIT_NORMAL_OPEN);
+        b_LdTmpBufRam(VIRTUAL_X1_PORT)  =(SILK_VIRTUAL_X1	| BIT_NORMAL_OPEN);
+        b_LdTmpBufRam(VIRTUAL_X2_PORT) 	=(SILK_VIRTUAL_X2	| BIT_NORMAL_OPEN);
+        b_LdTmpBufRam(VIRTUAL_X3_PORT) 	=(SILK_VIRTUAL_X3	| BIT_NORMAL_OPEN);
+        b_LdTmpBufRam(VIRTUAL_X4_PORT)	=(SILK_VIRTUAL_X4	| BIT_NORMAL_OPEN);
+        b_LdTmpBufRam(VIRTUAL_X5_PORT)	=(SILK_VIRTUAL_X5	| BIT_NORMAL_OPEN);
+        b_LdTmpBufRam(VIRTUAL_X6_PORT)	=(SILK_VIRTUAL_X6	| BIT_NORMAL_OPEN);
+        b_LdTmpBufRam(VIRTUAL_X7_PORT)	=(SILK_VIRTUAL_X7	| BIT_NORMAL_OPEN);
+
+		SaveVerify = 0x55;
+        flash_write_DspChar(F_BLOCK5);
+		SaveVerify = 0x0;
+
+	}	
+	return(0);
+}
+
+
+
+
+/*
+
+void  __attribute__((section(".usercode"))) InportGroup(void)
+{
+    
+    LocalType i;
+
+    i=(LadderGroupSub + GroupBaseAddr);
+
+    Cursor=0;
+    ShiftCnt=2;
+    EditBlanck=4;
+    EditStatus=DIGIT_STRING_EDIT;
+
+    DigitMaxValue=NO_USE_IN+1;
+    DigitMinValue=0;
+
+    DigitData=cF_FLRDSPCH((unsigned long)i);
+
+    if(DigitData & 0x80)    OrgNcNo=0x80;  //
+    else                    OrgNcNo=0x00;  //
+
+    DigitData=(DigitData & 0x7f);
+
+    Integer_Digit();    
+}
 
 
 void  __attribute__((section(".usercode"))) InportSave(void)
@@ -6068,6 +6264,7 @@ void  __attribute__((section(".usercode"))) InportSave(void)
         flash_write_DspChar(F_BLOCK4);
     }
 }
+*/
 
 
 /*
