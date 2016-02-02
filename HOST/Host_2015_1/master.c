@@ -64,6 +64,23 @@
 //door open 후 200mm 이상의 encoder pulse 가 들어오면  slip error(UCMP) 로 간주    
 ///////////////////////////////////////////////////
 
+///////////////////////////////////////////////////
+//ver 6.01 --> 6.02  modify
+// -------slip,gov err modify---------- 
+// 1).순간 정전시 slip,gov err -> slip,gov err  발생시 일단 slip,gov error 인지후 약 1.5초  동안 유지하면 error 를 인정하고
+//      1.5 초  이내에  복구 되면  순간정전으로 인식하여   error 를 복구한다.      
+// 2).encoder 에 의한 slip은 6.1과 동일
+// -------next floor error modify--------
+//    신법에서 next floor error 발생시 일단 정지하고 가까운 층으로 복귀후(LU or LD  하나라도 들어온경우) 멈추고 도어 open 후 멈추며 
+//    수동,또는 power off-> power on 후에 복귀된다(구법에서는 정지후 레벨찾고 정상 운행, 유압식은 바로 정이하고 복구 불가) 
+///////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////
+//ver 6.02 --> 6.03  modify
+// ------- vip err modify---------- 
+// 1).vip error 수정 
+///////////////////////////////////////////////////
 
 //  ----------
 //  ----------
@@ -513,8 +530,6 @@ unsigned char	Err_In_Emg_Byte,Err_In_Sus_Byte,Err_In_Rg_Byte,Err_In_Fr1_Byte,Err
 
 
 
-
-
 unsigned long  parameter_mirror[MAX_LONG_BUF]; // = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 
@@ -901,6 +916,13 @@ unsigned int __attribute__((section(".usercode")))  DoorOpenEndWaitChk(void)
 	if(bDoorJumper || bMotor_Overheat || S1_POWER_FAIL || bDZ_Err || bInspect || bsCleNoOn)			return(1);		
  	else if(bWaterAndArrive  ||  bsEarthquake)														return(1);
  	else if(OneEncoderBkErrChk())																	return(1);
+
+ 	else if(bsNextFloor){
+		if(New_Law_SystemChk()){
+			return(1);
+		}	
+	}		
+
 	return(0);
 }
 
@@ -3241,8 +3263,6 @@ unsigned int  __attribute__((section(".usercode"))) CounterCheck(void)
 
 
 
-
-
 void  __attribute__((section(".usercode"))) LightOnOff(void)
 {    
     OUT_LIT(1);
@@ -3269,7 +3289,7 @@ void  __attribute__((section(".usercode"))) EmergencyCheck(void)
 	unsigned int i;
 	i=0;
 
-	if(bsEmergency || bsLope || bsSlip)		i=1;
+	if(bsEmergency || bsLope || bsSlip || bSlip_Occur || bLope_Occur)		i=1;
 	if(New_Law_SystemChk() && bsInvertErr)	i=1;
 
 	if(i){
@@ -3300,12 +3320,14 @@ void  __attribute__((section(".usercode"))) EmergencyCheck(void)
 		ClrUpDnWard();				
 	}
 
-    if(bsSlip)			OUT_GBR(1);
-    else if(bsLope)		OUT_GBR(1);
-    else                OUT_GBR(0);
+
+    if(bsSlip || bSlip_Occur)			OUT_GBR(1);
+    else if(bsLope || bLope_Occur)		OUT_GBR(1);
+    else                				OUT_GBR(0);
 
 
-    if(bCarErr ||  bCarStopNoRun){
+
+    if(bCarErr ||  bCarStopNoRun || (DoorOpenEndWaitChk()) ){
         OUT_ERR(1);
 	}
        
@@ -4208,6 +4230,7 @@ void __attribute__((section(".usercode")))  VipCheck(void)
 {
 
     if( (!IN_PASS || bOnceVip || bExt_VIP) && AutoRunReady()){
+		S3_VIP1=1;
         bExtButClr=1;
 
         if((sRamDArry[mDoorSeq] == READY_ELEVATOR) && (sRamDArry[mNewAckStopFloor]==0) ){
@@ -4496,15 +4519,11 @@ unsigned int  __attribute__((section(".usercode"))) LuLdDzCheckNormal(void)
 	#ifdef  TEST_SIMULATION  
 		return(0);
 	#else
-		#ifdef  DELTA_INVERTER  
-			return(0);
-		#else
-			if(New_Law_SystemChk()){
-				if( ( IN_LU &&  IN_LD)  && !IN_BM)				bDZ_Err=1;	
-				else if( (!IN_LU && !IN_LD)  &&  IN_BM) 		bDZ_Err=1;				
-				else											bDZ_Err=0;	
-			}	
-		#endif
+		if(New_Law_SystemChk()){
+			if( ( IN_LU &&  IN_LD)  && !IN_BM)				bDZ_Err=1;	
+			else if( (!IN_LU && !IN_LD)  &&  IN_BM) 		bDZ_Err=1;				
+			else											bDZ_Err=0;	
+		}	
 	#endif
 
 	return(0);
@@ -4594,30 +4613,6 @@ unsigned int  __attribute__((section(".usercode"))) LuLdDzCheck(void)
 }
 
 
-/*
-unsigned int  __attribute__((section(".usercode"))) LuLdDzCheckNormal(unsigned int sta)
-{
-	#ifdef  TEST_SIMULATION  
-		return(0);
-	#else
-		#ifdef  DELTA_INVERTER  
-			return(0);
-		#else
-			if(New_Law_SystemChk()){
-				if( ( IN_LU &&  IN_LD)  && !IN_BM)				bDZ_Err=1;	
-				else if( (!IN_LU && !IN_LD)  &&  IN_BM) 		bDZ_Err=1;				
-				else{
-					if(sta==1){
-						bDZ_Err=0;	
-					}	
-				}
-			}	
-		#endif
-	#endif
-
-	return(0);
-}
-*/
 
 
 
@@ -4808,6 +4803,8 @@ unsigned int  __attribute__((section(".usercode")))   Auto_Manual_Key_Check(void
 		bWaterSensing=0;
 
 		bInspect=0;
+
+		bsNextFloor=0;
 
         if(bAuto && bMotorRestartOn && bMoveCar && bAutoRunningErr){
 			bAutoButtonErr=1;
@@ -7019,11 +7016,115 @@ void  __attribute__((section(".usercode"))) FindLuLdManual(void)
 }      
 
 
-
-
 unsigned int  __attribute__((section(".usercode"))) SlipCheck(void)
 {
 	unsigned long save_pulse;
+
+
+	if(bsSlip || bsLope || bLope_Occur || bSlip_Occur){
+		UpDnAllOff();
+		bExtButClr=1;
+		bCarButClr=1;
+        bCarErr=1;
+   
+		if(bsLope || bLope_Occur){
+			if(LopeTimer > SLIP_TIME){
+				bsLope=1;
+				bLope_Occur=0;	
+	        	bCarStopNoRun=1;
+				if(New_Law_SystemChk()){
+					NotRecoveryData=( NotRecoveryData | 0x01);
+				}
+			}
+			else if(!IN_GR)	bLope_Occur=0;   // recovery lope break        
+		}  
+          
+		if(bsSlip || bSlip_Occur){
+		 	if(SlipTimer > SLIP_TIME){
+				bsSlip=1;
+				bSlip_Occur=0;
+	        	bCarStopNoRun=1;
+				if(New_Law_SystemChk()){
+					NotRecoveryData=( NotRecoveryData | 0x02);
+				}
+			}
+			else{
+				if(New_Law_SystemChk()){
+					if( !LuLdDzCheck() ){         	         	
+						bSlip_Occur=0;
+					}
+				}
+				else{
+					if( !IN_LU || !IN_LD){         	         		        
+						bSlip_Occur=0;
+					}
+				}
+			}			           
+		}
+
+		return(0);
+	}
+
+
+
+ 
+	if(IN_GR)	bLope_Occur=1;
+	if(IN_AUTO)	bSlipCheckStart=0;
+
+
+	if( bSlipCheckStart && (OneDoorSenserNoCloseChk())){         
+    	if(INVERTER_CHECK == IO){				
+			save_pulse=CurPulse;	         
+			if(Base_Slip_pulse > save_pulse){
+				if( (Base_Slip_pulse - save_pulse) > Slip_pulse){
+			        bsSlip=1; 
+					SlipTimer=(SLIP_TIME+1);
+				}
+			}
+			else{
+				if( (save_pulse - Base_Slip_pulse) > Slip_pulse){
+			        bsSlip=1; 
+					SlipTimer=(SLIP_TIME+1);
+				}
+			}
+		}
+
+
+
+		if(New_Law_SystemChk()){
+			if( LuLdDzCheck() ){         	         	
+				bSlip_Occur=1;
+			}
+		}
+		else{
+			if(IN_LU && IN_LD){         	         		        
+				bSlip_Occur=1;
+			}
+		}
+	}
+
+
+	if(bsSlip || bSlip_Occur || bsLope || bLope_Occur){
+		UpDnAllOff();
+		bExtButClr=1;
+		bCarButClr=1;
+		bCarErr=1;   
+  		bSaveFlash=1;
+	} 
+
+	return(0);
+
+}
+
+
+
+
+/*
+unsigned int  __attribute__((section(".usercode"))) SlipCheck(void)
+{
+	unsigned long save_pulse;
+
+
 
 	if(bsSlip || bsLope){
 		UpDnAllOff();
@@ -7044,7 +7145,6 @@ unsigned int  __attribute__((section(".usercode"))) SlipCheck(void)
 		return(0);
 	}
  
-
 	if(IN_GR){		
 		UpDnAllOff();
 		bExtButClr=1;
@@ -7081,7 +7181,7 @@ unsigned int  __attribute__((section(".usercode"))) SlipCheck(void)
 
 
 		if(New_Law_SystemChk()){
-			if( LuLdDzCheck() ){         	         		        
+			if( LuLdDzCheck() ){         	         	
 		        bsSlip=1; 
 			}
 		}
@@ -7108,7 +7208,7 @@ unsigned int  __attribute__((section(".usercode"))) SlipCheck(void)
 	return(0);
 
 }
-
+*/
 
 
 unsigned int __attribute__((section(".usercode")))  NextFloorCheck(void)
@@ -7120,8 +7220,6 @@ unsigned int __attribute__((section(".usercode")))  NextFloorCheck(void)
 		bCarStopNoRun=1;
 		return(0);
 	}
-
-
 
 
    if(sRamDArry[mBefcurfloor] != sRamDArry[mcurfloor]){
@@ -7142,7 +7240,9 @@ unsigned int __attribute__((section(".usercode")))  NextFloorCheck(void)
 		bCarErr=1;
 	} 
 	else if(ElevStopTime > 10){			// 10 sec
-		bsNextFloor=0;
+		if(Old_Law_SystemChk()){
+			bsNextFloor=0;
+		}
 		bsLuLdNoOff=0;
 	}
 #endif
@@ -8775,25 +8875,25 @@ unsigned int  __attribute__((section(".usercode")))   CurErrFind(void)
 
 	auto_manu=ManualKeyStatus();
 
+
 	if( auto_manu > 0){
-		if(bsLope)				sRamDArry[mSysStatus]=sLOPE_BRK;      
-		else if(bsSlip)			sRamDArry[mSysStatus]=sSLIP;      
-		else if(bsBreakMgtOpen)	sRamDArry[mSysStatus]=sBreakMgtOpen;
-		else if(bsBreakOpen)	sRamDArry[mSysStatus]=sBreakOpen;
-		else if(bEncoderErr)	sRamDArry[mSysStatus]=sEncoderErr;      		
-		else if(bEncoderABErr)	sRamDArry[mSysStatus]=sEncoderABErr;    
-		else if(bRelevelErr)	sRamDArry[mSysStatus]=sRelevelError;     
-
+		if(bsLope || bLope_Occur)				sRamDArry[mSysStatus]=sLOPE_BRK;      
+		else if(bsSlip || bSlip_Occur)			sRamDArry[mSysStatus]=sSLIP;      
+		else if(bsBreakMgtOpen)					sRamDArry[mSysStatus]=sBreakMgtOpen;
+		else if(bsBreakOpen)					sRamDArry[mSysStatus]=sBreakOpen;
+		else if(bEncoderErr)					sRamDArry[mSysStatus]=sEncoderErr;      		
+		else if(bEncoderABErr)					sRamDArry[mSysStatus]=sEncoderABErr;    
+		else if(bRelevelErr)					sRamDArry[mSysStatus]=sRelevelError;     
 		
-		else if(bsHdsRunOff)	sRamDArry[mSysStatus]=sHDS_RUN_OFF;	
-		else if(bsCleRunOff)    sRamDArry[mSysStatus]=sCLE_RUN_OFF;
-		else if(bsEmergency)	sRamDArry[mSysStatus]=sEMERGENCY;
-		else if(bsUls)			sRamDArry[mSysStatus]=sULS;								
-		else if(bsDls)			sRamDArry[mSysStatus]=sDLS;								
-		else if(bAutoButtonErr)	sRamDArry[mSysStatus]=sAutoOff;
+		else if(bsHdsRunOff)					sRamDArry[mSysStatus]=sHDS_RUN_OFF;	
+		else if(bsCleRunOff)    				sRamDArry[mSysStatus]=sCLE_RUN_OFF;
+		else if(bsEmergency)					sRamDArry[mSysStatus]=sEMERGENCY;
+		else if(bsUls)							sRamDArry[mSysStatus]=sULS;								
+		else if(bsDls)							sRamDArry[mSysStatus]=sDLS;								
+		else if(bAutoButtonErr)					sRamDArry[mSysStatus]=sAutoOff;
 
-		else if(bsInvCurNext)	sRamDArry[mSysStatus]=sI_C_N_FLR;      	                // inverter error ??
-		else if(bsNextFloor)	sRamDArry[mSysStatus]=sNEXT_FLOOR;
+		else if(bsInvCurNext)					sRamDArry[mSysStatus]=sI_C_N_FLR;      	                // inverter error ??
+		else if(bsNextFloor)					sRamDArry[mSysStatus]=sNEXT_FLOOR;
 		else if(bFlrMatchErr)	sRamDArry[mSysStatus]=sEqualFloorError;
 		else if(bInvComErr)		sRamDArry[mSysStatus]=sInvCommErr;
 		else if(LuLdErrNm==1)	sRamDArry[mSysStatus]=sLuOrLdErr0;		
@@ -9613,6 +9713,10 @@ CmdFixFlrTime=cF_FIXFLOORTIME;
 	SlipTimer=0;
 	LopeTimer=0;
 
+	bSlip_Occur=0;
+	bLope_Occur=0;
+
+
 	LevelEncoderPulse2=0;
 
 /*
@@ -9728,13 +9832,13 @@ CmdFixFlrTime=cF_FIXFLOORTIME;
 	bsLope=0;
    	bsSlip=0;                  
     bSlipCheckStart=0;
-	bsNextFloor=0;
 	bsLuLdNoOff=0;         	         		        
 	bsBreakMgtOpen=0;    
 	bsBreakOpen=0;
 	bRunningOpenOn=0;
 	bEqualFloorError=0;
    	bDZ_Err=0;
+	bsNextFloor=0;
 
 
 	bSaveErrCnt=0;
@@ -9858,7 +9962,6 @@ void _ISR_X _T1Interrupt(void)
         I_SU1_Cht++;
         I_X_0_Cht++;
         I_FIRE_Cht++;
-
 
         C1Time++;
         C2Time++;    
@@ -10059,7 +10162,6 @@ void _ISR_X _T1Interrupt(void)
             if(SelSubCarTime < 100)     SelSubCarTime++;
             if(LadderKeyTime < 36500)   LadderKeyTime++;
             if(WarmingUpTime < 210)     WarmingUpTime++;                                 
-//            if(OpenOutOffTime < 250)    OpenOutOffTime++;
             if(CloseOutOffTime < 250)   CloseOutOffTime++;
             if(ExIOTimer < 250)   		ExIOTimer++;
 			if(HuntingTimer < 100)		HuntingTimer++;
@@ -10080,16 +10182,17 @@ void _ISR_X _T1Interrupt(void)
             }
 
 
-			if(bsLope){
+			if(bsLope || bLope_Occur){
 				if(LopeTimer < 1000)		LopeTimer++;
 			}
 			else							LopeTimer=0;
 
 
-			if(bsSlip){
+			if(bsSlip || bSlip_Occur){
 				if(SlipTimer < 1000)		SlipTimer++;
 			}
 			else							SlipTimer=0;
+
 
 			if(bsEmergency){
 				if(EmgTimer < 1000)			EmgTimer++;

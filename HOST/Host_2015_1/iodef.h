@@ -73,6 +73,7 @@ extern void __attribute__((section(".usercode"))) HextoASCIIByte(void);
 #define  ULSDLS_LENGTH  100
 
 #define  SLIP_MM    	200
+#define  SLIP_TIME    	15
 
 
 #define  I_AM_MASTER    0x2000
@@ -1542,6 +1543,8 @@ extern  UserDataType    CurDoorSelect;
 extern  UserDataType    LoopTime;
 extern	UserDataType    SaveVerify;
 
+extern	UserDataType    CountDn;
+extern	UserDataType    CountUp;
 
 extern	unsigned	int			PowerSaveTimer;
 extern  unsigned	int    	    NextFloorTime;
@@ -1885,7 +1888,7 @@ extern	unsigned int 	AutotunUpDn;
 
 
 #define  bOnceVip               GET_BITFIELD(&StateBit2).bit0 
-//#define  bNextFlrChk            GET_BITFIELD(&StateBit2).bit1 
+//#define  bNextFlrOccur          GET_BITFIELD(&StateBit2).bit1 
 #define  bExportData            GET_BITFIELD(&StateBit2).bit2 
 #define  bImportData            GET_BITFIELD(&StateBit2).bit3 
 #define  bDspClr                GET_BITFIELD(&StateBit2).bit4 
@@ -1961,8 +1964,8 @@ extern	unsigned int 	AutotunUpDn;
 #define  bErrSaveFlag   		GET_BITFIELD(&StateBit9).bit2 
 #define  bZeroHzSet      		GET_BITFIELD(&StateBit9).bit3 
 #define  bDoorOpenHold			GET_BITFIELD(&StateBit9).bit4 
-#define  bNC9_5       			GET_BITFIELD(&StateBit9).bit5 
-#define  bNC9_6		    		GET_BITFIELD(&StateBit9).bit6 
+#define  bLope_Occur       		GET_BITFIELD(&StateBit9).bit5 
+#define  bSlip_Occur		    GET_BITFIELD(&StateBit9).bit6 
 #define  bNC9_7					GET_BITFIELD(&StateBit9).bit7 
 
 

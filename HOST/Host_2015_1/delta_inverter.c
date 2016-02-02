@@ -20,7 +20,7 @@
 extern UserDataType    EnterKey;
 
 
-#define		CAN_BASE_TIME	20		
+#define		CAN_BASE_TIME	10		
 
 #define		HOST_SDO_0		0x60		
 #define		HOST_SDO_1		0x61		
@@ -236,15 +236,15 @@ LocalType __attribute__((section(".usercode"))) C2InvAckDataSort(void)
 
 	ret=0xff;
 
-	if( !((C2ThisRxSid == 0x02) || (C2ThisRxSid == 0x50)	|| (C2ThisRxSid == 0x51) || (C2ThisRxSid == 0x52)) ){
-		return(ret);	
-	}	 
+//	if( !((C2ThisRxSid == 0x02) || (C2ThisRxSid == 0x50)	|| (C2ThisRxSid == 0x51) || (C2ThisRxSid == 0x52)) ){
+//		return(ret);	
+//	}	 
 
 	switch(C2ThisRxSid){
 		case	0x02:
 			for(i=0;i<8;i++)	InvStatus[i] = C2ThisRxBuf[i];
-			ret=0; 	
 			InverterPDORxTime=0;
+			ret=0; 	
 			break;
 		case	0x50:
 			if( !((C2ThisRxBuf[0] == 0x03) || (C2ThisRxBuf[0] == 0x06)	|| (C2ThisRxBuf[0] == 0x60) || (C2ThisRxBuf[0] == 0x61) || (C2ThisRxBuf[0] == 0x62)) ){
@@ -357,6 +357,8 @@ LocalType __attribute__((section(".usercode"))) C2TxAct(void)
 
     if(C2TX0CONbits.TXREQ)		return(1);    				// fault
 	CAN2SendMessageyou(0,&C2ThisTxBuf[0], C2ThisTxDataCnt); // tx success       
+	C2Time=0;
+
 	return(0);
 }
 
@@ -583,8 +585,6 @@ LocalType __attribute__((section(".usercode"))) Can2Check(void)
 	if(C2Time < CAN_BASE_TIME)	return(0);
     if(C2TX0CONbits.TXREQ)		return(0);
 
-
-	C2Time=0;
 
 	if(InverterReady == 0x01){
 		if(SDOReqMode()){
@@ -1198,7 +1198,8 @@ LocalType __attribute__((section(".usercode"))) DeltaInvDataSortForPDO(void)
 				PDO_TX_DataBuf[5]	=0;
 			}
 		}
-		else	PDO_TX_DataBuf[0]	=0x0;							                                    
+//		else	PDO_TX_DataBuf[0]	=0x0;							                                    
+		else	PDO_TX_DataBuf[0]	=0x10;							                                    
 	}
 
 

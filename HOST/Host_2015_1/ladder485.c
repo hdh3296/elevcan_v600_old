@@ -993,14 +993,14 @@ const unsigned char GroupLineMessage[][17]={
                                     "INP2:DER        ",//14 
                                     "INP2:FID        ",//15 
                                     "INP2:UND        ",//16 
-                                    "NcNo2:DOOR_HOLD ",//17 
-                                    "NcNo2:VIRTUAL_X2",//18 
-                                    "NcNo2:VIRTUAL_X2",//19 
-                                    "NcNo2:VIRTUAL_X3",//20 
-                                    "NcNo2:VIRTUAL_X4",//21 
-                                    "NcNo2:VIRTUAL_X5",//22 
-                                    "NcNo2:VIRTUAL_X6",//23 
-                                    "NcNo2:VIRTUAL_X7",//24
+                                    "INP2:DOOR_HOLD  ",//17 
+                                    "INP2:VIRTUAL_X2 ",//18 
+                                    "INP2:VIRTUAL_X2 ",//19 
+                                    "INP2:VIRTUAL_X3 ",//20 
+                                    "INP2:VIRTUAL_X4 ",//21 
+                                    "INP2:VIRTUAL_X5 ",//22 
+                                    "INP2:VIRTUAL_X6 ",//23 
+                                    "INP2:VIRTUAL_X7 ",//24
 /*
                                     "INP2:nc         ",//17 
                                     "INP2:nc         ",//18 
@@ -1427,6 +1427,15 @@ const unsigned char NormalDspMessage[NORMAL_DSP_MESSAGE_CNT][11]={
                                       "Can Com Chk",
                                       "485 Com Chk",
                                       "Dec  Pulse ",
+
+                                      "Slip  mm   ",
+                                      "DoorOpTime ",
+                                      "EL StopTime",
+                                      "EL MoveTime",
+                                      "NoEncoderTm",
+                                      "EncoderUpTm",
+                                      "EncoderDnTm",
+/*
                                       "Reserve13  ",
                                       "Reserve12  ",
                                       "Reserve11  ",
@@ -1434,6 +1443,7 @@ const unsigned char NormalDspMessage[NORMAL_DSP_MESSAGE_CNT][11]={
                                       "Reserve9   ",
                                       "Reserve8   ",
                                       "Reserve7   ",
+*/
                                       "Reserve6   ",
                                       "Reserve5   ",
                                       "Reserve4   ",
@@ -2454,6 +2464,7 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
 {
     LocalType  i,j,k;
 
+	unsigned long tx1,tx2,tx3;
 
     k=cF_NormalDsp;
 
@@ -2558,6 +2569,87 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
 			if(iType_Test_PlusMinus)	New485Ladder[SECONDLINE_BASE]= '+';
 			else						New485Ladder[SECONDLINE_BASE]= '-';
         	break;
+
+////////////////////////////////////////////////////
+//"Slip  Pulse",
+        case    19:
+			tx1=GET_LONG(MM_PULSE);
+
+			if(Base_Slip_pulse > CurPulse){
+   				tx2=(Base_Slip_pulse - CurPulse);
+			}
+			else{
+   				tx2=(CurPulse - Base_Slip_pulse);
+			}
+
+   			CurEncoderPulse( tx2/tx1);
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+8]  ='m';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+9]  ='m';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+10] =' ';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+11] =' ';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+12] =' ';          
+        	break;
+//"DoorOpTime ",
+        case    20:
+    		if(bDoorOpenCmd)	CurEncoderPulse(DoorOpenTime);
+			else				CurEncoderPulse(0);	
+
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+8]  ='H';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+9]  ='m';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+10] ='s';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+11] ='e';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+12] ='c';          
+        	break;
+//"EL StopTime",
+        case    21:
+   			CurEncoderPulse(ElevStopTime);
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+8]  ='H';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+9]  ='m';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+10] ='s';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+11] ='e';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+12] ='c';          
+        	break;
+//"EL MoveTime",
+        case    22:
+   			CurEncoderPulse(ElevMoveTime);
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+8]  ='H';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+9]  ='m';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+10] ='s';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+11] ='e';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+12] ='c';          
+        	break;
+
+//"NoEncoderTm"
+        case    23:
+   			CurEncoderPulse(CounterTime);
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+8]  ='H';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+9]  ='m';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+10] ='s';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+11] ='e';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+12] ='c';          
+        	break;
+//"EncoderUpTm"
+        case    24:
+   			CurEncoderPulse(CountUp);
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+8]  ='T';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+9]  ='m';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+10] ='s';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+11] ='e';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+12] ='c';          
+        	break;
+//"EncoderDnTm"
+        case    25:
+   			CurEncoderPulse(CountDn);
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+8]  ='T';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+9]  ='m';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+10] ='s';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+11] ='e';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+12] ='c';          
+        	break;
+
+////////////////////////////////////////////////////
+
+
         default:
 			Default_Cur_State_Display();
             break;
