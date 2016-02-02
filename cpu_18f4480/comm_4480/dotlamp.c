@@ -234,15 +234,19 @@ unsigned char   Lamp(unsigned char id)
 #if  defined(__TYPE_HIB_HPI)   ||  defined(__TYPE_ES15)
 	if(RcvBuf[IdPt+SL_mCrtExtMoveFlr] & UP_READY){
 		if((RcvBuf[IdPt+SL_mCrtExtMoveFlr] & (~UPDN_READY)) == MyAddress){
-			UpKeyBit=1;
-			UpButtonTime=10;
+			if( !UP_KEY_LAMP){
+				UpKeyBit=1;
+				UpButtonTime=10;
+			}
 		}
 	}
 
 	if(RcvBuf[IdPt+SL_mCrtExtMoveFlr] & DN_READY){
 		if((RcvBuf[IdPt+SL_mCrtExtMoveFlr] & (~UPDN_READY)) == MyAddress){
-			DnKeyBit=1;
-			DnButtonTime=10;
+			if( !DN_KEY_LAMP){
+				DnKeyBit=1;
+				DnButtonTime=10;
+			}
 		}
 	}
 #elif defined(__TYPE_CAR)
