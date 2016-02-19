@@ -87,8 +87,10 @@ unsigned int   Can1ReceiveData_oldProtocol(void)
 			if(Can1RxSid & 0x80)	RcvSrcAdr=(RcvSrcAdr | 0x08);	
 			if(Can1RxSid & 0x100)	RcvSrcAdr=(RcvSrcAdr | 0x10);	
 			if(Can1RxSid & 0x200)	RcvSrcAdr=(RcvSrcAdr | 0x20);	
-			if(Can1RxSid & 0x400)	RcvSrcAdr=(RcvSrcAdr | 0x40);	
+			if(Can1RxSid & 0x400)	RcvSrcAdr=(RcvSrcAdr | 0x40);
 	
+			if(Can1RxEid & 0x20000)	RcvSrcAdr=(RcvSrcAdr | 0x80); // group nm 32까지 가능 T2016-02-19		
+
 			if(RcvSrcAdr == Com1RxBuffer[0]){                                     		
 				j=(unsigned char)(Can1RxEid & 0x0f);	
 				if(j == HOST_LAST_DATA)	j=4;		
