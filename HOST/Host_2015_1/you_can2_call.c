@@ -115,6 +115,8 @@ void  __attribute__((section(".usercode"))) SetSidEid(void)
     C2TmpSid=(unsigned int)cF_COMPANY;
     C2TmpSid=(C2TmpSid | (MyGroupAddr << 7));
 
+    C2TmpSid=(C2TmpSid & 0x07ff);
+
     C2TmdEidH=0;
 	C2TmdEidL=0;
 
@@ -131,6 +133,14 @@ void  __attribute__((section(".usercode"))) SetSidEid(void)
     if(MyLocalAddr & 0x01)   C2TmdEidL=(C2TmdEidL | 0x4000);
     if(MyLocalAddr & 0x02)   C2TmdEidL=(C2TmdEidL | 0x8000);
     if(MyLocalAddr & 0x04)   C2TmdEidH=(C2TmdEidH | 0x0001);
+
+	if(MyGroupAddr >= 0x20){
+		if(MyGroupAddr & 0x10)	C2TmdEidH=(C2TmdEidH | 0x0002);
+
+	    if(MyLocalAddr & 0x01)	C2TmdEidL=(C2TmdEidL | 0x4000);
+	    if(MyLocalAddr & 0x02)	C2TmdEidL=(C2TmdEidL | 0x8000);
+		C2TmdEidH=(C2TmdEidH | 0x0001);
+	}
 #endif
 
 	C2TmdEidL = (C2TmdEidL | I_AM_MASTER); //master set
@@ -283,7 +293,6 @@ void    __attribute__((section(".usercode"))) Can2Init(void)
     youCAN2SetMask(3,0xffff,0xffff,0xffff);
     youCAN2SetMask(1,0xffff,0xffff,0xffff);
     youCAN2SetMask(0,0x07ff,0x0003,0xc000);
-
 
 
 	#ifdef	DELTA_INVERTER	

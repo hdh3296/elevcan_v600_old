@@ -19,7 +19,6 @@ extern void __attribute__((section(".usercode"))) HextoASCIIByte(void);
 
 
 #define	MAX_EIGHT_CAR	1
-
 #define	RS485_FOR_CRT	1
 
 

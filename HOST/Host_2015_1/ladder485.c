@@ -4852,7 +4852,8 @@ void  __attribute__((section(".usercode"))) UserGroup(void)
             ShiftCnt=2;
             EditBlanck=6;
             EditStatus=DIGIT_EDIT;
-            DigitMaxValue=31;
+//            DigitMaxValue=31;
+            DigitMaxValue=63;
             DigitMinValue=0;
             i=F_GroupNm;
             DigitData=cF_FLRDSPCH((unsigned long)i);

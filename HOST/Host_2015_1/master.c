@@ -78,9 +78,18 @@
 
 ///////////////////////////////////////////////////
 //ver 6.02 --> 6.03  modify
-// ------- vip err modify---------- 
-// 1).vip error 수정 
+// ------- vip  err modify---------- 
+// 1).전용운전 ERROR  수정
 ///////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////
+//ver 6.03 --> 6.04  modify
+// group16번 이상 Error 수정   
+// group32번 수정 ->    63번 까지  수정
+///////////////////////////////////////////////////
+
+
 
 //  ----------
 //  ----------
@@ -4230,7 +4239,7 @@ void __attribute__((section(".usercode")))  VipCheck(void)
 {
 
     if( (!IN_PASS || bOnceVip || bExt_VIP) && AutoRunReady()){
-		S3_VIP1=1;
+        S3_VIP1=1;
         bExtButClr=1;
 
         if((sRamDArry[mDoorSeq] == READY_ELEVATOR) && (sRamDArry[mNewAckStopFloor]==0) ){
