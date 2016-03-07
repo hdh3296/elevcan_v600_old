@@ -123,6 +123,7 @@ date    :       1999,9,21
 #define			OPPOSITE_OPEN_MENT		FLOOR_B7+91 //99
 /* --> 주의 : 층도착 멘트에 대해서는 딩동 조건을 넣어 줘야 하므로 <--*/
 #define         FLOOR_P                	FLOOR_B7+92	//100 파킹 Floor
+#define         CARBTN_M                FLOOR_B7+93	//101 
 
 	
 	
@@ -1107,6 +1108,10 @@ unsigned char    GetCarCallMent(unsigned char Call_Floor)
 		{
 			tmMent = CARBTN_L;
 		}
+		else if (cDotDsp == 'M')
+		{
+			tmMent = CARBTN_M;
+		}		
         else if (cDotDsp == '0')
         {
             if (tmMent < (10 + CARBTN_B1))
