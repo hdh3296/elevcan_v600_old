@@ -1,13 +1,20 @@
 
+//ver5->6
+//keysort.c, comdata.c  ,  car11.c ,iodef.h
+//hall lantern  수정
+//car11.c --> carlift 용  one button valid
+
+
+
 #include        "..\can_4480\you_can.h"
 #include        "..\comm_4480\cpu18f4480.h"
 
 
 
 //#define		NEW_CAR						1
-//#define		NEW_HIB_HPI					1
+#define		NEW_HIB_HPI					1
 //#define		NEW_ES15					1
-#define		NEW_VOICE					1
+//#define		NEW_VOICE					1
 //#define		NEW_CAN_IO_32_BCD			1
 //#define		NEW_CAN_IO_32_FLR_ONOFF		1
 //#define		NEW_CAN_IO_8				1
@@ -61,12 +68,12 @@
 
 
 
-//#define __TYPE_DIRECT_BCD // BCD1_LAMP ~ BCD4_LAMP에 대하여 출력값을 직접 입력해야 한다. (Direct 또는 BCD에 따라)
+//#define __TYPE_DIRECT
 
 
 
 
-#define     EXT_VERSION     	0x05
+#define     EXT_VERSION     	0x06
 
 #define     SUB_DOOR_BIT    	0x01
 #define		HIB_PARKING_BIT 	0x02 
@@ -272,55 +279,68 @@
 	    #define  P27             LATC7
 	#endif;
 
-#elif defined(__TYPE_ES15) // 45k80
+#elif defined(__TYPE_ES15)
+	#if defined(__TYPE_DIRECT)
+	    #define  UP_KEY         RB0  
+	    #define  DN_KEY         RB0
+  	    
+	    #define  UP_KEY_LAMP    LATC6  
+	    #define  DN_KEY_LAMP    LATC6  	    
+	    #define  HALL_LAMP_UP   LATC6
+	    #define  HALL_LAMP_DN   LATC6
+	    #define  AUTO_LAMP      LATC6
 
-    #define  NOT_KEY        RA5  
-    #define  NOT_KEY1       RE2  //RC5
-    #define  UP_KEY         RE1  //RC7
-    #define  DN_KEY         RE0  //RC6
-    
-    #define  UP_KEY_LAMP    LATC7  
-    #define  DN_KEY_LAMP    LATC6  
-    #define  UP_LAMP        LATC5  // UP 출력 포트 
-    
-    #define  HALL_LAMP_UP   LATB0
-    #define  HALL_LAMP_DN   LATB1
-    #define  DN_LAMP        LATB4 // DN 출력 포트 
-    #define  AUTO_LAMP      LATB5 // AT  출력 포트 	
-    #define  MANUAL_LAMP    LATB6 // MT 출력 포트 
-    #define  FULL_LAMP      LATB7 // FULL 출력 포트 
-    
-    #define  P0             LATD  
-    #define  P2             LATC
 
-    #define  SEG_A          LATD0 // A 도뜨  
-    #define  SEG_B          LATD1 // B
-    #define  SEG_C          LATD2 // C
-    #define  SEG_D        	LATD3 // D
-    #define  SEG_E        	LATD4 // E
-    #define  SEG_F       	LATD5 // F
-    #define  SEG_G1       	LATD6 // G1
-    #define  SEG_G2         LATD7 // G2
+	    #define  BCD1_LAMP      LATE0  //Y0
+	    #define  BCD2_LAMP      LATE1  //Y1
+	    #define  BCD3_LAMP      LATE2  //Y2
+	    #define  BCD4_LAMP      LATC0  //Y3
+	    #define  UP_LAMP        LATC1  //Y4 
+	    #define  DN_LAMP        LATC2  //Y5
+	    #define  DOOR_OPEN_LAMP LATC3  //Y6
+	    #define  FULL_LAMP      LATD0  //Y7
+	    #define  PARKING_LAMP   LATD1  //Y8
+	    #define  MANUAL_LAMP    LATD2  //Y9
+	    #define  EMG_LAMP_B   	LATD3  //Y10
+	    #define  EMG_LAMP   	LATC4  //Y11
+	#else
+	    #define  NOT_KEY        RA5  
+	    #define  NOT_KEY1       RE2  //RC5
+	    #define  UP_KEY         RE1  //RC7
+	    #define  DN_KEY         RE0  //RC6
+	    
+	    #define  UP_KEY_LAMP    LATC7  //LATE1
+	    #define  DN_KEY_LAMP    LATC6  //LATE0
+	    #define  UP_LAMP        LATC5  //LATE2
+	    
+	    #define  HALL_LAMP_UP   LATB0
+	    #define  HALL_LAMP_DN   LATB1
+	    #define  DN_LAMP        LATB4
+	    #define  AUTO_LAMP      LATB5
+	    #define  MANUAL_LAMP    LATB6
+	    #define  FULL_LAMP      LATB7
+	    
+	    #define  P0             LATD  // 0000 0000 
+	    #define  P2             LATC
+	
+	
+	    #define  SEG_A          LATD0 
+	    #define  SEG_B          LATD1 
+	    #define  SEG_C          LATD2 
+	    #define  SEG_D        	LATD3 
+	    #define  SEG_E        	LATD4 
+	    #define  SEG_F       	LATD5 
+	    #define  SEG_G1       	LATD6 
+	    #define  SEG_G2         LATD7
+ 
 
-    #define  SEG_adg        LATC0 
-    #define  SEG_b_S        LATC1 
-    #define  SEG_c_S        LATC2 
-    #define  SEG_e_S        LATC3 
-    #define  SEG_n12        LATC4 
+	    #define  SEG_adg        LATC0 
+	    #define  SEG_b_S        LATC1 
+	    #define  SEG_c_S        LATC2 
+	    #define  SEG_e_S        LATC3 
+	    #define  SEG_n12        LATC4 
 
-	// 도뜨 출력용 디파인 정의 
-	#if defined(__TYPE_DIRECT_BCD)	
-		#define  BCD1_LAMP		LATD0  //Y0 도뜨 출력용
-		#define  BCD2_LAMP		LATD1  //Y1 도뜨 출력용
-		#define  BCD3_LAMP		LATD2  //Y2 도뜨 출력용
-		#define  BCD4_LAMP		LATD3  //Y3 도뜨 출력용
-		#define  BCD5_LAMP		LATD4  //Y4 도뜨 출력용
-		#define  BCD6_LAMP		LATD5  //Y5 도뜨 출력용
-		#define  BCD7_LAMP		LATD6  //Y6 도뜨 출력용
-		#define  BCD8_LAMP		LATD7  //Y7 도뜨 출력용
 	#endif
-
-
 
 #elif defined(__TYPE_CAR)
 

@@ -14,6 +14,7 @@
 
 
 
+unsigned char BefDnHallElev,BefUpHallElev;
 
 
 
@@ -171,7 +172,6 @@ int UpKeyLoad(unsigned char Curid)
 
     UpHallElev=0xff;
 
-
     if(b_vip){
         CanCmd=CAN_VIP_COMMAND;
 
@@ -197,18 +197,29 @@ int UpKeyLoad(unsigned char Curid)
   
 
 	SelHostAdr=0x0;
-	for(id=0;id<MAX_ELEV;id++){			
+	for(id=1;id<MAX_ELEV;id++){			
 		if(UpKeyCalu[SelHostAdr] > UpKeyCalu[id])	SelHostAdr=id;   
 		else if(UpKeyCalu[SelHostAdr] == UpKeyCalu[id]){
+			SelHostAdr=BefUpHallElev;
+
+/*
 			if(	Equal[SelHostAdr] >	Equal[id]){		
 				SelHostAdr=id;	
-			}			
+			}	
+			else if( Equal[SelHostAdr] == Equal[id]){		
+				if(BefUpHallElev != 0xff){	
+					SelHostAdr=BefUpHallElev;
+				}
+			}		
+*/
 		}
 	}
 	
 
     if(i==0){
 		UpHallElev=SelHostAdr;
+		BefUpHallElev=SelHostAdr;
+
 	    if(!Up_Key_Valid)   return(1);
 
         i=LoadBefCheck(SelHostAdr,1);                      
@@ -262,7 +273,6 @@ int DnKeyLoad(unsigned char Curid)
 
     DnHallElev=0xff;
 
-
     if(b_vip){
         CanCmd=CAN_VIP_COMMAND;
 
@@ -290,13 +300,23 @@ int DnKeyLoad(unsigned char Curid)
 
 
 	SelHostAdr=0x0;
-	
-	for(id=0;id<MAX_ELEV;id++){			
+	for(id=1;id<MAX_ELEV;id++){			
 		if(DnKeyCalu[SelHostAdr] > DnKeyCalu[id])     SelHostAdr=id;		
 		else if(DnKeyCalu[SelHostAdr] == DnKeyCalu[id]){
+			SelHostAdr=BefDnHallElev;
+
+/*
 			if(	Equal[SelHostAdr] >	Equal[id]){		
 				SelHostAdr=id;	
 			}			
+
+
+			else if(Equal[SelHostAdr] == Equal[id]){		
+				if(BefDnHallElev != 0xff){	
+					SelHostAdr=BefDnHallElev;
+				}
+			}					
+*/
 		}
 	}
 
@@ -304,6 +324,7 @@ int DnKeyLoad(unsigned char Curid)
 
     if(i==0){
 		DnHallElev=SelHostAdr;
+		BefDnHallElev=SelHostAdr;
 
 	    if(!Dn_Key_Valid)	   return(1);
 		 

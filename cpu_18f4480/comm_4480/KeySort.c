@@ -671,7 +671,10 @@ unsigned char  UpKeyCalcElev(unsigned int id)
 						UpKeyCalu[id] = CalCulate(xtmptop,xTmpCurFloor,xtmptop,xtmpadr,THIRD_OFFSET);                     		  
 					}  
 					else{
-                    	UpKeyCalu[id] = 1;  
+ 						if(IsCarMove(xIdPt))	UpKeyCalu[id] = 3;
+ 						else					UpKeyCalu[id] = 1;
+
+//                    	UpKeyCalu[id] = 1;  
 					}
                 }
 				else{
@@ -682,7 +685,8 @@ unsigned char  UpKeyCalcElev(unsigned int id)
             else if(IsCarDnWard(xIdPt)){
                 if(IsYouFlrEqualMe(xdestflr,xtmpadr)){
 	                if(IsYouUp(xdestflr)){
-	                    UpKeyCalu[id] = 1;  
+//	                    UpKeyCalu[id] = 1;  
+	                    UpKeyCalu[id] = 4;  
 	                }
                 	else{
 						UpKeyCalu[id] = CalCulate(xTmpCurFloor,xtmpstart,xtmpadr,xtmpstart,THIRD_OFFSET);                     		  
@@ -698,9 +702,12 @@ unsigned char  UpKeyCalcElev(unsigned int id)
 		}
 
 		if(UpKeyReadyChk(id)==0){
+			UpKeyCalu[id] = (100 + UpKeyCalu[id]);
+
+/*
 			if(UpKeyCalu[id] > 154)	UpKeyCalu[id]=254;
 			else					UpKeyCalu[id] = (100 + UpKeyCalu[id]);
-	/////////////////////////////////////////////////////////////////////////////////////////////////		return(1); //140509 홀랜터 꺼지는 거 수정
+*/
 		}
 
     }
@@ -793,7 +800,10 @@ unsigned char  DnKeyCalcElev(unsigned int id)
 						DnKeyCalu[id] = CalCulate(xTmpCurFloor,xtmpstart,xtmpadr,xtmpstart,THIRD_OFFSET);                     		  
 					}
 					else{
-                    	DnKeyCalu[id] = 1;  
+ 						if(IsCarMove(xIdPt))	DnKeyCalu[id] = 3;
+						else					DnKeyCalu[id] = 1;								
+
+//                    	DnKeyCalu[id] = 1;  
 					}
 				}
 				else{
@@ -803,7 +813,8 @@ unsigned char  DnKeyCalcElev(unsigned int id)
             else if(IsCarUpWard(xIdPt)){    
                 if(IsYouFlrEqualMe(xdestflr,xtmpadr)){
 	                if(IsYouDn(xdestflr)){
-	                    DnKeyCalu[id] = 1;  
+//	                    DnKeyCalu[id] = 1;  
+	                    DnKeyCalu[id] = 4;  
 	                }
 					else{	
 						DnKeyCalu[id] = CalCulate(xtmptop,xTmpCurFloor,xtmptop,xtmpadr,THIRD_OFFSET);                     		  
@@ -819,11 +830,14 @@ unsigned char  DnKeyCalcElev(unsigned int id)
         }
 
 			if(DnKeyReadyChk(id)==0){
+				DnKeyCalu[id] = (DnKeyCalu[id] + 100);
+
+/*
 				if(DnKeyCalu[id] >= 154)	DnKeyCalu[id]=254;
 				else 						DnKeyCalu[id] = (DnKeyCalu[id] + 100);
-		///////////////////////////////////////////////////////////////////////////		return(1); //140509 홀랜터 꺼지는 거 수정
-			}
+*/
 
+			}
     }
 
     return(ret); 

@@ -75,7 +75,19 @@ unsigned    char  YourKey1[4]={0,0,0,0};
 unsigned    char  YourKey2[4]={0,0,0,0};
 unsigned    char  YourKey3[4]={0,0,0,0};
 
-unsigned    char  OtherDoorKey[5];
+//unsigned    char  OtherDoorKey[5];
+
+unsigned    char  OtherDoor;
+unsigned    char  OtherDoor0;
+unsigned    char  OtherDoor1;
+unsigned    char  OtherDoor2;
+unsigned    char  OtherDoor3;
+
+unsigned    char  OtherKey[4]={0,0,0,0};
+unsigned    char  OtherKey0[4]={0,0,0,0};
+unsigned    char  OtherKey1[4]={0,0,0,0};
+unsigned    char  OtherKey2[4]={0,0,0,0};
+unsigned    char  OtherKey3[4]={0,0,0,0};
 
 
 
@@ -177,6 +189,8 @@ bit   bDoorOpenWaitOn=0;
 bit   bBefDoorOpen=0;
 bit   bBefK=0;
 
+bit   bTwoButton=0;
+
 
 bit   bOneskeySet=0;
 bit   bDoorOpenMain=0;
@@ -199,11 +213,110 @@ unsigned char P2=0;
 unsigned int  CarOneButtonSetCheck(void)
 {
 	#ifdef	 CARLIFT
-		if( (newscan[0] == CarKey[0]) && (newscan[1] == CarKey[1]) && (newscan[2] == CarKey[2]) && (newscan[3] == CarKey[3])){
-			return(0);
+		unsigned	char 	c_key[4]; 
+    	unsigned	int		IdPt;
+		unsigned	char 	bitsta,keycnt,k,i; 
+		
+		keycnt=0;
+
+		for(k=0;k<4;k++){
+			bitsta=0x01;
+			if(newscan[k] > 0){
+				for(i=0;i<8;i++){
+					if(newscan[k] & bitsta){
+						keycnt++;
+					}
+					bitsta=(bitsta << 1);
+				}
+			}
 		}
-		else if( (HighFlr > 0) || (LowFlr > 0))	return(1);
-		else	return(0);
+
+
+		if(keycnt>1){
+			bTwoButton=1;
+			return(1);
+		}	
+		else{
+	    	IdPt=(SelHostAdr * HOST_DATA_RECOD) + RCV_DATA;
+			c_key[0] = RcvBuf[IdPt + mCarKey1];
+			c_key[1] = RcvBuf[IdPt + mCarKey9];
+			c_key[2] = RcvBuf[IdPt + mCarKey17];
+			c_key[3] = RcvBuf[IdPt + mCarKey25];
+	
+			if( (newscan[0] == CarKey[0]) && (newscan[1] == CarKey[1]) && (newscan[2] == CarKey[2]) && (newscan[3] == CarKey[3])){
+				bTwoButton=0;
+			}
+			else if( (c_key[0] | c_key[1] | c_key[2] | c_key[3]))			bTwoButton=1;
+			else if( (YourKey[0] | YourKey[1] | YourKey[2] | YourKey[3]))	bTwoButton=1;
+			else if( (CarKey[0] | CarKey[1] | CarKey[2] | CarKey[3]))		bTwoButton=1;
+			else if( (HighFlr > 0) || (LowFlr > 0))							bTwoButton=1;
+			else															bTwoButton=0;				
+			return(1);
+
+		}
+	#else
+		bTwoButton=0;
+		return(0);
+	#endif
+}
+
+
+unsigned int  TwoButtonClear(void)
+{
+	unsigned char k;
+	for(k=0;k<4;k++){
+		CarKey[k] 	  = 0x0;        
+		ToggleKey[k]  = 0x0;      
+		YourKey0[k]   = 0x0;
+		YourKey1[k]   = 0x0;
+		YourKey2[k]   = 0x0;
+		YourKey3[k]   = 0x0;
+		YourKey[k]    = 0x0;
+	}			
+	return(0);
+}
+
+
+unsigned int  TwoButtonOnCheck(void)
+{
+	#ifdef	 CARLIFT
+		unsigned    char	i,k,flr;
+		unsigned    char 	bitsta;
+		unsigned    char 	buttonCnt=0;
+		unsigned	char 	tmpHigh,tmpLow; 
+
+		unsigned	char 	c_key[4]; 
+    	unsigned 	int		IdPt;
+
+		if((HighFlr==0) && (LowFlr==0))	return(0); 
+
+		tmpHigh=(HighFlr & ONLY_FLR);
+		tmpLow =(LowFlr & ONLY_FLR);
+
+
+		flr=0;
+		for(k=0;k<4;k++){
+			flr=(k * 8);
+			bitsta=0x01;
+			if(CarKey[k] > 0){
+				for(i=0;i<8;i++){
+					if(CarKey[k] & bitsta){
+						if( (tmpHigh != flr) && (tmpLow != flr)){
+							TwoButtonClear();
+							return(0);
+						}
+
+						if(OtherKey[k] & bitsta){
+							if(bIamXSubDoor)	TwoButtonClear();
+							return(0);
+						} 
+					}
+					bitsta=(bitsta << 1);
+					flr++;
+				}
+			}
+		}
+		return(0); 
 	#else
 		return(0);
 	#endif
@@ -438,25 +551,46 @@ void    MyLampCheck(void)
 		else{
             switch(i){
                 case    0x80:
-					OtherDoorKey[1]=EqualDataBuf[2];
+					OtherDoor0=EqualDataBuf[2];
+                    OtherKey0[0]=EqualDataBuf[3];
+                    OtherKey0[1]=EqualDataBuf[4];
+                    OtherKey0[2]=EqualDataBuf[5];
+                    OtherKey0[3]=EqualDataBuf[6];
                     j=1;
                     break;
                 case    0x81:
-					OtherDoorKey[2]=EqualDataBuf[2];
+					OtherDoor1=EqualDataBuf[2];
+                    OtherKey1[0]=EqualDataBuf[3];
+                    OtherKey1[1]=EqualDataBuf[4];
+                    OtherKey1[2]=EqualDataBuf[5];
+                    OtherKey1[3]=EqualDataBuf[6];
                     j=1;
                     break;
                 case    0x82:
-					OtherDoorKey[3]=EqualDataBuf[2];
+					OtherDoor2=EqualDataBuf[2];
+                    OtherKey2[0]=EqualDataBuf[3];
+                    OtherKey2[1]=EqualDataBuf[4];
+                    OtherKey2[2]=EqualDataBuf[5];
+                    OtherKey2[3]=EqualDataBuf[6];
                     j=1;
                     break;
                 case    0x83:
-					OtherDoorKey[4]=EqualDataBuf[2];
+					OtherDoor3=EqualDataBuf[2];
+                    OtherKey3[0]=EqualDataBuf[3];
+                    OtherKey3[1]=EqualDataBuf[4];
+                    OtherKey3[2]=EqualDataBuf[5];
+                    OtherKey3[3]=EqualDataBuf[6];
                     j=1;
                     break;
             }
         
             if(j==1){    
-                OtherDoorKey[0]  = (OtherDoorKey[1]   | OtherDoorKey[2]   | OtherDoorKey[3]   | OtherDoorKey[4]);
+				OtherDoor=(OtherDoor0   | OtherDoor1   | OtherDoor2   | OtherDoor3);
+                OtherKey[0]=OtherKey0[0] | OtherKey1[0] | OtherKey2[0] | OtherKey3[0];
+                OtherKey[1]=OtherKey0[1] | OtherKey1[1] | OtherKey2[1] | OtherKey3[1];
+                OtherKey[2]=OtherKey0[2] | OtherKey1[2] | OtherKey2[2] | OtherKey3[2];
+                OtherKey[3]=OtherKey0[3] | OtherKey1[3] | OtherKey2[3] | OtherKey3[3];                
+
             }
 
 		}
@@ -1200,6 +1334,14 @@ unsigned char  KeyClearAll(void)
       	YourKey2[k]   = 0x0;
       	YourKey3[k]   = 0x0;
       	YourKey[k]    = 0x0;
+
+
+      	OtherKey0[k]   = 0x0;
+      	OtherKey1[k]   = 0x0;
+      	OtherKey2[k]   = 0x0;
+      	OtherKey3[k]   = 0x0;
+      	OtherKey[k]    = 0x0;
+
    	}
 	
 	return(0);		   
@@ -1345,8 +1487,8 @@ void  io(void)
 
       newscan[0]=~tmp;
 
-      extkey=~YourKey[0];  
-      newscan[0]=(newscan[0] & extkey); 
+		//extkey=~YourKey[0];  
+		//newscan[0]=(newscan[0] & extkey); 
 
       SEL_ACT=1;      
    }
@@ -1359,8 +1501,8 @@ void  io(void)
       tmp=IN_DATA_PORT;
       tmp=IN_DATA_PORT;
       newscan[1]=~tmp;
-      extkey=~YourKey[1];  
-      newscan[1]=(newscan[1] & extkey); 
+//      extkey=~YourKey[1];  
+//      newscan[1]=(newscan[1] & extkey); 
       SEL_ACT=1;
    }
 
@@ -1372,8 +1514,8 @@ void  io(void)
       tmp=IN_DATA_PORT;
       tmp=IN_DATA_PORT;
       newscan[2]=~tmp;
-      extkey=~YourKey[2];  
-      newscan[2]=(newscan[2] & extkey); 
+//      extkey=~YourKey[2];  
+//      newscan[2]=(newscan[2] & extkey); 
       SEL_ACT=1;   
    }
       
@@ -1386,8 +1528,8 @@ void  io(void)
       tmp=IN_DATA_PORT;
       newscan[3]=~tmp;
 
-      extkey=~YourKey[3];  
-      newscan[3]=(newscan[3] & extkey);    
+//      extkey=~YourKey[3];  
+//      newscan[3]=(newscan[3] & extkey);    
       SEL_ACT=1;
    }
 
@@ -1466,13 +1608,15 @@ unsigned char   CarLampNormal(unsigned char id)
 unsigned int  SetKey(unsigned char    pt,unsigned char tfloor)
 {
     unsigned char i,st;
+
 	
 	tfloor=(tfloor + MyBaseFlr);
       
     st=0x01;
     for(i=0;i<8;i++){      
-        if((oldscan[pt] & st) && ((TopFloor+1) >= (tfloor+i))){     			
-            if(!(ClrKey[pt] & st) && !CarOneButtonSetCheck()){
+        if((oldscan[pt] & st) && ((TopFloor+1) >= (tfloor+i)) && !bTwoButton){     			
+//            if(!(ClrKey[pt] & st) && !CarOneButtonSetCheck()){
+            if(!(ClrKey[pt] & st)){
                 ClrKey[pt]   = ClrKey[pt] | st;
 				BellTime=0;               
                 Car_Key_Valid=1;
@@ -1518,6 +1662,8 @@ unsigned int  SetKeyButton(void)
 { 
 
    	unsigned char i,j,k;
+
+CarOneButtonSetCheck();
 
 
    if((newscan[0] == oldscan[0])){
@@ -1743,8 +1889,13 @@ void    CarUpDownKeyNormal(void)
 	}
 
 	if(Vip){		
-		if( !bDoorOpenSub || !bDoorOpenMain)	OtherDoorKey[0]=0;   
-      	j=(YourDoor | DoorKey | OtherDoorKey[0]);
+		if( !bDoorOpenSub || !bDoorOpenMain){
+//			OtherDoorKey[0]=0;
+			OtherDoor=0;
+		}
+   
+//      	j=(YourDoor | DoorKey | OtherDoorKey[0]);
+      	j=(YourDoor | DoorKey | OtherDoor);
 		if( ((j & 0x0a)== 0) && !CarMove && Open){
 			 bRealOpenkey=1;
 	         DoorKey=DoorKey | 0x01;
@@ -2275,6 +2426,8 @@ void main(void)
             KeyClearAll();  
             KeyClrTime=0;
         }
+
+		TwoButtonOnCheck();
         
     }
 
