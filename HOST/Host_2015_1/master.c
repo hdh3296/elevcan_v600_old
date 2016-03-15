@@ -90,20 +90,19 @@
 ///////////////////////////////////////////////////
 
 
-
-//  ----------
-//  ----------
-//  ----------
-//  ------- 수정사항 ---
-// invert comm erro(2)
-// car cancle 
-// 강제감속 시 복귀   
+///////////////////////////////////////////////////
+//ver 6.04 --> 6.05 modify 
+// move counter 에러 수정 ( counter 가 안되고 있었음)-> 최대 백만회 카운트    
+// total use time( hour 추가)
+// 작업모드 추가 > 작업자가 작업모드 설정시 층중간에 멈춤(Man Ins Mode)
+// 유압식 에서 final err 추가( 가바나 err 과 유사)
 ///////////////////////////////////////////////////
 
 
-//전용운전 추가
-//재난운전 추가
-//로더에  층제어 점검
+
+
+
+
 
 
 
@@ -322,6 +321,7 @@ unsigned	int			DzOffTimer=0;
 
 
 
+UserDataType    ManWorkingSeq=0;   
 
 UserDataType    OldFireBuf=0;  
 UserDataType    AutoBit=0;
@@ -528,6 +528,7 @@ unsigned long 	TestPulse1,LuLdEncoder,UpDnEncoder;
 
 unsigned long 	xPulse1,xPulse2,BaseDecPulseX;
 unsigned long 	xVarTime,xVarSCurve,MaxMpm,xCurMpm,xCurMpm_MaxMpmSpd,Length1,Length2;
+unsigned long 	ManJobPulse;
 
 
 
@@ -556,7 +557,7 @@ const unsigned char StatusMessage[][16]={
                                       "InverterStop    ",      //001                               
                                       "INVFloorStop    ",      //002                               
                                       "Emgency Stop    ",      //003                               
-                                      "GOV Error       ",      //004                               
+                                      "GOV/Final Error ",      //004                               
                                       "MotorOverheat   ",      //005                                                                           
                                       "Slip Stop       ",      //006                               
                                       "ULS Stop        ",      //007                                                                     
@@ -4557,7 +4558,6 @@ void    __attribute__((section(".usercode"))) WaterCheck(void)
 	}	
 
 
-
    	if(bWaterSensing){
 	   	bExtButClr=1;
 	 	bCarButClr=1;   
@@ -4878,13 +4878,13 @@ void __attribute__((section(".usercode")))  AutoUpDownStart(void)
     if(sRamDArry[mAckStopFloor]){  
         if((sRamDArry[mAckStopFloor] & ONLY_FLR) > sRamDArry[mcurfloor]){
             if(sRamDArry[mCarMoveState]==0){
-                if(bMoveUpOk)   MoveCounterx;
+                if(bMoveUpOk)   MoveCounterx++;
             }    
             CarUpStartCmd(); 
         }                         
         else if((sRamDArry[mAckStopFloor] & ONLY_FLR) < sRamDArry[mcurfloor]){
             if(sRamDArry[mCarMoveState]==0){
-                if(bMoveDnOk)   MoveCounterx;
+                if(bMoveDnOk)   MoveCounterx++;
             }
             CarDnStartCmd();
         }       
@@ -5360,6 +5360,13 @@ void __attribute__((section(".usercode")))  ManualUpDnKeyCheck(void)
 		bManualDnKey=0;        
 	}
    
+
+	if(ManWorkingSeq==1){
+		bManualDnKey=1;
+	}
+
+
+
 
 	if(bFhmRun){		
 
@@ -6036,6 +6043,90 @@ void __attribute__((section(".usercode")))  Dz_Overheat_Earthquake_Water_Chk(voi
 
 
 
+
+
+unsigned int __attribute__((section(".usercode")))  ManWorkingStartCheck(void)
+{
+	unsigned long	tx1,tx2;
+
+	if(INVERTER_CHECK != IO){
+		ManWorkingSeq=0;
+		return(0);			  
+	}
+
+
+	if(IN_VIRTUAL_X1){
+		ManWorkingSeq=0;
+		return(0);			  
+	}
+
+	switch(ManWorkingSeq){
+		case	0:
+			if(!IN_VIRTUAL_X1 && !bFhmRun){
+				if(AutoRunReady()){
+					if((sRamDArry[mDoorSeq] == READY_ELEVATOR)){
+						if(bDoorCloseOk && bOneLuOrLd){
+	        				if(sRamDArry[mcurfloor] > 0){
+								
+								tx1=GET_LONG(MM_PULSE);							
+								if(tx1>0){
+									tx2 = ((unsigned long)10000 * (unsigned long)(2000));  // 2m		
+									tx2 = (tx2/tx1);		
+								}									
+
+								tx1=CurPulse;
+								tx1=(tx1 - tx2);
+								ManJobPulse=(tx1);
+	
+								bAuto=0;
+								bExtButClr=1;
+								bCarButClr=1;
+								ManWorkingSeq=1;
+								bSlipCheckStart=0;
+							}
+						}
+					}
+				}
+			}
+			break;
+		case	1:
+			bAuto=0;
+			bExtButClr=1;
+			bCarButClr=1;
+			if(CurPulse <= ManJobPulse){
+				ManWorkingSeq=2;
+			}
+			else if( (IN_AUTO) || (bCarErr || bCarStopNoRun)){
+				ManWorkingSeq=2;
+			}
+			break;
+		case	2:
+			if(IN_AUTO){
+				ManWorkingSeq=3;
+			}
+			else{
+				bAuto=0;
+				bExtButClr=1;
+				bCarButClr=1;
+			}	
+			break;
+		case	3:
+			bExtButClr=1;
+			bCarButClr=1;
+			if(!IN_AUTO){
+				if(bOnLuLd && (sRamDArry[mDoorSeq] > DOOR_REOPEN_CHECK) ){
+					sRamDArry[mDoorSeq] = DOOR_OPEN_START;
+				}
+			}
+			break;			
+	}
+
+	return(0);			  
+}
+
+
+
+
 void __attribute__((section(".usercode")))  DoorOpenCloseSeq(void)
 {			  
 	LocalType TmpTime;
@@ -6411,7 +6502,6 @@ void __attribute__((section(".usercode")))  DoorOpClSystem(void)
                     else{
     					sRamDArry[mAckStopFloor] = sRamDArry[mNewAckStopFloor] = 0;
                         sRamDArry[mHighFloor]    = sRamDArry[mLowFloor]        = 0; 
-//						PortLengthSystemErr();
                     }
 				}               
 				else{
@@ -6437,6 +6527,7 @@ void __attribute__((section(".usercode")))  DoorOpClSystem(void)
     				bCarErr=1;
                 }
             }
+
             break;                
 
 		case  MOVE_ELEVATOR:  
@@ -7039,8 +7130,8 @@ unsigned int  __attribute__((section(".usercode"))) SlipCheck(void)
 		if(bsLope || bLope_Occur){
 			if(LopeTimer > SLIP_TIME){
 				bsLope=1;
-				bLope_Occur=0;	
-	        	bCarStopNoRun=1;
+				bLope_Occur=0;					
+        		bCarStopNoRun=1;
 				if(New_Law_SystemChk()){
 					NotRecoveryData=( NotRecoveryData | 0x01);
 				}
@@ -7071,6 +7162,16 @@ unsigned int  __attribute__((section(".usercode"))) SlipCheck(void)
 			}			           
 		}
 
+
+		if( !OilLopeTypeChk){					// oil type final err
+			if(IN_AUTO){
+				if(bsLope || bLope_Occur){
+					LopeTimer=0;
+				}
+			}
+		}
+
+	
 		return(0);
 	}
 
@@ -7126,98 +7227,6 @@ unsigned int  __attribute__((section(".usercode"))) SlipCheck(void)
 }
 
 
-
-
-/*
-unsigned int  __attribute__((section(".usercode"))) SlipCheck(void)
-{
-	unsigned long save_pulse;
-
-
-
-	if(bsSlip || bsLope){
-		UpDnAllOff();
-
-		bExtButClr=1;
-		bCarButClr=1;
-        bCarErr=1;   
-        bCarStopNoRun=1;
-
-		if(New_Law_SystemChk()){
-			if( bsLope && (LopeTimer > 15)){
-				NotRecoveryData=( NotRecoveryData | 0x01);
-			}            
-			if( bsSlip && (SlipTimer > 15)){
-				NotRecoveryData=( NotRecoveryData | 0x02);
-			}
-		}            
-		return(0);
-	}
- 
-	if(IN_GR){		
-		UpDnAllOff();
-		bExtButClr=1;
-		bCarButClr=1;
-		bCarErr=1;   
-  		bSaveFlash=1;
-		bsLope=1;         
-		return(0);
-	}
-
-
-	if(IN_AUTO){
-		bSlipCheckStart=0;
-		return(0);
-	}
-
-
-
-	if( bSlipCheckStart && (OneDoorSenserNoCloseChk())){         
-    	if(INVERTER_CHECK == IO){				
-			save_pulse=CurPulse;	         
-			if(Base_Slip_pulse > save_pulse){
-				if( (Base_Slip_pulse - save_pulse) > Slip_pulse){
-			        bsSlip=1; 
-				}
-			}
-			else{
-				if( (save_pulse - Base_Slip_pulse) > Slip_pulse){
-			        bsSlip=1; 
-				}
-			}
-		}
-
-
-
-		if(New_Law_SystemChk()){
-			if( LuLdDzCheck() ){         	         	
-		        bsSlip=1; 
-			}
-		}
-		else{
-			if(IN_LU && IN_LD){         	         		        
-		        bsSlip=1;            
-			}
-		}
-	}
-
-
-
-	if(bsSlip){
-		if(New_Law_SystemChk()){
-	        bSaveFlash=1;
-		}
-
-		UpDnAllOff();
-        bCarErr=1;   
-        bCarStopNoRun=1;
-	} 
-
-
-	return(0);
-
-}
-*/
 
 
 unsigned int __attribute__((section(".usercode")))  NextFloorCheck(void)
@@ -8492,6 +8501,8 @@ void  __attribute__((section(".usercode")))  EtcStopSet(void)
 //		if( (sRamDArry[mDoor] & 0x10))			S3_STOP1=1;
 		if(bDoorOpenHold && (cF_REOPTM > 300))	S3_STOP1=1;
 		if(DoorOpenEndWaitChk())				S3_STOP1=1;
+
+		if(ManWorkingSeq >= 1)					S3_STOP1=1;
 	}
 
 
@@ -8850,8 +8861,8 @@ unsigned int  __attribute__((section(".usercode")))   ManualKeyStatus(void)
 	i=0;
 
 	if(!IN_AUTO){
-		if(PerfectAuto()) 							i=1;
-		else										i=2;
+		if(PerfectAuto())	i=1;
+		else				i=2;
 	}	
 	else{
 		if(bCarUpMove){
@@ -8863,8 +8874,11 @@ unsigned int  __attribute__((section(".usercode")))   ManualKeyStatus(void)
 			i=2;
 		}
 		else{
-    		if(bFhmRun)					i=2;
-    		else if(bAutoTunning)		i=2;
+    		if(bFhmRun)								i=2;
+    		else if(bAutoTunning)					i=2;
+
+    		else if(bCarErr || bCarStopNoRun)		i=2;
+
 			else{
 				sRamDArry[mSysStatus]=sMANUAL;
 				i=0;
@@ -8953,6 +8967,7 @@ unsigned int  __attribute__((section(".usercode")))   CurErrFind(void)
 			else if((auto_manu == 1) && (sRamDArry[mDoorSeq] < DOOR_CLOSE_START))	sRamDArry[mSysStatus]=sOPEN; 
 			else if(bDoorCloseCmd)	sRamDArry[mSysStatus]=sCLOSE;		
 			else if((auto_manu == 1) && (sRamDArry[mDoorSeq] < READY_ELEVATOR))		sRamDArry[mSysStatus]=sCLOSE; 
+			else if(auto_manu == 2)	sRamDArry[mSysStatus]=sMANUAL;		
 			else					sRamDArry[mSysStatus]=sREADY;		
 
 
@@ -9147,6 +9162,8 @@ void  __attribute__((section(".usercode")))   IO_Check(void)
 	HuntingChk();
 	CounterCheck();
 
+			ManWorkingStartCheck();
+
 	
         if(bAuto){
             if(bMotorRestartOn){
@@ -9204,6 +9221,7 @@ void  __attribute__((section(".usercode")))   IO_Check(void)
 
         }                     
         else{    
+            sRamDArry[mDoorSeq] = DOOR_CLOSE_START;                    
 			bNewFire2=0;
 			bLevelOpen=0;
             bOnceOpen=0;

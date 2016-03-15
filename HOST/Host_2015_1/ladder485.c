@@ -879,7 +879,7 @@ const unsigned char GroupLineMessage[][17]={
                                     "NcNo2:FID       ",//15 
                                     "NcNo2:UND       ",//16 
                                     "NcNo2:DOOR_HOLD ",//17 
-                                    "NcNo2:VIRTUAL_X1",//18 
+                                    "NcNo2:ManInsMode",//18 
                                     "NcNo2:VIRTUAL_X2",//19 
                                     "NcNo2:VIRTUAL_X3",//20 
                                     "NcNo2:VIRTUAL_X4",//21 
@@ -994,7 +994,7 @@ const unsigned char GroupLineMessage[][17]={
                                     "INP2:FID        ",//15 
                                     "INP2:UND        ",//16 
                                     "INP2:DOOR_HOLD  ",//17 
-                                    "INP2:VIRTUAL_X2 ",//18 
+                                    "INP2:Man InsMode",//18 
                                     "INP2:VIRTUAL_X2 ",//19 
                                     "INP2:VIRTUAL_X3 ",//20 
                                     "INP2:VIRTUAL_X4 ",//21 
@@ -2583,6 +2583,7 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
 			}
 
    			CurEncoderPulse( tx2/tx1);
+
     		New485Ladder[SECONDLINE_BASE+EditBlanck+8]  ='m';          
     		New485Ladder[SECONDLINE_BASE+EditBlanck+9]  ='m';          
     		New485Ladder[SECONDLINE_BASE+EditBlanck+10] =' ';          
@@ -5002,6 +5003,11 @@ void  __attribute__((section(".usercode"))) UserGroup(void)
 
             DigitData=PowerOnTime;
             Integer_Digit();
+
+            New485Ladder[SECONDLINE_BASE+EditBlanck+5]='H';      
+            New485Ladder[SECONDLINE_BASE+EditBlanck+6]='o';      
+            New485Ladder[SECONDLINE_BASE+EditBlanck+7]='u';      
+            New485Ladder[SECONDLINE_BASE+EditBlanck+8]='r';      
             break;
         case    INIT_DATA:
             Cursor=0;
@@ -5579,6 +5585,7 @@ void  __attribute__((section(".usercode"))) UserGroupSave(void)
                 case    1:
 					bSaveFlash=1;
 					MoveCounterx=0;
+					PowerOnTime=0;
                     break;
                 case    2:
 					if(!bMoveCar){

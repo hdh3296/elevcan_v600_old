@@ -77,6 +77,9 @@ extern void __attribute__((section(".usercode"))) HextoASCIIByte(void);
 
 #define  I_AM_MASTER    0x2000
 
+
+#define  WARMING_UP_TIME	30
+
 ////////////////////////////////////////////
 ////////////////////////////////////////////
 ////////////////////////////////////////////
@@ -1438,6 +1441,7 @@ extern  UserDataType  	YourKey3[8];
 extern	UserDataType  	HibSet[10];
 
 
+extern	UserDataType    ManWorkingSeq;   
 
 extern  UserDataType    RxBuffer[MAX_RTX_BUF];
 extern  UserDataType    RcvBuf[MAX_SAVE_BUF];
@@ -1682,6 +1686,8 @@ extern const unsigned char StatusMessage[][16];
 extern const unsigned int EncRate[];
 
 
+extern	unsigned long 	ManJobPulse;
+
 
 
 extern	unsigned int    iType_Test_PlusMinus;
@@ -1914,7 +1920,7 @@ extern	unsigned int 	AutotunUpDn;
 #define  bBefDoorJumper         GET_BITFIELD(&StateBit4).bit4 
 #define  bHibSet       			GET_BITFIELD(&StateBit4).bit5 
 #define  bRunningOpenOn		    GET_BITFIELD(&StateBit4).bit6 
-//#define  bFhmEncoder        	GET_BITFIELD(&StateBit4).bit7 
+//#define  bManWorkMoveCar        GET_BITFIELD(&StateBit4).bit7 
 
 
 #define  bSlavePrk      		GET_BITFIELD(&StateBit5).bit0 
@@ -1928,7 +1934,7 @@ extern	unsigned int 	AutotunUpDn;
 
 
 #define  bLevelOpen      		GET_BITFIELD(&StateBit6).bit0 
-///////#define  bFhmEncoderSDS      	GET_BITFIELD(&StateBit6).bit1 
+//#define  bManWorkStart      	GET_BITFIELD(&StateBit6).bit1 
 #define  bFireTimeRun    		GET_BITFIELD(&StateBit6).bit2 
 #define  bFirstFire        		GET_BITFIELD(&StateBit6).bit3 
 #define  bSecondFire         	GET_BITFIELD(&StateBit6).bit4
@@ -1965,7 +1971,7 @@ extern	unsigned int 	AutotunUpDn;
 #define  bDoorOpenHold			GET_BITFIELD(&StateBit9).bit4 
 #define  bLope_Occur       		GET_BITFIELD(&StateBit9).bit5 
 #define  bSlip_Occur		    GET_BITFIELD(&StateBit9).bit6 
-#define  bNC9_7					GET_BITFIELD(&StateBit9).bit7 
+#define  bNCNOTUSE7				GET_BITFIELD(&StateBit9).bit7 
 
 
 //////////////////////////////////////////////////////////////
