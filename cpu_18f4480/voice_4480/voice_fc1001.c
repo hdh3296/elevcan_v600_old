@@ -227,6 +227,11 @@ date    :       1999,9,21
 #define ELE_bIN_PAS  	(((RcvBuf[IdPt + SL_IN_GR] & (0x01 << 2)) == 0x0)?		1:0)
 #define ELE_bIN_FIR  	(((RcvBuf[IdPt + SL_IN_GR] & (0x01 << 3)) == 0x0)?		1:0)
 #define ELE_bIN_WAT  	(((RcvBuf[IdPt + SL_IN_GR] & (0x01 << 4)) == 0x0)?		1:0)
+
+#define ELE_bIN_FR1  	(((RcvBuf[IdPt + SL_IN_FIRE] & 0x01) == 0x0)?				1:0)
+#define ELE_bIN_FR2 	(((RcvBuf[IdPt + SL_IN_FIRE] & (0x01 << 1)) == 0x0)?		1:0)
+
+
 // I/O  출력
 #define ELE_bIN_FAN  	(((RcvBuf[IdPt + SL_OUT_FAN] & 0x01) == 0x0)?				0:1)
 #define ELE_bIN_LIT 	(((RcvBuf[IdPt + SL_OUT_FAN] & (0x01 << 1)) == 0x0)?		0:1)
@@ -951,7 +956,7 @@ unsigned char    GetVoice_State(UCHAR xTmpCurVoice, UCHAR xCurVoice)
     }
 
     // 화재
-    if (ELE_bFIRE && (xCurVoice != HWAJAE_MENT))
+    if (ELE_bFIRE && (xCurVoice != HWAJAE_MENT) && !ELE_bIN_FR1)
     {
         xTmpCurVoice = HWAJAE_MENT;
     }
