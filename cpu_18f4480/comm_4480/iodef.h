@@ -14,9 +14,9 @@
 //#define		NEW_CAR						1
 //#define		NEW_HIB_HPI					1
 //#define		NEW_ES15					1
-//#define		NEW_VOICE					1
+#define		NEW_VOICE					1
 //#define		NEW_CAN_IO_32_BCD			1 // CAN ACC VER4.0 보드용 (층 확장) 
-#define		NEW_CAN_IO_32_FLR_ONOFF			1 // CAN ACC VER4.0 보드용 (층 제어)
+//#define		NEW_CAN_IO_32_FLR_ONOFF			1 // CAN ACC VER4.0 보드용 (층 제어)
 //#define		NEW_CAN_IO_8				1 // 미 사용, VOICE 확장용으로 쓰인다. VOICE 프로젝트로 넘어갔다. 
 //#define		NEW_CAN_O_8					1 // 없음
 //#define		POWER_CONTROL				1 // 

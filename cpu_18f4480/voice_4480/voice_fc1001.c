@@ -14,6 +14,10 @@ date    :       1999,9,21
 
 #include        "Voice_Ext_IO_8.h"
 
+
+#define NormalBoard_DoorSlow	1 // 일반형 보드로 도어 슬로우 제어 기능 사용 시(릴레이 출력), 확장IO보드 사용시에는 디파인 막아야 한다. 
+
+
 #define START_FL	FLOOR_B7
 #define END_FL		FLOOR_B
 #define VOICE_ADR  	A_VOI
@@ -215,14 +219,14 @@ date    :       1999,9,21
 #define ELE_DSP2         RcvBuf[IdPt + DSP2]
 
 #define ELE_mSYSSTATUS  RcvBuf[IdPt + SL_mSysStatus]
-// I/O  입력 : // 0x0 이면? 입력 접점에 신호 ON
-#define ELE_bIN_EMG  	(((RcvBuf[IdPt + SL_IN_EMG] & 0x01) == 0x0)?				1:0)
-#define ELE_bIN_PRK 	(((RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 1)) == 0x0)?		1:0)
+// I/O  입력 : // 0x0 이면? 입력 접점에 신호 ON / 입력 비트 값은 실제 입력이 안들어 올때 (즉, 입력 LED에 불이 안 들어 올때 비트 1값이 통신으로 온다.) / 통신 비트 0 = 입력 ON 
+#define ELE_bIN_EMG  	(((RcvBuf[IdPt + SL_IN_EMG] & 0x01) == 0x0)?			0:1)
+#define ELE_bIN_PRK 	(((RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 1)) == 0x0)?		0:1)
 #define ELE_bIN_AT  	(((RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 2)) == 0x0)?		1:0)
 #define ELE_bIN_UB  	(((RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 3)) == 0x0)?		1:0)
 #define ELE_bIN_DB  	(((RcvBuf[IdPt + SL_IN_EMG] & (0x01 << 4)) == 0x0)?		1:0)
 
-#define ELE_bIN_RG  	(((RcvBuf[IdPt + SL_IN_GR] & 0x01) == 0x0)?				1:0)
+#define ELE_bIN_RG  	(((RcvBuf[IdPt + SL_IN_GR] & 0x01) == 0x0)?				0:1)
 #define ELE_bIN_BAT 	(((RcvBuf[IdPt + SL_IN_GR] & (0x01 << 1)) == 0x0)?		1:0)
 #define ELE_bIN_PAS  	(((RcvBuf[IdPt + SL_IN_GR] & (0x01 << 2)) == 0x0)?		1:0)
 #define ELE_bIN_FIR  	(((RcvBuf[IdPt + SL_IN_GR] & (0x01 << 3)) == 0x0)?		1:0)
@@ -232,14 +236,14 @@ date    :       1999,9,21
 #define ELE_bIN_FR2 	(((RcvBuf[IdPt + SL_IN_FIRE] & (0x01 << 1)) == 0x0)?		1:0)
 
 
-// I/O  출력
+// I/O  출력 / 출력은 출력 LED에 불이 들어 올때, 즉 출력이 나갈 때 출력 통신 비트는 1로 셋 된다. / 통신 비트 1 = 출력 ON
 #define ELE_bIN_FAN  	(((RcvBuf[IdPt + SL_OUT_FAN] & 0x01) == 0x0)?				0:1)
 #define ELE_bIN_LIT 	(((RcvBuf[IdPt + SL_OUT_FAN] & (0x01 << 1)) == 0x0)?		0:1)
 #define ELE_bIN_BUZ  	(((RcvBuf[IdPt + SL_OUT_FAN] & (0x01 << 2)) == 0x0)?		0:1)
 #define ELE_bIN_BEL  	(((RcvBuf[IdPt + SL_OUT_FAN] & (0x01 << 3)) == 0x0)?		0:1)
 #define ELE_bIN_REL  	(((RcvBuf[IdPt + SL_OUT_FAN] & (0x01 << 4)) == 0x0)?		0:1)
 //
-#define ELE_bIN_RELAY  	(((RcvBuf[IdPt + SL_S5_STATE_37] & 0x01) != 0x0)?		1:0)
+#define ELE_bIN_RELAY  	(((RcvBuf[IdPt + SL_S5_STATE_37] & 0x01) == 0x0)?		0:1)
 
 
 
@@ -416,14 +420,20 @@ void main(void)
     SetVoice(); // 각종 셋팅 여부 
     if (bSetSong) bSetCarBtnVoice = FALSE;
 
+
 	Ext_IO_8_Init();
+
+// 일반형 보드에서 확장IO 보드로 넘어가면서 릴레이 IO가 출력에서 입력으로 바끼었기 때문에 ....
+#if   defined(NormalBoard_DoorSlow) 
+	TRISC0	=	0x0;    // VOICE 일반 보드 인 경우, 릴레이 출력으로 설정 
+#endif
 
 
     while (1)
     {
         CLRWDT();
 
-	Ext_IO_8_Func();
+		Ext_IO_8_Func();
 
 
         // Voice Downlod 중...
@@ -433,9 +443,13 @@ void main(void)
         }
 
         if (ELE_bIN_RELAY)
+		{
             _BATTERY = BAT_ON;
+		}	
         else
+		{
             _BATTERY = BAT_OFF;
+		}
 
         DspCharRdWr(); // CAR CALL 음성을 위한 엘리베이터 각층 디스플레이 값 저장
         SetCarKeyCancel(); // CAR CALL 취소 값 셋팅
