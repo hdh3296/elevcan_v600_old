@@ -200,6 +200,11 @@ UserDataType	__attribute__((section(".usercode"))) OpenKeyCheck(void)
 
     ret=1;
 
+	if(bDoorSlowExe){
+		sRamDArry[mDoor]    = (sRamDArry[mDoor] & MAIN_SUB_OPEN_KEY_CLEAR);   
+	}
+
+
     ValidDoorSel();
 
     switch(NewDoorSelect)
@@ -594,7 +599,10 @@ void	__attribute__((section(".usercode"))) DoorOpenClose_you(void)
         bDoorCloseCmd=0;
     }
 
+/* solmodify
     if(bDoorOpenCmd){
+*/
+    if(bDoorOpenCmd && bDoorOpenValid){
         SelectDoorOpen_abc();
     }
     else if(bDoorCloseCmd){
@@ -827,13 +835,19 @@ void	__attribute__((section(".usercode"))) DoorOpenEndCheck(void)
 {
 
     if((USE_CHECK == BAGGAGE_USE) || (USE_CHECK == CARLIFT_USE)){
+    	if(CarDoor1UseChk){
+	        if(IN_OP_E) bOpenEnd=0;
+	        else        bOpenEnd=1;
+		}
+		else			bOpenEnd=1;
+	
+    	if(HoleDoor1UseChk){
+	        if(IN_X7)   bHoleDoorOpenEnd=0;
+	        else        bHoleDoorOpenEnd=1;
+		}
+		else			bHoleDoorOpenEnd=1;
 
-        if(IN_OP_E) bOpenEnd=0;
-        else        bOpenEnd=1;
-
-        if(IN_X7)   bHoleDoorOpenEnd=0;
-        else        bHoleDoorOpenEnd=1;
-
+				
         if(bHoleDoorOpenEnd && bOpenEnd)    bOpenDoorOk =1;
         else                                bOpenDoorOk =0;
 
@@ -844,17 +858,7 @@ void	__attribute__((section(".usercode"))) DoorOpenEndCheck(void)
         }
     }
     else{
-
         bHoleDoorOpenEnd=1;
-
-/*
-#ifdef	TEST_SIMULATION
-        if(IN_X7)   bHoleDoorOpenEnd=0;
-        else        bHoleDoorOpenEnd=1;
-#else
-        bHoleDoorOpenEnd=1;
-#endif	              
-*/
 
         if(IN_OP_E){
             bOpenEnd=0;
@@ -913,6 +917,7 @@ UserDataType	__attribute__((section(".usercode"))) HoleDoorCloseEndCheckForDoorj
 }
 
 
+/*
 UserDataType	__attribute__((section(".usercode"))) CarDoorSwitchCheck(void)
 {
 
@@ -941,7 +946,7 @@ UserDataType	__attribute__((section(".usercode"))) CarDoorSwitchCheck(void)
 
     return(i);
 }
-
+*/
 
 
 

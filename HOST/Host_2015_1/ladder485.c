@@ -287,7 +287,7 @@ void  __attribute__((section(".usercode"))) Pc_Command(void);
 #define     FHM_RUN_CHK             8  
 #define     ALL_MENU_CHK            9 
 #define     ENGINEER_NM             10
-#define     TOTAL_USE_TIME          11 
+//#define     TOTAL_USE_TIME          11 
 #define     INIT_DATA               12 
 #define     GROUP_NUMBER            13 
 #define     LOCAL_NUMBER            14 
@@ -504,7 +504,8 @@ const unsigned char GroupLineMessage[][17]={
                                     "USER:Fhm Run    ",//9 
                                     "USER:SubMenu On ",//10 
                                     "USER:Engineer Nm",//11 
-                                    "USER:Tt Use Time",//12 
+//                                    "USER:Tt Use Time",//12 
+                                    "USER:Not Use12  ",//12 
                                     "USER:Init Data  ",//13 
                                     "USER:Group Nm   ",//14 
                                     "USER:Local Nm   ",//15 
@@ -688,7 +689,7 @@ const unsigned char GroupLineMessage[][17]={
                                     "ONOFF2:SftUse RL",//25
                                     "ONOFF2:Floor Sel",//26
                                     "ONOFF2:RunningOp",//27
-                                    "ONOFF2:Not Use  ",//28
+                                    "ONOFF2:UcmpOnOff",//28
                                     "ONOFF2:Not Use  ",//29
                                     "ONOFF2:Not Use  ",//30
                                     "ONOFF2:Copy_Encd",//31
@@ -1146,6 +1147,7 @@ const unsigned char DOOR_MAIN_SUB[]	={"DOOR-S:Floor01  "};
 			   
 const unsigned char FhmSuccessMsg[16]     ="  FHM Success   "; 
 const unsigned char AutoTun_SuccessMsg[16]="Tunning Success "; 
+const unsigned char AutoTun_FailMsg[16]   =" Tunning Fail   "; 
 
 //digitData == 1 
 const unsigned char ElevOnOffSetMessage[ELEV_ONOFF_MESSAGE_CNT][11]={   
@@ -1176,7 +1178,7 @@ const unsigned char ElevOnOffSetMessage[ELEV_ONOFF_MESSAGE_CNT][11]={
                                     "Sft Comm On",   
                                     " BCD Floor ",
                                     "Run_Op  On ",   
-                                    "Reserve5   ",   
+                                    "UcmpChk On ",   
                                     "Reserve4   ",   
                                     "Reserve3   ",   
                                     "EncCopy On",   
@@ -1213,7 +1215,7 @@ const unsigned char ElevOnOffResetMessage[ELEV_ONOFF_MESSAGE_CNT][11]={
                                     "Sft CommOff",   
                                     "DirectFloor",   
                                     "Run_Op Off ",   
-                                    "Reserve5   ",   
+                                    "UcmpChk Off",   
                                     "Reserve4   ",   
                                     "Reserve3   ",   
                                     "EncCopy Off",   
@@ -1423,11 +1425,11 @@ const unsigned char NormalDspMessage[NORMAL_DSP_MESSAGE_CNT][11]={
                                       "FS0  Input ",
                                       "Mem  Dsp   ",     
                                       "Move Counte",
+                                      "PowerOnTime",
                                       "Err Counter",
                                       "Can Com Chk",
                                       "485 Com Chk",
                                       "Dec  Pulse ",
-
                                       "Slip  mm   ",
                                       "DoorOpTime ",
                                       "EL StopTime",
@@ -1444,7 +1446,6 @@ const unsigned char NormalDspMessage[NORMAL_DSP_MESSAGE_CNT][11]={
                                       "Reserve8   ",
                                       "Reserve7   ",
 */
-                                      "Reserve6   ",
                                       "Reserve5   ",
                                       "Reserve4   ",
                                       "Reserve3   ",
@@ -1877,6 +1878,35 @@ void    __attribute__((section(".usercode"))) MoveCounterDsp(void)
     New485Ladder[SECONDLINE_BASE+EditBlanck+9]  ='o';          
     New485Ladder[SECONDLINE_BASE+EditBlanck+10] ='v';          
     New485Ladder[SECONDLINE_BASE+EditBlanck+11] ='e';          
+}
+
+
+void    __attribute__((section(".usercode"))) PowerOnTimeDsp(void)
+{
+    unsigned long value;
+
+
+    value=PowerOnTime;
+
+    New485Ladder[SECONDLINE_BASE+EditBlanck+0]=(value/1000000)  + '0';
+    value=value%1000000;              
+    New485Ladder[SECONDLINE_BASE+EditBlanck+1]=(value/100000)   + '0';
+    value=value%100000;              
+    New485Ladder[SECONDLINE_BASE+EditBlanck+2]=(value/10000)    + '0';
+    value=value%10000;              
+    New485Ladder[SECONDLINE_BASE+EditBlanck+3]=(value/1000)     + '0';
+    value=value%1000;              
+    New485Ladder[SECONDLINE_BASE+EditBlanck+4]=(value/100)      + '0';
+    value=value%100;                        
+    New485Ladder[SECONDLINE_BASE+EditBlanck+5]=(value/10)       + '0';          
+    New485Ladder[SECONDLINE_BASE+EditBlanck+6]=(value%10)       + '0';          
+
+
+    New485Ladder[SECONDLINE_BASE+EditBlanck+7]  =' ';          
+    New485Ladder[SECONDLINE_BASE+EditBlanck+8]  ='H';          
+    New485Ladder[SECONDLINE_BASE+EditBlanck+9]  ='o';          
+    New485Ladder[SECONDLINE_BASE+EditBlanck+10] ='u';          
+    New485Ladder[SECONDLINE_BASE+EditBlanck+11] ='r';          
 }
 
 
@@ -2350,8 +2380,13 @@ unsigned int __attribute__((section(".usercode"))) TunningMessage(void)
 	unsigned int i,j;
 
 	#ifdef	DELTA_INVERTER
-	if(sRamDArry[AUTO_TUNING] == AUTOTUN_SEQ_12){          
-           for(i=0;i<16;i++)	New485Ladder[SECONDLINE_BASE+i] =AutoTun_SuccessMsg[i];
+	if(sRamDArry[AUTO_TUNING] == AUTOTUN_END){          
+			if(bAutoTunningMsg){	
+           		for(i=0;i<16;i++)	New485Ladder[SECONDLINE_BASE+i] =AutoTun_SuccessMsg[i];
+			}
+			else{
+           		for(i=0;i<16;i++)	New485Ladder[SECONDLINE_BASE+i] =AutoTun_FailMsg[i];
+			}
 	}
 	else{
         j=sRamDArry[mSysStatus];
@@ -2411,20 +2446,6 @@ unsigned int __attribute__((section(".usercode"))) Default_Cur_State_Display(voi
 {
 	unsigned int i,j;
 
-/*
-	if(bAutoTunning){
-		if(sRamDArry[AUTO_TUNING] == AUTOTUN_SEQ_12){          
-            for(i=0;i<16;i++)	New485Ladder[SECONDLINE_BASE+i] =AutoTun_SuccessMsg[i];
-		}
-		else{
-            j=sRamDArry[mSysStatus];
-            for(i=0;i<16;i++)	New485Ladder[SECONDLINE_BASE+i] =StatusMessage[j][i];
-			New485Ladder[SECONDLINE_BASE+14]=(unsigned char)((sRamDArry[AUTO_TUNING]/10) + '0');
-			New485Ladder[SECONDLINE_BASE+15]=(unsigned char)((sRamDArry[AUTO_TUNING]%10) + '0');
-		}	           
-	}
-	else{
-*/
 		i=BlinkDisplay();
 		if( i>0){
 			if(i==1){
@@ -2441,7 +2462,8 @@ unsigned int __attribute__((section(".usercode"))) Default_Cur_State_Display(voi
 			}
 			else				j=sRamDArry[mSysStatus];
 
-	        for(i=0;i<16;i++)	New485Ladder[SECONDLINE_BASE+i] =StatusMessage[j][i];          		
+	        for(i=0;i<16;i++)	New485Ladder[SECONDLINE_BASE+i] =StatusMessage[j][i];          				
+
 		}
 		else{
 			if(bAutoTunning){
@@ -2556,15 +2578,18 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
             MoveCounterDsp();
             break;
         case    15:
+            PowerOnTimeDsp();
+            break;
+        case    16:
             ErrCounterDsp();
 			break;
-        case    16:
+        case    17:
             CanComDsp();
             break;
-        case    17:
+        case    18:
             Rs485ComDsp();
             break;
-        case    18:
+        case    19:
    			CurEncoderPulse(LType_Test_Value);
 			if(iType_Test_PlusMinus)	New485Ladder[SECONDLINE_BASE]= '+';
 			else						New485Ladder[SECONDLINE_BASE]= '-';
@@ -2572,7 +2597,7 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
 
 ////////////////////////////////////////////////////
 //"Slip  Pulse",
-        case    19:
+        case    20:
 			tx1=GET_LONG(MM_PULSE);
 
 			if(Base_Slip_pulse > CurPulse){
@@ -2591,7 +2616,7 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
     		New485Ladder[SECONDLINE_BASE+EditBlanck+12] =' ';          
         	break;
 //"DoorOpTime ",
-        case    20:
+        case    21:
     		if(bDoorOpenCmd)	CurEncoderPulse(DoorOpenTime);
 			else				CurEncoderPulse(0);	
 
@@ -2602,7 +2627,7 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
     		New485Ladder[SECONDLINE_BASE+EditBlanck+12] ='c';          
         	break;
 //"EL StopTime",
-        case    21:
+        case    22:
    			CurEncoderPulse(ElevStopTime);
     		New485Ladder[SECONDLINE_BASE+EditBlanck+8]  ='H';          
     		New485Ladder[SECONDLINE_BASE+EditBlanck+9]  ='m';          
@@ -2611,7 +2636,7 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
     		New485Ladder[SECONDLINE_BASE+EditBlanck+12] ='c';          
         	break;
 //"EL MoveTime",
-        case    22:
+        case    23:
    			CurEncoderPulse(ElevMoveTime);
     		New485Ladder[SECONDLINE_BASE+EditBlanck+8]  ='H';          
     		New485Ladder[SECONDLINE_BASE+EditBlanck+9]  ='m';          
@@ -2621,7 +2646,7 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
         	break;
 
 //"NoEncoderTm"
-        case    23:
+        case    24:
    			CurEncoderPulse(CounterTime);
     		New485Ladder[SECONDLINE_BASE+EditBlanck+8]  ='H';          
     		New485Ladder[SECONDLINE_BASE+EditBlanck+9]  ='m';          
@@ -2630,7 +2655,7 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
     		New485Ladder[SECONDLINE_BASE+EditBlanck+12] ='c';          
         	break;
 //"EncoderUpTm"
-        case    24:
+        case    25:
    			CurEncoderPulse(CountUp);
     		New485Ladder[SECONDLINE_BASE+EditBlanck+8]  ='T';          
     		New485Ladder[SECONDLINE_BASE+EditBlanck+9]  ='m';          
@@ -2639,7 +2664,7 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
     		New485Ladder[SECONDLINE_BASE+EditBlanck+12] ='c';          
         	break;
 //"EncoderDnTm"
-        case    25:
+        case    26:
    			CurEncoderPulse(CountDn);
     		New485Ladder[SECONDLINE_BASE+EditBlanck+8]  ='T';          
     		New485Ladder[SECONDLINE_BASE+EditBlanck+9]  ='m';          
@@ -2649,14 +2674,12 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
         	break;
 
 ////////////////////////////////////////////////////
-
-
         default:
 			Default_Cur_State_Display();
             break;
     }
 
-	if(k != 16)	sRamDArry[mCallMe]=0x0;
+	if(k != 17)	sRamDArry[mCallMe]=0x0;		//can com check 
 
 	return(0);		
 }
@@ -3564,8 +3587,6 @@ void  __attribute__((section(".usercode"))) DigitStringMessage(void)
 	                for(i=0;i<11;i++){
 	                    New485Ladder[SECONDLINE_BASE+EditBlanck+i]=NormalDspMessage[DigitData][i];
 	                }
-	                i=1;
-	                i=0;
 					break;
 				case	DRIVE_METHOD:
 	                for(i=0;i<11;i++){
@@ -3813,15 +3834,6 @@ void  __attribute__((section(".usercode"))) FlrDspGroupSave(LocalType offset)
 	offset=(offset + F_FlrDspCh);
 		
     DspCharSave(offset,ShiftCnt);
-
-//    DspCharSave((offset*2),ShiftCnt);
-
-#ifdef	L_K_J
-	if((PowerOnTime < L_K_J_TIME) && (PowerOnTime < 0xfff0) ){
-		PowerOnTime=0x0;
-	}
-#endif
-
 }
 
 
@@ -4796,6 +4808,7 @@ void  __attribute__((section(".usercode"))) UserGroup(void)
             New485Ladder[SECONDLINE_BASE+EditBlanck+1]='*';  
             New485Ladder[SECONDLINE_BASE+EditBlanck+2]='*';      
             New485Ladder[SECONDLINE_BASE+EditBlanck+3]='*';      
+			if(BefPassWardKeyBuf[0] != '*')	New485Ladder[i+2 + 11]='1';
             break;
         case    SERIAL_NM:
             Cursor=0;
@@ -4993,6 +5006,7 @@ void  __attribute__((section(".usercode"))) UserGroup(void)
             New485Ladder[SECONDLINE_BASE+EditBlanck+2]='0';      
             New485Ladder[SECONDLINE_BASE+EditBlanck+3]='0';      
             break;
+/*
         case    TOTAL_USE_TIME:
             Cursor=0;
             ShiftCnt=5;
@@ -5009,6 +5023,7 @@ void  __attribute__((section(".usercode"))) UserGroup(void)
             New485Ladder[SECONDLINE_BASE+EditBlanck+7]='u';      
             New485Ladder[SECONDLINE_BASE+EditBlanck+8]='r';      
             break;
+*/
         case    INIT_DATA:
             Cursor=0;
             ShiftCnt=0;
@@ -5099,6 +5114,15 @@ void  __attribute__((section(".usercode"))) UserGroup(void)
         default:
             break;
     }
+
+
+	if((LadderGroupSub != PASSWARD)){
+		BefPassWardKeyBuf[0]='*';
+		BefPassWardKeyBuf[1]='*';
+		BefPassWardKeyBuf[2]='*';
+		BefPassWardKeyBuf[3]='*';
+	}
+
 }
 
 
@@ -5112,7 +5136,7 @@ void  __attribute__((section(".usercode"))) UserGroupSave(void)
 
     switch(LadderGroupSub){
         case    VERSION:
-        case    TOTAL_USE_TIME:
+//        case    TOTAL_USE_TIME:
             break;
         case    BOARD_ID:
             if((DigitData==0) || (DigitData==3)|| (DigitData==6) ){
@@ -5202,6 +5226,63 @@ void  __attribute__((section(".usercode"))) UserGroupSave(void)
 			PassWardKeyBuf[2]=New485Ladder[SECONDLINE_BASE+EditBlanck+2];
 			PassWardKeyBuf[3]=New485Ladder[SECONDLINE_BASE+EditBlanck+3];
 
+		    if(bPasswardOk){
+				if( (PassWardKeyBuf[0] != '*') && (PassWardKeyBuf[1] != '*') && (PassWardKeyBuf[2] != '*') && (PassWardKeyBuf[3] != '*')){ 
+					if( (PassWardKeyBuf[0] == BefPassWardKeyBuf[0]) && (PassWardKeyBuf[1] == BefPassWardKeyBuf[1]) && (PassWardKeyBuf[2] == BefPassWardKeyBuf[2]) && (PassWardKeyBuf[3] == BefPassWardKeyBuf[3])){ 
+			            if(bPasswardOk){
+			                i=F_Passward0;    
+			                b_LdTmpBufRam((unsigned long)(i+0))=(LocalType)(PassWardKeyBuf[0]);
+			                b_LdTmpBufRam((unsigned long)(i+1))=(LocalType)(PassWardKeyBuf[1]);
+			                b_LdTmpBufRam((unsigned long)(i+2))=(LocalType)(PassWardKeyBuf[2]);
+			                b_LdTmpBufRam((unsigned long)(i+3))=(LocalType)(PassWardKeyBuf[3]);
+			                flash_write_DspChar(F_BLOCK2);
+						}
+			
+						PasswardCheck();
+						if(bPasswardOk){
+			                LadderGroup=0;
+			                LadderGroupSub=0;
+						}
+					}
+					else{
+						BefPassWardKeyBuf[0]=PassWardKeyBuf[0];
+						BefPassWardKeyBuf[1]=PassWardKeyBuf[1];
+						BefPassWardKeyBuf[2]=PassWardKeyBuf[2];
+						BefPassWardKeyBuf[3]=PassWardKeyBuf[3];
+		
+						PassWardKeyBuf[0]='*';
+						PassWardKeyBuf[1]='*';
+						PassWardKeyBuf[2]='*';
+						PassWardKeyBuf[3]='*';
+
+					}
+				}
+				else{
+					PassWardKeyBuf[0]='*';
+					PassWardKeyBuf[1]='*';
+					PassWardKeyBuf[2]='*';
+					PassWardKeyBuf[3]='*';
+	
+					BefPassWardKeyBuf[0]=PassWardKeyBuf[0];
+					BefPassWardKeyBuf[1]=PassWardKeyBuf[1];
+					BefPassWardKeyBuf[2]=PassWardKeyBuf[2];
+					BefPassWardKeyBuf[3]=PassWardKeyBuf[3];
+				}
+			}
+			else{
+				PasswardCheck();
+				if(bPasswardOk){
+	                LadderGroup=0;
+	                LadderGroupSub=0;
+				}
+			}
+
+/*
+			PassWardKeyBuf[0]=New485Ladder[SECONDLINE_BASE+EditBlanck+0];
+			PassWardKeyBuf[1]=New485Ladder[SECONDLINE_BASE+EditBlanck+1];
+			PassWardKeyBuf[2]=New485Ladder[SECONDLINE_BASE+EditBlanck+2];
+			PassWardKeyBuf[3]=New485Ladder[SECONDLINE_BASE+EditBlanck+3];
+
 			if( (PassWardKeyBuf[0] != '*') && (PassWardKeyBuf[1] != '*') && (PassWardKeyBuf[2] != '*') && (PassWardKeyBuf[3] != '*')){ 
 	            if(bPasswardOk){
 	                i=F_Passward0;    
@@ -5218,38 +5299,7 @@ void  __attribute__((section(".usercode"))) UserGroupSave(void)
 	                LadderGroupSub=0;
 				}
 			}
-
-
-/*
-            if(bPasswardOk==0){
-                if(   (pw[0]== New485Ladder[SECONDLINE_BASE+EditBlanck+0]) 
-                   && (pw[1]== New485Ladder[SECONDLINE_BASE+EditBlanck+1]) 
-                   && (pw[2]== New485Ladder[SECONDLINE_BASE+EditBlanck+2]) 
-                   && (pw[3]== New485Ladder[SECONDLINE_BASE+EditBlanck+3])){
-
-                    bPasswardOk=1;
-                    LadderGroup=0;
-                    LadderGroupSub=0;					
-               } 
-            }
-            else{
-                i=F_Passward0;
-    
-                b_LdTmpBufRam((unsigned long)(i+0))=(LocalType)(New485Ladder[SECONDLINE_BASE+EditBlanck+0]);
-                b_LdTmpBufRam((unsigned long)(i+1))=(LocalType)(New485Ladder[SECONDLINE_BASE+EditBlanck+1]);
-                b_LdTmpBufRam((unsigned long)(i+2))=(LocalType)(New485Ladder[SECONDLINE_BASE+EditBlanck+2]);
-                b_LdTmpBufRam((unsigned long)(i+3))=(LocalType)(New485Ladder[SECONDLINE_BASE+EditBlanck+3]);
-    
-                flash_write_DspChar(F_BLOCK2);
-
-				PasswardCheck();
-                LadderGroup=0;
-                LadderGroupSub=0;
-            }
 */
-
-
-
             break;
         case    SERIAL_NM:
             i=F_SerialNm10;
@@ -5592,7 +5642,11 @@ void  __attribute__((section(".usercode"))) UserGroupSave(void)
 						for(i=0;i<E_END;i++){
 							eDArry[i]=0;
 						}
-						sRamDArry[mBefErrCntPt]=0xff;
+
+						sRamDArry[mBefErrCntPt]=0;
+						eDArry[eErrCntPt]=0;
+						Flash_ErrClear_All();
+
 						bSaveFlash=1;
 
 					
@@ -7299,14 +7353,28 @@ unsigned int  __attribute__((section(".usercode"))) KeyCheck(void)
 
 		if(sRamDArry[AUTO_TUNING] > AUTOTUN_SEQ_0){
 			EnterKey=0;
+			AutotunUpDn=0;
+			sRamDArry[AUTO_TUNING] = AUTOTUN_SEQ_0;		
+
+		#ifdef	DELTA_INVERTER
+			if(!bAutoTunningMsg){
+				LadderGroup=EL_GROUP;
+				LadderGroupSelect=LadderGroup;
+				LadderGroupSub=SUBNM_AUTO_TUN;
+			}
+			else{
+				LadderGroupSelect=0;
+				LadderGroup=0;
+				LadderGroupSub=0;
+			}
+		#else
 			LadderGroupSelect=0;
 			LadderGroup=0;
 			LadderGroupSub=0;
-			NewMenuStart();
-			CursorOff();
+		#endif
 
-			AutotunUpDn=0;
-			sRamDArry[AUTO_TUNING] = AUTOTUN_SEQ_0;			
+			NewMenuStart();
+			CursorOff();			
 		} 
 	}
 
@@ -7611,7 +7679,6 @@ unsigned int  __attribute__((section(".usercode"))) NewFlashData(void)
     
         }
     }
-
 
 
    	LadderBuf[C_BASE_MEMORY]=LadderGroup;              

@@ -55,7 +55,6 @@ unsigned int  __attribute__((section(".usercode")))   FireOneTwoClear(void)
 	bFR2Start1=0;
 	if(bFireTimeRun){
 		bFireTimeRun=0;		                  	
-		OUT_BUZ(0);
 	}		                  	
 	return(0);			                  	
 }
@@ -178,8 +177,9 @@ unsigned int  __attribute__((section(".usercode")))   Normal_Fire_Service(void)
 			if(bSubSlaveFire)	sRamDArry[mDoor]=( sRamDArry[mDoor] | SUB_OPEN_KEY);                            
 			else				sRamDArry[mDoor]=( sRamDArry[mDoor] | MAIN_OPEN_KEY);                            
 
-			if( (bOpenDoorOk || !bDoorCloseOk) && bFirstFire){
-			    sRamDArry[mFireSeq]=FIRE_ONE;                
+			if( (bOpenDoorOk || !bDoorCloseOk)){
+				bFireFlrOn=1;
+				if(bFirstFire)	sRamDArry[mFireSeq]=FIRE_ONE;                
 			}
 			else{
 				if(bOnLuLd && bDoorOpenEnd){
@@ -243,6 +243,7 @@ unsigned int  __attribute__((section(".usercode")))   Fire_Service(void)
             if(bFirstFire){
                 ClrUpDnWard();       
                 S3_CUR_KEY1=1;               
+				bFireFlrOn=1;
 
 				if(DoorOpenOnChk()){
                     SelectDoorOpen_you();
@@ -252,16 +253,15 @@ unsigned int  __attribute__((section(".usercode")))   Fire_Service(void)
                     if(bFirstFire && bSecondFire){
                         if((sRamDArry[mHighFloor] > 0) || (sRamDArry[mLowFloor] > 0)){
 							bFireTimeRun=1;
-                            if((RestartTime/5) % 2) OUT_BUZ(1);
-                            else                    OUT_BUZ(0);
                             if(RestartTime > 50){
 		                        bDoorCloseCmd=1;
 		                        bOpenDoorOk=0;
 		                        bDoorCloseOk=1;
 		                        bFR2Start1=1;
-								OUT_BUZ(0);
 								if( !StartFireFloor())	sRamDArry[mFireSeq]=FIRE_THREE;
                             }
+							else if((RestartTime/5) % 2)	bOldFireBuz=1;
+
                         }
                     }
                 }
@@ -320,25 +320,8 @@ unsigned int  __attribute__((section(".usercode")))   Fire_Service(void)
 					S3_CUR_KEY1=1;       
 					if((sRamDArry[mHighFloor] > 0) || (sRamDArry[mLowFloor] > 0)){
 						StartFireFloor();
-
-/*
-
-						bFireTimeRun=1;
-						if((RestartTime/5) % 2) OUT_BUZ(1);
-						else                    OUT_BUZ(0);
-						if(RestartTime > 50){
-							bDoorCloseCmd=1;
-							bOpenDoorOk=0;
-							bDoorCloseOk=1;
-							bFR2Start1=1;
-							OUT_BUZ(0);
-							StartFireFloor();
-						}
-*/
-
 					}
 				}
-
 
               	if(bOpenDoorOk){
                 	DoorCloseTime=0;
@@ -346,16 +329,7 @@ unsigned int  __attribute__((section(".usercode")))   Fire_Service(void)
               	}			
               	else if(bDoorCloseOk){   
 					StartFireFloor();
-
-/*
-            		if(bFirstFire){
-						StartFireFloor();
-                    }
-*/
               	}
-
-
-
             }
             else{
               S3_CUR_KEY1=0;
@@ -377,7 +351,7 @@ unsigned int  __attribute__((section(".usercode")))   FireConditionChk(void)
 
 	bSafeFire=0;
 	bSecondFire=0;
-	bFirstFire=0;
+//	bFirstFire=0;
 
 	if(New_Law_SystemChk()){
 		bFireTimeRun=0;	
@@ -385,8 +359,8 @@ unsigned int  __attribute__((section(".usercode")))   FireConditionChk(void)
 
 		if( !IN_FIRE || bExt_FIRE || bSlaveFire || bExt_Second_FIRE){
 			S2_FIRE1=1;
-			if( !IN_FR1){
-				bFirstFire=1;
+			if( !IN_FR1 || bFirstFire){
+				if(bFireFlrOn)	bFirstFire=1;
 			}	
 			else{
 				if(!IN_FR2 && !bExt_Second_FIRE){
@@ -398,21 +372,24 @@ unsigned int  __attribute__((section(".usercode")))   FireConditionChk(void)
 		}	
 	}
 	else{
+		
 		if( !IN_FIRE || bExt_FIRE || bSlaveFire || (SubFireCheck()) || !IN_FR1 || bExt_Second_FIRE){
 			S2_FIRE1=1;
 			if( !IN_FR1){
 				bExt_Second_FIRE=0;
 				bFirstFire=1;
 				if( !IN_FR2)	bSecondFire=1;
-			}			
+			}
+			else	bFirstFire=0;			
 			return(1);         
 		}	
 	}
 
+	bFirstFire=0;
 	S2_FIRE1=0;
 	S3_CUR_KEY1=0;
 	sRamDArry[mFireSeq] = NO_FIRE;
-
+	bFireFlrOn=0;
 	FireOneTwoClear();
 
 	return(0);         
@@ -432,8 +409,11 @@ void  __attribute__((section(".usercode")))     CommonFireKeyCheck(void)
 			FireOneTwoClear();
 		}
 
-		FireBaseFloor=cF_FIRESAFEFLR;
-
+		if(New_Law_SystemChk()){
+			if( !bFireFlrOn)	FireBaseFloor=cF_FIRESAFEFLR;
+			else				FireBaseFloor=sRamDArry[mcurfloor];
+		}
+		else	FireBaseFloor=cF_FIRESAFEFLR;
 				
 		if(S2_FIRE1){
 			if(sRamDArry[mFireSeq]==NO_FIRE){
@@ -451,7 +431,7 @@ void  __attribute__((section(".usercode")))     CommonFireKeyCheck(void)
 			}
 		}
 
-        if(FireBaseFloor>cF_TOPFLR)   FireBaseFloor=0;     
+        if(FireBaseFloor>cF_TOPFLR)   FireBaseFloor=sRamDArry[mcurfloor];     
 	}
 }
 
@@ -460,6 +440,7 @@ void  __attribute__((section(".usercode")))     CommonFireKeyCheck(void)
 void  __attribute__((section(".usercode")))     FireKeyCheck(void)
 {
 
+	bOldFireBuz=0;
 
 	if(PerfectAuto()){
 		CommonFireKeyCheck();
@@ -475,7 +456,7 @@ void  __attribute__((section(".usercode")))     FireKeyCheck(void)
 
 		bSlaveFire=0;
 		bSubSlaveFire=0;         
-
+		bFireFlrOn=0;
 		FireOneTwoClear();
     }
 

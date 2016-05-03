@@ -5,7 +5,7 @@
 
 #define  	VERSION_0         		    '6'
 #define  	VERSION_1         		    '0'
-#define  	VERSION_2         		    '5'
+#define  	VERSION_2         		    '6'
 
 
 #define     LG                          0
@@ -231,7 +231,7 @@
 #define     bSafetyValidLR              24                      //ONOFF3
 #define     bFloorSel                   25                      //ONOFF3
 #define     bRunOpenSetClear            26                      //ONOFF3
-#define     bONOFF33          			27                      //ONOFF3
+#define     bUcmpFeedback          		27                      //ONOFF3
 #define     bONOFF34                    28                      //ONOFF3
 #define     bONOFF35                    29                      //ONOFF3
 #define     bEncoderCpy                 30                      //ONOFF3

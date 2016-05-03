@@ -35,7 +35,7 @@
 #define  AUTOTUN_SEQ_14    14
 #define  AUTOTUN_SEQ_15    15
 
-#define  AUTOTUN_SUCCESS	AUTOTUN_SEQ_12    
+#define  AUTOTUN_END		AUTOTUN_SEQ_15    
 
 
 
@@ -54,16 +54,6 @@
 #define  eSysErCnt            BASE_ADDR                 				// 78   84 
 #define  eErrCntPt            eSysErCnt+ERR_SAVE_SIZE + ERR_SAVE_WIDE  	// 175  1
 #define  E_END                256                   	// 
-
-
-//#define  e_CurPulse           eErrCntPt+2               				//
-//#define  e_CurFloor           e_CurPulse+4              	//
-//#define  e_PowerOnTime        e_CurFloor+4              	//
-//#define  e_CurDoorSelect      e_PowerOnTime+4           	//
-//#define  e_xx      			  e_CurDoorSelect+4           	//
-//#define  e_GBR      		  30    //e_xx + 4           			//
-//#define  E_END                e_GBR + 5                   	// 
-
 
 
 

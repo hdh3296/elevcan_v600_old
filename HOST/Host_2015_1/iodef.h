@@ -23,8 +23,6 @@ extern void __attribute__((section(".usercode"))) HextoASCIIByte(void);
 
 
 //#define		CHINA				1
-//#define		L_K_J				1
-//#define		L_K_J_TIME			1440
 
 
 
@@ -54,13 +52,6 @@ extern void __attribute__((section(".usercode"))) HextoASCIIByte(void);
 //#define			FIX_FLOOR		1
 
 
-////////////////////////////////////////////
-///////////SAMSUNG_///////////////////
-////////////////////////////////////////////
-//
-//#define	SAMSUNG		1
-////////////////////////////////////////////
-////////////////////////////////////////////
 
 #define		LU_ON_LD_ON			0
 #define		LU_OFF_LD_ON		1
@@ -385,7 +376,7 @@ typedef  union  _long_union
 #define  sEarthquake  		  36
 #define  sDZErr  		  	  37
 #define  sCLE_NO_ON           38
-
+#define  sUcmpFeedErrMsg      39
 /////////////////////////////////////
 
 #define  sTuning              42
@@ -989,18 +980,19 @@ typedef  union  _long_union
 #define  F_MoveCount1			F_BLOCK_X0+5
 #define  F_MoveCount2			F_BLOCK_X0+6
 #define  F_MoveCount3			F_BLOCK_X0+7
-#define  F_PowerOnTime0			F_BLOCK_X0+8
-#define  F_PowerOnTime1			F_BLOCK_X0+9
+#define  F_not_use1				F_BLOCK_X0+8
+#define  F_not_use2				F_BLOCK_X0+9
 #define  F_CurFloor				F_BLOCK_X0+10
 #define  F_CurDoorSelect		F_BLOCK_X0+11
 #define  F_GBR      		  	F_BLOCK_X0+12
 #define  F_eErrCntPt			F_BLOCK_X0+13
 #define  F_xx1					F_BLOCK_X0+14
 #define  F_xx2					F_BLOCK_X0+15
-#define  F_xx3					F_BLOCK_X0+16
-#define  F_xx4					F_BLOCK_X0+17
-#define  F_xx5					F_BLOCK_X0+18
-#define  F_xx6					F_BLOCK_X0+19
+
+#define  F_PowerOnTime0			F_BLOCK_X0+16
+#define  F_PowerOnTime1			F_BLOCK_X0+17
+#define  F_PowerOnTime2			F_BLOCK_X0+18
+#define  F_PowerOnTime3			F_BLOCK_X0+19
 
 /////////////////////////////////////////////
 #define  F_E_CurPulse0			F_BLOCK_X0+20   
@@ -1349,21 +1341,6 @@ typedef  union  _long_union
 
 
 
-/*
-#define  F_CurPulse0			F_BLOCK_X+256   //F_BLOCK14
-#define  F_CurPulse1			F_BLOCK_X+257
-#define  F_CurPulse2			F_BLOCK_X+258
-#define  F_CurPulse3			F_BLOCK_X+259
-#define  F_MoveCount0			F_BLOCK_X+260
-#define  F_MoveCount1			F_BLOCK_X+261
-#define  F_MoveCount2			F_BLOCK_X+262
-#define  F_MoveCount3			F_BLOCK_X+263
-#define  F_PowerOnTime0			F_BLOCK_X+264
-#define  F_PowerOnTime1			F_BLOCK_X+265
-#define  F_CurFloor				F_BLOCK_X+266
-#define  F_CurDoorSelect		F_BLOCK_X+267
-#define  F_GBR      		  	F_BLOCK_X+268
-*/
 //#define  F_Block_END      		F_BLOCK_X+319
 //#define  F_Block_Length      	F_Block_END - F_BLOCK_X -1
 
@@ -1431,6 +1408,7 @@ extern	unsigned int 	AirConRcvTimer;
 
 
 extern	UserDataType	PassWardKeyBuf[4];     
+extern	UserDataType    BefPassWardKeyBuf[4];     
 
 extern  UserDataType  	YourKey0[8];
 extern  UserDataType  	YourKey1[8];
@@ -1540,7 +1518,6 @@ extern  UserDataType    OriginalStartFloor;
 extern  UserDataType    UseBaseTime;
 extern  UserDataType    ElevStopTime;
 extern  UserDataType    ElevMoveTime;
-extern  UserDataType    PowerOnTime;
 extern  UserDataType    NewDoorSelect;
 extern  UserDataType    CurDoorSelect;
 extern  UserDataType    LoopTime;
@@ -1562,6 +1539,7 @@ extern	unsigned	int    	    ExIOTimer;
 extern	unsigned	int    	    BreakTime;
 extern  unsigned 	int   		CAN_Buf[8];
 extern	unsigned	int			SensorPositionBuf[20];
+extern	unsigned	int			TunningTimer;
 
 
 
@@ -1588,6 +1566,7 @@ extern	UserDataType    StateBit6;
 extern	UserDataType    StateBit7;   
 extern	UserDataType    StateBit8;   
 extern	UserDataType    StateBit9;   
+extern	UserDataType    StateBit10;   
 extern  UserDataType    Vip_Floor;   
 
 
@@ -1642,6 +1621,7 @@ extern  unsigned int   Percent;
 extern  unsigned int   ThisReceiveSlave;
 
 
+extern	unsigned long   PowerOnTime;
 
 extern  unsigned long 	BefCurEncoderPulse;
 extern  unsigned long   TmpEncoderPulse;
@@ -1893,7 +1873,7 @@ extern	unsigned int 	AutotunUpDn;
 
 
 #define  bOnceVip               GET_BITFIELD(&StateBit2).bit0 
-//#define  bNextFlrOccur          GET_BITFIELD(&StateBit2).bit1 
+#define  bDoorOpenValid			GET_BITFIELD(&StateBit2).bit1 
 #define  bExportData            GET_BITFIELD(&StateBit2).bit2 
 #define  bImportData            GET_BITFIELD(&StateBit2).bit3 
 #define  bDspClr                GET_BITFIELD(&StateBit2).bit4 
@@ -1920,7 +1900,7 @@ extern	unsigned int 	AutotunUpDn;
 #define  bBefDoorJumper         GET_BITFIELD(&StateBit4).bit4 
 #define  bHibSet       			GET_BITFIELD(&StateBit4).bit5 
 #define  bRunningOpenOn		    GET_BITFIELD(&StateBit4).bit6 
-//#define  bManWorkMoveCar        GET_BITFIELD(&StateBit4).bit7 
+#define  bFireFlrOn        		GET_BITFIELD(&StateBit4).bit7 
 
 
 #define  bSlavePrk      		GET_BITFIELD(&StateBit5).bit0 
@@ -1933,8 +1913,8 @@ extern	unsigned int 	AutotunUpDn;
 #define  bErrClearOnce        	GET_BITFIELD(&StateBit5).bit7 
 
 
-#define  bLevelOpen      		GET_BITFIELD(&StateBit6).bit0 
-//#define  bManWorkStart      	GET_BITFIELD(&StateBit6).bit1 
+#define  bsUcmpFeedErr      	GET_BITFIELD(&StateBit6).bit0 
+#define  bBefbsUcmpFeedErr  	GET_BITFIELD(&StateBit6).bit1 
 #define  bFireTimeRun    		GET_BITFIELD(&StateBit6).bit2 
 #define  bFirstFire        		GET_BITFIELD(&StateBit6).bit3 
 #define  bSecondFire         	GET_BITFIELD(&StateBit6).bit4
@@ -1971,7 +1951,18 @@ extern	unsigned int 	AutotunUpDn;
 #define  bDoorOpenHold			GET_BITFIELD(&StateBit9).bit4 
 #define  bLope_Occur       		GET_BITFIELD(&StateBit9).bit5 
 #define  bSlip_Occur		    GET_BITFIELD(&StateBit9).bit6 
-#define  bNCNOTUSE7				GET_BITFIELD(&StateBit9).bit7 
+#define  bLevelOpen				GET_BITFIELD(&StateBit9).bit7 
+
+
+
+#define  bReadyCall      		GET_BITFIELD(&StateBit10).bit0 
+#define  bOldFireBuz      		GET_BITFIELD(&StateBit10).bit1 
+#define  bAutoTunningMsg   		GET_BITFIELD(&StateBit10).bit2 
+#define  bNOT_USE3      		GET_BITFIELD(&StateBit10).bit3 
+#define  bNOT_USE4				GET_BITFIELD(&StateBit10).bit4 
+#define  bNOT_USE5       		GET_BITFIELD(&StateBit10).bit5 
+#define  bNOT_USE6		    	GET_BITFIELD(&StateBit10).bit6 
+#define  bNOT_USE7				GET_BITFIELD(&StateBit10).bit7 
 
 
 //////////////////////////////////////////////////////////////
@@ -2224,7 +2215,7 @@ extern	unsigned int 	AutotunUpDn;
 //#define  iF_F_UseTime10         GET_LONGFIELD(&FlashDspCharBuf[F_UseTime10/4])      .intger[(F_UseTime10%4)/2]
 
 #define  cF_OPWTTM              (cF_OPWTTMmsec * 10)
-#define  cF_OPTTTM              (cF_OPTTTMmsec * 10)
+#define  cF_OPTTTM              (unsigned int)(cF_OPTTTMmsec * 10)
 #define  cF_LULDOFFTIME         (cF_LULDOFFTIMEmsec * 10)
 
 #define  cF_REOPTM              (cF_REOPTMmsec * 10)     
@@ -2807,6 +2798,7 @@ extern  UserDataType    BefX0Byte;
 #define  SafetyValidLR                      bitChk_FLRDSPCH(F_OnOff3,(bSafetyValidLR % 8))
 #define  FloorSelMethod                     bitChk_FLRDSPCH(F_OnOff3,(bFloorSel % 8))
 #define  RunningOpenOnOff                   bitChk_FLRDSPCH(F_OnOff3,(bRunOpenSetClear % 8))
+#define  UcmpFeedBackChk                    bitChk_FLRDSPCH(F_OnOff3,(bUcmpFeedback % 8))
 
 /////////////////////////////////////////////////////////////////////////////////////////
 #define  EncoderCopyOnOff                   bitChk_FLRDSPCH(F_OnOff3,(bEncoderCpy % 8))
