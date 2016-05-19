@@ -8528,28 +8528,11 @@ unsigned int   __attribute__((section(".usercode")))  BuzOnOff(void)    // new l
 
 	OUT_SLOW_DOOR(0);
 
-	if(bDoorCloseOk || IN_AUTO || S3_PARKING1 || Old_Law_SystemChk() || bFireFlrOn){
+	if(bDoorCloseOk || IN_AUTO || S3_PARKING1 || Old_Law_SystemChk() || bFireFlrOn || !PerfectAuto()){
 		bDoorSlowExe=0;
 		FiremanTimer =0;
 	}
 
-/*
-	if( !S2_FIRE1 || !IN_FR1 || !IN_FR2 ){
-		bDoorSlowExe=0;
-		FiremanTimer=0;
-	}
-*/
- 
-	
-/*
-	if(Old_Law_SystemChk()){
-		FiremanTimer =0;
-		bDoorSlowExe =0;
-	
-	}
-
-/////	if(Old_Law_FireBuzChk())	return(0); 
-*/
 
     OUT_BUZ(0);
     
@@ -8561,8 +8544,7 @@ unsigned int   __attribute__((section(".usercode")))  BuzOnOff(void)    // new l
 	        OUT_BUZ(1);         
 	    }
 
-
-		if(FiremanTimer >= 120){
+		if( (FiremanTimer >= 120) && S2_FIRE1 && !bFireFlrOn){
 			bDoorSlowExe=1;
  			if(!bMoveCar)	OUT_BUZ(1);
 		}
@@ -8579,67 +8561,27 @@ unsigned int   __attribute__((section(".usercode")))  BuzOnOff(void)    // new l
 	}
 
 
-	if( bAuto && S1_OVERLOAD1)								OUT_BUZ(1);
+	if(bAuto){
+		if(S1_OVERLOAD1)								OUT_BUZ(1);
 
-	if(USE_CHECK == BAGGAGE_USE){
-		if(bAuto && bOnLuLd && !bMoveCar && SafetyChk()){              
-			OUT_BUZ(1);          
+		if(USE_CHECK == BAGGAGE_USE){
+			if(bOnLuLd && !bMoveCar && SafetyChk()){              
+				OUT_BUZ(1);          
+			}
+			else if(bOnLuLd && !bMoveCar && (TmpBuzor < 10)){              
+				OUT_BUZ(1);          
+			}
 		}
-		else if(bAuto && bOnLuLd && !bMoveCar && (TmpBuzor < 10)){              
-			OUT_BUZ(1);          
-		}
-	}
-	else if(USE_CHECK == CARLIFT_USE){
-		if(bAuto && SafetyChk()){              
-			OUT_BUZ(1);          
-		}
-	}
-
-
-
-
-/*
-	if(Old_Law_SystemChk()){
-		if(bFirstFire && S2_FIRE1 && bSecondFire && (sRamDArry[mFireSeq] == FIRE_ONE){              
-			return(0);
-		}
-	}
-	else{
-		if(!bFirstFire && S2_FIRE1){
-			if( (FiremanTimer >= 120) &&  !bMoveCar)	OUT_BUZ(1);
-			else										OUT_BUZ(0);
-			return(0);	
+		else if(USE_CHECK == CARLIFT_USE){
+			if(SafetyChk()){              
+				OUT_BUZ(1);          
+			}
 		}
 	}
 
-	if(USE_CHECK == BAGGAGE_USE){
-		if(S1_OVERLOAD1){              
-			OUT_BUZ(1);          
-		}
-		else if(bAuto && bOnLuLd && !bMoveCar && SafetyChk()){              
-			OUT_BUZ(1);          
-		}
-		else if(bAuto && bOnLuLd && !bMoveCar && (TmpBuzor < 10)){              
-			OUT_BUZ(1);          
-		}
-		else	OUT_BUZ(0);         
-	}
-	else if(USE_CHECK == CARLIFT_USE){
-		if(S1_OVERLOAD1){              
-			OUT_BUZ(1);          
-		}
-		else if(bAuto && SafetyChk()){              
-			OUT_BUZ(1);          
-		}
-		else	OUT_BUZ(0);         
-	}
-	else{
-		if(S1_OVERLOAD1)    OUT_BUZ(1);          
-		else                OUT_BUZ(0);         
-	}
-*/
     return(0);
 }
+
 
 
 
