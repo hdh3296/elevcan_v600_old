@@ -360,6 +360,7 @@ bit bOppositeDoor_Enab;
 
 unsigned int RealayTestTimer = 0;
 
+bit bHajaeMentEn;
 
 
 
@@ -773,7 +774,7 @@ unsigned char    GetVoice_Floor(unsigned char xTmpCurVoice, unsigned char xCurFl
     static unsigned char befFloorMent = 0;
     static bit bmentSaveEnab;
 
-    if (xTmpCurVoice != 0xff)
+    if (xTmpCurVoice != NO_MENT)
         return xTmpCurVoice;
 
     if (xCurFloorMent != 0xfe)
@@ -814,7 +815,7 @@ unsigned char   GetVoice_OpenCloseUpDn(unsigned char xTmpCurVoice)
     static bit xbOpened = FALSE;
     static bit xbUpDned = FALSE;
 
-    if (xTmpCurVoice != 0xff)
+    if (xTmpCurVoice != NO_MENT)
         return xTmpCurVoice;
 
     if (ELE_bPARKING_READY)
@@ -899,7 +900,7 @@ unsigned char   GetVoice_Song(unsigned char xBefVoice)
     unsigned char tmCurVoice;
     static bit bSong = FALSE;
 
-    if (xBefVoice != 0xff)
+    if (xBefVoice != NO_MENT)
         return xBefVoice;
 
     if (ELE_bCAR_MOVE && ELE_bAUTO)
@@ -946,7 +947,7 @@ unsigned char    GetVoice_State(UCHAR xTmpCurVoice, UCHAR xCurVoice)
 {
     static unsigned char EmergencyVoiceCnt = 0;
 
-    if (xTmpCurVoice != 0xff)
+    if (xTmpCurVoice != NO_MENT)
         return xTmpCurVoice;
 
     // 파킹
@@ -969,8 +970,18 @@ unsigned char    GetVoice_State(UCHAR xTmpCurVoice, UCHAR xCurVoice)
         xTmpCurVoice = OVERLOAD_MENT;
     }
 
-    // 화재
-    if (ELE_bFIRE && (xCurVoice != HWAJAE_MENT) && !ELE_bIN_FR1)
+    // 화재 
+	if (!ELE_bFIRE)
+	{
+		bHajaeMentEn = TRUE;
+	}
+	
+	if (ELE_bIN_FR1)
+	{
+		bHajaeMentEn = FALSE;
+	}	
+	
+    if (ELE_bFIRE && (xCurVoice != HWAJAE_MENT) && bHajaeMentEn)
     {
         xTmpCurVoice = HWAJAE_MENT;
     }
@@ -1024,7 +1035,7 @@ unsigned char   GetVoice_CarCall(UCHAR xTmpCurVoice, UCHAR *xCurkey, UCHAR *xBef
     unsigned char iFloor; // 0~31
     unsigned char bitKey;
 
-    if (xTmpCurVoice != 0xff)
+    if (xTmpCurVoice != NO_MENT)
         return xTmpCurVoice;
     if (!ELE_bAUTO || ELE_bFLOW)
         return xTmpCurVoice;
@@ -1617,6 +1628,7 @@ void InitVoice(void)
     bBeepEnab = TRUE;
 	bOppositeDoor_Enab = FALSE;
 	_BATTERY = BAT_OFF;
+	bHajaeMentEn = TRUE;
 }
 
 void SetVoice(void)
