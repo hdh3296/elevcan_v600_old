@@ -243,7 +243,7 @@ unsigned int  __attribute__((section(".usercode")))   Fire_Service(void)
             if(bFirstFire){
                 ClrUpDnWard();       
                 S3_CUR_KEY1=1;               
-				bFireFlrOn=1;
+//				bFireFlrOn=1;
 
 				if(DoorOpenOnChk()){
                     SelectDoorOpen_you();
@@ -351,7 +351,7 @@ unsigned int  __attribute__((section(".usercode")))   FireConditionChk(void)
 
 	bSafeFire=0;
 	bSecondFire=0;
-//	bFirstFire=0;
+	bFirstFire=0;
 
 	if(New_Law_SystemChk()){
 		bFireTimeRun=0;	
@@ -359,8 +359,13 @@ unsigned int  __attribute__((section(".usercode")))   FireConditionChk(void)
 
 		if( !IN_FIRE || bExt_FIRE || bSlaveFire || bExt_Second_FIRE){
 			S2_FIRE1=1;
+/*
 			if( !IN_FR1 || bFirstFire){
 				if(bFireFlrOn)	bFirstFire=1;
+			}	
+*/
+			if( !IN_FR1){
+				bFirstFire=1;
 			}	
 			else{
 				if(!IN_FR2 && !bExt_Second_FIRE){
@@ -385,7 +390,7 @@ unsigned int  __attribute__((section(".usercode")))   FireConditionChk(void)
 		}	
 	}
 
-	bFirstFire=0;
+/////////////////	bFirstFire=0;
 	S2_FIRE1=0;
 	S3_CUR_KEY1=0;
 	sRamDArry[mFireSeq] = NO_FIRE;
