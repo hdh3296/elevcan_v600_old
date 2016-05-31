@@ -154,6 +154,20 @@
 
 
 
+///////////////////////////////////////////////////
+//ver 6.06 --> 6.07 modify 
+// 1.safety Buz 수정 
+/////////////////////////////////
+
+///////////////////////////////////////////////////
+//ver 6.07 --> 6.08 modify 
+// 1.fire 수정 
+/////////////////////////////////
+
+///////////////////////////////////////////////////
+//ver 6.08 --> 6.09 modify 
+// 1.vip 운전 수정 
+/////////////////////////////////
 
 
 
@@ -6580,7 +6594,11 @@ void __attribute__((section(".usercode")))  DoorOpenCloseSeq(void)
     
                 if(bDoorCloseOk){
                     sRamDArry[mDoorSeq]=DOOR_CLOSE_END;                                        
-                    UpDnRstCheck(); 
+                    UpDnRstCheck();
+ 
+					if(S3_VIP1){
+						DoorCloseTime=0;
+					}					
 
 					#ifdef	TEST_SIMULATION
                         if(!IN_X5)	sRamDArry[mDoorSeq]=DOOR_OPEN_START; 
