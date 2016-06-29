@@ -5,7 +5,7 @@
 #include  "you_can2.h" 
 
 
-void  __attribute__((section(".usercode"))) Delta_inverter_Par_DataSort(unsigned int this_data);
+void  __attribute__((section(".usercode"))) Delta_Par_DataSort(unsigned int this_data);
 
 void  __attribute__((section(".usercode"))) Pc_Command(void);
 
@@ -197,7 +197,7 @@ void  __attribute__((section(".usercode"))) Pc_Command(void);
 //#define OUTPORT_GROUP_MAX           23
 #define ERROR_GROUP_MAX             40
 #define EL_GROUP_MAX         		32
-
+#define DELTA_GROUP_MAX				99
 
 
 
@@ -396,8 +396,10 @@ UserDataType    Cursor;
 UserDataType    EditStatus;
 UserDataType    EditBlanck;
 UserDataType    ShiftCnt;
+UserDataType    DecimalPt;
 UserDataType    MaxSubMenu;
 UserDataType    MemPointer;
+
 
 
 UserDataType   pw[4];
@@ -671,9 +673,10 @@ const unsigned char GroupLineMessage[][17]={
                                     "ONOFF2:WaitTotal",//7  
                                     "ONOFF2:ClosTotal",//8  
                                     "ONOFF2:C_Dr1 Chk",//9  
-                                    "ONOFF2:C_Dr2 Chk",//10  
+//                                    "ONOFF2:C_Dr2 Chk",//10  
+                                    "ONOFF2:NextFlChk",//10  
                                     "ONOFF2:H_Dr1 Chk",//11
-                                    "ONOFF2:H_Dr2 Chk",//12 
+                                    "ONOFF2:Reserve  ",//12 
                                     "ONOFF2:S_Sft Chk",//13
                                     "ONOFF2:MgtMonChk",//14
                                     "ONOFF2:Encod Chk",//15
@@ -1160,9 +1163,10 @@ const unsigned char ElevOnOffSetMessage[ELEV_ONOFF_MESSAGE_CNT][11]={
                                     "WaitTtTm On",                                      
                                     "Cl TtTm On ",   
                                     "CarDr1  Use",   
-                                    "CarDr2  Use",   
+//                                    "CarDr2  Use",   
+                                    "NextFlr_Run",   
                                     "HolDr1  Use",   
-                                    "HolDr2  Use",   
+                                    "Reserve    ",   
                                     "S_Sfty  Use",   
                                     "Mgt Mon On ",   
                                     "Encoder Use",   
@@ -1197,9 +1201,10 @@ const unsigned char ElevOnOffResetMessage[ELEV_ONOFF_MESSAGE_CNT][11]={
                                     "WaitTtTmOff",                                      
                                     "Cl TtTm Off",   
                                     "C_Dr1 N_Use",   
-                                    "C_Dr2 N_Use",   
+//                                    "C_Dr2 N_Use",   
+                                    "NextFl_Stop",   
                                     "H_Dr1 N_Use",   
-                                    "H_Dr2 N_Use",   
+                                    "Reserve    ",   
                                     "S_Sft N_Use",   
                                     "Mgt Mon Off",   
                                     "Encod N_Use",   
@@ -2596,8 +2601,31 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
         	break;
 
 ////////////////////////////////////////////////////
-//"Slip  Pulse",
         case    20:
+
+//"Decrease Length",
+			tx1=GET_LONG(MM_PULSE);
+
+/*
+			if(Base_Slip_pulse > CurPulse){
+   				tx2=(Base_Slip_pulse - CurPulse);
+			}
+			else{
+   				tx2=(CurPulse - Base_Slip_pulse);
+			}
+*/
+			tx2=DecTotalPulse;
+   			CurEncoderPulse( tx2/tx1);
+
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+8]  ='m';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+9]  ='m';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+10] =' ';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+11] =' ';          
+    		New485Ladder[SECONDLINE_BASE+EditBlanck+12] =' ';          
+
+
+/*
+//"Slip  Pulse",
 			tx1=GET_LONG(MM_PULSE);
 
 			if(Base_Slip_pulse > CurPulse){
@@ -2614,6 +2642,7 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
     		New485Ladder[SECONDLINE_BASE+EditBlanck+10] =' ';          
     		New485Ladder[SECONDLINE_BASE+EditBlanck+11] =' ';          
     		New485Ladder[SECONDLINE_BASE+EditBlanck+12] =' ';          
+*/
         	break;
 //"DoorOpTime ",
         case    21:
@@ -3348,50 +3377,49 @@ void  __attribute__((section(".usercode"))) NewMenuStart(void)
 
 #ifdef	DELTA_INVERTER
 		case    DELTA_PAR_GROUP_00:
-            MaxSubMenu=EL_GROUP_MAX;
+            MaxSubMenu=DELTA_GROUP_MAX;
 			break;
 		case    DELTA_PAR_GROUP_01:
-            MaxSubMenu=EL_GROUP_MAX;
+            MaxSubMenu=DELTA_GROUP_MAX;
 			break;
         case    DELTA_PAR_GROUP_02:
-            MaxSubMenu=EL_GROUP_MAX;
+            MaxSubMenu=DELTA_GROUP_MAX;
 			break;
         case    DELTA_PAR_GROUP_03:
-            MaxSubMenu=EL_GROUP_MAX;
+            MaxSubMenu=DELTA_GROUP_MAX;
 			break;
         case    DELTA_PAR_GROUP_04:
-            MaxSubMenu=EL_GROUP_MAX;
-            MaxSubMenu=100;
+            MaxSubMenu=DELTA_GROUP_MAX;
 			break;
         case    DELTA_PAR_GROUP_05:
-            MaxSubMenu=EL_GROUP_MAX;
+            MaxSubMenu=DELTA_GROUP_MAX;
 			break;
         case    DELTA_PAR_GROUP_06:
-            MaxSubMenu=EL_GROUP_MAX;
+            MaxSubMenu=DELTA_GROUP_MAX;
 			break;
         case    DELTA_PAR_GROUP_07:
-            MaxSubMenu=EL_GROUP_MAX;
+            MaxSubMenu=DELTA_GROUP_MAX;
 			break;
         case    DELTA_PAR_GROUP_08:
-            MaxSubMenu=EL_GROUP_MAX;
+            MaxSubMenu=DELTA_GROUP_MAX;
 			break;
         case    DELTA_PAR_GROUP_09:
-            MaxSubMenu=EL_GROUP_MAX;
+            MaxSubMenu=DELTA_GROUP_MAX;
 			break;
         case    DELTA_PAR_GROUP_10:
-            MaxSubMenu=EL_GROUP_MAX;
+            MaxSubMenu=DELTA_GROUP_MAX;
 			break;
         case    DELTA_PAR_GROUP_11:
-            MaxSubMenu=EL_GROUP_MAX;
+            MaxSubMenu=DELTA_GROUP_MAX;
 			break;
         case    DELTA_PAR_GROUP_12:
-            MaxSubMenu=EL_GROUP_MAX;
+            MaxSubMenu=DELTA_GROUP_MAX;
 			break;
         case    DELTA_PAR_GROUP_13:
-            MaxSubMenu=EL_GROUP_MAX;
+            MaxSubMenu=DELTA_GROUP_MAX;
 			break;
         case    DELTA_PAR_GROUP_14:
-            MaxSubMenu=EL_GROUP_MAX;
+            MaxSubMenu=DELTA_GROUP_MAX;
 			break;
 #endif
 
@@ -3768,7 +3796,7 @@ void  __attribute__((section(".usercode"))) Integer_Digit(void)
 
 	#ifdef	DELTA_INVERTER
 	if( (LadderGroup >= DELTA_PAR_GROUP_00) && (LadderGroup < DELTA_PAR_GROUP_END)){
-		Delta_inverter_Par_DataSort(value);					
+		Delta_Par_DataSort(value);					
 	}
 	#endif
 
@@ -5639,14 +5667,17 @@ void  __attribute__((section(".usercode"))) UserGroupSave(void)
                     break;
                 case    2:
 					if(!bMoveCar){
+
+/*
 						for(i=0;i<E_END;i++){
 							eDArry[i]=0;
 						}
 
 						sRamDArry[mBefErrCntPt]=0;
 						eDArry[eErrCntPt]=0;
-						Flash_ErrClear_All();
+*/
 
+						Flash_ErrClear_All();
 						bSaveFlash=1;
 
 					
@@ -6505,7 +6536,7 @@ const unsigned char INVERTER_PAR[] 		={"Inverter Par: 00"};
 const unsigned char INVERTER_VAL[] 		={"00:             "};
 
 
-void  __attribute__((section(".usercode"))) Delta_inverter_Par_Group(void)
+void  __attribute__((section(".usercode"))) Delta_Par_Group(void)
 {
     LocalType i,j;
 
@@ -6530,34 +6561,9 @@ void  __attribute__((section(".usercode"))) Delta_inverter_Par_Group(void)
 }
 
 
-/*
-
-void  __attribute__((section(".usercode"))) Delta_inverter_Par_DataSet(unsigned int val,unsigned int dp)
-{
-
-	Man_Dsp(val,0);
-
-	if(dp==1){
-    	New485Ladder[SECONDLINE_BASE+EditBlanck+5]=New485Ladder[SECONDLINE_BASE+EditBlanck+4];          
-    	New485Ladder[SECONDLINE_BASE+EditBlanck+4]='.';          
-	}	
-	else if(dp==2){
-    	New485Ladder[SECONDLINE_BASE+EditBlanck+5]=New485Ladder[SECONDLINE_BASE+EditBlanck+4];          
-    	New485Ladder[SECONDLINE_BASE+EditBlanck+4]=New485Ladder[SECONDLINE_BASE+EditBlanck+3];          
-    	New485Ladder[SECONDLINE_BASE+EditBlanck+3]='.';          
-	}	
-	else if(dp==3){
-    	New485Ladder[SECONDLINE_BASE+EditBlanck+5]=New485Ladder[SECONDLINE_BASE+EditBlanck+4];          
-    	New485Ladder[SECONDLINE_BASE+EditBlanck+4]=New485Ladder[SECONDLINE_BASE+EditBlanck+3];          
-    	New485Ladder[SECONDLINE_BASE+EditBlanck+3]=New485Ladder[SECONDLINE_BASE+EditBlanck+2];          
-    	New485Ladder[SECONDLINE_BASE+EditBlanck+2]='.';          
-	}
-	Cursor=0;
-}
-*/
 
 
-void  __attribute__((section(".usercode"))) Delta_inverter_Par_GroupSave(void)
+void  __attribute__((section(".usercode"))) Delta_Par_GroupSave(void)
 {
 	unsigned int val;
 
@@ -6588,7 +6594,7 @@ void  __attribute__((section(".usercode"))) Delta_inverter_Par_GroupSave(void)
 }
 
 
-void  __attribute__((section(".usercode"))) Delta_inverter_Par_DataSort(unsigned int this_data)
+void  __attribute__((section(".usercode"))) Delta_Par_DataSort(unsigned int this_data)
 {
 	unsigned int dp;
 	
@@ -6600,13 +6606,46 @@ void  __attribute__((section(".usercode"))) Delta_inverter_Par_DataSort(unsigned
 	else					dp=0;
 
 
-//	if( IV_This_Attrv  & 0x0100)	
+//	if( IV_This_Attrv  & 0x0100)
+	
 	EditStatus=DIGIT_EDIT;	
-
 	DigitMinValue=IV_This_Min;
 	DigitMaxValue=IV_This_Max;
 	DigitData=this_data;
 
+
+	if(DigitMaxValue < 10){
+	    ShiftCnt=1;
+//		if(dp > 0 )	ShiftCnt++;
+		if(dp == 1 )	ShiftCnt=3;
+		Il_Dsp(DigitData,dp);
+	}
+	else if(DigitMaxValue < 100){
+	    ShiftCnt=2;
+		if(dp == 1 )		ShiftCnt=3;
+		else if(dp == 2 )	ShiftCnt=4;
+		Sip_Dsp(DigitData,dp);
+	}
+	else if(DigitMaxValue < 1000){
+	    ShiftCnt=3;
+		if(dp == 1 )		ShiftCnt=4;
+		else if(dp == 2 )	ShiftCnt=4;
+		else if(dp == 3 )	ShiftCnt=5;
+		Bek_Dsp(DigitData,dp);
+	}
+	else if(DigitMaxValue < 10000){
+	    ShiftCnt=4;
+		if(dp > 0 )	ShiftCnt++;
+		Chun_Dsp(DigitData,dp);
+	}
+	else{
+	    ShiftCnt=5;
+		if(dp > 0 )	ShiftCnt++;
+		Man_Dsp(DigitData,dp);
+	}
+
+
+/*
 	if( (DigitMaxValue < 10) && (dp==0)){
 	    ShiftCnt=1;
 		Il_Dsp(DigitData,dp);
@@ -6632,6 +6671,8 @@ void  __attribute__((section(".usercode"))) Delta_inverter_Par_DataSort(unsigned
 		if(dp > 0 )	ShiftCnt++;
 		Man_Dsp(DigitData,dp);
 	}
+*/
+
 }
 
 
@@ -6789,7 +6830,7 @@ unsigned int  __attribute__((section(".usercode"))) SaveData(void)
         case    DELTA_PAR_GROUP_12:
         case    DELTA_PAR_GROUP_13:
         case    DELTA_PAR_GROUP_14:
-			Delta_inverter_Par_GroupSave();
+			Delta_Par_GroupSave();
 			ret=1;
 			break;
 #endif
@@ -6839,11 +6880,24 @@ unsigned int  __attribute__((section(".usercode"))) CusorDigitSet(void)
 unsigned int  __attribute__((section(".usercode"))) CusorDataUp(void)
 {
     LocalType i;
-    i=SECONDLINE_BASE + EditBlanck + Cursor;
+    LocalType j,digCur;
+
+    i=(SECONDLINE_BASE + EditBlanck + Cursor);
 
     switch(EditStatus){
-        case    DIGIT_EDIT:
-            switch(ShiftCnt-Cursor){
+        case    DIGIT_EDIT:		
+		    i=(SECONDLINE_BASE + EditBlanck);
+			digCur=Cursor;	
+
+			for(j=Cursor;j<ShiftCnt; j++){
+        		if((New485Ladder[i+j] == '.')){
+					digCur=(Cursor+1);
+					break;
+				}
+			}
+			
+//            switch(ShiftCnt-Cursor){
+            switch(ShiftCnt-digCur){
                 case    1:
                     DigitData++;
                     break;
@@ -6904,12 +6958,23 @@ unsigned int  __attribute__((section(".usercode"))) CusorDataUp(void)
 unsigned int  __attribute__((section(".usercode"))) CusorDataDn(void)
 {
     LocalType i;
+    LocalType j,digCur;
 
     i=SECONDLINE_BASE + EditBlanck + Cursor;
 
     switch(EditStatus){
         case    DIGIT_EDIT:
-            switch(ShiftCnt-Cursor){
+		    i=(SECONDLINE_BASE + EditBlanck);
+			digCur=Cursor;	
+			for(j=Cursor;j<ShiftCnt; j++){
+        		if((New485Ladder[i+j] == '.')){
+					digCur=(Cursor+1);
+					break;
+				}
+			}
+
+//            switch(ShiftCnt-Cursor){
+            switch(ShiftCnt-digCur){
                 case    1:
                     if(DigitData > 0)           DigitData--;
                     break;
@@ -6957,8 +7022,12 @@ unsigned int  __attribute__((section(".usercode"))) ShiftRightCur(void)
 {
     LocalType i;
 
-    if(ShiftCnt==0) Cursor=0;
-    else            Cursor=(Cursor+1)%ShiftCnt; 
+    if(ShiftCnt==0){
+ 		Cursor=0;
+	}
+    else{
+    	Cursor=(Cursor+1)%ShiftCnt; 
+	}
 
     i=SECONDLINE_BASE + EditBlanck + Cursor;
 
@@ -6981,9 +7050,15 @@ unsigned int  __attribute__((section(".usercode"))) ShiftLeftCur(void)
 {
     LocalType i;
 
-    if(ShiftCnt==0)     Cursor=0;
-    else if(Cursor>0)   Cursor--;
-    else                Cursor=ShiftCnt-1;
+    if(ShiftCnt==0){
+     	Cursor=0;
+	}
+    else if(Cursor>0){
+   		Cursor--;
+	}
+    else{
+    	Cursor=ShiftCnt-1;
+	}
 
     i=SECONDLINE_BASE + EditBlanck + Cursor;
 
@@ -7670,7 +7745,7 @@ unsigned int  __attribute__((section(".usercode"))) NewFlashData(void)
 	        case    DELTA_PAR_GROUP_12:
 	        case    DELTA_PAR_GROUP_13:
 	        case    DELTA_PAR_GROUP_14:
-				Delta_inverter_Par_Group();
+				Delta_Par_Group();
 				DeltaRdWrStatus=1;
 				break;
 	#endif
@@ -7734,11 +7809,11 @@ unsigned int  __attribute__((section(".usercode"))) NewFlashData(void)
 
 	if(bsInvCurNext){		    	
 		delta_rdwr_valid=1;
-		DeltaInverterRdWr( (unsigned char)(4),(unsigned char)(23),1,0,sRamDArry[S0_FLOOR]);
+		DeltaRdWr( (unsigned char)(4),(unsigned char)(23),1,0,sRamDArry[S0_FLOOR]);
 	}
 	else if( (LadderGroup >= DELTA_PAR_GROUP_00) && (LadderGroup < DELTA_PAR_GROUP_END) && (DeltaRdWrStatus > 0)){
 		bDeltaGroupEdit=1;
-		DeltaInverterRdWr( (unsigned char)(LadderGroup-DELTA_PAR_GROUP_00),(unsigned char)LadderGroupSub,0,0,0);
+		DeltaRdWr( (unsigned char)(LadderGroup-DELTA_PAR_GROUP_00),(unsigned char)LadderGroupSub,0,0,0);
 
 //		if(DeltaRdWrStatus==0)	EnterKey=1;            
 

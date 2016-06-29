@@ -120,6 +120,15 @@ void __attribute__((section(".usercode")))   DspFloorSet(void)
 ////////////////
 void __attribute__((section(".usercode")))     CurSelSpeed(unsigned int spd)
 {
+
+	#ifdef	DELTA_INVERTER
+		if( (spd >= 1) && (spd <= 7)){
+			spd=1;	 
+			bDeltaSpdOff=1;
+		}
+		else	bDeltaSpdOff=0;
+	#endif
+
     switch(spd){
         case    0:
             OUT_P1(0);
@@ -273,8 +282,84 @@ void  __attribute__((section(".usercode")))    CarLowSpeedCmd_IO(void)
 
 
 
+void  __attribute__((section(".usercode")))   CarStopCmd_IO(void)
+{        
+
+	
+	if(bOnceMove){
+		bOnceMove=0;
+		sRamDArry[mCarMoveState]=0;
+
+		if(DecStartPulse >0){	
+			if(DecStartPulse >= CurPulse)	DecTotalPulse = (DecStartPulse - CurPulse);	
+			else							DecTotalPulse = (CurPulse-DecStartPulse);	
+			DecStartPulse=0;
+		}
+	}
 
 
+    switch(sRamDArry[mCarMoveState]){
+        case	0:
+            sRamDArry[mCarMoveState]=1;
+            break;							
+        case  1:                                   
+            sRamDArry[mCarMoveState]=2;
+            bOneStep=0;               
+            bTwoStep=0;                
+            bThreeStep=0;              
+            bFourStep=0;               
+			MotorStopTime=0;
+            break;
+        case  2:
+            ZeroSpeedCmd_IO();
+            if(MotorStopTime>iF_Bk1OffTime){
+                bOneStep=1;               
+                OUT_BK1(0);                     
+            }              
+
+            if(MotorStopTime>iF_Bk2OffTime){
+                bTwoStep=1;               
+                OUT_BK2(0);
+            }              
+
+            if(MotorStopTime>iF_UDOffTime){
+                bThreeStep=1;               
+          	    CallMeUpDnDirectionSet();                                                                       
+                OUT_U_W(0);                                                               
+                OUT_D_W(0);                                                        
+            }              
+
+            if(MotorStopTime>iF_P4OffTime){
+                bFourStep=1;               
+                OUT_P4(0);
+            }
+
+
+            if(bOneStep && bTwoStep && bThreeStep && bFourStep){               
+                ZeroSpeedCmd_IO();
+                OUT_P4(0);
+                OUT_U_W(0);                                                               
+                OUT_D_W(0);                                                        
+                OUT_BK1(0);
+                OUT_BK2(0);
+
+                bMoveCar=0;
+                bCarUpMove=0;
+                bCarDnMove=0;
+                S2_CAR_MOVE1=0;
+   				ElevMoveTime=0;
+                if(!bAuto)  ClrUpDnWard();
+                bVoiceReady=0;   
+            }              
+            break;
+        default:
+            sRamDArry[mCarMoveState]=0;
+            break;
+    }
+}
+
+
+/*
 void  __attribute__((section(".usercode")))   CarStopCmd_IO(void)
 {        
     switch(sRamDArry[mCarMoveState]){
@@ -321,7 +406,6 @@ void  __attribute__((section(".usercode")))   CarStopCmd_IO(void)
                 OUT_BK1(0);
                 OUT_BK2(0);
 
-				if(New_Law_SystemChk())	OUT_RST(0);
 
                 bMoveCar=0;
                 bCarUpMove=0;
@@ -337,6 +421,7 @@ void  __attribute__((section(".usercode")))   CarStopCmd_IO(void)
             break;
     }
 }
+*/
 
 
 
@@ -733,8 +818,6 @@ void  __attribute__((section(".usercode"))) 	InverterErrorCheck_IO(void)
 
 void   __attribute__((section(".usercode")))   CarStopCmd(void)
 {
-    if(IN_LU && IN_LD)    bCarErr=1;
-
     CarStopCmd_IO();
 	S3_SHIFT1=0; //shift   
 }
@@ -744,6 +827,7 @@ void  __attribute__((section(".usercode")))    CarUpStartCmd(void)
 {
 	if(bPowerSaveMoveValid){
 	    bSaveFlash=1;
+		bOnceMove=1;
 	    CarUpStartCmd_IO();
 	}
 }
@@ -753,6 +837,7 @@ void  __attribute__((section(".usercode")))    CarDnStartCmd(void)
 {
 	if(bPowerSaveMoveValid){
 	    bSaveFlash=1;
+		bOnceMove=1;
 	    CarDnStartCmd_IO();
 	}
 }
@@ -761,6 +846,18 @@ void  __attribute__((section(".usercode")))    CarDnStartCmd(void)
 
 void  __attribute__((section(".usercode")))    CarCurFloorRead(void)
 {
+	#ifdef	DELTA_INVERTER
+    	DeltaCarCurFloorRead();
+		DeltaInverterReqStopFloor();
+	#else
+    if(INVERTER_CHECK == LG)                                CarCurFloorRead_ELEV();                                             
+    else if(INVERTER_CHECK == D_F)                          CarCurFloorRead_OnOff();                                             
+    else{
+    	CarCurFloorRead_IO();
+	}
+	#endif
+
+/*
     if(INVERTER_CHECK == LG)                                CarCurFloorRead_ELEV();                                             
     else if(INVERTER_CHECK == D_F)                          CarCurFloorRead_OnOff();                                             
     else{
@@ -769,6 +866,8 @@ void  __attribute__((section(".usercode")))    CarCurFloorRead(void)
 		DeltaInverterReqStopFloor();
 		#endif
 	}
+*/
+
 }
 
 

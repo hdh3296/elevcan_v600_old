@@ -36,14 +36,23 @@ void  __attribute__((section(".usercode"))) CaluDecreasePulse(void)
 
 unsigned int    __attribute__((section(".usercode"))) SpeedSet(void)
 {
-	if(New_Spd_SystemChk())		return(SpeedSet_spd3());
-	else						return(SpeedSet_old());
+	#ifdef	DELTA_INVERTER
+		return(0);
+	#else
+		if(New_Spd_SystemChk())		return(SpeedSet_spd3());
+		else						return(SpeedSet_old());
+	#endif
 }
 
 
 
 void __attribute__((section(".usercode")))    RunSpeedCmd_IO(void)
 {
+	#ifdef	DELTA_INVERTER
+		if(New_Spd_SystemChk())		CurSpeed=SPEED_HIGH; 
+		else						CurSpeed=SPEED_60;
+	#endif
+
 	if(New_Spd_SystemChk())		RunSpeedCmd_IO_spd3();
 	else						RunSpeedCmd_IO_old();
 }

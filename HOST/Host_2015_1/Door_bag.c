@@ -917,36 +917,6 @@ UserDataType	__attribute__((section(".usercode"))) HoleDoorCloseEndCheckForDoorj
 }
 
 
-/*
-UserDataType	__attribute__((section(".usercode"))) CarDoorSwitchCheck(void)
-{
-
-	UserDataType i;
-	UserDataType in_closeend;
-
-
-    i=1;
-
-	in_closeend=0;
-
-	if(New_Law_SystemChk()){
-		if(INVERTER_CHECK != LG){	
-			if(!IN_FS2)	in_closeend=1;   		// close
-		}
-	}
-	else{
-		if(!IN_GS2)	in_closeend=1;   		// close
-	}	
-
-
-    if(CarDoor2UseChk){
-        if(in_closeend)                 i=1;        //close
-        else                            i=0;        //not close
-    }
-
-    return(i);
-}
-*/
 
 
 

@@ -134,8 +134,7 @@ unsigned int  __attribute__((section(".usercode"))) NewUpKeyChk(void)
 		if( (sRamDArry[mMostLongDst] & ONLY_FLR) > (sRamDArry[mReqStopFloor]  & ONLY_FLR)){
 			sRamDArry[mHighFloor]= sRamDArry[mMostLongDst];
 		} 
-    }
-     
+    }     
 	return(0);
 }
 

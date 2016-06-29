@@ -266,7 +266,7 @@ extern void __attribute__((section(".usercode"))) HextoASCIIByte(void);
 
 #define	    BASE_NEXT_FLR_TIME 		200
 #define	    RELEVEL_TIME            160  //80 
-				
+#define	    REL_RY_TIME				5    // 500 msec 
 #define	    SEC_MIN_TIME            180  //180 
 
 //#define	    Manual_Door 			1
@@ -1498,7 +1498,6 @@ extern  UserDataType    sec1;
 
 extern  UserDataType    EepTime;
 extern  UserDataType    FanTime; 
-extern  UserDataType    ManualStopTime;  
 extern  UserDataType    WarmingUpTime; 
 extern  UserDataType    FixFlrTimeCnt; 
 extern  UserDataType    errtime;
@@ -1540,6 +1539,7 @@ extern	unsigned	int    	    BreakTime;
 extern  unsigned 	int   		CAN_Buf[8];
 extern	unsigned	int			SensorPositionBuf[20];
 extern	unsigned	int			TunningTimer;
+extern	unsigned	int    		MotorStopTime;  
 
 
 
@@ -1627,6 +1627,7 @@ extern  unsigned long 	BefCurEncoderPulse;
 extern  unsigned long   TmpEncoderPulse;
 extern	unsigned long 	LevelEncoderPulse1,LevelEncoderPulse2;
 extern	unsigned long 	TestPulse1,UpDnEncoder;
+extern	unsigned long   DecStartPulse,DecTotalPulse;
 
 
 
@@ -1907,7 +1908,7 @@ extern	unsigned int 	AutotunUpDn;
 #define  bMotor_Overheat      	GET_BITFIELD(&StateBit5).bit1 
 #define  bBefbMotor_Overheat    GET_BITFIELD(&StateBit5).bit2 
 #define  bNewFire2        		GET_BITFIELD(&StateBit5).bit3 
-#define  bNewRelevel         	GET_BITFIELD(&StateBit5).bit4 
+//#define  bNewRelevel         	GET_BITFIELD(&StateBit5).bit4 
 #define  bSafety_scrSft       	GET_BITFIELD(&StateBit5).bit5 
 #define  bRelevelErr		    GET_BITFIELD(&StateBit5).bit6 
 #define  bErrClearOnce        	GET_BITFIELD(&StateBit5).bit7 
@@ -1954,12 +1955,11 @@ extern	unsigned int 	AutotunUpDn;
 #define  bLevelOpen				GET_BITFIELD(&StateBit9).bit7 
 
 
-
 #define  bReadyCall      		GET_BITFIELD(&StateBit10).bit0 
 #define  bOldFireBuz      		GET_BITFIELD(&StateBit10).bit1 
 #define  bAutoTunningMsg   		GET_BITFIELD(&StateBit10).bit2 
-#define  bNOT_USE3      		GET_BITFIELD(&StateBit10).bit3 
-#define  bNOT_USE4				GET_BITFIELD(&StateBit10).bit4 
+#define  bOnceMove      		GET_BITFIELD(&StateBit10).bit3 
+#define  bDeltaSpdOff			GET_BITFIELD(&StateBit10).bit4 
 #define  bNOT_USE5       		GET_BITFIELD(&StateBit10).bit5 
 #define  bNOT_USE6		    	GET_BITFIELD(&StateBit10).bit6 
 #define  bNOT_USE7				GET_BITFIELD(&StateBit10).bit7 

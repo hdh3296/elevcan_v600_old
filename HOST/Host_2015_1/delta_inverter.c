@@ -13,20 +13,27 @@
 #include  	"counter.h"
 #include	"Host_NewProtocol.h" 
 #include	"you_can2.h" 
+#include  	"default_setup.h" 
 
 
-// delta:  stop sequence
+// delta:  stop sequence--		o	
+//         auto tunning-----	o 
 //         relevel
 //         cancle
-//         auto tunning 
+//         target floor check 
+//         sus,sds length 
+//         parameter edit 
 
 
 #ifdef	DELTA_INVERTER	
 
+extern	LocalType __attribute__((section(".usercode"))) DeltaDataSortForPDO(void);
+
 extern UserDataType    EnterKey;
 
 
-#define		CAN_BASE_TIME	10		
+#define		INV_COM_ERR_TIME	100   // 100msec		
+#define		CAN_BASE_TIME		10		
 
 #define		HOST_SDO_0		0x60		
 #define		HOST_SDO_1		0x61		
@@ -87,25 +94,6 @@ extern UserDataType    EnterKey;
 #define		IV_FSD_1		0x40
 #define		IV_BK_RELEASE_1	0x80
 
-/*
-#define		Inv_Ready_Chk			(InvStatus[0] & IV_READY_0)			?	(1) : (0)
-#define		Inv_Error_Chk			(InvStatus[0] & IV_ERROR_0)			?	(1) : (0)
-#define		Inv_Warnning_Chk		(InvStatus[0] & IV_WARNNING_0)		?	(1) : (0)
-#define		Inv_Up_Chk				(InvStatus[0] & IV_UP_0)			?	(1) : (0)
-#define		Inv_Down_Chk			(InvStatus[0] & IV_DOWN_0)			?	(1) : (0)
-#define		Inv_Normal_Chk			(InvStatus[0] & IV_NORMAL_0)		?	(1) : (0)
-#define		Inv_Reserve1_Chk		(InvStatus[0] & IV_RESERVE1_0)		?	(1) : (0)
-#define		Inv_Zero_Spd_Chk		(InvStatus[0] & IV_ZERO_SPD_0)		?	(1) : (0)
-
-#define		Inv_Inspe_Chk			(InvStatus[1] & IV_INSPE_1)			?	(1) : (0)
-#define		Inv_Rescue_Chk			(InvStatus[1] & IV_RESCUE_1)		?	(1) : (0)
-#define		Inv_Relevel_Chk			(InvStatus[1] & IV_RELEVEL_1)		?	(1) : (0)
-#define		Inv_Reserve2_Chk		(InvStatus[1] & IV_RESERVE2_1)		?	(1) : (0)
-#define		Inv_Reserve3_Chk		(InvStatus[1] & IV_RESERVE3_1)		?	(1) : (0)
-#define		Inv_FST_Chk				(InvStatus[1] & IV_FST_1)			?	(1) : (0)
-#define		Inv_FSD_Chk				(InvStatus[1] & IV_FSD_1)			?	(1) : (0)
-#define		Inv_BreakRelease_Chk	(InvStatus[1] & IV_BK_RELEASE_1)	?	(1) : (0)
-*/
 
 
 
@@ -156,6 +144,22 @@ unsigned char	OrgTargetFlr;
 
 
 unsigned int	IV_This_Attrv,IV_This_Min,IV_This_Max,IV_This_Value;
+
+
+
+/*
+LocalType __attribute__((section(".usercode"))) DeltaInverterRelevelHzSet(void)
+{
+	if(bOneLuOrLd)	return(1);
+
+	if( (sRamDArry[mcurfloor] == 0) && !IN_SD1 && (bCarDnMove)){
+        tmppulse1=FLOOR_COUNT(sRamDArry[mcurfloor+1]);
+        tmppulse2=FLOOR_COUNT(sRamDArry[mcurfloor]);
+
+	return(0);
+}
+*/
+
 
 
 void     __attribute__((section(".usercode"))) C2RxSidEidDataLoad(void)
@@ -517,14 +521,19 @@ LocalType __attribute__((section(".usercode"))) Write_SDO(void)
 
 
 
+
+
 LocalType __attribute__((section(".usercode"))) PDO_DataLoad(void)
 {
 	unsigned int i;
 
 	C2ThisTxSid=HOST_PDO;
+	DeltaDataSortForPDO();
+
 	for(i=0;i<8;i++){
 		C2ThisTxBuf[i]=PDO_TX_DataBuf[i];
 	}
+
 	C2ThisTxDataCnt	=0x08;
 	C2TxAct();
 	return(0);
@@ -677,7 +686,7 @@ LocalType __attribute__((section(".usercode"))) WaitAckTimeOutChk(void)
 
 
 
-LocalType __attribute__((section(".usercode"))) DeltaInverterRdWr(unsigned char addressH,unsigned char addressL,unsigned char WriteWordNm,unsigned char valH,unsigned char valL)
+LocalType __attribute__((section(".usercode"))) DeltaRdWr(unsigned char addressH,unsigned char addressL,unsigned char WriteWordNm,unsigned char valH,unsigned char valL)
 {    
 	unsigned int val,dp;
 	unsigned int ret;
@@ -735,7 +744,7 @@ LocalType __attribute__((section(".usercode"))) DeltaInverterRdWr(unsigned char 
 					b_data1=(unsigned int)(b_data1 & 0x00ff);
 					IV_This_Max=(b_data0 | b_data1); 
 
-					Delta_inverter_Par_DataSort(IV_This_Value);					
+					Delta_Par_DataSort(IV_This_Value);					
 					DeltaRdWrStatus=0;
 				}		
 				else{
@@ -773,7 +782,7 @@ LocalType __attribute__((section(".usercode"))) DeltaInverterRdWr(unsigned char 
 
 
 
-LocalType __attribute__((section(".usercode"))) DeltaInverterRdWrFhm(unsigned char addressH,unsigned char addressL)
+LocalType __attribute__((section(".usercode"))) DeltaRdWrFhm(unsigned char addressH,unsigned char addressL)
 {    
 	unsigned int val,dp;
 	unsigned int ret;
@@ -1033,7 +1042,7 @@ LocalType __attribute__((section(".usercode"))) DeltaInverterRdWrFhm(unsigned ch
 
 
 
-LocalType __attribute__((section(".usercode"))) DeltaInverterDecCheck(void)
+LocalType __attribute__((section(".usercode"))) DeltaDecCheck(void)
 {
 	if(InvStatus[1] & IV_DECREASE_1)	return(1);
 	else								return(0);
@@ -1047,7 +1056,7 @@ LocalType __attribute__((section(".usercode"))) BreakReleaseCheck(void)
 }
 
 
-LocalType __attribute__((section(".usercode"))) DeltaInverterZeroHzSet(void)
+LocalType __attribute__((section(".usercode"))) DeltaZeroHzSet(void)
 {
 	if(InvStatus[0] & IV_ZERO_SPD_0)	return(1);
 	else								return(0);
@@ -1055,9 +1064,11 @@ LocalType __attribute__((section(".usercode"))) DeltaInverterZeroHzSet(void)
 
 
 
+
+
 LocalType __attribute__((section(".usercode"))) DeltaInvertFloorResetting(void)
 {
-///	if(!bUnd)	bUnd=DeltaInverterDecCheck();
+///	if(!bUnd)	bUnd=DeltaDecCheck();
 
 	if( (InvStatus[5] != sRamDArry[S0_FLOOR]) && (DeltaRdWrStatus==0)){
 		AddrWriteParameter(4,23,1,0,sRamDArry[S0_FLOOR]);  // current floor reset
@@ -1073,21 +1084,19 @@ LocalType __attribute__((section(".usercode"))) DeltaInverterReqStopFloor(void)
 {
 	if(InvStatus[3] > 0){
 		sRamDArry[mReqStopFloor] = (InvStatus[3] - 1); 
-		
-//		if( !DeltaInverterZeroHzSet()){
-			sRamDArry[mReqStopFloor] = (sRamDArry[mReqStopFloor] | CAR_READY);
-//		}
 	}
 	else{
-		sRamDArry[mReqStopFloor] = InvStatus[5]-1; 
-		sRamDArry[mReqStopFloor] = (sRamDArry[mReqStopFloor] | CAR_READY);
+		sRamDArry[mReqStopFloor] = (InvStatus[5] - 1); 
 	}
 
+	sRamDArry[mReqStopFloor] = (sRamDArry[mReqStopFloor] | CAR_READY);
 
-//	if(BreakReleaseCheck())	Delta_bUnd=0;	
-	if( !bMoveCar)	Delta_bUnd=0;
+
+	if( !bMoveCar){
+		Delta_bUnd=0;
+	}
 	else{
-		if(DeltaInverterDecCheck())	Delta_bUnd=1;
+		if(DeltaDecCheck())	Delta_bUnd=1;
 	}
 
 	if(Delta_bUnd==1)	bUnd=1;
@@ -1097,7 +1106,7 @@ LocalType __attribute__((section(".usercode"))) DeltaInverterReqStopFloor(void)
 }
 
 
-
+/*
 LocalType __attribute__((section(".usercode"))) DeltaInverterUpFlrChk(void)
 {
     unsigned long tmppulse1,tmppulse2,newFloor;
@@ -1141,9 +1150,28 @@ LocalType __attribute__((section(".usercode"))) DeltaInverterDnFlrChk(void)
 
 	return(0);            
 }
+*/
 
 
-LocalType __attribute__((section(".usercode"))) DeltaInverterStopChk(void)
+LocalType __attribute__((section(".usercode"))) DeltaTopFirstFloorChk(void)
+{
+	unsigned int i,j;
+	if(bOneLuOrLd){
+		if(sRamDArry[mcurfloor]==0){
+			if(!IN_SD1)	return(1);
+			else		return(0);		
+		}	 
+		else if(sRamDArry[mcurfloor]== cF_TOPFLR){
+			if(!IN_SU1)	return(1);			
+			else		return(0);		
+		}	 
+		else			return(1);
+	}	
+	return(0);
+}
+
+
+LocalType __attribute__((section(".usercode"))) DeltaStopChk(void)
 {
 	unsigned int ret=0;
 	unsigned char InvFloor,HostFloor;
@@ -1151,10 +1179,45 @@ LocalType __attribute__((section(".usercode"))) DeltaInverterStopChk(void)
 	ret=0;
 
 	InvFloor=InvStatus[5];
+	HostFloor=(sRamDArry[mcurfloor]+1);
 	sRamDArry[mInvFloor] = (InvFloor-1);  		      
 
+
+	if(InverterPDORxTime > INV_COM_ERR_TIME)	bInvComErr=1;
+	else										bInvComErr=0;	
+
+	if(bInvComErr){
+		if(bMoveCar){
+			if(PerfectAuto()){
+				bStrongDec=1; 					
+			}
+			else	bCarErr=1;
+		}
+		else{
+			bCarErr=1;
+		}
+
+		bsInvCurNext=0;
+	}
+	else{
+		if( !bMoveCar){
+			if( (InvFloor >= 1) && (InvFloor != HostFloor) && (WarmingUpTime > 20) && !IN_AUTO  && bOnLuLd){
+				if(HostFloor <= (cF_TOPFLR+1)/2)	sRamDArry[mcurfloor]=0;
+				else								sRamDArry[mcurfloor]=cF_TOPFLR;
+
+				DeltaInvertFloorResetting();
+			}
+			else{
+				bsInvCurNext=0;
+			}
+		}
+	}
+
+
+/*
+
 	if( !bMoveCar){
-		if(InverterPDORxTime > 50){
+		if(InverterPDORxTime > INV_COM_ERR_TIME){
 			bInvComErr=1;
 			bsInvCurNext=0;
 		}
@@ -1173,38 +1236,52 @@ LocalType __attribute__((section(".usercode"))) DeltaInverterStopChk(void)
 		bInvComErr=0;
 		bsInvCurNext=0;
 	}
+*/
 
 
 	if(PerfectAuto()){ 					
-//		if(!IN_SU1 && (bCarUpMove)){
-		if(DeltaInverterUpFlrChk() ){
-			HostFloor=(cF_TOPFLR+1);
-			if(InvFloor != HostFloor){
-				bStrongDec=1;
-			}
+		if( bMoveCar && bOnLuLd && (InvFloor != HostFloor)){
+			bStrongDec=1;
 		}
 
-//		if(!IN_SD1 && (bCarDnMove)){
-		if(DeltaInverterDnFlrChk()){
-			HostFloor=1;
-			if(InvFloor != HostFloor){
+		if(bCarUpMove){
+			HostFloor=(cF_TOPFLR+1);
+			if(!IN_SU1){
+				if(InvFloor != HostFloor){
+					bStrongDec=1;
+				}
+			}
+
+			if( InvStatus[4] > HostFloor){
 				bStrongDec=1;
 			}
-		}		
+
+		}
+
+		else if(bCarDnMove){
+			HostFloor=1;
+			if(!IN_SD1){
+				if(InvFloor != HostFloor){
+					bStrongDec=1;
+				}
+			}
+		
+			if( !DeltaZeroHzSet()){
+				if(InvStatus[4] < HostFloor){
+					bStrongDec=1;
+				} 
+			}
+		}
 	}
 
 
-	if(bStrongDec){
-		OUT_P3(1);
-		if(DeltaInverterZeroHzSet()){
+
+	if(!bMoveCar){
+		if(bStrongDec){
 			bCarErr=1;
-		}
-	}	
-	else			OUT_P3(0);
-
-
-	if(!bMoveCar)	bStrongDec=0;	
-
+		}	
+		bStrongDec=0;	
+	}
 	return(ret);
 }
 
@@ -1212,7 +1289,6 @@ LocalType __attribute__((section(".usercode"))) DeltaInverterStopChk(void)
 LocalType __attribute__((section(".usercode"))) DeltaCancleValidChk(void)
 {
 	unsigned long ev_mpm,cur_mpm,min_mpm;
-
 
 	min_mpm=10;
 
@@ -1223,28 +1299,23 @@ LocalType __attribute__((section(".usercode"))) DeltaCancleValidChk(void)
 
 
 	if(Delta_bUnd==1){
-//		PDO_TX_DataBuf[6]=5;
 		return(0);
-	}
+	}	
 	else if(!(InvStatus[0] & IV_CONST_SPD_0)){
 		if(cur_mpm < ev_mpm){
 			if(cur_mpm > min_mpm){
-//				PDO_TX_DataBuf[6]=4;
 				return(0);
 			}
-//			else	PDO_TX_DataBuf[6]=3;			
 		}
-//		else	PDO_TX_DataBuf[6]=2;	
 	}
-//	else	PDO_TX_DataBuf[6]=1;
-	
- 
-//	PDO_TX_DataBuf[6]=6;
+
 	return(1);			
 }
 
 
-LocalType __attribute__((section(".usercode"))) DeltaInvDataSortForPDO(void)
+
+
+LocalType __attribute__((section(".usercode"))) DeltaDataSortForPDO(void)
 {
 	unsigned int i,j;
 
@@ -1255,10 +1326,11 @@ LocalType __attribute__((section(".usercode"))) DeltaInvDataSortForPDO(void)
 	PDO_TX_DataBuf[4] 	=0;
 	PDO_TX_DataBuf[5]	=0;
 	PDO_TX_DataBuf[6]	=0;
-//	PDO_TX_DataBuf[7]	=0;				
+	PDO_TX_DataBuf[7]	=0;				
 
 
-	DeltaInverterStopChk();
+//////////////////////////////////////////////////	
+	DeltaStopChk();
 
 	if( (PerfectAuto()) && !(InvStatus[1] & IV_FSD_1)){ 					
 	    if((bCarUpMove || bCarDnMove) && (sRamDArry[mAckStopFloor] & UPDN_CAR_READY)){	
@@ -1268,23 +1340,16 @@ LocalType __attribute__((section(".usercode"))) DeltaInvDataSortForPDO(void)
 		if(bMoveCar){
 			PDO_TX_DataBuf[0]	= 0x04;
 
-			if(PDO_TX_DataBuf[5] != InvStatus[4]){
-				if( !DeltaCancleValidChk()){	
-					PDO_TX_DataBuf[5]=InvStatus[4];
-
-///					if(C2Time>=CAN_BASE_TIME)	PDO_TX_DataBuf[7]++;
-////////////					sRamDArry[mAckStopFloor]=((InvStatus[4]-1) | CAR_READY);				
-				}
-			}
-
 		    if(bCarUpMove){
 				if(PDO_TX_DataBuf[5] < InvStatus[3]){
 					PDO_TX_DataBuf[5] = InvStatus[3]; 										
 				}
 			}
-			else{       
+			else if(bCarDnMove){
 				if(PDO_TX_DataBuf[5] > InvStatus[3]){
-					PDO_TX_DataBuf[5] = InvStatus[3]; 										
+					if(InvStatus[3] > 0){
+						PDO_TX_DataBuf[5] = InvStatus[3];
+					} 										
 				}
 			}				
 		}	
@@ -1296,7 +1361,7 @@ LocalType __attribute__((section(".usercode"))) DeltaInvDataSortForPDO(void)
 	else{
 		if(bMoveCar){		
 			if(bSearchHome){
-				if(bOneLuOrLd){
+				if(DeltaTopFirstFloorChk()){
 					PDO_TX_DataBuf[0]	=0x40;			
 				}
 				else{
@@ -1309,34 +1374,23 @@ LocalType __attribute__((section(".usercode"))) DeltaInvDataSortForPDO(void)
 				PDO_TX_DataBuf[5]	=0;
 			}
 		}
-//		else	PDO_TX_DataBuf[0]	=0x0;							                                    
 		else	PDO_TX_DataBuf[0]	=0x10;							                                    
+
+		if( !bDeltaSpdOff && !bFhmRun){
+			PDO_TX_DataBuf[0]	=0x0;							                                    
+		}
 	}
 
 
 	if((InvStatus[0] & IV_ERROR_0)){
 		bCarErr=1;                                                     		
 	}
-
-
-/*
-	if(CurSelOutPortChk(cF_UP)){
-		PDO_TX_DataBuf[2]	=0x02;
-	}	
-	else if(CurSelOutPortChk(cF_DN)){
-		PDO_TX_DataBuf[2]	=0x04;
-	}	
-	else{
-		PDO_TX_DataBuf[2]	=0x0;
-	}
-*/
 		
 	PDO_TX_DataBuf[2]	=0x0;
 
+
 	return(0);
 }
-
-
 
 
 
@@ -1520,6 +1574,246 @@ LocalType __attribute__((section(".usercode"))) DeltaAutoTunningRun(unsigned cha
 
 	return(0);
 }	
+
+
+
+void __attribute__((section(".usercode"))) 	DeltaNoButtonAndDefaultLoad(void)
+{
+
+	sRamDArry[DEST_FLR]=sRamDArry[mAckStopFloor] = sRamDArry[mReqStopFloor];
+
+/*
+#ifdef	FLOOR_64
+	if(sRamDArry[mReqStopFloor] & UPDN_READY){
+		sRamDArry[DEST_FLR]=sRamDArry[mAckStopFloor] = sRamDArry[mReqStopFloor];
+	}         	
+#else
+	if(sRamDArry[mReqStopFloor] & CAR_READY){
+		sRamDArry[DEST_FLR]=sRamDArry[mAckStopFloor] = sRamDArry[mReqStopFloor];
+	}         	
+#endif
+*/
+
+}
+
+
+void __attribute__((section(".usercode"))) DeltaNewFloorLoadCheck(void)
+{
+    if(bCarUpMove && (sRamDArry[mHighFloor]==0)){    		
+		NoButtonAndDefaultLoad();
+	}
+    else if(bCarDnMove && (sRamDArry[mLowFloor]==0)){    
+		NoButtonAndDefaultLoad();
+	}
+   	else if(sRamDArry[mAckStopFloor] == 0){
+		NoButtonAndDefaultLoad();	
+	}
+	else{
+	  	if(bCarUpMove){
+	        sRamDArry[DEST_FLR]=sRamDArry[mAckStopFloor] = sRamDArry[mHighFloor];            																							
+	    }
+	    else if(bCarDnMove){
+	        sRamDArry[DEST_FLR]=sRamDArry[mAckStopFloor] = sRamDArry[mLowFloor];																							
+	    }	
+	}
+}            		
+
+
+
+
+void   __attribute__((section(".usercode"))) DeltaNewFloorLoad(void)
+{  	
+   	if(bCarUpMove){
+   		if(sRamDArry[DEST_FLR] != sRamDArry[mHighFloor]){
+//			if( DeltaCancleValidChk()){	
+				DeltaNewFloorLoadCheck();
+//			}				
+   		}
+   	}
+   	else if(bCarDnMove){
+   		if(sRamDArry[DEST_FLR] != sRamDArry[mLowFloor]){
+//			if( DeltaCancleValidChk()){	
+				DeltaNewFloorLoadCheck();
+//			}	
+   		}
+   	}                        
+
+	if(!(sRamDArry[mAckStopFloor] & UPDN_CAR_READY)){
+		if(sRamDArry[mReqStopFloor] & CAR_READY){	
+			sRamDArry[mAckStopFloor] = sRamDArry[mReqStopFloor];		
+		}
+	}
+}
+
+
+
+
+void  __attribute__((section(".usercode")))  DeltaCarCurFloorRead(void)
+{
+
+    unsigned long tmppulse1,tmppulse2,newFloor;
+
+    CurFTime=0;
+	NextFTime=0;
+
+    if(bFhmRun) return;
+
+
+    if(sRamDArry[mcurfloor] > cF_TOPFLR){
+        sRamDArry[mcurfloor]=0;
+    }
+
+
+    if(bCarUpMove){
+        if(!IN_SU1){
+            if(!IN_EMG)	sRamDArry[mcurfloor]=cF_TOPFLR;   //modify ?
+        }
+
+        if(sRamDArry[mcurfloor] < cF_TOPFLR){
+	        tmppulse1=FLOOR_COUNT(sRamDArry[mcurfloor]+1);
+	        tmppulse2=FLOOR_COUNT(sRamDArry[mcurfloor]);
+	            
+	        newFloor=(tmppulse1-tmppulse2);
+	        newFloor=(unsigned long)(newFloor >> 1);
+	        newFloor=(unsigned long)(tmppulse2 + newFloor);
+	
+	        if((unsigned long)CurPulse >= (unsigned long)newFloor){
+	            if(sRamDArry[mcurfloor] < cF_TOPFLR) sRamDArry[mcurfloor]++;
+	        }
+		}
+		else{
+			sRamDArry[mcurfloor] = cF_TOPFLR;
+		}
+
+		if(sRamDArry[mcurfloor] >= cF_TOPFLR){
+			sRamDArry[mAckStopFloor] = (sRamDArry[mcurfloor] | DN_READY);
+		}
+    }
+
+    else if(bCarDnMove){
+        if(!IN_SD1){                              //modify ?
+            if(!IN_EMG)	sRamDArry[mcurfloor]=0;
+     	}
+
+        if(sRamDArry[mcurfloor] > 0){
+            tmppulse1=FLOOR_COUNT(sRamDArry[mcurfloor]);
+            tmppulse2=FLOOR_COUNT(sRamDArry[mcurfloor]-1);
+
+	        newFloor=(tmppulse1-tmppulse2);
+	        newFloor=(unsigned long)(newFloor >> 1);
+	        newFloor=(unsigned long)(tmppulse2 + newFloor);
+	
+	        if((unsigned long)CurPulse <= (unsigned long)newFloor){
+	            if(sRamDArry[mcurfloor] > 0 ) sRamDArry[mcurfloor]--;
+	        }
+        }
+                    
+		if(sRamDArry[mcurfloor] == 0){
+	    	sRamDArry[mAckStopFloor] = (sRamDArry[mcurfloor] | UP_READY);				                      
+		}
+	
+    }
+
+}
+
+
+
+void  __attribute__((section(".usercode")))  DeltaWaitNextLuLd(void)
+{
+
+	
+#ifdef	FLOOR_64
+	if(((sRamDArry[mReqStopFloor] & ONLY_FLR) == (sRamDArry[mAckStopFloor] & ONLY_FLR))  && (sRamDArry[mReqStopFloor] & UPDN_READY)){
+#else
+	if(((sRamDArry[mReqStopFloor] & ONLY_FLR) == (sRamDArry[mAckStopFloor] & ONLY_FLR))  && (sRamDArry[mReqStopFloor] & CAR_READY)){
+#endif
+		RunningOpenAction();
+
+		bDac=1; 
+
+		if( ((sRamDArry[mcurfloor] & ONLY_FLR) == (sRamDArry[mAckStopFloor] & ONLY_FLR)) && bUnd){
+			if(bOnLuLd){
+				if(DeltaZeroHzSet()){
+					sRamDArry[mDoorSeq]=STOP_ELEVATOR;	
+				}
+			}
+		}
+
+		if(!bUnd){
+			DeltaNewFloorLoad();
+ 			if((sRamDArry[mReqStopFloor] & ONLY_FLR) != (sRamDArry[mAckStopFloor] & ONLY_FLR)){
+                bDac=0;
+			}         
+		}
+ 	}
+ 	else if(bUnd){
+		#ifdef	FLOOR_64
+        if(sRamDArry[mAckStopFloor] == 0){
+			sRamDArry[mAckStopFloor] = ((sRamDArry[mReqStopFloor] & ONLY_FLR) | UP_READY);				
+ 		}
+		#else
+        if(!(sRamDArry[mAckStopFloor] & UPDN_CAR_READY)){
+ 			sRamDArry[mAckStopFloor] = ((sRamDArry[mReqStopFloor] & ONLY_FLR) | CAR_READY);				
+ 		}
+		#endif
+
+		bDac=1;		
+ 	}			
+	else{			       
+		bDac=0;		
+		DeltaNewFloorLoad();
+ 	}	
+
+
+ 	if(IN_LU && IN_LD){
+		bReLoadEncoder=0;
+		bReLoadEncoderExe=0;
+	}
+	else if(bOnLuLd){
+		if(!bReLoadEncoder){
+			bReLoadEncoder=1;
+        	if( (EncoderCopyOnOff) && (!bUnd)){
+				bReLoadEncoderExe=1;
+			}	
+
+			if(bCarUpMove){
+				sRamDArry[mLuLdFloor]++;
+			}
+			else if(bCarDnMove){
+				sRamDArry[mLuLdFloor]--;
+			}		
+
+		}
+	}
+
+	if(bUnd){				
+		if((LuLdTime==0)){				
+        	UpDnCallClear();  
+		}
+	}
+
+/*
+	if(InverterPDORxTime > INV_COM_ERR_TIME){
+		if( (sRamDArry[mcurfloor] & ONLY_FLR) == (sRamDArry[mAckStopFloor] & ONLY_FLR)){
+			if(bOnLuLd && (LuLdTime > iF_RunOffTime)){
+				sRamDArry[mDoorSeq] = STOP_ELEVATOR;
+			}
+		}
+	}
+*/
+
+
+	if(bInvComErr){
+		if(CurMeterPerMin <= 1){
+			EncoderClear();
+			sRamDArry[mDoorSeq] = STOP_ELEVATOR;
+		}
+	}
+
+	if(DeltaZeroHzSet()){
+		sRamDArry[mDoorSeq] = STOP_ELEVATOR;
+	}
+}
 
 
 #endif

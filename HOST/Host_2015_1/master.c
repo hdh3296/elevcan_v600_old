@@ -153,24 +153,52 @@
 ///////////////////////////////////////////////////
 
 
+///////////////////////////////////////////////////
+//ver 6.06--> 6.07modify 
+// 1.buz 수정
+//   **.신법에서 door가  2분이상 안닫히면 buz 가 울리게 되어 있어서 울리지 안도록 수정
+///////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////
-//ver 6.06 --> 6.07 modify 
-// 1.safety Buz 수정 
-/////////////////////////////////
+//ver 6.07--> 6.08modify 
+// 1.fire 수정
+//   **.FIRE,FR1 on 후 FR1 off시(즉 최초 화재 복귀층  복귀후) 현재층에서 door open후 대기한다)   
+///////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////
-//ver 6.07 --> 6.08 modify 
-// 1.fire 수정 
-/////////////////////////////////
+//ver 6.08--> 6.09 modify 
+///////////////////////////////////////////////////
+// 1.vip 수정
+///////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////
-//ver 6.08 --> 6.09 modify 
-// 1.vip 운전 수정 
-/////////////////////////////////
+//ver 6.09--> 6.10 modify 
+///////////////////////////////////////////////////
+// 1.nextflr 복귀후 운행/멈춤 설정 수정
+//   **ONOFF2 GROUP : 9  -nextflr -stop = 운행중단
+//   **ONOFF2 GROUP : 9  -nextflr -run  = 복귀후 운행 재개
+// 2.OpenClWait 
+//   **Open Close 역방향시 설정된 시간후에 역방향 도어 제어
+// 3.nextflr err 
+//   * relevel 시 로프식은 Nextflr check 안하고 유압식은 검사한다 
+// 4.running open OUT_REL 
+// 5.감속거리 계산(user group 6  curstatus  임시로 slip mm 
 
 
+// delta inverter
+// 6.FSD 정지후 delay 후 스톱 
+// 7.통신 에러시 (100msec)  강제감속 정지
+// 8.층 에러시                     강제감속정지
+// 9.층 에러시 정지후  복귀층 복귀(1층,top층) 
+///////////////////////////////////////////////////
 
+
+///////////////////////////////////////////////////
+//ver 6.10--> 6.11 modify(2016-06-29) 
+///////////////////////////////////////////////////
+// 메인 서브 도어 있는 층에서 메인 서브 양쪽에서 동시에 호출 시에
+// 도착한 엘리베이터가 한쪽 문 만 서비스 하였던 오류 수정 
+///////////////////////////////////////////////////
 
 
 //Earthquake  routine
@@ -305,7 +333,6 @@ UserDataType    msec10=0;
 UserDataType    sec1=0;
 UserDataType    EepTime=0;
 UserDataType    FanTime=0; 
-UserDataType    ManualStopTime=0;  
 UserDataType    WarmingUpTime=0; 
 UserDataType    FixFlrTimeCnt=0; 
 UserDataType    errtime=0;
@@ -340,7 +367,6 @@ UserDataType    CrtMoveFlr;
 
 UserDataType    NotRecoveryData;     
 
-UserDataType    ReLevelAnounceTime;     
 
 
 unsigned	int    	    UcmpOnOffChkTimer=0;
@@ -351,6 +377,7 @@ unsigned	int   	    LuLdTime=0;
 unsigned	int   	    CounterTime=0;
 unsigned	int   	    CounterChkTime=0;
 unsigned	int    	    DoorOpenTime=0;
+unsigned	int    	    DoorOpClTime=0;
 unsigned	int    	    LightTime=0;
 unsigned	int    	    AutoNoMoveTime=0;
 unsigned	int    	    SolTimer=0;
@@ -375,8 +402,7 @@ unsigned	int			TunningTimer=0;
 //////////////////////////////////////////////
 unsigned	int			PowerSaveTimer=0;
 //////////////////////////////////////////////
-
-
+unsigned	int    		MotorStopTime=0;  
 unsigned	int			SensorPositionBuf[20];
 
 
@@ -609,6 +635,8 @@ unsigned char	Err_CurFloor,Err_RunFloor,Err_DestFloor,Err_LuLdFloor,Err_InvFloor
 unsigned char	Err_Out_Up_Byte,Err_Out_Op_Byte,Err_Out_Fan_Byte;
 unsigned char	Err_In_Emg_Byte,Err_In_Sus_Byte,Err_In_Rg_Byte,Err_In_Fr1_Byte,Err_In_X0_Byte,Err_In_Fs0_Byte;
 
+
+unsigned long   DecStartPulse,DecTotalPulse;
 
 
 unsigned long  parameter_mirror[MAX_LONG_BUF]; // = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -1031,14 +1059,24 @@ UserDataType  __attribute__((section(".usercode"))) VersionCheck(void)
 
 //////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////
+
+UserDataType  __attribute__((section(".usercode"))) EEP_Load_Err(void)
+{
+	unsigned int i;	
+
+    for(i=0;i<E_END;i++){
+    	eDArry[eSysErCnt+i]=cF_FLRDSPCH((unsigned long)(F_BLOCK_X1 + i));         
+	}
+
+	return(0);
+}
+
+
 UserDataType  __attribute__((section(".usercode"))) Flash_ErrClear_All(void)
 {
 	unsigned int	i;
 
 	SaveVerify = 0x55;
-
-	sRamDArry[mBefErrCntPt]=0;
-	eDArry[eErrCntPt]=0;
 
 	for(i=0;i<16;i++)	parameter_mirror[i]=0;
 
@@ -1048,6 +1086,12 @@ UserDataType  __attribute__((section(".usercode"))) Flash_ErrClear_All(void)
 	flash_write_DspChar(F_BLOCK_X1+192);
 
 	SaveVerify = 0x0;
+
+	EEP_Load_Err();
+
+	sRamDArry[mBefErrCntPt]=0;
+	eDArry[eErrCntPt]=0;
+
 
 	return(0);
 }
@@ -1141,10 +1185,18 @@ temp delete
 
 
 
+
 UserDataType  __attribute__((section(".usercode"))) EEP_Load_All(void)
 {
 	unsigned int i;	
 
+	EEP_Load_Err();
+
+    eDArry[eErrCntPt]=cF_FLRDSPCH((unsigned long)(F_eErrCntPt));   
+	sRamDArry[mBefErrCntPt]=eDArry[eErrCntPt];
+
+
+/*
     for(i=0;i<ERR_SAVE_CNT;i++){
     	eDArryEvent[i]=0x0;
 	}
@@ -1152,8 +1204,10 @@ UserDataType  __attribute__((section(".usercode"))) EEP_Load_All(void)
     for(i=0;i<E_END;i++){
     	eDArry[eSysErCnt+i]=cF_FLRDSPCH((unsigned long)(F_BLOCK_X1 + i));         
 	}
-
+*/
     eDArry[eErrCntPt]=cF_FLRDSPCH((unsigned long)(F_eErrCntPt));   
+	sRamDArry[mBefErrCntPt]=eDArry[eErrCntPt];
+
       
     sRamDArry[mcurfloor]=cF_FLRDSPCH((unsigned long)(F_CurFloor));         
     CurDoorSelect=cF_FLRDSPCH((unsigned long)(F_CurDoorSelect));         
@@ -1164,7 +1218,6 @@ UserDataType  __attribute__((section(".usercode"))) EEP_Load_All(void)
 
 	PowerOnTime=GET_LONG_BYTE((unsigned long)(F_PowerOnTime0));
 	
-	sRamDArry[mBefErrCntPt]=eDArry[eErrCntPt];
 
 	return(0);
 }
@@ -1912,6 +1965,7 @@ UserDataType	__attribute__((section(".usercode"))) SaveEebuf(UserDataType  ErrNa
 UserDataType  __attribute__((section(".usercode"))) ErrSave(void)
 {  
 
+	if( WarmingUpTime < 50)						return(0);
 	if( IN_AUTO && !bAutoButtonErr)				return(0);							
 	if( bsEmergency && (EmgTimer < 5))			return(0);
 
@@ -2069,7 +2123,9 @@ UserDataType  __attribute__((section(".usercode"))) ErrSave(void)
 
    	if(bDoorJumper){							  //
       	if(!bBefDoorJumper){
-			SaveEebuf(sCarDoor_Jumper + DoorJumperNm);
+			if(DoorJumperNm >0){	
+				SaveEebuf(sCarDoor_Jumper + (DoorJumperNm - 1));
+			}
         	bBefDoorJumper=bDoorJumper;
       	}        
    	}
@@ -2269,8 +2325,6 @@ void  __attribute__((section(".usercode"))) UpWard(void)
    bUpWard=1;              
    bDnWard=0;             
 
-//	sRamDArry[DEST_FLR]= (sRamDArry[DEST_FLR] & ~DN_READY);
-//	sRamDArry[DEST_FLR]= (sRamDArry[DEST_FLR] |  UP_READY);
    
    if(bMoveCar && !bUnd)    S3_SHIFT1=1; //shift
    else                     S3_SHIFT1=0; //shift
@@ -2284,8 +2338,6 @@ void  __attribute__((section(".usercode"))) DnWard(void)
    bUpWard=0;              
    bDnWard=1;              
 
-//	sRamDArry[DEST_FLR]= (sRamDArry[DEST_FLR] & ~UP_READY);
-//	sRamDArry[DEST_FLR]= (sRamDArry[DEST_FLR] |  DN_READY);
    
    if(bMoveCar && !bUnd)    S3_SHIFT1=1; //shift
    else                     S3_SHIFT1=0; //shift
@@ -2805,6 +2857,22 @@ void  __attribute__((section(".usercode"))) OutData(void)
 	}
 
 
+#ifdef	DELTA_INVERTER	
+	if(!IN_SD1)	OUT_P1(1);
+	else		OUT_P1(0);
+
+	if(!IN_SU1)	OUT_P2(1);
+	else		OUT_P2(0);
+
+
+	if(bStrongDec){
+		OUT_P3(1);
+	}	
+	else	OUT_P3(0);
+#endif
+
+
+
     TRISB=0x00ff;
 
     OUT_ACT1=0;
@@ -3029,11 +3097,6 @@ void  __attribute__((section(".usercode")))   UpDnStopCmd(void)
 
     OUT_BK2(0);
     OUT_BK1(0);
-
-
-    sRamDArry[mCarMoveState]=0;
-
-	if(New_Law_SystemChk())	OUT_RST(0);
 }
 
 
@@ -3045,10 +3108,10 @@ void   __attribute__((section(".usercode"))) CarAllStopCmd(void)
     OUT_DAC(0);
     bDac=0;
 
+	bDeltaSpdOff=0;
     bInvOutAllClr=0;	
 	bMotorRestartOn=0;
-    ManualStopTime=0;
-
+	MotorStopTime=0;
 
     S2_CAR_MOVE1=0;
     
@@ -3083,39 +3146,13 @@ void   __attribute__((section(".usercode"))) CarAllStopCmd(void)
 
 void  __attribute__((section(".usercode")))   CarManualStopCmd(void)
 {        
-    LocalType tmp;     
-    unsigned int	tmp_time;
 
-    tmp_time = (ManualStopTime * 100);
-    
-    tmp=0;
+    CarStopCmd();
 
-    ZeroSpeedCmd_IO(); 		
-    if(tmp_time>iF_Bk1OffTime){
-        OUT_BK1(0);                     
-        tmp=(tmp | 0x01);
-    }
-
-    if(tmp_time>iF_Bk2OffTime){
-        OUT_BK2(0);
-        tmp=(tmp | 0x02);
-    }              
-
-    if(tmp_time>iF_UDOffTime){
-        OUT_U_W(0);                                                               
-        OUT_D_W(0);                                                        
-        tmp=(tmp | 0x04);
-    }              
-
-    if(tmp_time>iF_P4OffTime){
-        OUT_P4(0);
-        tmp=(tmp | 0x08);
-    }
-
-    if(tmp == 0x0f){
-		ManualStopTime=0;           
+	if(!bMoveCar){
+		MotorStopTime=0;
         bInvOutAllClr=1;      
-    }
+	}
 }
 
 
@@ -3125,7 +3162,7 @@ void   __attribute__((section(".usercode"))) CarAllStopCmdTest(void)
     unsigned long i,j;
  
     if(bMotorRestartOn){
-        ManualStopTime=0;
+		MotorStopTime=0;
         bInvOutAllClr=0;
 		bMotorRestartOn=0;
     }           
@@ -3152,7 +3189,7 @@ void   __attribute__((section(".usercode"))) CarAllStopCmdTest(void)
 	if( !bInvOutAllClr){
 	    if(!OilLopeTypeChk || bCarErr || bCarStopNoRun){                                             
 			UpDnStopCmd();
-			ManualStopTime=0;           
+			MotorStopTime=0;
 	        bInvOutAllClr=1;
 	    }
 	    else    CarManualStopCmd();
@@ -3160,13 +3197,14 @@ void   __attribute__((section(".usercode"))) CarAllStopCmdTest(void)
    
         
     if(bInvOutAllClr){        
+		bDeltaSpdOff=0;
 		S2_CAR_MOVE1=0;
 		bMoveCar=0;
 		bCarUpMove=0;
 		bCarDnMove=0;
 		UpDnStopCmd();
 
-		if(ManualStopTime > 10){		
+		if(MotorStopTime > 1000){		
 			bMotorRestartOn=1;
 
 			if(bEqualFloorError)	sRamDArry[mcurfloor] = 0;
@@ -3760,8 +3798,6 @@ unsigned int  __attribute__((section(".usercode")))  SaftyStopChk(void)
     safty_stop_chk=0;
 
 	if(bAuto){
-//	    if(!CarDoor1UseChk && !CarDoor2UseChk)  safty_stop_chk=1;
-
 	    if(!CarDoor1UseChk )  					safty_stop_chk=1;
 	    if(USE_CHECK == CARLIFT_USE)            safty_stop_chk=1;    
 	}  
@@ -3973,13 +4009,18 @@ unsigned int __attribute__((section(".usercode")))  RunningOpenCheck(void)
 #else
 	if( !RunningOpenOnOff)																	return(0);	
 	if((USE_CHECK != MAN_USE) )																return(0);
- 	if(!bAuto || !bDac || !bUnd || !bOnLuLd)												return(0);
+// 	if(!bAuto || !bDac || !bUnd || !bOnLuLd)												return(0);
+ 	if(!bAuto || !bUnd || !bOnLuLd)															return(0);
 	if((sRamDArry[mcurfloor] & ONLY_FLR) != (sRamDArry[mAckStopFloor] & ONLY_FLR))			return(0);
 	if(bSolControl)																			return(0);
 	if( !NoUseNoOpen())																		return(0);	
 	if( !bRunningOpenOn){
 	    if(S2_FIRE1)																		return(0);
 	    if(S1_POWER_FAIL)																	return(0);
+	}
+
+   	if( (sRamDArry[mDoorSeq] > DOOR_OPEN_START) && (sRamDArry[mDoorSeq] < WAIT_NEXT_LULD)){
+		return(0);
 	}
 
 	return(1);
@@ -3991,21 +4032,39 @@ unsigned int __attribute__((section(".usercode")))  RunningOpenCheck(void)
 unsigned int __attribute__((section(".usercode")))  RunningOpenAction(void)
 {   	
 
+	if(bRunningOpenOn){
+		ThisFloorDoorCheck();
+		if(RelevelTime > REL_RY_TIME){
+			SelectDoorOpen_you();    		
+		}
+	}
+	return(1);
+
+
+
+/*
 	if(S2_FIRE1 || bWaterSensing){
 		bRunningOpenOn=0;
 		return(0);
 	}
+*/
 
+
+/*
 	if(RunningOpenCheck()){
-		ThisFloorDoorCheck();
-		SelectDoorOpen_you();    		
 		bRunningOpenOn=1;
+		ThisFloorDoorCheck();
+
+		if(RelevelTime > 5){
+			SelectDoorOpen_you();    		
+		}
 		return(1);
 	}
 	else{
 		bRunningOpenOn=0;
 		return(0);
 	} 
+*/
 }
 
 
@@ -4018,8 +4077,6 @@ unsigned int  __attribute__((section(".usercode")))  DoorCloseOkCheck(void)
         bCarErr=1;   
 		return(0);
     }
-
-
 
 
 	if(bLevelFind || bRunningOpenOn){
@@ -4046,6 +4103,17 @@ unsigned int  __attribute__((section(".usercode")))  DoorCloseOkCheck(void)
 
 unsigned int  __attribute__((section(".usercode")))  RunningOpenValidChk(void)
 {   	
+
+	if(PerfectAuto()){
+		if(RunningOpenCheck())	bRunningOpenOn=1;	
+		else					bRunningOpenOn=0;
+	}
+	else{
+		bRunningOpenOn=0;	
+	}
+
+
+/*
 	if(!AutoRunReady()){
 		if( !bMoveCar)	bRunningOpenOn=0;
 	}
@@ -4057,6 +4125,7 @@ unsigned int  __attribute__((section(".usercode")))  RunningOpenValidChk(void)
 			}
 		}
 	}
+*/
 
 	return(0);
 }	
@@ -4373,8 +4442,8 @@ void __attribute__((section(".usercode")))  VipCheck(void)
         S3_VIP1=1;
         bExtButClr=1;
 
-        if((sRamDArry[mDoorSeq] == READY_ELEVATOR) && (sRamDArry[mNewAckStopFloor]==0) ){
-            sRamDArry[mDoorSeq] = DOOR_OPEN_START;    
+        if((sRamDArry[mDoorSeq] == READY_ELEVATOR) && (sRamDArry[mNewAckStopFloor]==0)){
+			sRamDArry[mDoorSeq] = DOOR_OPEN_START;    
         }                  
     }
     else{   
@@ -4502,11 +4571,12 @@ UserDataType __attribute__((section(".usercode")))  SubDoorTimer(void)
 
 UserDataType __attribute__((section(".usercode")))  SubFireCheck(void)
 {
-
+	return(0);
+/*
     if(USE_CHECK == BAGGAGE_USE)    return(0);
     if(USE_CHECK == CARLIFT_USE)   	return(0);
     if(INVERTER_CHECK == D_F)		return(0);                                             
- 
+
 	if(!IN_X6 && (cF_X6SAFEFLR <= cF_TOPFLR)){
 		FireBaseFloor=cF_X6SAFEFLR;    
     	return(1);         
@@ -4516,6 +4586,7 @@ UserDataType __attribute__((section(".usercode")))  SubFireCheck(void)
     	return(1);         
 	}
     else                          	return(0);
+*/
 }
 
 
@@ -4803,10 +4874,17 @@ unsigned int  __attribute__((section(".usercode")))   ReLevelCheck(void)
 		return(0);
 	}
 
+
+	if(bLevelFind){
+		if(bOnLuLd && !bMoveCar)	bLevelFind=0;	
+	}
+
+
     if(bAuto && bMotorRestartOn && (sRamDArry[mDoorSeq] >= READY_ELEVATOR)){
 		bLevelFind=0;
 		return(0);
 	}
+
 
     if(RelevelTime > RELEVEL_TIME){
 		bRelevelErr=1;
@@ -4816,13 +4894,11 @@ unsigned int  __attribute__((section(".usercode")))   ReLevelCheck(void)
 
 	if(New_Law_SystemChk()){
 		if( LuLdDzCheck() && bLevelFind){
-			bLevelFind=0;
 			bRelevelErr=1;
 		}         	         		        
 	}
 	else{	
 	    if(IN_LU && IN_LD && bLevelFind){
-  			bLevelFind=0;
 			bRelevelErr=1;
 		}
 	}
@@ -4833,34 +4909,25 @@ unsigned int  __attribute__((section(".usercode")))   ReLevelCheck(void)
 			bRelevelErr=1;
 		}
 		else{
+			bLevelFind=0;
 			return(0);	
 		}
 	}	
 
 
-	if(New_Law_SystemChk()){
-		if( !CurSelOutPortChk(cF_RST)){
-			bNewRelevel=0;		         		
-		}
-					
+	if(New_Law_SystemChk()){					
 	    if(!bOnLuLd && bOneLuOrLd){
 	    	if(bManualAuto){
-				OUT_RST(1);					
-				if(	bNewRelevel==0){
-					ReLevelAnounceTime=0;
-					bNewRelevel=1;
-				}		         		
-				else{
-					if(ReLevelAnounceTime > 10){
-						LuLdTime=0;
-						bFirstOnLuLd=0;
-			       		CarOnceStopTime = 31;
-			         	bManualAuto=0;
-			            bLevelFind=1;
-			            bDoorCloseOk=1;             		
-			            if(!IN_LU && IN_LD)         bHomeUpDn = 1;
-			            else if(IN_LU && !IN_LD)    bHomeUpDn = 0;
-					}
+				bLevelFind=1;
+				if(RelevelTime > REL_RY_TIME){
+					LuLdTime=0;
+					bFirstOnLuLd=0;
+		       		CarOnceStopTime = 31;
+		         	bManualAuto=0;
+		            bLevelFind=1;
+		            bDoorCloseOk=1;             		
+		            if(!IN_LU && IN_LD)         bHomeUpDn = 1;
+		            else if(IN_LU && !IN_LD)    bHomeUpDn = 0;
 				}
 	  		}
 	    }
@@ -4886,8 +4953,6 @@ unsigned int  __attribute__((section(".usercode")))   ReLevelCheck(void)
 		bLevelFind=0;
 	    bCarErr=1;   
 		bCarStopNoRun=1;  				         
-		bNewRelevel=0;		         		
-		ReLevelAnounceTime=0;
     }        
 }
 
@@ -5578,7 +5643,7 @@ void __attribute__((section(".usercode")))  ManualUpDnKeyCheck(void)
 				if(!IN_LU && IN_LD && !IN_SD1){
 	               	sRamDArry[mcurfloor]=1;
 					#ifdef	DELTA_INVERTER 					
-						if(DeltaInverterRdWrFhm(0x09,0x0a)){
+						if(DeltaRdWrFhm(0x09,0x0a)){
 							if(bMotorRestartOn){
 								FhmToggle=LU_OFF_LD_OFF;	
                         		sRamDArry[FHM_SEQ]=FHM_SEQ_3;
@@ -5693,7 +5758,7 @@ void __attribute__((section(".usercode")))  ManualUpDnKeyCheck(void)
 			case  FHM_SEQ_4:
                 if(INVERTER_CHECK == LG) OUT_P4(0);
 				#ifdef	DELTA_INVERTER 					
-					if(DeltaInverterRdWrFhm(0x09,0x0a)){
+					if(DeltaRdWrFhm(0x09,0x0a)){
                         sRamDArry[FHM_SEQ]=FHM_SEQ_5;
 					}
 				#else
@@ -6360,11 +6425,22 @@ unsigned int __attribute__((section(".usercode")))  DoorCloseTimeChk(void)
 }
 
 
+unsigned int __attribute__((section(".usercode")))  DoorOpenRelevel_REL(void)
+{
+	if(New_Law_SystemChk()){
+		OUT_RST(0);
+		if(bLevelFind && bRunningOpenOn){
+			bCarErr=1;			
+		}
+		else if((bLevelFind || bRunningOpenOn) && (bOneLuOrLd) )	OUT_RST(1);
+	}					
+}
+
+
 
 void __attribute__((section(".usercode")))  DoorOpenCloseSeq(void)
 {			  
 	LocalType TmpTime;
-
 
 
     if((sRamDArry[mDoorSeq] >= DOOR_CLOSE_START) && (sRamDArry[mDoorSeq] < READY_ELEVATOR) && !S2_FIRE1){
@@ -6415,9 +6491,11 @@ void __attribute__((section(".usercode")))  DoorOpenCloseSeq(void)
 				}
 			}
 
+/*
 			if(bDoorJumper){		
 				if(DoorJumperNm > 0)	DoorJumperNm=(DoorJumperNm-1);
 			}
+*/
 		}
 
 		if(bDoorJumper){		
@@ -6429,8 +6507,6 @@ void __attribute__((section(".usercode")))  DoorOpenCloseSeq(void)
 
     switch(sRamDArry[mDoorSeq]){
         case    DOOR_OPEN_START:
-
-
 			VirtualExtKeyClear();
             sRamDArry[mDoor]= (sRamDArry[mDoor] & MAIN_SUB_CLOSE_KEY_CLEAR);
 
@@ -6467,7 +6543,7 @@ void __attribute__((section(".usercode")))  DoorOpenCloseSeq(void)
                 sRamDArry[mDoorSeq] = READY_ELEVATOR;
             }
 			else if(NoUseNoOpen() || S1_POWER_FAIL){			
-				if(DoorOpenTime >= 5){
+				if( (DoorOpenTime >= 5) && (DoorOpClTime >= cF_OPCLWTM)){
 					SelectDoorOpen_you();
 					if(bDoorOpenValid){    
 						sRamDArry[mDoorSeq] = DOOR_OPEN_CHECK;
@@ -6572,6 +6648,7 @@ void __attribute__((section(".usercode")))  DoorOpenCloseSeq(void)
 	            else{
                     if(DoorOpenTime > DEFAULT_REOPTM){             ////
         		        sRamDArry[mDoorSeq] = DOOR_CLOSE_START;
+						DoorOpClTime=0;
                     }
                 }                               
             }         			
@@ -6583,7 +6660,10 @@ void __attribute__((section(".usercode")))  DoorOpenCloseSeq(void)
 			else{
 	            bDoorOpenEnd=0;
 	            if(sRamDArry[mHighFloor] | sRamDArry[mLowFloor])	S3_UPDN_VO1=1;
-				sRamDArry[mDoorSeq]=DOOR_CLOSE_CHECK;     
+				if(DoorOpClTime >= cF_OPCLWTM){
+					sRamDArry[mDoorSeq]=DOOR_CLOSE_CHECK;
+					DoorOpClTime=0;
+				}     
 			}
 
             break;
@@ -6594,11 +6674,16 @@ void __attribute__((section(".usercode")))  DoorOpenCloseSeq(void)
     
                 if(bDoorCloseOk){
                     sRamDArry[mDoorSeq]=DOOR_CLOSE_END;                                        
-                    UpDnRstCheck();
- 
-					if(S3_VIP1){
+                    UpDnRstCheck(); 
+
+					CurDoorSelect=NO_DOOR;
+					DoorCloseTime=0;
+
+/*					
+                	if(S3_VIP1){			
 						DoorCloseTime=0;
-					}					
+					}
+*/
 
 					#ifdef	TEST_SIMULATION
                         if(!IN_X5)	sRamDArry[mDoorSeq]=DOOR_OPEN_START; 
@@ -6648,8 +6733,8 @@ void __attribute__((section(".usercode")))  DoorOpenCloseSeq(void)
 void __attribute__((section(".usercode")))  DoorOpClSystem(void)
 {
 	unsigned int pt;  
-
 	unsigned long tmp_p;
+
 /*
     if(bUnd && bDac){
         if((VoiceTime > cF_DIRTIME) &&  (sRamDArry[mDoorSeq] >= WAIT_NEXT_LULD)){
@@ -6658,7 +6743,6 @@ void __attribute__((section(".usercode")))  DoorOpClSystem(void)
             }
         }
     }                
-  
 */
                                                                          
     HighLowCallClear();
@@ -6763,6 +6847,7 @@ void __attribute__((section(".usercode")))  DoorOpClSystem(void)
 			bAutoRunningErr=1;
  			bReLoadEncoder=0;
 			bReLoadEncoderExe=0;
+			DecStartPulse=0;	
 
 #ifdef  TEST_SIMULATION  
             if(MotorMoveTime>10){
@@ -6781,9 +6866,20 @@ void __attribute__((section(".usercode")))  DoorOpClSystem(void)
 				bsLuLdNoOff=1;
 				bCarErr=1;	
 			}               
+
+
+			#ifdef	DELTA_INVERTER
+			DeltaNewFloorLoad();
+			#endif
+
 #endif
             break;                         
          case  WAIT_NEXT_LULD:
+
+			#ifdef	DELTA_INVERTER
+				DeltaWaitNextLuLd();
+			#else
+	
 				#ifdef	FLOOR_64
     			if(((sRamDArry[mReqStopFloor] & ONLY_FLR) == (sRamDArry[mAckStopFloor] & ONLY_FLR))  && (sRamDArry[mReqStopFloor] & UPDN_READY)){
 				#else
@@ -6804,9 +6900,9 @@ void __attribute__((section(".usercode")))  DoorOpClSystem(void)
 					}
 
             		if(bUnd && (LuLdTime > iF_RunOffTime)){
+						LuLdTime=0;
     	       	        sRamDArry[mDoorSeq]=STOP_ELEVATOR;
          	  	      	sRamDArry[mCarMoveState]=0;
-						LuLdTime=0;
     				}
 #else
 
@@ -6816,22 +6912,19 @@ void __attribute__((section(".usercode")))  DoorOpClSystem(void)
 	 					if( ((sRamDArry[mcurfloor] & ONLY_FLR) == (sRamDArry[mAckStopFloor] & ONLY_FLR)) && bUnd){
 
 							if(AutoLandingModeChk((unsigned char)YASKAWA_AUTOLANDING)){
-			 					if((sRamDArry[mcurfloor] & ONLY_FLR) != (sRamDArry[mAckStopFloor] & ONLY_FLR))	LuLdTime =0;  //xx							                                    
+			 					if((sRamDArry[mcurfloor] & ONLY_FLR) != (sRamDArry[mAckStopFloor] & ONLY_FLR))	LuLdTime =0;  //xx	
+						                                    
 								if(bOnLuLd && !IN_FS4){	
+									LuLdTime =0;
 			    	       	        sRamDArry[mDoorSeq]=STOP_ELEVATOR;
 			         	  	      	sRamDArry[mCarMoveState]=0;			    				
 								}
 							}
 							else{
 								if(bOnLuLd){
-									#ifdef	DELTA_INVERTER 					
-										if(DeltaInverterZeroHzSet())	sRamDArry[mDoorSeq]=STOP_ELEVATOR;	
-									#else				
-										if( !StopPulseCheck()){
-					    					sRamDArry[mDoorSeq]=STOP_ELEVATOR;
-										}
-									#endif
-	
+									if( !StopPulseCheck()){
+				    					sRamDArry[mDoorSeq]=STOP_ELEVATOR;
+									}	
 								}
 	
 	
@@ -6850,6 +6943,7 @@ void __attribute__((section(".usercode")))  DoorOpClSystem(void)
 	 					if((sRamDArry[mcurfloor] & ONLY_FLR) != (sRamDArry[mAckStopFloor] & ONLY_FLR))	LuLdTime =0;  //xx				
 	                                    
 	            		if(bUnd && (LuLdTime > iF_RunOffTime)){
+							LuLdTime=0;
 	    	       	        sRamDArry[mDoorSeq]=STOP_ELEVATOR;
 	         	  	      	sRamDArry[mCarMoveState]=0;
 	    				}
@@ -6895,7 +6989,8 @@ void __attribute__((section(".usercode")))  DoorOpClSystem(void)
 					}
 
                     bDac=0;		
-					NewFloorLoad();                  
+
+       				NewFloorLoad();
     			}	
 
 
@@ -7027,40 +7122,25 @@ void __attribute__((section(".usercode")))  DoorOpClSystem(void)
 						}
 					}
 				}
-
-
-				#ifdef	DELTA_INVERTER 					
-					if(InverterPDORxTime > 50){
-						if( (sRamDArry[mcurfloor] & ONLY_FLR) == (sRamDArry[mAckStopFloor] & ONLY_FLR)){
-							if(bOnLuLd && (LuLdTime > iF_RunOffTime)){
-								sRamDArry[mDoorSeq] = STOP_ELEVATOR;
-							}
-						}
-					}
-					else if( DeltaInverterZeroHzSet()){
-						sRamDArry[mDoorSeq] = STOP_ELEVATOR;
-/*
-						if(sRamDArry[mDoorSeq] != STOP_ELEVATOR){
-							bCarErr=1;
-						}
-*/
-
-					}
 				#endif
 
-               break;                         
+				if(bUnd && (DecStartPulse == 0)){
+					DecStartPulse=CurPulse;
+				}
+				
+               	break;                         
          	case  STOP_ELEVATOR:
-
+				EncoderClear();
 				RunningOpenAction();            			
-
-
+				DoorOpClTime=100;
 			    CarStopCmd();
 
-				if(!bOnLuLd){
-					bCarErr=1;	
-				}	
-
                 if(!bMoveCar){
+
+					if(!bOnLuLd){
+						bCarErr=1;	
+					}	
+
 					bAutoRunningErr=0;
 					bFR2Start1=0;
 
@@ -7285,6 +7365,8 @@ void  __attribute__((section(".usercode"))) FindLuLdManual(void)
 
 /////////	NextFloorTime=0;  
 
+	if(OilLopeTypeChk)	NextFloorTime=0;
+
 	EncoderClear();
 
     if( RelevelStopChk()== 0){
@@ -7296,7 +7378,6 @@ void  __attribute__((section(".usercode"))) FindLuLdManual(void)
 			bSearchHome=0;
 		}			
 		CarStopCmd();		
-
 		
 		if(!bMoveCar){		
 			if( !bOnceOpen){
@@ -7475,6 +7556,7 @@ unsigned int __attribute__((section(".usercode")))  NextFloorCheck(void)
 {
 	unsigned int ntime,TmpnextTime;
 
+
 	if(!OilLopeTypeChk && (bsNextFloor || bsLuLdNoOff)){
 		bCarErr=1;
 		bCarStopNoRun=1;
@@ -7500,13 +7582,21 @@ unsigned int __attribute__((section(".usercode")))  NextFloorCheck(void)
 	if((TmpnextTime > ntime) && bMoveCar){
 		UpDnAllOff();
 		bsNextFloor=1;
-		NotRecoveryData=(NotRecoveryData | 0x08);
 		bCarErr=1;
+
+		if( !CarDoor2UseChk){
+			NotRecoveryData=(NotRecoveryData | 0x08);
+		}
 	} 
 	else if(ElevStopTime > 10){			// 10 sec
 		if(Old_Law_SystemChk()){
 			bsNextFloor=0;
 		}
+
+		if(CarDoor2UseChk){
+			bsNextFloor=0;
+		}
+
 		bsLuLdNoOff=0;
 	}
 #endif
@@ -8602,7 +8692,6 @@ unsigned int   __attribute__((section(".usercode")))  BuzOnOff(void)    // new l
 
 
 
-
 void  __attribute__((section(".usercode")))  EtcStopSet(void)
 {
     S3_STOP1=0;    
@@ -9335,7 +9424,7 @@ void  __attribute__((section(".usercode")))   IO_Check(void)
 			bRunningOpenOn=0;
 			NoStart=0;
 			bFlrMatchErr=0;	
-
+			DoorOpClTime=100;
             bTestKey=0;                        
             bCarUpDnChButClr=0;
             
@@ -9434,12 +9523,7 @@ void  __attribute__((section(".usercode")))   IO_Check(void)
     DspFloorSet();
 	SolOnChk();
 	DoorCloseTimeChk();
-
-
-	#ifdef	DELTA_INVERTER
-		DeltaInvDataSortForPDO();
-	#endif
-
+	DoorOpenRelevel_REL();
 
     EmergencyCheck();
     OutData();
@@ -9942,7 +10026,7 @@ CmdFixFlrTime=cF_FIXFLOORTIME;
 	sRamDArry[AUTO_TUNING] = AUTOTUN_SEQ_0;	
 	AutotunUpDn=0;
 
-
+	bOnceMove=0;
 	bsSlip=0;
 	bsLope=0;
 	bRelevelErr=0;
@@ -10226,8 +10310,9 @@ void _ISR_X _T1Interrupt(void)
         }
 
 
-        if(LadderTime  < 20002)  LadderTime++;
+        if(LadderTime  < 20002)  	LadderTime++;
 
+		if(MotorStopTime < 50000)	MotorStopTime++;
 
 
         msec10++;
@@ -10258,7 +10343,7 @@ void _ISR_X _T1Interrupt(void)
             }  
 
 
-            if(bLevelFind){  
+            if(bLevelFind || bRunningOpenOn){  
                 if(RelevelTime < 250)  RelevelTime++;
                 if(RelevelTime > 240){
 					bCarErr=1;
@@ -10277,13 +10362,16 @@ void _ISR_X _T1Interrupt(void)
             DnBttonTime++;   
             SerialLoopMaxTime++;
 
+
+
+			if(DoorOpClTime < 1000)			DoorOpClTime++;
+
 			if(TunningTimer < 1000)			TunningTimer++;
 
             if(DoorCloseTime < 1000)		DoorCloseTime++;
 			if(BreakTime  < 1000)			BreakTime++;
 			if(PowerSaveTimer  < 250)		PowerSaveTimer++;
 			if(UcmpOnOffChkTimer < 1000)	UcmpOnOffChkTimer++;								
-			if(ReLevelAnounceTime  < 100)	ReLevelAnounceTime++;
 			if(SolTimer < 100)				SolTimer++;
 //			if(SolWaitTimer < 100)			SolWaitTimer++;
             if(SelMainCarTime < 100)    	SelMainCarTime++;
@@ -10353,11 +10441,6 @@ void _ISR_X _T1Interrupt(void)
 
                 if(InvErrTime < 600)    InvErrTime++;
             }        
-
-            if( !bMotorRestartOn){
-                if(ManualStopTime < 100)  ManualStopTime++;
-            }
-            else	ManualStopTime=0;
 
 
             if(bFireTimeRun){

@@ -195,6 +195,9 @@ LocalType  __attribute__((section(".usercode")))    ForceSettingSpeed(void)
 	
 void  __attribute__((section(".usercode")))  CarCurFloorRead_IO_old(void)
 {
+
+#ifndef	DELTA_INVERTER	
+
     unsigned long decrease_pulse;
     unsigned long tmppulse1,tmppulse2,newFloor;
 
@@ -437,6 +440,9 @@ void  __attribute__((section(".usercode")))  CarCurFloorRead_IO_old(void)
     }
     
     return;
+
+#endif
+
 }
 
 
@@ -872,7 +878,6 @@ unsigned int  __attribute__((section(".usercode")))   SpeedSet_old(void)
 
 
 	NoStart=0;
-
     if(INVERTER_CHECK == LG)    return(0);
     if(INVERTER_CHECK == D_F)   return(0);
 

@@ -240,6 +240,8 @@ LocalType  __attribute__((section(".usercode")))    SpeedReSetting(unsigned int 
 	
 void  __attribute__((section(".usercode")))  CarCurFloorRead_IO_spd3(void)
 {
+#ifndef	DELTA_INVERTER	
+
     unsigned long decrease_pulse;
     unsigned long tmppulse1,tmppulse2,newFloor;
 
@@ -342,12 +344,6 @@ void  __attribute__((section(".usercode")))  CarCurFloorRead_IO_spd3(void)
             }
         }
 
-/*
-		if(sRamDArry[mcurfloor] >= cF_TOPFLR){
-			sRamDArry[mReqStopFloor] = (sRamDArry[mcurfloor] | DN_READY);  
-	    	sRamDArry[mAckStopFloor] = (sRamDArry[mcurfloor] | DN_READY);
-		}
-*/
 #else
         if(bUnd){
             CarLowSpeedCmd_IO();
@@ -368,13 +364,6 @@ void  __attribute__((section(".usercode")))  CarCurFloorRead_IO_spd3(void)
             }
         }
 
-/*
-		if(sRamDArry[mcurfloor] >= cF_TOPFLR){
-			sRamDArry[mReqStopFloor] = (sRamDArry[mcurfloor] | CAR_READY);  
-	    	sRamDArry[mAckStopFloor] = (sRamDArry[mcurfloor] | CAR_READY);
-		}
-
-*/
 
 #endif
 
@@ -489,6 +478,7 @@ void  __attribute__((section(".usercode")))  CarCurFloorRead_IO_spd3(void)
     }
     
     return;
+#endif
 }
 
 
