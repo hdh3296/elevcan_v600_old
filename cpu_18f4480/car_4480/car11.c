@@ -1769,14 +1769,19 @@ CarOneButtonSetCheck();
 
 	bDoorOpenWaitOn=0;
 
-#ifndef	FLOOR_32_USE						
-	if(Auto && Open && !CarMove){
-		if(newscan[3] & 0x80){
-			bDoorOpenWaitOn=1;
-			UpButtonTime=1;
+	if(TopFloor < 31){
+		if(Auto && Open && !CarMove){
+			i=((TopFloor+1)/8);
+			j=((TopFloor+1)%8);
+			k= (0x01 << j);
+			if(newscan[i] & k){
+				bDoorOpenWaitOn=1;
+				UpButtonTime=1;
+			}
 		}
 	}
-#endif
+
+
 
 
 /*
