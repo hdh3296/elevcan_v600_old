@@ -201,6 +201,13 @@
 ///////////////////////////////////////////////////
 
 
+///////////////////////////////////////////////////
+//ver 6.11--> 6.12 modify(2016-08-16) 
+///////////////////////////////////////////////////
+// door stop 수정 -> 도어 닫힌상태서 door stop 후 open door 시 solenoid on/off 반복 수정
+///////////////////////////////////////////////////
+
+
 //Earthquake  routine
 //bsEarthquake 
 //bBefbsEarthquake
@@ -4548,9 +4555,9 @@ void __attribute__((section(".usercode")))  DoorOpenAndHoldCheck(void)
 			if( !IN_DOOR_HOLD || (door_stop==1)){
 				if(cF_REOPTM > 0){
 					bDoorOpenHold=1;
-					DoorOpenTime=0;
 					if(sRamDArry[mDoorSeq] >= DOOR_REOPEN_CHECK){
 	               		sRamDArry[mDoorSeq]=DOOR_OPEN_START;
+						DoorOpenTime=0;
 					}
 				}
 			}
