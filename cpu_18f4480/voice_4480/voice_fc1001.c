@@ -18,119 +18,120 @@ date    :       1999,9,21
 #define NormalBoard_DoorSlow	1 // 일반형 보드로 도어 슬로우 제어 기능 사용 시(릴레이 출력), 확장IO보드 사용시에는 디파인 막아야 한다. 
 
 
-#define START_FL	8
+#define START_FL	FLOOR_B7
 #define END_FL		FLOOR_B
 #define VOICE_ADR  	A_VOI
 #define VOICE_ON               0
 #define VOICE_OFF              1
 
 //층 정보 정의
-#define         DINGDONG_MENT          	0
-#define         UP_MENT                	1
-#define         DOWN_MENT              	2
-#define         HWAJAE_MENT            	3
-#define         OVERLOAD_MENT          	4
-#define         EMERGENCY_MENT         	5
-#define         CLOSE_MENT             	6
-#define         POWER_DOWN_MENT        	7
-#define         FLOOR_B8				8
-#define         FLOOR_B7               	9
-#define         FLOOR_B6                FLOOR_B7+1  // 10
-#define         FLOOR_B5                FLOOR_B7+2	// 11
-#define         FLOOR_B4                FLOOR_B7+3	// 12
-#define         FLOOR_B3                FLOOR_B7+4	// 13
-#define         FLOOR_B2                FLOOR_B7+5	// 14
-#define         FLOOR_B1                FLOOR_B7+6	// 15
-#define         FLOOR_F1                 FLOOR_B7+7	// 16
-#define         FLOOR_F2                 FLOOR_B7+8	// 17
-#define         FLOOR_F3                 FLOOR_B7+9	// 18
-#define         FLOOR_F4                 FLOOR_B7+10	// 19
-#define         FLOOR_F5                 FLOOR_B7+11	// 20
-#define         FLOOR_F6                 FLOOR_B7+12	// 21
-#define         FLOOR_F7                 FLOOR_B7+13	// 22
-#define         FLOOR_F8                 FLOOR_B7+14	// 23
-#define         FLOOR_F9                 FLOOR_B7+15	// 24
-#define         FLOOR_F10                FLOOR_B7+16	// 25
-#define         FLOOR_F11                FLOOR_B7+17	// 26
-#define         FLOOR_F12                FLOOR_B7+18	// 27
-#define         FLOOR_F13                FLOOR_B7+19	// 28
-#define         FLOOR_F14                FLOOR_B7+20	// 29
-#define         FLOOR_F15                FLOOR_B7+21	// 30
-#define         FLOOR_F16                FLOOR_B7+22	// 31
-#define         FLOOR_F17                FLOOR_B7+23	// 32
-#define         FLOOR_F18                FLOOR_B7+24	// 33
-#define         FLOOR_F19                FLOOR_B7+25	// 34
-#define         FLOOR_F20                FLOOR_B7+26	// 35
-#define         FLOOR_F21                FLOOR_B7+27	// 36
-#define         FLOOR_F22                FLOOR_B7+28	// 37
-#define         FLOOR_F23                FLOOR_B7+29	// 38
-#define         FLOOR_F24                FLOOR_B7+30	// 39
-#define         FLOOR_F25                FLOOR_B7+31	// 40
-#define         FLOOR_F26                FLOOR_B7+32	// 41
-#define         FLOOR_F27                FLOOR_B7+33	// 42
-#define         FLOOR_F28                FLOOR_B7+34	// 43
-#define         FLOOR_F29                FLOOR_B7+35	// 44
-#define         FLOOR_F30                FLOOR_B7+36	// 45
-#define         FLOOR_F31                FLOOR_B7+37	// 46
-#define         FLOOR_F32                FLOOR_B7+38	// 47
-#define         FLOOR_G                 FLOOR_B7+39 // 48
-#define         FLOOR_M                 FLOOR_B7+40	// 49
-#define         FLOOR_L                 FLOOR_B7+41	// 50
-#define         FLOOR_PH                FLOOR_B7+42	// 51
-#define         FLOOR_B                	FLOOR_B7+43	// 52
-#define         CARBTN_B8          		FLOOR_B7+44	// 53
-#define         CARBTN_B7          		FLOOR_B7+45	// 54
-#define         CARBTN_B6          		FLOOR_B7+46	// 55
-#define         CARBTN_B5          		FLOOR_B7+47	// 56
-#define         CARBTN_B4          		FLOOR_B7+48	// 57
-#define         CARBTN_B3          		FLOOR_B7+49	// 58
-#define         CARBTN_B2          		FLOOR_B7+50 // 59
-#define         CARBTN_B1          		FLOOR_B7+51	// 60
-#define         CARBTN_F1          		FLOOR_B7+52	// 61
-#define         CARBTN_F2          		FLOOR_B7+53	// 62
-#define         CARBTN_F3          		FLOOR_B7+54	// 63
-#define         CARBTN_F4          		FLOOR_B7+55	// 64
-#define         CARBTN_F5          		FLOOR_B7+56	// 65
-#define         CARBTN_F6          		FLOOR_B7+57	// 66
-#define         CARBTN_F7          		FLOOR_B7+58	// 67
-#define         CARBTN_F8          		FLOOR_B7+59	// 68
-#define         CARBTN_F9          		FLOOR_B7+60	// 69
-#define         CARBTN_F10         		FLOOR_B7+61	// 70
-#define         CARBTN_F11          	FLOOR_B7+62	// 71
-#define         CARBTN_F12          	FLOOR_B7+63	// 72
-#define         CARBTN_F13          	FLOOR_B7+64	// 73
-#define         CARBTN_F14          	FLOOR_B7+65	// 74
-#define         CARBTN_F15          	FLOOR_B7+66	// 75
-#define         CARBTN_F16          	FLOOR_B7+67	// 76
-#define         CARBTN_F17          	FLOOR_B7+68	// 77
-#define         CARBTN_F18          	FLOOR_B7+69	// 78
-#define         CARBTN_F19          	FLOOR_B7+70	// 79
-#define         CARBTN_F20         		FLOOR_B7+71	// 80
-#define         CARBTN_F21          	FLOOR_B7+72	// 81
-#define         CARBTN_F22          	FLOOR_B7+73	// 82
-#define         CARBTN_F23          	FLOOR_B7+74	// 83
-#define         CARBTN_F24          	FLOOR_B7+75	// 84
-#define         CARBTN_F25          	FLOOR_B7+76	// 85
-#define         CARBTN_F26          	FLOOR_B7+77	// 86
-#define         CARBTN_F27          	FLOOR_B7+78 // 87
-#define         CARBTN_F28          	FLOOR_B7+79 // 88
-#define         CARBTN_F29          	FLOOR_B7+80 // 89
-#define         CARBTN_F30          	FLOOR_B7+81 // 90
-#define         CARBTN_F31          	FLOOR_B7+82 // 91
-#define         CARBTN_F32          	FLOOR_B7+83 // 92
-#define         PARKING_MENT      		FLOOR_B7+84 // 93
-#define         OPEN_MENT      		    FLOOR_B7+85	// 94
-#define         CANCLE_MENT      		FLOOR_B7+86	// 95
-#define         PUSH_MENT      		    FLOOR_B7+87	// 96
-#define         SILENCE_MENT            FLOOR_B7+88 // 97
-#define         SONG_MENT               FLOOR_B7+89 // 98
-#define         BEEP_MENT               FLOOR_B7+90 // 99 삐 소리
-#define			CARBTN_L				FLOOR_B7+91 // 100	
-#define			OPPOSITE_OPEN_MENT		FLOOR_B7+92 // 101
+#define         DINGDONG_MENT          0
+#define         UP_MENT                1
+#define         DOWN_MENT              2
+#define         HWAJAE_MENT            3
+#define         OVERLOAD_MENT          4
+#define         EMERGENCY_MENT         5
+#define         CLOSE_MENT             6
+#define         POWER_DOWN_MENT        7
+#define         FLOOR_B7               8
+#define         FLOOR_B6                FLOOR_B7+1  //9
+#define         FLOOR_B5                FLOOR_B7+2	//10
+#define         FLOOR_B4                FLOOR_B7+3	//11
+#define         FLOOR_B3                FLOOR_B7+4	//12
+#define         FLOOR_B2                FLOOR_B7+5	//13
+#define         FLOOR_B1                FLOOR_B7+6	//14
+#define         FLOOR_F1                 FLOOR_B7+7	//15
+#define         FLOOR_F2                 FLOOR_B7+8	//16
+#define         FLOOR_F3                 FLOOR_B7+9	//17
+#define         FLOOR_F4                 FLOOR_B7+10	//18
+#define         FLOOR_F5                 FLOOR_B7+11	//19
+#define         FLOOR_F6                 FLOOR_B7+12	//20
+#define         FLOOR_F7                 FLOOR_B7+13	//21
+#define         FLOOR_F8                 FLOOR_B7+14	//22
+#define         FLOOR_F9                 FLOOR_B7+15	//23
+#define         FLOOR_F10                FLOOR_B7+16	//24
+#define         FLOOR_F11                FLOOR_B7+17	//25
+#define         FLOOR_F12                FLOOR_B7+18	//26
+#define         FLOOR_F13                FLOOR_B7+19	//27
+#define         FLOOR_F14                FLOOR_B7+20	//28
+#define         FLOOR_F15                FLOOR_B7+21	//29
+#define         FLOOR_F16                FLOOR_B7+22	//30
+#define         FLOOR_F17                FLOOR_B7+23	//31
+#define         FLOOR_F18                FLOOR_B7+24	//32
+#define         FLOOR_F19                FLOOR_B7+25	//33
+#define         FLOOR_F20                FLOOR_B7+26	//34
+#define         FLOOR_F21                FLOOR_B7+27	//35
+#define         FLOOR_F22                FLOOR_B7+28	//36
+#define         FLOOR_F23                FLOOR_B7+29	//37
+#define         FLOOR_F24                FLOOR_B7+30	//38
+#define         FLOOR_F25                FLOOR_B7+31	//39
+#define         FLOOR_F26                FLOOR_B7+32	//40
+#define         FLOOR_F27                FLOOR_B7+33	//41
+#define         FLOOR_F28                FLOOR_B7+34	//42
+#define         FLOOR_F29                FLOOR_B7+35	//43
+#define         FLOOR_F30                FLOOR_B7+36	//44
+#define         FLOOR_F31                FLOOR_B7+37	//45
+#define         FLOOR_F32                FLOOR_B7+38	//46
+#define         FLOOR_G                 FLOOR_B7+39 //47
+#define         FLOOR_M                 FLOOR_B7+40	//48
+#define         FLOOR_L                 FLOOR_B7+41	//49
+#define         FLOOR_PH                FLOOR_B7+42	//50
+#define         FLOOR_B                	FLOOR_B7+43	//51
+#define         CARBTN_B7          		FLOOR_B7+44	//52
+#define         CARBTN_B6          		FLOOR_B7+45	//53
+#define         CARBTN_B5          		FLOOR_B7+46	//54
+#define         CARBTN_B4          		FLOOR_B7+47	//55
+#define         CARBTN_B3          		FLOOR_B7+48	//56
+#define         CARBTN_B2          		FLOOR_B7+49 //57
+#define         CARBTN_B1          		FLOOR_B7+50	//58
+#define         CARBTN_F1          		FLOOR_B7+51	//59
+#define         CARBTN_F2          		FLOOR_B7+52	//60
+#define         CARBTN_F3          		FLOOR_B7+53	//61
+#define         CARBTN_F4          		FLOOR_B7+54	//62
+#define         CARBTN_F5          		FLOOR_B7+55	//63
+#define         CARBTN_F6          		FLOOR_B7+56	//64
+#define         CARBTN_F7          		FLOOR_B7+57	//65
+#define         CARBTN_F8          		FLOOR_B7+58	//66
+#define         CARBTN_F9          		FLOOR_B7+59	//67
+#define         CARBTN_F10         		FLOOR_B7+60	//68
+#define         CARBTN_F11          	FLOOR_B7+61	//69
+#define         CARBTN_F12          	FLOOR_B7+62	//70
+#define         CARBTN_F13          	FLOOR_B7+63	//71
+#define         CARBTN_F14          	FLOOR_B7+64	//72
+#define         CARBTN_F15          	FLOOR_B7+65	//73
+#define         CARBTN_F16          	FLOOR_B7+66	//74
+#define         CARBTN_F17          	FLOOR_B7+67	//75
+#define         CARBTN_F18          	FLOOR_B7+68	//76
+#define         CARBTN_F19          	FLOOR_B7+69	//77
+#define         CARBTN_F20         		FLOOR_B7+70	//78
+#define         CARBTN_F21          	FLOOR_B7+71	//79
+#define         CARBTN_F22          	FLOOR_B7+72	//80
+#define         CARBTN_F23          	FLOOR_B7+73	//81
+#define         CARBTN_F24          	FLOOR_B7+74	//82
+#define         CARBTN_F25          	FLOOR_B7+75	//83
+#define         CARBTN_F26          	FLOOR_B7+76	//84
+#define         CARBTN_F27          	FLOOR_B7+77 //85
+#define         CARBTN_F28          	FLOOR_B7+78 //86
+#define         CARBTN_F29          	FLOOR_B7+79 //87
+#define         CARBTN_F30          	FLOOR_B7+80 //88
+#define         CARBTN_F31          	FLOOR_B7+81 //89
+#define         CARBTN_F32          	FLOOR_B7+82 //90
+#define         PARKING_MENT      		FLOOR_B7+83 //91
+#define         OPEN_MENT      		    FLOOR_B7+84	//92
+#define         CANCLE_MENT      		FLOOR_B7+85	//93
+#define         PUSH_MENT      		    FLOOR_B7+86	//94
+#define         SILENCE_MENT            FLOOR_B7+87 //95
+#define         SONG_MENT               FLOOR_B7+88 //96
+#define         BEEP_MENT               FLOOR_B7+89 //97 삐 소리
+#define			CARBTN_L				FLOOR_B7+90 //98	
+#define			OPPOSITE_OPEN_MENT		FLOOR_B7+91 //99
 /* --> 주의 : 층도착 멘트에 대해서는 딩동 조건을 넣어 줘야 하므로 <--*/
-#define         FLOOR_P                	FLOOR_B7+93	// 102 파킹 Floor
-#define         CARBTN_M                FLOOR_B7+94	// 103 	
-#define 		NO_MENT 				0xff // 255, 멘트 없음
+#define         FLOOR_P                	FLOOR_B7+92	//100 파킹 Floor
+#define         CARBTN_M                FLOOR_B7+93	//101 
+
+	
+	
+#define NO_MENT 0xff // 멘트 없음
 
 
 
