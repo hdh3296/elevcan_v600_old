@@ -2602,18 +2602,12 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
 
 ////////////////////////////////////////////////////
         case    20:
+   			CurEncoderPulse(NextFloorTime);
 
-//"Decrease Length",
-			tx1=GET_LONG(MM_PULSE);
 
 /*
-			if(Base_Slip_pulse > CurPulse){
-   				tx2=(Base_Slip_pulse - CurPulse);
-			}
-			else{
-   				tx2=(CurPulse - Base_Slip_pulse);
-			}
-*/
+//"Decrease Length",
+			tx1=GET_LONG(MM_PULSE);
 			tx2=DecTotalPulse;
    			CurEncoderPulse( tx2/tx1);
 
@@ -2623,6 +2617,7 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
     		New485Ladder[SECONDLINE_BASE+EditBlanck+11] =' ';          
     		New485Ladder[SECONDLINE_BASE+EditBlanck+12] =' ';          
 
+*/
 
 /*
 //"Slip  Pulse",

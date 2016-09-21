@@ -208,6 +208,14 @@
 ///////////////////////////////////////////////////
 
 
+///////////////////////////////////////////////////
+//ver 6.12--> 6.13 modify(2016-09-20) 
+///////////////////////////////////////////////////
+//1. oil type(유압식) 에서 수동상태에서 nextflrTime 지난후  자동으로 놓으면 nextFlr error 발생(ver 6.12 에서)
+//2. 자동상태에서 최초 리레벨후 한번 문을 열었다 닫음 수정(리레벨후 문을 안열도록 수정)
+///////////////////////////////////////////////////
+
+
 //Earthquake  routine
 //bsEarthquake 
 //bBefbsEarthquake
@@ -4236,11 +4244,10 @@ void __attribute__((section(".usercode")))  LuLdOnCheck(void)
 
 	curStat=lu_ld_state;
 	if(befStat != curStat){
-		if(!PerfectAuto() || (sRamDArry[mDoorSeq]!= MOVE_ELEVATOR)){
-			NextFloorTime=0;
-		}
+		NextFloorTime=0;
 	}
 
+	if( IN_AUTO || !bMoveCar || S1_POWER_FAIL)		NextFloorTime=0;
 
 
     if(!IN_LU || !IN_LD)	bOneLuOrLd=1;
@@ -4929,7 +4936,7 @@ unsigned int  __attribute__((section(".usercode")))   ReLevelCheck(void)
 				if(RelevelTime > REL_RY_TIME){
 					LuLdTime=0;
 					bFirstOnLuLd=0;
-		       		CarOnceStopTime = 31;
+//		       		CarOnceStopTime = 31;
 		         	bManualAuto=0;
 		            bLevelFind=1;
 		            bDoorCloseOk=1;             		
@@ -4944,7 +4951,7 @@ unsigned int  __attribute__((section(".usercode")))   ReLevelCheck(void)
 			if(bManualAuto){
 				LuLdTime=0;
 				bFirstOnLuLd=0;
-				CarOnceStopTime = 31;
+//				CarOnceStopTime = 31;
 				bManualAuto=0;
 				bLevelFind=1;
 				bDoorCloseOk=1;             
@@ -6535,6 +6542,7 @@ void __attribute__((section(".usercode")))  DoorOpenCloseSeq(void)
 
             S3_UPDN_VO1=0;
 			bDoorOpenEndFind=0;
+			bOnceOpen=1;
 
 
 			ThisFloorDoorCheck();
@@ -6835,7 +6843,7 @@ void __attribute__((section(".usercode")))  DoorOpClSystem(void)
                 if( (!IN_LU || !IN_LD) && bDoorCloseOk){
                     if(bManualAuto){
                         bManualAuto=0;
-                        CarOnceStopTime=31;      
+//                        CarOnceStopTime=31;      
 
                       	if(!IN_LU && IN_LD)         bHomeUpDn = 1;
                       	else if(IN_LU && !IN_LD)    bHomeUpDn = 0;
@@ -6869,7 +6877,8 @@ void __attribute__((section(".usercode")))  DoorOpClSystem(void)
                 bUpDnSet=0;
 				LuLdTime=0;
 			}			   
-			else  if(NextFloorTime>cF_LULDOFFTIME){		
+//			else  if(NextFloorTime>cF_LULDOFFTIME){		
+			else  if(ElevMoveTime>cF_LULDOFFTIME){		
 				bsLuLdNoOff=1;
 				bCarErr=1;	
 			}               
@@ -7389,7 +7398,6 @@ void  __attribute__((section(".usercode"))) FindLuLdManual(void)
 		if(!bMoveCar){		
 			if( !bOnceOpen){
 				sRamDArry[mDoorSeq] = DOOR_OPEN_START;
-				bOnceOpen=1;
 			}
 
 			if(!bLevelFind){
@@ -7577,7 +7585,6 @@ unsigned int __attribute__((section(".usercode")))  NextFloorCheck(void)
       sRamDArry[mBefcurfloor] = sRamDArry[mcurfloor];
    }
 
-	if( !bMoveCar || S1_POWER_FAIL)		NextFloorTime=0;
 
 
 	ntime=(BASE_NEXT_FLR_TIME + (cF_NEXTFLRTIME * 10));
@@ -9369,9 +9376,9 @@ void  __attribute__((section(".usercode")))   IO_Check(void)
         if(bAuto){
             if(bMotorRestartOn){
                 if(!bManualAuto){
-                    if(CarOnceStopTime>30){     
+                    if(CarOnceStopTime>10){     
 	                    FindLuLdManual();
-						CarOnceStopTime=31;      
+						CarOnceStopTime=11;      
                         bTestKey=0;
 						bLevelOpen=0;
 					}
