@@ -1634,7 +1634,7 @@ extern	unsigned long   DecStartPulse,DecTotalPulse;
 extern	UserDataType    SerialLoopMaxTime;
 extern	UserDataType    ClrCnt;
 
-extern	UserDataType    TmpBuzor;   
+extern	UserDataType    TmpBuzor,TmpBuzorTime;   
 extern	UserDataType    ExtKeyCnt;
 extern	UserDataType    NotRecoveryData;     
 extern	UserDataType    CmdFixFlrTime;

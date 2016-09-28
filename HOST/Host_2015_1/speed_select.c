@@ -64,7 +64,6 @@ void __attribute__((section(".usercode")))    Mnanual_Speed_Sel(void)
 	else						Mnanual_Speed_Sel_old();
 }
 
-
 void __attribute__((section(".usercode")))    CarCurFloorRead_IO(void)
 {
 	if(New_Spd_SystemChk())		CarCurFloorRead_IO_spd3();
@@ -77,6 +76,12 @@ void __attribute__((section(".usercode")))    SpeedChange(void)
 	if(New_Spd_SystemChk())		SpeedChange_spd3();
 	else						SpeedChange_old();
 }
+
+
+
+
+
+
 
 
 
