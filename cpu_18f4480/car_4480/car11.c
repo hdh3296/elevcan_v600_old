@@ -1775,8 +1775,16 @@ CarOneButtonSetCheck();
 			j=((TopFloor+1)%8);
 			k= (0x01 << j);
 			if(newscan[i] & k){
-				bDoorOpenWaitOn=1;
-				UpButtonTime=1;
+				if(MyTmpAddress == 0){
+					bDoorOpenWaitOn=1;
+					UpButtonTime=1;
+				}
+				else{
+					if(CurFloor == MyTmpAddress){
+						bDoorOpenWaitOn=1;
+						UpButtonTime=1;
+					}	
+				}
 			}
 		}
 	}
