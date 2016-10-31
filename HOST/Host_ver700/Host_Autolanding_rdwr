@@ -1,0 +1,273 @@
+
+#include <p30fxxxx.h>
+#include  "30f6010_io.h"            
+#include  "host_io.h"            
+#include  "iodef.h"
+#include  "door.h"
+#include  "com.h"
+#include  "counter.h"
+#include    "you_can2.h" 
+#include	"Host_NewProtocol.h" 
+
+
+
+#ifdef	ONLY_NEW_SPD_VALID	
+
+
+LocalType __attribute__((section(".usercode"))) DeltaParameterRdWr(void)
+{    
+	unsigned char 	portadr=0;
+    LocalType  j,k;
+
+	if(bParRdWr){
+		ParRdWrTime=0;
+		ParRdWrCount=0;	
+		return(0);
+	}		
+
+
+	if(ParRdWrTime> 1000){	
+		ParRdWrTime=0;
+		bParameterMdf=0;
+		ParRdWrCount=100;	
+		DeltaRdWrStatus=1;
+
+		if( (BefxTunningSeq==xTunningSeq) && (xTunningSeq>0)){
+			ParRdWrCount=113;
+		}
+	}
+
+	if(DeltaRdWrStatus>0){
+		switch(ParRdWrCount){
+//////////////////////////////////////////////////////////////
+			case	100:
+				DeltaRdWr(INV_ERR_H_ADDR,INV_ERR_L_ADDR,0,0,0);	//error code
+				if(DeltaRdWrStatus==0){
+					InvErrNm=(unsigned int)(This_Value);  
+					ParRdWrCount++;
+					DeltaRdWrStatus=1;
+				}
+				break;
+			case	101:
+				DeltaRdWr(MOTOR_TYPE_H_ADDR,MOTOR_TYPE_L_ADDR,0,0,0);
+				if(DeltaRdWrStatus==0){
+					xVarMotorType= (This_Value);  // 3=유도,8=동기
+					if((xVarMotorType==3) || (xVarMotorType==8)){
+						ParRdWrCount++;
+					}	
+					else{
+						ParRdWrCount=0;
+					}
+
+					DeltaRdWrStatus=1;
+				}
+				break;
+			case	102:
+				if(xVarMotorType==3){
+					DeltaRdWr(IM_MOTOR_RPM_H_ADDR,IM_MOTOR_RPM_L_ADDR,0,0,0);	//rpm
+				}
+				else{
+					DeltaRdWr(PM_MOTOR_RPM_H_ADDR,PM_MOTOR_RPM_L_ADDR,0,0,0);	//rpm
+				}
+				if(DeltaRdWrStatus==0){
+					xVarRpm= (This_Value); 
+					Length1=GET_LONG(RPM);
+					if(xVarRpm != Length1)	bParameterMdf=1;
+
+					ParRdWrCount++;
+					DeltaRdWrStatus=1;
+				}
+				break;
+			case	103:
+				DeltaRdWr(MOTOR_ENC_H_ADDR,MOTOR_ENC_L_ADDR,0,0,0);	//encoder pulse
+				if(DeltaRdWrStatus==0){
+					xVarEncoder= (This_Value );  
+					Length1=GET_LONG(ENCODER_PULSE);
+					if(xVarEncoder != Length1)	bParameterMdf=1;
+
+					ParRdWrCount++;
+					DeltaRdWrStatus=1;
+				}
+				break;
+			case	104:
+				DeltaRdWr(MAX_EV_SPD_H_ADDR,MAX_EV_SPD_L_ADDR,0,0,0);  //mpm
+				if(DeltaRdWrStatus==0){
+					xVarMpm1000= (This_Value * 10);  // 1000m/sec = 1.000 m/sec
+					xVarMpm1000 = (xVarMpm1000 * 60);      // m/m(60.00= 6000);  = 6000/5000=1.2
+					xVarMpm=(xVarMpm1000/1000);
+					Length1=GET_LONG(MPM);
+					if(xVarMpm != Length1)	bParameterMdf=1;
+
+					ParRdWrCount++;
+					DeltaRdWrStatus=1;
+				}
+				break;
+////////////////////////////
+			case	105:
+				DeltaRdWr(MAX_HZ_H_ADDR,MAX_HZ_L_ADDR,0,0,0);
+				if(DeltaRdWrStatus==0){
+					xVarMaxHz= (This_Value * 10);  // hz read ( 50.00= 50000)
+
+					ParRdWrCount++;
+					DeltaRdWrStatus=1;
+				}
+				break;
+////////////////////////////
+
+			case	106:
+				DeltaRdWr(DEC_TIME_H_ADDR,DEC_TIME_L_ADDR,0,0,0);
+				if(DeltaRdWrStatus==0){
+					xVarDecTime= (This_Value * 10);  // 10msec  -> 1msec
+					Length1=GET_LONG(BASE_DEC_TIME);
+					if(xVarDecTime != Length1)	bParameterMdf=1; 
+
+					ParRdWrCount++;
+					DeltaRdWrStatus=1;
+				}
+				break;
+			case	107:
+				DeltaRdWr(S_CUV_TIME1_H_ADDR,S_CUV_TIME1_L_ADDR,0,0,0);
+				if(DeltaRdWrStatus==0){
+					xVarSCurve= (This_Value * 10);  // 10msec  -> 1msec
+					Length1=GET_LONG(BASE_SCURVE_TIME);
+					if(xVarSCurve != Length1)	bParameterMdf=1;   	
+
+					ParRdWrCount++;
+					DeltaRdWrStatus=1;
+				}
+				break;
+			case	108:
+				DeltaRdWr(4,(cF_SPEED_DEC_PORT),0,0,0);  
+				if(DeltaRdWrStatus==0){
+					xDecMpm= (This_Value * 10);  
+					if( (cF_SPEED_DEC_PORT ==0)){
+						xDecMpm=0;
+					}
+					
+					xDecMpm=(xVarMpm1000 * xDecMpm)/xVarMaxHz;
+
+					Length1=GET_LONG(BASE_DEC_SPD);
+					if(xDecMpm != Length1)	bParameterMdf=1;
+
+					ParRdWrCount++;
+					DeltaRdWrStatus=1;
+				}
+				break;
+			case	109:
+				EVLowDecLength=0;
+
+				DeltaRdWr(4,(cF_SPEED_LOW_PORT),0,0,0);
+				if(DeltaRdWrStatus==0){
+					EVLowSpd= (This_Value * 10);  // hz read
+
+					if( (cF_SPEED_LOW_PORT ==0)){
+						EVLowSpd=0;
+					}
+ 
+					Length1=((xVarMpm1000 * 10)/xVarMaxHz);
+					xVarCurMpm=(Length1 * EVLowSpd)/10;
+					CurDecPulseCalcu();
+					EVLowDecLength=CurSpdDecPulse;
+					Length1=GET_LONG(DEC_LENGTH_SPD_LOW);
+					if(EVLowDecLength != Length1)	bParameterMdf=1;
+
+					ParRdWrCount++;
+					DeltaRdWrStatus=1;
+				}
+				break;
+			case	110:
+				EVMidDecLength=0;
+				DeltaRdWr(4,(cF_SPEED_MID_PORT),0,0,0);
+				if(DeltaRdWrStatus==0){
+					EVMidSpd= (This_Value * 10);  // hz read
+
+					if( (cF_SPEED_MID_PORT ==0)){
+						EVMidSpd=0;
+					}
+
+					Length1=((xVarMpm1000 * 10)/xVarMaxHz);
+					xVarCurMpm=(Length1 * EVMidSpd)/10;
+					CurDecPulseCalcu();
+					EVMidDecLength=CurSpdDecPulse;
+					Length1=GET_LONG(DEC_LENGTH_SPD_MID);
+					if(EVMidDecLength != Length1)	bParameterMdf=1;
+
+					ParRdWrCount++;
+					DeltaRdWrStatus=1;
+				}
+				break;
+			case	111:
+				EVHighDecLength=0;
+				DeltaRdWr(4,(cF_SPEED_HIGH_PORT),0,0,0);
+				if(DeltaRdWrStatus==0){
+					EVHighSpd= (This_Value * 10);  // hz read
+
+					if( (cF_SPEED_HIGH_PORT ==0)){
+						EVHighSpd=0;
+					}
+
+					Length1=((xVarMpm1000 * 10)/xVarMaxHz);
+					xVarCurMpm=(Length1 * EVHighSpd)/10;
+					CurDecPulseCalcu();
+					EVHighDecLength=CurSpdDecPulse;
+					Length1=GET_LONG(DEC_LENGTH_SPD_HIGH);
+					if(EVHighDecLength != Length1)	bParameterMdf=1;
+
+					ParRdWrCount++;
+
+					if(bParameterMdf){
+						SaveVerify = 0x55;
+
+						for(k=0;k<16;k++){
+							parameter_mirror[k]=FlashDspCharBuf[ENCODER_PULSE+k].long_data;  
+						}
+
+						k=( (ENCODER_PULSE) % (ENCODER_PULSE));
+						l_LdTmpBufRam(k)=(unsigned long)xVarEncoder;
+						k=( (MPM) % (ENCODER_PULSE));
+						l_LdTmpBufRam(k)=(unsigned long)xVarMpm;
+						k=( (RPM) % (ENCODER_PULSE));
+						l_LdTmpBufRam(k)=(unsigned long)xVarRpm;
+
+
+						k=( (BASE_DEC_TIME) % (ENCODER_PULSE));
+						l_LdTmpBufRam(k)=(unsigned long)xVarDecTime;
+		
+						k=( (BASE_SCURVE_TIME) % (ENCODER_PULSE));
+						l_LdTmpBufRam(k)=(unsigned long)xVarSCurve;		
+
+						k=( (DEC_LENGTH_SPD_LOW) % (ENCODER_PULSE));
+						l_LdTmpBufRam(k)=(unsigned long)EVLowDecLength;		
+
+						k=( (DEC_LENGTH_SPD_MID) % (ENCODER_PULSE));
+						l_LdTmpBufRam(k)=(unsigned long)EVMidDecLength;		
+
+						k=( (DEC_LENGTH_SPD_HIGH) % (ENCODER_PULSE));
+						l_LdTmpBufRam(k)=(unsigned long)EVHighDecLength;		
+
+						k=( (BASE_DEC_SPD) % (ENCODER_PULSE));
+						l_LdTmpBufRam(k)=(unsigned long)xDecMpm;		
+
+
+						flash_write(ENCODER_PULSE);
+						CaluDecreasePulse();
+						bParameterMdf=0;
+						SaveVerify=0;
+					}
+				}
+				break;
+//////////////////////////////////////////////////////////////
+			case	112:
+				break;
+			case	113:
+				Tunning_Run(This_Value);
+				break;
+			default:
+				break;
+
+		}
+	}
+}
+
+
+#endif
