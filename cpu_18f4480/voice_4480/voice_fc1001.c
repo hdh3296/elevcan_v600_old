@@ -1040,7 +1040,10 @@ unsigned char   GetVoice_CarCall(UCHAR xTmpCurVoice, UCHAR *xCurkey, UCHAR *xBef
     if (!ELE_bAUTO || ELE_bFLOW)
         return xTmpCurVoice;
     if (!ELE_bUP && !ELE_bDOWN)
-        return xTmpCurVoice;
+    {	
+		if (!ELE_bVIP)
+        	return xTmpCurVoice;
+    }
     if (CurVoice != 0xff)
         return xTmpCurVoice;
 
@@ -1053,7 +1056,7 @@ unsigned char   GetVoice_CarCall(UCHAR xTmpCurVoice, UCHAR *xCurkey, UCHAR *xBef
             // 한 개의 카키 상태 비교
             if ((xCurkey[j] & bitKey) &&  !(xBefkey[j] & bitKey)) // 카콜 등록이면? (참 && !거짓)
             {
-                if (iFloor != (ELE_nCURFLOOR - 1)) // 카콜 등록 층이 현재 층과 같지 않을 때 ! (즉, 같을 땐 무시)
+                if (iFloor != (ELE_nCURFLOOR - 1)) // 카콜 등록 층이 현재 층과 같지 않을 때는 출력을 내보낸다. 
                 {
                     xBefkey[j] = (xBefkey[j] | bitKey);
                     xTmpCurVoice = GetCarCallMent(iFloor);
@@ -1177,9 +1180,11 @@ void    SetCarKeyCancel(void)
 
     if (!ELE_bUP && !ELE_bDOWN)
     {
-        bBefBtnClr = ON;
+		if (!ELE_bVIP)
+        	bBefBtnClr = ON;
     }
-    if (ELE_bEXT_BUT_CLR || ELE_bCAR_BUT_CLR)
+	
+    if (ELE_bCAR_BUT_CLR)
     {
         bBefBtnClr = ON;
     }
