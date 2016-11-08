@@ -37,7 +37,7 @@ void __attribute__((section(".usercode")))   DspFloorSet(void)
 {
     LocalType i,j;  
 
-	if( !bDspSeq && (!PerfectAuto() || DoorOpenEndWaitChk())){
+	if( !bDspSeq && (!PerfectAuto() || DoorOpenEndWaitChk() || (NoStart > 0) )){
 //    if( !bDspSeq && (bCarErr || bCarStopNoRun || bCarStop || !bAuto || DoorOpenEndWaitChk()) ){
         j=SegError;
     

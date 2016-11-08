@@ -16,7 +16,7 @@
 #include  "default_setup.h" 
 
 
-extern	UserDataType	NoStart;
+//extern	UserDataType	NoStart;
 
 
 

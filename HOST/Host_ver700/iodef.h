@@ -1606,7 +1606,7 @@ extern	unsigned	int			TunningTimer;
 extern	unsigned	int    		MotorStopTime;  
 
 
-
+extern	UserDataType	NoStart;
 extern  UserDataType    OldFireBuf;  
 extern  UserDataType    AutoBit;
 extern  UserDataType    EmerBit;
