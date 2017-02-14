@@ -824,7 +824,8 @@ unsigned char   GetVoice_OpenCloseUpDn(unsigned char xTmpCurVoice)
     if (ELE_bAUTO)   // 자동 !
     {
         // Up, Down 시, 음성 처리
-        if (ELE_bOPEN && (UpDnVoiceTimer > 40) && xbOpened && (xbUpDned == FALSE))
+        if (ELE_bOPEN && (UpDnVoiceTimer > 40) 
+			&& xbOpened && (xbUpDned == FALSE))
         {
             if (ELE_bUP)
             {
@@ -838,33 +839,35 @@ unsigned char   GetVoice_OpenCloseUpDn(unsigned char xTmpCurVoice)
             }
         }
         // Door Open 시, 음성 처리
-        if (ELE_bCAR_MOVE == FALSE)
-        {
-            if ((ELE_mSYSSTATUS == msysDOOROPEN) && (xbOpened == FALSE) && !bVoicePlaying)   //open
-            {
-				if (bOppositeDoor_Enab)	
-				{
-					bOppositeDoor_Enab = FALSE;
-					xTmpCurVoice = OPPOSITE_OPEN_MENT; // 반대편 문이 열립니다.
-				}
-				else	
-				{
-                xTmpCurVoice = OPEN_MENT; // 문이 열립니다 !
-				}
-                xbOpened = TRUE;
-                UpDnVoiceTimer = 0;
-            }
-            else if ((ELE_mSYSSTATUS == msysDOORCLOSE) && xbOpened)   //close
-            {
-                xTmpCurVoice = CLOSE_MENT; // 문이 닫힙니다 !
-                xbOpened = FALSE;
-            }
-        }
-        else
+        if (ELE_bCAR_MOVE)
         {
             UpDnVoiceTimer = 0;
             xbUpDned = FALSE;
-        }
+        }      
+
+
+		if ((ELE_mSYSSTATUS == msysDOOROPEN) 
+					&& (xbOpened == FALSE) && !bVoicePlaying)	//open
+		{
+			if (bOppositeDoor_Enab) 
+			{
+				bOppositeDoor_Enab = FALSE;
+				xTmpCurVoice = OPPOSITE_OPEN_MENT; // 반대편 문이 열립니다.
+			}
+			else	
+			{
+				xTmpCurVoice = OPEN_MENT; // 문이 열립니다 !
+			}
+			xbOpened = TRUE;
+			UpDnVoiceTimer = 0;
+		}
+		else if ((ELE_mSYSSTATUS == msysDOORCLOSE) && xbOpened)   //close
+		{
+			xTmpCurVoice = CLOSE_MENT; // 문이 닫힙니다 !
+			xbOpened = FALSE;
+		}
+
+		
     }
     else   // 자동이 아닐 때 !
     {
