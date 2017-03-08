@@ -847,7 +847,7 @@ unsigned char   GetVoice_OpenCloseUpDn(unsigned char xTmpCurVoice)
             xbUpDned = FALSE;
         }      
 
-
+		// open 출력이 나갈때 open 멘트 나가도록 수정 2017-03-09
 		if ( (ELE_bOUT_OP) && (xbOpened == FALSE) && !bVoicePlaying )	//open
 		{
 			if (bOppositeDoor_Enab) 
