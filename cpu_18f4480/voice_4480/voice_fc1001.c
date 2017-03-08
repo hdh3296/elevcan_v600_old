@@ -245,6 +245,8 @@ date    :       1999,9,21
 //
 #define ELE_bIN_RELAY  	(((RcvBuf[IdPt + SL_S5_STATE_37] & 0x01) == 0x0)?		0:1)
 
+#define ELE_bOUT_OP  	(((RcvBuf[IdPt + SL_OUT_OP] & 0x01) == 0x0)?	0:1)
+#define ELE_bOUT_CL 	(((RcvBuf[IdPt + SL_OUT_OP] & (0x01 << 1)) == 0x0)?		0:1)
 
 
 
@@ -846,8 +848,7 @@ unsigned char   GetVoice_OpenCloseUpDn(unsigned char xTmpCurVoice)
         }      
 
 
-		if ((ELE_mSYSSTATUS == msysDOOROPEN) 
-					&& (xbOpened == FALSE) && !bVoicePlaying)	//open
+		if ( (ELE_bOUT_OP) && (xbOpened == FALSE) && !bVoicePlaying )	//open
 		{
 			if (bOppositeDoor_Enab) 
 			{
@@ -861,7 +862,7 @@ unsigned char   GetVoice_OpenCloseUpDn(unsigned char xTmpCurVoice)
 			xbOpened = TRUE;
 			UpDnVoiceTimer = 0;
 		}
-		else if ((ELE_mSYSSTATUS == msysDOORCLOSE) && xbOpened)   //close
+		else if (xbOpened && ELE_bOUT_CL)   // close : 문이 이미 열려있는 상태에서 close 출력이 나오면 
 		{
 			xTmpCurVoice = CLOSE_MENT; // 문이 닫힙니다 !
 			xbOpened = FALSE;
