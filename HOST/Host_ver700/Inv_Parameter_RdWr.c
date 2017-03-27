@@ -594,7 +594,7 @@ unsigned int  __attribute__((section(".usercode"))) Inv_Par_GroupSaveChk(void)
 		case    INV_PAR_GROUP_12:
 		case    INV_PAR_GROUP_13:
 		case    INV_PAR_GROUP_14:
-			if(bHostAutoLanding){
+			if(bHostAutoLanding && !bParRd ){
 				if( !AutoTunningStartChk()){	
 					Inverter_Par_Group_Save();
 				}

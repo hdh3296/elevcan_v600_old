@@ -704,7 +704,15 @@ UserDataType	__attribute__((section(".usercode"))) OpenCloseSet(void)
 #ifdef	TEST_SIMULATION
     if(bDoorCloseOk && (sRamDArry[mDoorSeq] >= DOOR_CLOSE_END)){
 #else
-    if(bDoorCloseOk){
+	LocalType TmpDoorOpenOn=0;
+
+    if(bDoorCloseOk && !bMoveCar && (!DoorJumperChkOnOffChk) && (PerfectAuto())){
+    	if(bDoorCloseOk && (sRamDArry[mDoorSeq] >= DOOR_OPEN_WAIT)){
+			TmpDoorOpenOn=1;
+		}
+	}
+
+    if(bDoorCloseOk && (TmpDoorOpenOn==0)){
 #endif
         S1_OPEN1=0; 
         S3_OPEN_SUB1=0;

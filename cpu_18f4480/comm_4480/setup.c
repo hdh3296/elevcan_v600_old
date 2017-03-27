@@ -71,7 +71,7 @@ void    LoadSetupValue(void)
 //    if(SubkDoor > 1)   SubkDoor = 0;     
 
     offset_flr=information[3];
-    if(offset_flr > 2)   offset_flr = 0;     
+    if(offset_flr > 3)   offset_flr = 0;     
 
     ButtonType=information[4];
 

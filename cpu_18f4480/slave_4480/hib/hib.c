@@ -4,6 +4,7 @@
 //#define		MOTEL	1
 
 
+
 #include    <pic18.h>
 
 #include        "..\..\..\system_com\memory_map.h"
@@ -28,7 +29,6 @@
     #error  "Type Not Define Error(iodef.h)"
 #endif
 /////////////////////////////////
-
 
 
 extern  unsigned char    Lamp(unsigned char id);  //4
@@ -79,6 +79,7 @@ unsigned    char  SensorTime;
 unsigned    char  virtualTimer;
 
 
+
 bit   HostCallMe;
 bit   UpMove;
 bit   DnMove;
@@ -86,9 +87,9 @@ bit   FloorChange;
 bit   ManualToggle;
 bit   CarMove;
 bit   KeyClr;
-//bit   OpenLampSet;
 bit   Auto;
 bit   FDsp;
+
 bit   Parking;
 bit   Vip;
 bit   Fire;
@@ -112,7 +113,6 @@ bit   Up_Key_Clear;
 bit   Dn_Key_Valid;
 bit   Dn_Key_Clear;
 bit   CurKey;
-//bit   SetupBit=0;                     
 bit   TogUpKeyBitSet;                     
 bit   TogUpKeyBitReset;                     
 bit   TogDnKeyBitSet;                     
@@ -120,18 +120,16 @@ bit   TogDnKeyBitReset;
 bit   b_vip=0;                    
 bit   b_MyFamily=0;                    
 bit   bIamXSubDoor=0;                    
-
-
 bit   ExtCallKey=0;                    
 bit   bHALL_LAMP_UP=0;
 bit   bSensorButton=0;
-
 bit   bCardKeyValid=0;
+bit   bCmdUpKey=0;
+bit   bCmdDnKey=0;
 
+bit   bHibHallDoor=0;
 
-bit   	bCmdUpKey=0;
-bit   	bCmdDnKey=0;
-
+bit   bBefSensorButton=0;
 
 
 
@@ -390,6 +388,28 @@ unsigned char MotelButton(unsigned char id)
 
 
 
+
+unsigned int	HallDoorChk(void)
+{
+	if(offset_flr == 3){			// russia hall door
+		if(virtualTimer > 10){
+			if(Close){
+				if(bHibHallDoor && (virtualTimer < 20)){
+					return(0);
+				}		
+			}
+
+			HostCallMe=1;	
+			if(bHibHallDoor)	CanKeyValue[2] = (CanKeyValue[2] | 0x20);			// close
+			else		   		CanKeyValue[2] = (CanKeyValue[2] & ~(0x20));		// open
+		}	
+	}
+	return(0);
+}
+
+
+
+
 void	xxx(void)
 {
 #ifdef	CARD_KEY
@@ -397,19 +417,20 @@ void	xxx(void)
 #else
 	if(ExtCallKey){
 #endif
- 		CanCmd=CAN_KEY_SET;
-		SelHostAdr=ReceiveAdr=LocalNumber;
-
-		#ifdef		FLOOR_64
-	     	CanKeyValue[1] = (MyAddress-1);
-			if(CanKeyValue[1] == 0)	CanKeyValue[1]=(CanKeyValue[1] | UP_READY);
-		#else
-    	 	CanKeyValue[1] = ((MyAddress-1) | CAR_READY);
-		#endif
-
-		if(!UP_KEY_SUB)   CanKeyValue[2] = (CanKeyValue[2] | HALL_SENSOR);
-		else		   	  CanKeyValue[2] = (CanKeyValue[2] & ~(HALL_SENSOR));
-
+		if(offset_flr == 1){			// reopen use
+	 		CanCmd=CAN_KEY_SET;
+			SelHostAdr=ReceiveAdr=LocalNumber;
+			#ifdef		FLOOR_64
+		     	CanKeyValue[1] = (MyAddress-1);
+				if(CanKeyValue[1] == 0)	CanKeyValue[1]=(CanKeyValue[1] | UP_READY);
+			#else
+	    	 	CanKeyValue[1] = ((MyAddress-1) | CAR_READY);
+			#endif
+	
+			CanKeyValue[2] = (CanKeyValue[2] | HALL_SENSOR);
+//			if(!UP_KEY_SUB)   CanKeyValue[2] = (CanKeyValue[2] | HALL_SENSOR);
+//			else		   	  CanKeyValue[2] = (CanKeyValue[2] & ~(HALL_SENSOR));
+		}
 	}
 }
 
@@ -518,8 +539,6 @@ void main(void)
 	}
 
     while(1){    
-		virtualTimer++;
-
 	    if(ChangeSetup){
 			ChangeSetup=0;
 			CompanyWrite();
@@ -544,6 +563,9 @@ void main(void)
 
         if(CanTxAct){
 			MyConfigSet();
+
+			HallDoorChk();
+
             if(!UpKeyLoad(ReceiveAdr) || (ExtCallKey)){
 				xxx();
                 CanTx1();
@@ -629,9 +651,17 @@ void main(void)
         		SelHostAdr=LocalNumber;                  
                 CanCmd=CAN_NO_KEY_SET;
                 CanKeyValue[1] = 0x0; 
-                CanKeyValue[2] = virtualTimer;  
+				if(offset_flr == 3){			// russia hall door
+					if(bHibHallDoor)	CanKeyValue[2] = (CanKeyValue[2] | 0x20);			// close
+					else		   		CanKeyValue[2] = (CanKeyValue[2] & ~(0x20));		// open
+				}
+
                 CanTx0();
                 HostCallMe=0;
+				
+				if(CanKeyValue[0] == CAN_NO_KEY_SET){
+					virtualTimer=0;
+				}
             }
 
 			CanTxAct=0;
@@ -768,14 +798,62 @@ void interrupt isr(void)
 #endif
 		
         UpKeyBit=0;
-        DnKeyBit=0;   
-		ExtCallKey=0;	 
-		bSensorButton=0;
+        DnKeyBit=0;
+   
+//		ExtCallKey=0;	 
+//		bSensorButton=0;
+//		bHibHallDoor=0;
+
+
+		SensorTime++;
+		if(UP_KEY_SUB == bBefSensorButton){
+			if(SensorTime > 10){
+				bSensorButton= !bBefSensorButton;
+				SensorTime=11;
+			}
+		} 
+		else{
+			SensorTime=0;
+			bBefSensorButton=UP_KEY_SUB;
+		}
+
+		if(Auto && !Parking){
+			if(offset_flr == 1){			// reopen use
+				if( !CarMove && (CurFloor  == MyAddress) && !Close){
+					ExtCallKey=bSensorButton;
+				}
+				else{
+					ExtCallKey=0;
+				}
+			}
+			else if(offset_flr == 2){
+				if( !UP_KEY_SUB)	UpKeyBit=1;	
+			}
+			else if(offset_flr == 3){
+				bHibHallDoor=bSensorButton;
+			}
+			else{
+				ExtCallKey=0;
+				bHibHallDoor=0;
+			}
+
+			#ifdef	CARD_KEY
+			if( !UP_KEY_SUB && (offset_flr == 0)){
+				Up_Key_Valid=1;
+				Dn_Key_Valid=1;
+			}
+			#endif
+		}
+		else{
+			ExtCallKey=0;
+			bHibHallDoor=0;
+		}
 
 
 
 
-//		if(!SetupBit && Auto && !Parking){
+
+/*
 		if(Auto && !Parking){
 			if(!UP_KEY_SUB){
 				if(offset_flr == 1){			// reopen use
@@ -785,6 +863,9 @@ void interrupt isr(void)
 				}
 				else if(offset_flr == 2){
 					UpKeyBit=1;
+				}
+				else if(offset_flr == 3){
+					bSensorButton=1;
 				}
 
 				#ifdef	CARD_KEY
@@ -800,11 +881,17 @@ void interrupt isr(void)
 			SensorTime++;
 			if(SensorTime > 10){
 				SensorTime=11;
-				ExtCallKey=1;
+				if(offset_flr == 1){
+					ExtCallKey=1;
+				}
+				else if(offset_flr == 3){
+					bHibHallDoor=1;
+				}
 			}
 		}
 		else	SensorTime=0;
 
+*/
 
 
 
@@ -858,6 +945,9 @@ void interrupt isr(void)
 
         if(msec100>100){
             msec100=0;
+
+
+			if(virtualTimer < 100)	virtualTimer++;
 
 			NoCanInt++;
                                     

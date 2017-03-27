@@ -125,6 +125,7 @@ unsigned int   __attribute__((section(".usercode")))  ReadEncoder(void)
 	}
 
 	if(CurPulse >= 0xfffff000)	CurPulse=BASE_PULSE;	
+	if(CurPulse <= 50000)		CurPulse=BASE_PULSE;	
 
 	return(0); 
 }

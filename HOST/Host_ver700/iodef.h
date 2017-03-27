@@ -112,6 +112,8 @@ extern void __attribute__((section(".usercode"))) HextoASCIIByte(void);
 
 #define  WARMING_UP_TIME	30
 
+#define  INV_RECOVERY_TIME  200			// 20sec
+
 ////////////////////////////////////////////
 ////////////////////////////////////////////
 ////////////////////////////////////////////
@@ -418,8 +420,8 @@ typedef  union  _long_union
 #define  sDZErr  		  	  37
 #define  sCLE_NO_ON           38
 #define  sUcmpFeedErrMsg      39
-/////////////////////////////////////
-
+#define  sDecForce      	  40
+#define  sOverRun      	  	  41
 #define  sTuning              42
 #define  sFhmError            43
 //////////////////////////////////////
@@ -882,15 +884,14 @@ typedef  union  _long_union
 #define  DEC_PULSE_45           BASE_1+ 13
 #define  DEC_PULSE_60           BASE_1+ 14
 #define  DEC_PULSE_90           BASE_1+ 15
-
 #define  DEC_PULSE_105          BASE_1+ 16
 #define  DEC_PULSE_120          BASE_1+ 17
 #define  DEC_PULSE_150          BASE_1+ 18
 #define  DEC_PULSE_180          BASE_1+ 19
 #define  DEC_PULSE_210          BASE_1+ 20
-//	#define  MIN_DEC_PULSE_30       BASE_1+ 21
-//	#define  MIN_DEC_PULSE_45       BASE_1+ 22
-//	#define  MIN_DEC_PULSE_60       BASE_1+ 23
+#define  MIN_DEC_PULSE_30       BASE_1+ 21
+#define  MIN_DEC_PULSE_45       BASE_1+ 22
+#define  MIN_DEC_PULSE_60       BASE_1+ 23
 //	#define  MIN_DEC_PULSE_90       BASE_1+ 24
 //	#define  MIN_DEC_PULSE_105      BASE_1+ 25
 //	#define  MIN_DEC_PULSE_120      BASE_1+ 26
@@ -907,16 +908,25 @@ typedef  union  _long_union
 #define  DEC_LENGTH_SPD_MID  	DEC_LENGTH_45 
 #define  DEC_LENGTH_SPD_HIGH	DEC_LENGTH_60 
 #define  BASE_DEC_MPM       	DEC_LENGTH_90  
+
 #define  BASE_DEC_TIME          DEC_LENGTH_105  
 #define  BASE_SCURVE_TIME       DEC_LENGTH_120
-#define  BASE_SU_LENGTH			DEC_LENGTH_150
-#define  BASE_SD_LENGTH			DEC_LENGTH_180
+#define  BASE_SU1_LENGTH		DEC_LENGTH_150
+#define  BASE_SD1_LENGTH		DEC_LENGTH_180
 #define  BASE_BEF_LULD_PULSE	DEC_LENGTH_210
   
 #define  DEC_PULSE_SPD_LOW     	DEC_PULSE_30
 #define  DEC_PULSE_SPD_MID     	DEC_PULSE_45
 #define  DEC_PULSE_SPD_HIGH     DEC_PULSE_60
 
+
+#define  BASE_SUS_LENGTH		BASE_1+ 16
+#define  BASE_SDS_LENGTH		BASE_1+ 17
+#define  BASE_X0_LENGTH			BASE_1+ 18
+#define  BASE_X1_LENGTH			BASE_1+ 19
+#define  BASE_PLANK_LENGTH		BASE_1+ 20
+#define  BASE_SENSOR_LENGTH		BASE_1+ 21
+#define  BASE_CENTER_LENGTH		BASE_1+ 22
 
 //#define  BASE_DEC_PULSE        	DEC_PULSE_90  
 //////////////////////////////////////////////////////////
@@ -1048,14 +1058,17 @@ typedef  union  _long_union
 #define  F_E_CurPulse1			F_BLOCK_X0+21
 #define  F_E_CurPulse2			F_BLOCK_X0+22
 #define  F_E_CurPulse3			F_BLOCK_X0+23
-#define  F_E_NotUse_L0			F_BLOCK_X0+24   
-#define  F_E_NotUse_L1			F_BLOCK_X0+25
-#define  F_E_NotUse_L2			F_BLOCK_X0+26
-#define  F_E_NotUse_L3			F_BLOCK_X0+27
+
+#define  F_E_D_ON_Pulse0		F_BLOCK_X0+24   
+#define  F_E_D_ON_Pulse1		F_BLOCK_X0+25
+#define  F_E_D_ON_Pulse2		F_BLOCK_X0+26
+#define  F_E_D_ON_Pulse3		F_BLOCK_X0+27
+
 #define  F_E_Mpm0				F_BLOCK_X0+28
 #define  F_E_Mpm1				F_BLOCK_X0+29
 #define  F_E_NotUse_Int0		F_BLOCK_X0+30
 #define  F_E_NotUse_Int1		F_BLOCK_X0+31
+
 #define  F_E_OUT_UP				F_BLOCK_X0+32
 #define  F_E_OUT_OP				F_BLOCK_X0+33
 #define  F_E_OUT_FAN			F_BLOCK_X0+34
@@ -1077,7 +1090,7 @@ typedef  union  _long_union
 #define  F_E_LuLdFloor			F_BLOCK_X0+47
 
 
-#define  F_E_InvFloor			F_BLOCK_X0+48
+#define  F_E_FsdNm				F_BLOCK_X0+48
 #define  F_E_NotUse49			F_BLOCK_X0+49
 #define  F_E_CurYear			F_BLOCK_X0+50
 #define  F_E_CurMonth			F_BLOCK_X0+51
@@ -1086,6 +1099,16 @@ typedef  union  _long_union
 #define  F_E_CurHour			F_BLOCK_X0+53
 #define  F_E_CurMin				F_BLOCK_X0+54
 #define  F_E_CurSec				F_BLOCK_X0+55
+
+#define  F_NotUsex0				F_BLOCK_X0+56   
+#define  F_NotUsex1				F_BLOCK_X0+57
+#define  F_NotUsex2				F_BLOCK_X0+58
+#define  F_NotUsex3				F_BLOCK_X0+59
+
+#define  F_ZeroPulse0			F_BLOCK_X0+60   
+#define  F_ZeroPulse1			F_BLOCK_X0+61
+#define  F_ZeroPulse2			F_BLOCK_X0+62
+#define  F_ZeroPulse3			F_BLOCK_X0+63
 
 /////////////////////////////////////////////
 
@@ -1505,6 +1528,7 @@ extern	unsigned long 	MmBuf,PulseBuf;
 
 extern	unsigned	int   HallDoorOpenFloor[3];
 
+extern	UserDataType    FsdNm;
 extern  UserDataType    Cancle;
 extern  UserDataType    BefRcvAdr;
 extern  UserDataType    CurRcvAdr;
@@ -1575,6 +1599,7 @@ extern  UserDataType    CurDoorSelect;
 extern  UserDataType    LoopTime;
 extern	UserDataType    SaveVerify;
 extern	UserDataType    inverterClrTime;
+extern	UserDataType    inverterTwoClrTime;
 
 extern	UserDataType    CountDn;
 extern	UserDataType    CountUp;
@@ -1632,6 +1657,7 @@ extern	UserDataType    StateBit8;
 extern	UserDataType    StateBit9;   
 extern	UserDataType    StateBit10;   
 extern	UserDataType    StateBit11;   
+extern	UserDataType    StateBit12;   
 extern  UserDataType    Vip_Floor;   
 
 
@@ -1671,8 +1697,6 @@ extern  UserDataType    LadderTime;
 extern  UserDataType    SegError;
 
 
-extern  UserDataType   SelMainCarTime;
-extern  UserDataType   SelSubCarTime;
 extern  UserDataType   LadderKeyTime;
 
 extern  UserDataType	SrcAdrBlk;
@@ -1680,7 +1704,10 @@ extern  UserDataType	LoaderChk;
 
 extern	UserDataType    CrtMoveFlr;
 extern	UserDataType    InvErrNm;
+extern	UserDataType    BefInvErrNm;
 
+extern	unsigned int    ExtFanTimer;
+extern	unsigned int    ExtLightTimer;
 
 extern  unsigned int   TxPercent;
 extern  unsigned int   Percent;
@@ -1696,6 +1723,9 @@ extern	unsigned long 	LevelEncoderPulse1,LevelEncoderPulse2;
 extern	unsigned long 	TestPulse1,UpDnEncoder;
 extern	unsigned long   DecStartPulse,DecTotalPulse;
 
+extern	unsigned long   LimitSusPulse,LimitSdsPulse,LimitSu1Pulse,LimitSd1Pulse,UpLimitX0Pulse,DnLimitX1Pulse,SensorPulse,PlankPulse,LuLdStopPulse,ZeroHzPulse;
+extern	unsigned long   LevelOnPulse,SlipOrgPulse,SlipArrivePulse;
+
 //extern	unsigned long 	xVarDecTime,xVarSCurve,MaxMpm,xVarCurMpm,xCurMpm_MaxMpmSpd,Length1,Length2,xVarMotorType,xVarRpm,xVarEncoder,xVarMpm,xVarMpm1000,xVarMaxHz,xDecMpm;
 //extern	unsigned long 	EVLowSpd,EVMidSpd,EVHighSpd,CurSpdDecPulse,EVLowDecLength,EVMidDecLength,EVHighDecLength,EVDecLength;
 
@@ -1707,6 +1737,7 @@ extern	unsigned long 	EVManualSpd,EVLowSpd,EVMidSpd,EVHighSpd,CurSpdDecPulse,EVL
 extern	unsigned long 	tmpxMaxMpm,tmpxCurMpm,tmpxLastMpm,tmpxVarDecTime,tmpxVarSCurve,tmpVarLengthVal1,tmpVarLengthVal2;
 extern	unsigned long 	CMaxMpm   ,CCurMpm   ,CLastMpm   ,CVarDecTime  ,CVarSCurve   ,CVarLengthVal1 ,CVarLengthVal2;
 
+extern	unsigned long 	OneceUseBuf1,OneceUseBuf2,OneceUseBuf3;
 
 extern	unsigned long   xBefLuLdPulse;
 
@@ -1732,7 +1763,6 @@ extern	unsigned long   FindDecTime;
 extern	unsigned long   DeltaTime;
 
 extern	unsigned long   Slip_pulse,Base_Slip_pulse;
-extern	unsigned long 	PositionPulse1;
 
 
 extern	UserDataType    LadderGroup;
@@ -1753,9 +1783,11 @@ extern const unsigned int EncRate[];
 extern	unsigned long 	ManJobPulse;
 
 
-
+/*
 extern	unsigned int    iType_Test_PlusMinus;
 extern	unsigned long   LType_Test_Value;
+*/
+
 extern	unsigned int 	AutotunUpDn;
 
 
@@ -1966,7 +1998,7 @@ extern	unsigned int 	AutotunUpDn;
 #define  bWaterSensing          GET_BITFIELD(&StateBit2).bit7 
 
 
-//#define  bFirstOnLuLd           GET_BITFIELD(&StateBit3).bit0 
+#define  bSlipWard           	GET_BITFIELD(&StateBit3).bit0 
 #define  bNotStopRelevel        GET_BITFIELD(&StateBit3).bit1 
 #define  bPasswardUse           GET_BITFIELD(&StateBit3).bit2 
 #define  bCompanyCtl        	GET_BITFIELD(&StateBit3).bit3 
@@ -2056,6 +2088,17 @@ extern	unsigned int 	AutotunUpDn;
 #define  bL1000_Enter       	GET_BITFIELD(&StateBit11).bit5 
 #define  bManDeltaSpdOff		GET_BITFIELD(&StateBit11).bit6 
 #define  bCarErrOn				GET_BITFIELD(&StateBit11).bit7 
+
+
+#define  bReqFlrLoad      		GET_BITFIELD(&StateBit12).bit0 
+#define  bInvRecoveryErr      	GET_BITFIELD(&StateBit12).bit1 
+#define  bBefAutoManual   		GET_BITFIELD(&StateBit12).bit2 
+#define  bsOverRun      		GET_BITFIELD(&StateBit12).bit3 
+#define  bBefbsOverRun			GET_BITFIELD(&StateBit12).bit4 
+#define  bSaveDec       		GET_BITFIELD(&StateBit12).bit5 
+#define  bBefbsFsd				GET_BITFIELD(&StateBit12).bit6 
+#define  bsFsd					GET_BITFIELD(&StateBit12).bit7 
+
 
 //////////////////////////////////////////////////////////////
 #define  IN_SU1_PORT            GET_BITFIELD(&I_SU1_bit).bit0 
@@ -2269,10 +2312,10 @@ extern	unsigned int 	AutotunUpDn;
 #define  cF_STTM5msec           GET_LONGFIELD(&FlashDspCharBuf[F_StTm5/4])          .byte[F_StTm5%4]
 
 
-#define  cF_SafetyTimemsec     GET_LONGFIELD(&FlashDspCharBuf[F_SafetyTime/4])    .byte[F_SafetyTime%4]
+#define  cF_SafetyTimemsec     GET_LONGFIELD(&FlashDspCharBuf[F_SafetyTime/4])    	.byte[F_SafetyTime%4]
 
 
-#define  cF_RunOffTime         GET_LONGFIELD(&FlashDspCharBuf[F_RunOffTime/4])      .byte[F_RunOffTime%4]
+#define  cF_RunOffTime         GET_LONGFIELD(&FlashDspCharBuf[F_RunOffTime/4])     	.byte[F_RunOffTime%4]
 #define  iF_RunOffTime         (cF_RunOffTime * 100)
 
 #define  cF_Bk1OffTime         GET_LONGFIELD(&FlashDspCharBuf[F_Bk1OffTime/4])      .byte[F_Bk1OffTime%4]
@@ -2281,11 +2324,11 @@ extern	unsigned int 	AutotunUpDn;
 #define  cF_Bk2OffTime         GET_LONGFIELD(&FlashDspCharBuf[F_Bk2OffTime/4])      .byte[F_Bk2OffTime%4]
 #define  iF_Bk2OffTime         (cF_Bk2OffTime * 100)
 
-#define  cF_UDOffTime         GET_LONGFIELD(&FlashDspCharBuf[F_UDOffTime/4])      .byte[F_UDOffTime%4]
+#define  cF_UDOffTime         GET_LONGFIELD(&FlashDspCharBuf[F_UDOffTime/4])      	.byte[F_UDOffTime%4]
 #define  iF_UDOffTime         (cF_UDOffTime * 100)
 
 
-#define  cF_P4OffTime         GET_LONGFIELD(&FlashDspCharBuf[F_P4OffTime/4])      .byte[F_P4OffTime%4]
+#define  cF_P4OffTime         GET_LONGFIELD(&FlashDspCharBuf[F_P4OffTime/4])      	.byte[F_P4OffTime%4]
 #define  iF_P4OffTime         (cF_P4OffTime * 100)
 
 
@@ -2319,7 +2362,7 @@ extern	unsigned int 	AutotunUpDn;
 
 #define  cF_BRK_MGT_TIME        (cF_BrkMgtmsec * 10)     
 
-#define  cF_SafetyTimeSec         (cF_SafetyTimemsec * 10)
+#define  cF_SafetyTimeSec		(cF_SafetyTimemsec * 10)
 
 
 #define  cF_STTM1               (cF_STTM1msec * 1)
@@ -2894,7 +2937,7 @@ extern  UserDataType    BefX0Byte;
 #define  FloorSelMethod                     bitChk_FLRDSPCH(F_OnOff3,(bFloorSel % 8))
 #define  RunningOpenOnOff                   bitChk_FLRDSPCH(F_OnOff3,(bRunOpenSetClear % 8))
 #define  UcmpFeedBackChk                    bitChk_FLRDSPCH(F_OnOff3,(bUcmpFeedback % 8))
-
+#define  NormalEmgEVChk                     bitChk_FLRDSPCH(F_OnOff3,(bNormalEmgEV % 8))
 /////////////////////////////////////////////////////////////////////////////////////////
 #define  EncoderCopyOnOff                   bitChk_FLRDSPCH(F_OnOff3,(bEncoderCpy % 8))
 #define  ManWorkingChk                      bitChk_FLRDSPCH(F_OnOff3,(bManWorkingChk % 8))
@@ -3021,4 +3064,21 @@ extern	unsigned int Addr_CurAmp;
 extern	unsigned int Addr_Reset;
 
 
-extern	unsigned	int			youtesttime;
+//extern	unsigned	int			youtesttime;
+
+
+
+#define	DEC_SUS		1		
+#define	DEC_SDS		2		
+#define	DEC_SU1		3		
+#define	DEC_SD1		4		
+#define	DEC_X0		5		
+#define	DEC_X1		6		
+#define	ENC_HIGH	7		
+#define	ENC_LOW		8		
+#define	DEC_LOW		9		
+#define	SPD_ON		10		
+
+
+
+extern	unsigned long	TestYou;

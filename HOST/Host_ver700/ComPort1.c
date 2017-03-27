@@ -65,6 +65,18 @@ unsigned char  __attribute__((section(".usercode")))  ASCIItoHex(unsigned char f
 */
 
 
+void  __attribute__((section(".usercode"))) Com1RxREGClear(void)
+{
+	unsigned	char	buf1;
+   	if(_U1RXDA)    buf1=U1RXREG;
+   	if(_U1RXDA)    buf1=U1RXREG;
+   	if(_U1RXDA)    buf1=U1RXREG;
+   	if(_U1RXDA)    buf1=U1RXREG;
+   	if(_U1RXDA)    buf1=U1RXREG;
+}
+
+
+
 void    Crc_Calulate_Cmm1(unsigned int crcdata)
 {
 	register unsigned int    i;
@@ -103,8 +115,9 @@ void     __attribute__((section(".usercode")))  Chksum_Sum(void)
 void	__attribute__((section(".usercode"))) Serial(void)
 {
 
-   	Chksum_Sum();
-   	
+	Com1RxREGClear();
+
+   	Chksum_Sum();   	
    	RxCurCnt=0;
    	RxStatus=TX_SET;
     U1TXREG=RxBuffer[RxCurCnt];
@@ -119,6 +132,7 @@ void	__attribute__((section(".usercode"))) Serial(void)
 
 void  __attribute__((section(".usercode"))) SerialCheck(void)
 {
+   	LocalType   buf1=0;
 
 	if(bHostAutoLanding){	
 		Com1Autolanding();
@@ -130,8 +144,7 @@ void  __attribute__((section(".usercode"))) SerialCheck(void)
 	#else
 		CrtReqCheck();
 	#endif
-	
-	
+		
 		if((RxStatus==TX_SET) && (SerialTime > 2)){
 			TXEN=1;  		
 			RxCurCnt=0;
@@ -142,6 +155,13 @@ void  __attribute__((section(".usercode"))) SerialCheck(void)
 			TXEN=1;  		
 		}
 	}
+
+
+	if(_U1OERR){
+		Com1RxREGClear();
+		_U1OERR=0;
+	}
+
 }
 
 
@@ -195,25 +215,22 @@ void _ISR_X _U1RXInterrupt(void)
     _U1RXIF=0;
 
 	if(_U1RXDA)    buf1=U1RXREG;
+	
+    if(_U1FERR){
+        _U1FERR=0;
+    }
 
+    if(_U1PERR){
+        _U1PERR=0;
+    }
     
+///////////////////
+
+
 	if(bHostAutoLanding){	
 		Com1AutolandingRxInt(buf1);
 	}
-	else{
-
-	    if(_U1OERR){
-	        _U1OERR=0;
-	    }
-	
-	    if(_U1FERR){
-	        _U1FERR=0;
-	    }
-	
-	    if(_U1PERR){
-	        _U1PERR=0;
-	    }
-	
+	else{	
 		
 	    if(RxStatus != TX_SET){   
 			if(SerialTime > 3){
@@ -342,14 +359,7 @@ void _ISR_X _U1RXInterrupt(void)
 					else	RxCurCnt++;
 					break;						
 			}
-	
-			if(RxCurCnt==0){
-			   	if(_U1RXDA)    buf1=U1RXREG;
-			   	if(_U1RXDA)    buf1=U1RXREG;
-			   	if(_U1RXDA)    buf1=U1RXREG;
-			   	if(_U1RXDA)    buf1=U1RXREG;
-			}
-	
+		
 	#endif
 	    }
 	    SerialTime=0;

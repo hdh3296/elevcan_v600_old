@@ -14,8 +14,6 @@ extern	UserDataType   C2DataSeqStart;
 extern  UserDataType   C2Time;
 extern	UserDataType   C2DataSeq;
 
-//extern  UserDataType   Can2DataSeq;
-extern  unsigned int   C2Company;
 extern  unsigned int   C2ReceiveSlaveAdr;
 extern  unsigned int   C2ReceiveAdrStatus;
 extern  unsigned int   C2Loop;
@@ -39,20 +37,6 @@ extern	unsigned int   	C2ThisTxBuf[8];
 
 
 
-/*
-UserDataType   C2DataSeqStart=0;
-UserDataType   C2Time=0;
-UserDataType   C2DataSeq=0;
-unsigned int   C2Company=0;
-unsigned int   C2ReceiveSlaveAdr=0;
-unsigned int   C2ReceiveAdrStatus=0;
-
-unsigned int   C2TmpSid=0;
-unsigned int   C2TmdEidL=0;
-unsigned int   C2TmdEidH=0;
-
-unsigned int   C2Loop=0;
-*/
 
 
 

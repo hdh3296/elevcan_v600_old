@@ -26,6 +26,18 @@ UserDataType    SerialTime2=0x0;
 UserDataType    Chksum2=0;
 
 
+
+void  __attribute__((section(".usercode"))) Com2RxREGClear(void)
+{
+	unsigned	char	buf1;
+   	if(_U2RXDA)    buf1=U2RXREG;
+   	if(_U2RXDA)    buf1=U2RXREG;
+   	if(_U2RXDA)    buf1=U2RXREG;
+   	if(_U2RXDA)    buf1=U2RXREG;
+   	if(_U2RXDA)    buf1=U2RXREG;
+}
+
+
 void      __attribute__((section(".usercode"))) Chksum_Sum2(void)
 {
     
@@ -52,7 +64,7 @@ void      __attribute__((section(".usercode"))) Chksum_Sum2(void)
 
 void      __attribute__((section(".usercode"))) Serial2(void)
 {
-
+	Com2RxREGClear();
    	Chksum_Sum2();   	
    	RxCurCnt2=0;
    	RxStatus2=TX_SET;   
@@ -134,19 +146,9 @@ void _ISR_X _U2RXInterrupt(void)
     
    	if(_U2RXDA)    buf1=U2RXREG;
 
-/*
-   	if(_U2RXDA)    buf1=U2RXREG;
-   	if(_U2RXDA)    buf1=U2RXREG;
-   	if(_U2RXDA)    buf1=U2RXREG;
-   	if(_U2RXDA)    buf1=U2RXREG;
-   	if(_U2RXDA)    buf1=U2RXREG;
-*/
 
     SerialTime2=0;
 
-    if(_U2OERR){
-        _U2OERR=0;
-    }
 
     if(_U2FERR){
         _U2FERR=0;

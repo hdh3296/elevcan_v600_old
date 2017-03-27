@@ -75,7 +75,6 @@ unsigned char  GetElevPointer(unsigned int id)
     xdestflr=RcvBuf[xIdPt+DEST_FLR];
 	xyoufloor=RcvBuf[xIdPt+DEST_FLR];
 
-
 	if(IsCarUpWard(xIdPt)){
 		#ifdef		FLOOR_64
 			if(xtmphigh > 0){
@@ -650,6 +649,11 @@ unsigned char  UpKeyCalcElev(unsigned int id)
         else if(xtmpadr > xTmpCurFloor){
             if(IsCarUpWard(xIdPt)){
 				UpKeyCalu[id] = CalCulate(xtmpadr,xTmpCurFloor,0,0,FIRST_OFFSET);
+ 				if(IsCarMove(xIdPt)){
+					if(IsYouFlrHighOrEqualMe(xdestflr,xtmpadr)){
+						UpKeyCalu[id] = (UpKeyCalu[id]-1); 
+					}
+				}
 			}
             else if(IsCarDnWard(xIdPt)){
 				UpKeyCalu[id] = CalCulate(xTmpCurFloor,xtmpstart,xtmpadr,xtmpstart,THIRD_OFFSET);
@@ -673,14 +677,11 @@ unsigned char  UpKeyCalcElev(unsigned int id)
 					else{
  						if(IsCarMove(xIdPt))	UpKeyCalu[id] = 3;
  						else					UpKeyCalu[id] = 1;
-
-//                    	UpKeyCalu[id] = 1;  
 					}
                 }
 				else{
 					UpKeyCalu[id] = CalCulate(xtmptop,xTmpCurFloor,xtmptop,xtmpadr,THIRD_OFFSET);                     		  
 				}
-
             }
             else if(IsCarDnWard(xIdPt)){
                 if(IsYouFlrEqualMe(xdestflr,xtmpadr)){
@@ -758,6 +759,11 @@ unsigned char  DnKeyCalcElev(unsigned int id)
 			}
             else if(IsCarDnWard(xIdPt)){
 				DnKeyCalu[id] = CalCulate(xTmpCurFloor,xtmpadr,0,0,FIRST_OFFSET);
+ 				if(IsCarMove(xIdPt)){
+					if(IsYouFlrLowOrEqualMe(xdestflr,xtmpadr)){
+						DnKeyCalu[id] = (DnKeyCalu[id]-1); 
+					}
+				}
             }            
             else{				
 				DnKeyCalu[id] = CalCulate(xTmpCurFloor,xtmpadr,0,0,FIRST_OFFSET);                      		  
@@ -802,8 +808,6 @@ unsigned char  DnKeyCalcElev(unsigned int id)
 					else{
  						if(IsCarMove(xIdPt))	DnKeyCalu[id] = 3;
 						else					DnKeyCalu[id] = 1;								
-
-//                    	DnKeyCalu[id] = 1;  
 					}
 				}
 				else{

@@ -85,7 +85,7 @@ LocalType __attribute__((section(".usercode"))) EdsAddressSet(void)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	Addr_CurError		=( ((unsigned int)(EDS_INV_ERR_ADDRH 			<< 8)) | ((unsigned int)(EDS_INV_ERR_ADDRL)));
-	Addr_CurAmp			=( ((unsigned int)(EDS_INV_ERR_ADDRH 			<< 8)) | ((unsigned int)(EDS_INV_ERR_ADDRL)));
+	Addr_CurAmp			=( ((unsigned int)(EDS_INV_CUR_AMP_ADDRH 		<< 8)) | ((unsigned int)(EDS_INV_CUR_AMP_ADDRL)));
 	Addr_Reset			=( ((unsigned int)(EDS_INV_RESET_ADDRH 			<< 8)) | ((unsigned int)(EDS_INV_RESET_ADDRL)));
 
 

@@ -31,6 +31,7 @@
 #define     CMD_EXT_CALL_SEV		0x07
 #define     CMD_VIP					0x08
 #define     CMD_SECOND_FIRE			0x09
+#define     CMD_FAN_LIGHT_ETC		0x0a
 
 
 #define 	UP_READY          		0x80
@@ -60,7 +61,7 @@
 #define  	S1_EMG            		0x08
 #define  	S1_BAT            		0x10
 #define  	S1_AUTO           		0x20
-#define  	S1_MANUAL         		0x40 // user lamp 2 로 사용
+#define  	S1_MANUAL         		0x40
 #define  	S1_UP             		0x80
 
 #define  	S2_DN             		0x01
@@ -70,7 +71,7 @@
 #define  	S2_FIRE           		0x10
 #define  	S2_CAR_BUT_CLR    		0x20
 #define  	S2_OPEN_LAMP_ON   		0x40    
-#define  	S2_LAMP_USER      		0x80 // user lamp 1 로 사용
+#define  	S2_LAMP_USER      		0x80
 
 #define  	S3_VIP            		0x01
 #define  	S3_PARKING        		0x02
@@ -160,13 +161,14 @@
 #define  	HibDnCall6        	62                      
 #define  	HibDnCall7        	63               
 
+#define  	TestBuf        		64               
+
 #define  	Year              	80
 #define  	Month             	81
 #define  	Day               	82
 #define  	Hour              	83
 #define  	Minuate           	84
 #define  	sec               	85
-
 
 #define  	mcurfloor         	200
 #define  	mBefcurfloor      	201
@@ -191,6 +193,8 @@
 #define  	mInvFloor    		220
 #define  	mEV_LastErr   		221
 //#define  	mLoader_mSysStatus  222
+
+//#define  	FHM_RUN           	230   // delete  delete
 
 #define  	EndsRam           	254
 #define  	END_SRAM          EndsRam+1

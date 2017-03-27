@@ -556,7 +556,7 @@ LocalType __attribute__((section(".usercode"))) L1000AddressSet(void)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	Addr_CurError		=( ((unsigned int)(L1000_INV_ERR_ADDRH 			<< 8)) | ((unsigned int)(L1000_INV_ERR_ADDRL)));
-	Addr_CurAmp			=( ((unsigned int)(L1000_INV_ERR_ADDRH 			<< 8)) | ((unsigned int)(L1000_INV_ERR_ADDRL)));
+	Addr_CurAmp			=( ((unsigned int)(L1000_INV_CUR_AMP_ADDRH 		<< 8)) | ((unsigned int)(L1000_INV_CUR_AMP_ADDRL)));
 	Addr_Reset			=( ((unsigned int)(L1000_INV_RESET_ADDRH 		<< 8)) | ((unsigned int)(L1000_INV_RESET_ADDRL)));
 
 

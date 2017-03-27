@@ -47,6 +47,7 @@ UserDataType	Com1Crc=0;
 
 
 
+
 void  __attribute__((section(".usercode"))) Com1RxSuccess(void)
 {
 	unsigned int i;
@@ -129,6 +130,7 @@ void  __attribute__((section(".usercode"))) MultiWardWrAck(unsigned char val)
 }
 
 
+
 void  __attribute__((section(".usercode"))) ReadWardAck(unsigned char val)
 {
 	unsigned int i;
@@ -173,6 +175,9 @@ void  __attribute__((section(".usercode"))) Com1ReceiveData(unsigned char val)
 	unsigned int i;
 	unsigned int txCnt,rcvCnt;
 
+
+	if(Com1RxThisPt>= MAX_RTX_BUF)	Com1RxThisPt=0;	  //you
+
 	Com1RxBuffer[Com1RxThisPt]=val;
 
 
@@ -213,7 +218,8 @@ void  __attribute__((section(".usercode"))) Com1ReceiveData(unsigned char val)
 
 void      __attribute__((section(".usercode"))) Com1TxStart(void)
 {   	
-
+	Com1RxREGClear();
+	Com1RxThisPt=0;   //you 
 	TXEN=0;
 	Com1SerialTime=0;
    	Com1TxThisPt=0;
@@ -260,19 +266,6 @@ void  __attribute__((section(".usercode"))) Com1AutolandingTxInt(void)
 void  __attribute__((section(".usercode"))) Com1AutolandingRxInt(unsigned char buf1)
 {
     Com1SerialTime=0;
-
-    if(_U1OERR){
-        _U1OERR=0;
-    }
-
-    if(_U1FERR){
-        _U1FERR=0;
-    }
-
-    if(_U1PERR){
-        _U1PERR=0;
-    }
-
     if(Com1RxStatus != TX_SET)	Com1ReceiveData(buf1);
 }
 
@@ -337,9 +330,6 @@ void _ISR_X _U1RXInterrupt(void)
 
     Com1SerialTime=0;
 
-    if(_U1OERR){
-        _U1OERR=0;
-    }
 
     if(_U1FERR){
         _U1FERR=0;

@@ -32,7 +32,6 @@ UserDataType   C2DataSeqStart=0;
 
 UserDataType   C2Time=0;
 UserDataType   C2DataSeq=0;
-unsigned int   C2Company=0;
 unsigned int   C2ReceiveSlaveAdr=0;
 unsigned int   C2ReceiveAdrStatus=0;
 
@@ -474,31 +473,33 @@ LocalType __attribute__((section(".usercode"))) HostReadMyData(void)
 
 LocalType __attribute__((section(".usercode"))) HostCommandAct(void)
 {
+    unsigned int   good; 
+	good=0;
 
     if((CAN2_RxBuf[2]    ==   (PC_COMMAND | CMD_PARKING)) && (CAN2_RxBuf[3] == 0x00)){
         if(CAN2_RxBuf[4] == 0x01) 	bExt_PRKING = 1;
         else                    	bExt_PRKING = 0;
-		NormalDataReturn();    
+		good=1;
     }    
     else if((CAN2_RxBuf[2]    ==   (PC_COMMAND | CMD_FIRE)) && (CAN2_RxBuf[3] == 0x00)){
         if(CAN2_RxBuf[4] == 0x01) 	bExt_FIRE = 1;
         else                    	bExt_FIRE = 0;
-		NormalDataReturn();    
+		good=1;
     }
     else if((CAN2_RxBuf[2]    ==   (PC_COMMAND | CMD_FAMILY_SEV)) && (CAN2_RxBuf[3] == 0x00)){
         if(CAN2_RxBuf[4] == 0x01) 	bExt_FAMILY = 1;
         else                    	bExt_FAMILY = 0;
-		NormalDataReturn();    
+		good=1;
     }
     else if((CAN2_RxBuf[2]    ==   (PC_COMMAND | CMD_VIP)) && (CAN2_RxBuf[3] == 0x00)){
         if(CAN2_RxBuf[4] == 0x01) 	bExt_VIP = 1;
         else                    	bExt_VIP = 0;
-		NormalDataReturn();    
+		good=1;
     }
     else if((CAN2_RxBuf[2]    ==   (PC_COMMAND | CMD_SECOND_FIRE)) && (CAN2_RxBuf[3] == 0x00)){
         if(CAN2_RxBuf[4] == 0x01) 	bExt_Second_FIRE = 1;
         else                    	bExt_Second_FIRE = 0;
-		NormalDataReturn();    
+		good=1;
     }
 
 
@@ -509,15 +510,29 @@ LocalType __attribute__((section(".usercode"))) HostCommandAct(void)
 #else
 		CrtMoveFlr=(unsigned char)(CAN2_RxBuf[4] | CAR_READY);
 #endif
-		NormalDataReturn();    
+		good=1;
     }
 
     else if((CAN2_RxBuf[2]    ==   (PC_COMMAND | CMD_EXT_CALL_SEV)) && (CAN2_RxBuf[3] == 0x00)){
 		sRamDArry[mCrtExtMoveFlr]=(unsigned char)(CAN2_RxBuf[4]);
 		ExtKeyCnt=3;
 		CAN2_RxBuf[0]=0;
-		NormalDataReturn();    
+		good=1;
     }
+    else if((CAN2_RxBuf[2]    ==   (PC_COMMAND | CMD_FAN_LIGHT_ETC)) && (CAN2_RxBuf[3] == 0x00)){
+		if( (CAN2_RxBuf[4] > 0) &&  (CAN2_RxBuf[4] < 0xff)){
+			ExtFanTimer=(unsigned char)(CAN2_RxBuf[4]-1);
+			ExtFanTimer=(ExtFanTimer % 100);
+			good=1;
+		}
+		if( (CAN2_RxBuf[5] > 0) &&  (CAN2_RxBuf[5] < 0xff)){
+			ExtLightTimer=(unsigned char)(CAN2_RxBuf[5]-1);
+			ExtLightTimer=(ExtLightTimer % 100);
+			good=1;
+		}
+    }
+
+	if(good)	NormalDataReturn();	
 }
 
 

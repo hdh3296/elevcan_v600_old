@@ -121,6 +121,29 @@ unsigned int __attribute__((section(".usercode")))  RunningDecPulseCalcu(void)
 			if(CurMeterPerMin > 200){		//20.0	
 				RunCurDecPulseCalcu();
 				CVarLengthVal1=GET_LONG(MM_PULSE);
+				if(CVarLengthVal1 > 0){
+					CVarLengthVal2=(CurSpdDecPulse * 10);
+					CVarLengthVal1=(CVarLengthVal2/CVarLengthVal1);
+				}
+				
+				DecreasePulse=(CVarLengthVal1 + xBefLuLdPulse);
+			}
+			else{
+				DecreasePulse=0;
+			}
+		}
+	}
+	return(0);
+}
+
+/*
+unsigned int __attribute__((section(".usercode")))  RunningDecPulseCalcu(void)
+{
+	if(PerfectAuto()){
+		if(!bUnd && bMoveCar){
+			if(CurMeterPerMin > 200){		//20.0	
+				RunCurDecPulseCalcu();
+				CVarLengthVal1=GET_LONG(MM_PULSE);
 				CVarLengthVal2=(CurSpdDecPulse * 10);
 				CVarLengthVal1=(CVarLengthVal2/CVarLengthVal1);
 				DecreasePulse=(CVarLengthVal1 + xBefLuLdPulse);
@@ -131,7 +154,7 @@ unsigned int __attribute__((section(".usercode")))  RunningDecPulseCalcu(void)
 		}
 	}
 }
-
+*/
 
 #endif
 

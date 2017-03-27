@@ -77,7 +77,7 @@ extern void    __attribute__((section(".usercode"))) VirtualMoveCntReDsp(void);
 #define GROUP_32               		32		// 14
 
 
-
+/*
 #define USER_GROUP                  1
 #define FLR_DSP_GROUP               2
 #define FLR_GROUP                   3
@@ -96,11 +96,70 @@ extern void    __attribute__((section(".usercode"))) VirtualMoveCntReDsp(void);
 #define OUTPORT_GROUP               16
 #define ERROR_GROUP                 17
 #define EL_GROUP               		18
-
+#define INV_PAR_GROUP_00          19
+#define INV_PAR_GROUP_01          20
+#define INV_PAR_GROUP_02          21
+#define INV_PAR_GROUP_03          22
+#define INV_PAR_GROUP_04          23
+#define INV_PAR_GROUP_05          24
+#define INV_PAR_GROUP_06          25
+#define INV_PAR_GROUP_07          26
+#define INV_PAR_GROUP_08          27
+#define INV_PAR_GROUP_09          28
+#define INV_PAR_GROUP_10          29
+#define INV_PAR_GROUP_11          30
+#define INV_PAR_GROUP_12          31
+#define INV_PAR_GROUP_13          32
+#define INV_PAR_GROUP_14          33
+#define INV_PAR_GROUP_END		  34
 
 #define MAX_GROUP_SPD3              17
 #define MAX_GROUP                   18
+*/
 
+
+#define USER_GROUP                  1
+#define FLR_DSP_GROUP               2
+#define FLR_GROUP                   3
+#define TIMER_GROUP                 4
+#define ONOFF1_GROUP                5
+#define ONOFF2_GROUP                6
+#define SUB_DOOR_GROUP              7
+#define OPEN_WAIT_GROUP             8
+#define NCNO1_GROUP                 9
+#define NCNO2_GROUP                 10
+#define NCNO3_GROUP                 11
+#define INPORT1_GROUP               12
+#define INPORT2_GROUP               13
+#define OUTPORT_GROUP               14
+#define ERROR_GROUP                 15
+#define EL_GROUP               		16
+									
+#define INV_PAR_GROUP_00          	17
+#define INV_PAR_GROUP_01          	18
+#define INV_PAR_GROUP_02          	19
+#define INV_PAR_GROUP_03          	20
+#define INV_PAR_GROUP_04          	21
+#define INV_PAR_GROUP_05          	22
+#define INV_PAR_GROUP_06          	23
+#define INV_PAR_GROUP_07          	24
+#define INV_PAR_GROUP_08          	25
+#define INV_PAR_GROUP_09          	26
+#define INV_PAR_GROUP_10          	27
+#define INV_PAR_GROUP_11          	28
+#define INV_PAR_GROUP_12          	29
+#define INV_PAR_GROUP_13          	30
+#define INV_PAR_GROUP_14          	31
+#define INV_PAR_GROUP_END		  	32
+
+#define MAX_GROUP_SPD3              INV_PAR_GROUP_00
+#define MAX_GROUP                   EL_GROUP
+
+
+
+
+//#define IO_GROUP                    50
+//#define PARAMETER_GROUP             51
 
 
 
@@ -125,7 +184,7 @@ extern void    __attribute__((section(".usercode"))) VirtualMoveCntReDsp(void);
 #define     SUBNM_BASE_SCURVE_TIME      15  
 #define     SUBNM_SU2SD2_SPD           	16  
 #define     SUBNM_X0X1_SPD             	17  
-#define     SUBNM_NOTUSE0             	18
+#define     SUBNM_SNNSOR_POSITION       18
 #define     SUBNM_NOTUSE1             	19  
 #define     SUBNM_NOTUSE2          		20  
 #define     SUBNM_NOTUSE3             	21  
@@ -141,22 +200,6 @@ extern void    __attribute__((section(".usercode"))) VirtualMoveCntReDsp(void);
 
 
 
-#define INV_PAR_GROUP_00          19
-#define INV_PAR_GROUP_01          20
-#define INV_PAR_GROUP_02          21
-#define INV_PAR_GROUP_03          22
-#define INV_PAR_GROUP_04          23
-#define INV_PAR_GROUP_05          24
-#define INV_PAR_GROUP_06          25
-#define INV_PAR_GROUP_07          26
-#define INV_PAR_GROUP_08          27
-#define INV_PAR_GROUP_09          28
-#define INV_PAR_GROUP_10          29
-#define INV_PAR_GROUP_11          30
-#define INV_PAR_GROUP_12          31
-#define INV_PAR_GROUP_13          32
-#define INV_PAR_GROUP_14          33
-#define INV_PAR_GROUP_END		  34
 
 
 
@@ -229,9 +272,9 @@ extern void    __attribute__((section(".usercode"))) VirtualMoveCntReDsp(void);
 #define     INPORT2_SEL_MESSAGE_CNT 	32
 #define     OUTPORT_SEL_MESSAGE_CNT 	(NO_USE_OUT+1)
 #define     DOOR_SEL_MESSAGE_CNT 		4
-#define     FINAL_ERR_DSP_MESSAGE_CNT   15
+#define     FINAL_ERR_DSP_MESSAGE_CNT   18
 #define     SYSTEM_SET_MESSAGE_CNT  	4
-#define     SENSOR_POSITION_MESSAGE_CNT 10
+#define     SENSOR_POSITION_MESSAGE_CNT 14
 
 
 
@@ -239,6 +282,22 @@ extern void    __attribute__((section(".usercode"))) VirtualMoveCntReDsp(void);
 #define     ELEV_SPEED_MESSAGE_CNT  		9
 
 //#define     AUTO_LANDING_MESSAGE_CNT  		2
+
+
+#define		SENSOR_LENGTH	0
+#define		PLANK_LENGTH	1
+#define		SDS_LENGTH		2
+#define		SUS_LENGTH		3
+#define		SD1_LENGTH		4
+#define		SU1_LENGTH		5
+#define		X1_LENGTH		6
+#define		X0_LENGTH		7	
+#define		CENTER_LENGTH	8
+#define		NC2_LENGTH		9
+#define		L_DEC_LENGTH	10
+#define		M_DEC_LENGTH	11
+#define		H_DEC_LENGTH	12
+#define		LEVEL_POSITION	13
 
 
 #define     MAX_LADDER_BUF          40
@@ -318,7 +377,7 @@ extern void    __attribute__((section(".usercode"))) VirtualMoveCntReDsp(void);
 #define     User_G5                 26
 #define     User_G6                 27
 #define     FINAL_ERR_DSP           28
-#define     SENSOR_POSITION         29
+#define     User_G8         		29
 #define     SYSTEM_SET              30
 #define     ENCODER_RATE          	31
   

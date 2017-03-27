@@ -670,6 +670,9 @@ void  __attribute__((section(".usercode"))) DF_Mode(void)
 
 		b_LdTmpBufRam(OLS_PORT)         	=SILK_OLS   | BIT_NORMAL_CLOSE;         //1     
 		b_LdTmpBufRam(X7_PORT)          	=SILK_X7    | BIT_NORMAL_CLOSE;			//1             
+
+		b_LdTmpBufRam(SU1_PORT)         	=SILK_SU1   | BIT_NORMAL_OPEN;         //1     //ver6
+		b_LdTmpBufRam(SD1_PORT)         	=SILK_SD1   | BIT_NORMAL_OPEN;         //1     //ver6
 	}
 	
 	flash_write_DspChar(EMG_PORT);		//block4
@@ -946,6 +949,7 @@ void  __attribute__((section(".usercode"))) Setup_Default(void)
 	bit_LdTmpBufRamReset(F_OnOff3,bFloorSel             % 8);
 	bit_LdTmpBufRamReset(F_OnOff3,bRunOpenSetClear      % 8);
 	bit_LdTmpBufRamReset(F_OnOff3,bUcmpFeedback      	% 8);
+	bit_LdTmpBufRamSet(F_OnOff3,bNormalEmgEV      		% 8);
 	bit_LdTmpBufRamReset(F_OnOff3,bManWorkingChk      	% 8);
 	bit_LdTmpBufRamSet(F_OnOff3,bEncoderCpy         	% 8);
 	

@@ -52,6 +52,26 @@ void  __attribute__((section(".usercode")))    Mnanual_Speed_Sel_spd3(void)
 */
 
 
+unsigned int __attribute__((section(".usercode")))    SetWhyDec(unsigned int Dec_Nm)
+{
+
+	if(!bsFsd){
+		bsFsd=1;
+		FsdNm=Dec_Nm;	 
+		sRamDArry[mAckStopFloor]=0;
+	}
+
+	OUT_DAC(1);
+	bExtButClr=1;
+	bCarButClr=1;
+    bUnd=1;
+    CarLowSpeedCmd_IO();
+
+	return(0);
+}
+
+
+
 void __attribute__((section(".usercode")))    RunSpeedCmd_IO_spd3(void)
 {
 
@@ -79,9 +99,10 @@ void __attribute__((section(".usercode")))    RunSpeedCmd_IO_spd3(void)
 
 LocalType  __attribute__((section(".usercode")))    SpeedReSetting(unsigned int spd_sig)
 {
-	unsigned int 	spd_val,spd_change_sta;
+	unsigned int 	spd_val,spd_change_sta,event_name;
 	unsigned long 	tmppulse,basePulse,highpulse,lowpulse;
 
+	event_name=0;
 	spd_change_sta=0;
 	spd_val=NOT_USE_SPEED;
 
@@ -94,6 +115,7 @@ LocalType  __attribute__((section(".usercode")))    SpeedReSetting(unsigned int 
     if(bCarUpMove){
 		if(spd_sig == 1){
 			if( !IN_SU2){
+				event_name=1;									//su1
 				spd_val=cF_SU2SD2_VELOCITY;
 				if( spd_val == CHANGE_DEC_LIMIT_SUSD){
 					if(!bFindSU){
@@ -102,16 +124,15 @@ LocalType  __attribute__((section(".usercode")))    SpeedReSetting(unsigned int 
 						MmToPulse((unsigned long)OFFSET_LIMIT_SUSD);
 						basePulse=PulseBuf;
 	
-						tmppulse=GET_LONG(BASE_SU_LENGTH);
+						tmppulse=GET_LONG(BASE_SU1_LENGTH);
 						highpulse=(tmppulse + basePulse);
 						lowpulse =(tmppulse - basePulse);
 	
 						tmppulse=CurPulse;
 						if( (tmppulse > highpulse) || (tmppulse < lowpulse)){
 							spd_change_sta=1;
-	    					sRamDArry[mcurfloor] = 0;
-
 							#ifdef	DELTA_INVERTER_AUTOLANDING_CAN
+	    						sRamDArry[mcurfloor] = 0;
 								bStrongDec=1;	
 							#endif
 						} 
@@ -123,6 +144,7 @@ LocalType  __attribute__((section(".usercode")))    SpeedReSetting(unsigned int 
 		else{
 			if(USE_CHECK == MAN_USE){
 				if( !IN_X0){
+					event_name=3;									//x0
 					spd_val=cF_X0X1_VELOCITY;
 					if( spd_val >= CHANGE_DEC_LIMIT_SUSD)	spd_val=NOT_USE_SPEED;	 
 					spd_change_sta=1; 
@@ -133,24 +155,23 @@ LocalType  __attribute__((section(".usercode")))    SpeedReSetting(unsigned int 
     else if(bCarDnMove){
 		if(spd_sig == 1){
 			if( !IN_SD2){
+				event_name=2;									//Sd1
 				spd_val=cF_SU2SD2_VELOCITY;
 				if( spd_val == CHANGE_DEC_LIMIT_SUSD){
 					if(!bFindSD){
 						bFindSD=1;
-						tmppulse=GET_LONG(MM_PULSE);
-						basePulse = ((unsigned long)10000 * (unsigned long)OFFSET_LIMIT_SUSD);		
-						basePulse = (basePulse /tmppulse);		
-	
-						tmppulse=GET_LONG(BASE_SD_LENGTH);
+						MmToPulse((unsigned long)OFFSET_LIMIT_SUSD);
+						basePulse = PulseBuf;
+							
+						tmppulse=GET_LONG(BASE_SD1_LENGTH);
 						highpulse=(tmppulse + basePulse);
 						lowpulse =(tmppulse - basePulse);
 	
 						tmppulse=CurPulse;
 						if( (tmppulse > highpulse) || (tmppulse < lowpulse)){
 							spd_change_sta=1;
-	    					sRamDArry[mcurfloor] = 0;
-
 							#ifdef	DELTA_INVERTER_AUTOLANDING_CAN
+	    						sRamDArry[mcurfloor] = 0;
 								bStrongDec=1;	
 							#endif
 
@@ -163,6 +184,7 @@ LocalType  __attribute__((section(".usercode")))    SpeedReSetting(unsigned int 
 		else{
 			if(USE_CHECK == MAN_USE){
 				if( !IN_X1){
+					event_name=4;									//x1
 					spd_val=cF_X0X1_VELOCITY; 
 					if( spd_val >= CHANGE_DEC_LIMIT_SUSD)	spd_val=NOT_USE_SPEED;	 
 					spd_change_sta=1; 
@@ -186,9 +208,7 @@ LocalType  __attribute__((section(".usercode")))    SpeedReSetting(unsigned int 
 	switch(spd_val){
 		case    CHANGE_DEC_AT_SPD_M_H:
 			if(CurSpeed >= SPEED_MID){
-				if(!bUnd)	OUT_DAC(1);	
 				bUnd=1;
-				
 				CurSpeed=spd_val;
 				bSetSpeedOn=1;                    
 				CarLowSpeedCmd_IO();
@@ -196,18 +216,15 @@ LocalType  __attribute__((section(".usercode")))    SpeedReSetting(unsigned int 
 			break;
 		case    CHANGE_DEC_AT_SPD_H:
 			if(CurSpeed >= SPEED_HIGH){
-				if(!bUnd)	OUT_DAC(1);	
-				bUnd=1;
-				
+				bUnd=1;				
 				CurSpeed=spd_val;
 				bSetSpeedOn=1;                    
 				CarLowSpeedCmd_IO();
 			}
 			break;
 		case    CHANGE_DEC_LIMIT_SUSD:
-			if(!bUnd)	OUT_DAC(1);	
-			bUnd=1;
-			
+			SetWhyDec(DEC_SDS+event_name);
+			bUnd=1;			
 			CurSpeed=spd_val;
 			bSetSpeedOn=1;                    
 			CarLowSpeedCmd_IO();
@@ -242,7 +259,7 @@ LocalType  __attribute__((section(".usercode")))    SpeedReSetting(unsigned int 
 			break;
 	
 	}
-
+		
 	return(0);
 }
 
@@ -279,9 +296,11 @@ void  __attribute__((section(".usercode")))  CarCurFloorRead_IO_spd3(void)
 
     if(bCarUpMove){
         if(!IN_SU1){
-            if(!IN_EMG)	sRamDArry[mcurfloor]=cF_TOPFLR;   //modify ?
+//            if(!IN_EMG)	sRamDArry[mcurfloor]=cF_TOPFLR;   //modify ?
 
-			if(PerfectAuto() && !bUnd)	OUT_DAC(1);	 
+			if(PerfectAuto() && !bUnd){
+				SetWhyDec(DEC_SUS);
+			}
 
             bUnd=1;
             CarLowSpeedCmd_IO();
@@ -348,19 +367,11 @@ void  __attribute__((section(".usercode")))  CarCurFloorRead_IO_spd3(void)
 		    	sRamDArry[mAckStopFloor] = (sRamDArry[mcurfloor] | DN_READY);
 			}
 			else{			
+/*
                	if(CurPulse > StopMinimumPulse) sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] | UPDN_READY);
                	else                            sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] & ~UPDN_READY);    
-
-
-/*
-				if(bHostAutoLanding){
-					sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] | UPDN_READY);
-				}
-				else{
-	               	if(CurPulse > StopMinimumPulse) sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] | UPDN_READY);
-	               	else                            sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] & ~UPDN_READY);    
-				}
 */
+				sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] | UPDN_READY);
             }
         }
 
@@ -374,18 +385,11 @@ void  __attribute__((section(".usercode")))  CarCurFloorRead_IO_spd3(void)
 		    	sRamDArry[mAckStopFloor] = (sRamDArry[mcurfloor] | CAR_READY);
 			}
 			else{
-               	if(CurPulse > StopMinimumPulse) sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] | CAR_READY);
-               	else                            sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] & ~CAR_READY);    
-
 /*
-				if(bHostAutoLanding){
-					sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] | CAR_READY);
-				}
-				else{
-	               	if(CurPulse > StopMinimumPulse) sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] | CAR_READY);
-	               	else                            sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] & ~CAR_READY);    
-				}
-*/
+               	if(CurPulse > StopMinimumPulse) sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] | CAR_READY);
+               	else                            sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] & ~CAR_READY);
+*/   
+				sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] | CAR_READY);
             }
         }
 
@@ -396,10 +400,11 @@ void  __attribute__((section(".usercode")))  CarCurFloorRead_IO_spd3(void)
 
     else if(bCarDnMove){
         if(!IN_SD1){                              //modify ?
-            if(!IN_EMG)	sRamDArry[mcurfloor]=0;
+//            if(!IN_EMG)	sRamDArry[mcurfloor]=0;
 
-			if(PerfectAuto() && !bUnd)	OUT_DAC(1);	 
-
+			if(PerfectAuto() && !bUnd){
+				SetWhyDec(DEC_SDS);
+			}
             bUnd=1;
             CarLowSpeedCmd_IO();
      	}
@@ -466,19 +471,11 @@ void  __attribute__((section(".usercode")))  CarCurFloorRead_IO_spd3(void)
 			    	sRamDArry[mAckStopFloor] = (sRamDArry[mcurfloor] | UP_READY);				                      
 				}
 				else{
+/*
 	                if(CurPulse < StopMinimumPulse) sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] | UPDN_READY);
 	                else                            sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] & ~UPDN_READY);    
-
-/*
-					if(bHostAutoLanding){
-							sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] | UPDN_READY);
-						}
-						else{
-			                if(CurPulse < StopMinimumPulse) sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] | UPDN_READY);
-			                else                            sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] & ~UPDN_READY);    
-						}
-		            }
 */
+					sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] | UPDN_READY);
 				}
 	        }
 
@@ -492,19 +489,11 @@ void  __attribute__((section(".usercode")))  CarCurFloorRead_IO_spd3(void)
 			    	sRamDArry[mAckStopFloor] = (sRamDArry[mcurfloor] | CAR_READY);				                      
 				}
 				else{
+/*
 	                if(CurPulse < StopMinimumPulse) sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] | CAR_READY);
 	                else                            sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] & ~CAR_READY);    
-
-/*
-					if(bHostAutoLanding){
-						sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] | CAR_READY);
-					}
-					else{
-		                if(CurPulse < StopMinimumPulse) sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] | CAR_READY);
-		                else                            sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] & ~CAR_READY);    
-					}
 */
-
+					sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] | CAR_READY);
 	            }
 	        }
 	
@@ -675,8 +664,11 @@ unsigned int    __attribute__((section(".usercode"))) SpeedHighCheck(void)
     MinPulse=GET_LONG(DEC_PULSE_SPD_HIGH);
     if(MinPulse==0) 		return(1);
 
-	tmpP=(MinPulse / 2);
-    MinPulse= ((MinPulse * 2) + tmpP);
+//	ver7.01
+//	tmpP=(MinPulse / 2);
+//	MinPulse= ((MinPulse * 2) + tmpP);
+
+  	MinPulse= (MinPulse * 2);
 
     if(TotalPulse>MinPulse) return(0);
     else                    return(1);
@@ -693,8 +685,11 @@ unsigned int    __attribute__((section(".usercode"))) SpeedMidCheck(void)
     MinPulse=GET_LONG(DEC_PULSE_SPD_MID);
     if(MinPulse==0) 		return(1);
 
-	tmpP=(MinPulse / 2);
-    MinPulse= ((MinPulse * 2) + tmpP);
+//	ver7.01
+//	tmpP=(MinPulse / 2);
+//	MinPulse= ((MinPulse * 2) + tmpP);
+
+  	MinPulse= (MinPulse * 2);
 
     if(TotalPulse>MinPulse) return(0);
     else                    return(1);
@@ -709,8 +704,11 @@ unsigned int    __attribute__((section(".usercode"))) SpeedLowCheck(void)
     MinPulse=GET_LONG(DEC_PULSE_SPD_LOW);
     if(MinPulse==0) 		return(1);
 
-	tmpP=(MinPulse / 2);
-    MinPulse= ((MinPulse * 2) + tmpP);
+//	ver7.01
+//	tmpP=(MinPulse / 2);
+//	MinPulse= ((MinPulse * 2) + tmpP);
+
+  	MinPulse= (MinPulse * 2);
 
     if(TotalPulse>MinPulse) return(0);
     else                    return(1);
@@ -744,7 +742,6 @@ unsigned int  __attribute__((section(".usercode")))   SpeedChange_spd3(void)
         if(bCarUpMove)  StopMinimumPulse=DecreasePulse+CurPulse;
         else            StopMinimumPulse=CurPulse-DecreasePulse;
     }
-
 
     return(ret);
 }
@@ -835,4 +832,77 @@ unsigned int  __attribute__((section(".usercode")))   SpeedSet_spd3(void)
 
 }
 
+
+//	ver7.01
+
+
+unsigned int  __attribute__((section(".usercode")))   Spd3ReloadReqFlr(unsigned int updn)
+{
+    unsigned long 	MinPulsex,tmppulseCur;
+	unsigned int	reqflr;
+
+	if((INVERTER_CHECK == IO) && New_Spd_SystemChk()){
+	    switch(CurSpeed){
+	        case    SPEED_LOW:
+	   			MinPulsex=GET_LONG(DEC_PULSE_SPD_LOW);
+	            break;
+	        case    SPEED_MID:
+	   			MinPulsex=GET_LONG(DEC_PULSE_SPD_MID);
+	            break;
+	        case    SPEED_HIGH:
+	   			MinPulsex=GET_LONG(DEC_PULSE_SPD_HIGH);
+	            break;
+	        default:
+	            break;
+	    }
+	
+		MinPulsex=(MinPulsex * 2);
+		tmppulseCur=FLOOR_COUNT(sRamDArry[mcurfloor]);
+	
+		if(updn==0){	// upward
+	        if(sRamDArry[mcurfloor]< cF_TOPFLR)  reqflr  = (unsigned int)(sRamDArry[mcurfloor]+1);
+	        else                                 reqflr  = (unsigned int)(cF_TOPFLR);
+	
+			sRamDArry[mReqStopFloor]  = (unsigned char)(reqflr);	
+			OneceUseBuf1=(MinPulsex + tmppulseCur);
+			do{
+				OneceUseBuf2=FLOOR_COUNT(reqflr);
+				if(OneceUseBuf2 >= OneceUseBuf1){
+					sRamDArry[mReqStopFloor]  = (unsigned char)(reqflr);
+					return(0); 
+				}
+				else	reqflr++;
+			}while(reqflr <= (unsigned int)(cF_TOPFLR));
+		}
+		else{		// dnward
+	        if(sRamDArry[mcurfloor]>0)  reqflr  = (unsigned int)(sRamDArry[mcurfloor]-1);
+	        else                        reqflr  = 0;
+	
+			sRamDArry[mReqStopFloor]  = (unsigned char)(reqflr);	
+			OneceUseBuf1=(tmppulseCur - MinPulsex);
+			do{
+				OneceUseBuf2=FLOOR_COUNT(reqflr);
+				if(OneceUseBuf2 <= OneceUseBuf1){
+					sRamDArry[mReqStopFloor]  = (unsigned char)(reqflr);
+					return(0); 
+				}
+				else	reqflr--;
+				if(reqflr==0)	return(0);
+	
+			}while(reqflr > 0);
+		}
+	}
+	else{
+		if(updn==0){	// upward
+	        if(sRamDArry[mcurfloor]< cF_TOPFLR)  sRamDArry[mReqStopFloor]  = sRamDArry[mcurfloor]+1;
+	        else                                 sRamDArry[mReqStopFloor]  = cF_TOPFLR;
+		}
+		else{
+	        if(sRamDArry[mcurfloor]>0)  sRamDArry[mReqStopFloor]  = sRamDArry[mcurfloor]-1;
+	        else                        sRamDArry[mReqStopFloor]  = 0;
+		}
+	}
+
+	return(0);
+}
 

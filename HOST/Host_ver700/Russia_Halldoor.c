@@ -92,15 +92,16 @@ unsigned int  __attribute__((section(".usercode"))) RussiaTwoHallDoorOpenCheck(v
 		else	valBit=(valBit << 1);
 	}
 
+
 	if(OpenCnt==1){
-		HallDoorOpenFloor[1]=0;	
+		HallDoorOpenFloor[1]=0;
 		if(HallDoorOpenFloor[0] == (sRamDArry[mcurfloor]+1)){
 			return(0);
 		}
 	}
 	else if(OpenCnt==0){
-		HallDoorOpenFloor[0]=0;	
-		HallDoorOpenFloor[1]=0;	
+		HallDoorOpenFloor[0]=0;
+		HallDoorOpenFloor[1]=0;
 	}
 
 	return( (unsigned int)OpenCnt);

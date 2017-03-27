@@ -25,13 +25,6 @@
 
 UserDataType   C1Time=0;
 UserDataType   C1DataSeq=0;
-
-UserDataType   SelMainCarTime=0;
-UserDataType   SelSubCarTime =0;
-
-
-//unsigned int   C1Company=0;
-//unsigned int   C1ReceiveGroupNumber=0;
 unsigned int   C1ReceiveMaterAdr=0;
 unsigned int   C1ReceiveSlaveAdr=0;
 unsigned int   C1ReceiveAdrStatus=0;
@@ -352,6 +345,14 @@ unsigned int   __attribute__((section(".usercode")))  ClearKeyData(void)
     if((cmd==CAN_KEY_SET) || (cmd==CAN_KEY_CLEAR) ){
         if(i & UPDN_READY){
 			tmpkey=(unsigned char)i;
+
+    		if(cmd==CAN_KEY_SET){
+            	if(tmpkey == (sRamDArry[mReqStopFloor] & ONLY_FLR)){
+					if(bMoveCar)	return(0);
+				}
+			}
+
+
             if(tmpkey == sRamDArry[mHighFloor]){
 				sRamDArry[mHighFloor]  = 0;        
 				if(sRamDArry[mCurCarkey] > 0){
@@ -402,6 +403,12 @@ unsigned int   __attribute__((section(".usercode")))  ClearKeyData(void)
             j=(i & ONLY_FLR);
             k=(i & UPDN_CAR_READY);
     
+    		if((cmd==CAN_KEY_SET) || (cmd==CAN_KEY_READY)){
+            	if(j == (sRamDArry[mReqStopFloor] & ONLY_FLR)){
+					if(bMoveCar)	return(0);
+				}
+			}
+
             if(j == (sRamDArry[mHighFloor] & ONLY_FLR)){
 	        	sRamDArry[mHighFloor]  = (sRamDArry[mHighFloor] & ~k);                                            
             }
@@ -496,25 +503,6 @@ unsigned int  __attribute__((section(".usercode")))  CarBoardDataReceive(void)
 	CarRelocateStartfloor();
 
     seconddoor          =(UserDataType)((C1RX0B4 >> 8) & 0x00ff);
-
-    
-/*
-    if(S2_FIRE1){
-        if(seconddoor & 0x01){
-            if(SelMainCarTime < 10) return(0);
-            else                    SelSubCarTime =0;    
-        }
-        else{
-            if(SelSubCarTime < 10)  return(0);
-            else                    SelMainCarTime=0;
-        }
-    }
-    else{
-        SelMainCarTime=10;
-        SelSubCarTime =10;
-    }
-*/
-
 
     sRamDArry[mCarOpCl] =(UserDataType)(C1RX0B2 & 0x00ff);
 
@@ -1268,34 +1256,6 @@ void  _ISR_X _C1Interrupt(void)
             }
 
 #endif
-/*
-            if(C1ReceiveMaterAdr==3){
-                if(MyLocalAddr==0)      	 C1Time=25;
-                else if(MyLocalAddr==1)      C1Time=20;
-                else if(MyLocalAddr==2)      C1Time=15;
-                else                         C1Time=0;
-            }
-            else if(C1ReceiveMaterAdr==2){
-                if(MyLocalAddr==3)           C1Time=25;
-                else if(MyLocalAddr==0)      C1Time=20;
-                else if(MyLocalAddr==1)      C1Time=15;
-                else                         C1Time=0;
-            }
-            else if(C1ReceiveMaterAdr==1){
-                if(MyLocalAddr==2)           C1Time=25;
-                else if(MyLocalAddr==3)      C1Time=20;
-                else if(MyLocalAddr==0)      C1Time=15;
-                else                         C1Time=0;
-            }
-            else if(C1ReceiveMaterAdr==0){
-                if(MyLocalAddr==1)           C1Time=25;
-                else if(MyLocalAddr==2)      C1Time=20;
-                else if(MyLocalAddr==3)      C1Time=15;
-                else                         C1Time=0;
-            }
-*/
-
-
         }
         else if(C1ReceiveAdrStatus == SLAVE_TX_MASTER){
 

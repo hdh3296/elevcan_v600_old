@@ -137,6 +137,9 @@ void  __attribute__((section(".usercode"))) NormalDataReturn_485(void)
     RxBuffer[j+1]=(unsigned char)((Com1Crc >> 8) & 0x00ff);
     RxBuffer[j+2]=0;
 
+
+	Com1RxREGClear();
+
 	TXEN=0;  
 	SerialTime=0;
    	RxCurCnt=0;	
@@ -151,33 +154,35 @@ void  __attribute__((section(".usercode"))) NormalDataReturn_485(void)
 
 LocalType __attribute__((section(".usercode"))) HostCommandAct_485(void)
 {
+    unsigned int   good; 
+
+	good=0;
 
     if((RxBuffer[2]    ==   (PC_COMMAND | CMD_PARKING)) && (RxBuffer[3] == 0x00)){
         if(RxBuffer[4] == 0x01) bExt_PRKING = 1;
         else                    bExt_PRKING = 0;
-    	NormalDataReturn_485();    
-
+		good=1;
     }    
     else if((RxBuffer[2]    ==   (PC_COMMAND | CMD_FIRE)) && (RxBuffer[3] == 0x00)){
         if(RxBuffer[4] == 0x01) bExt_FIRE = 1;
         else                    bExt_FIRE = 0;
-    	NormalDataReturn_485();    
+		good=1;
     }
     else if((RxBuffer[2]    ==   (PC_COMMAND | CMD_FAMILY_SEV)) && (RxBuffer[3] == 0x00)){
         if(RxBuffer[4] == 0x01) bExt_FAMILY = 1;
         else                    bExt_FAMILY = 0;
-    	NormalDataReturn_485();    
+		good=1;
     }
 
     else if((RxBuffer[2]    ==   (PC_COMMAND | CMD_VIP)) && (RxBuffer[3] == 0x00)){
         if(RxBuffer[4] == 0x01) bExt_VIP = 1;
         else                    bExt_VIP = 0;
-    	NormalDataReturn_485();    
+		good=1;
     }
     else if((RxBuffer[2]    ==   (PC_COMMAND | CMD_SECOND_FIRE)) && (RxBuffer[3] == 0x00)){
         if(RxBuffer[4] == 0x01) bExt_Second_FIRE = 1;
         else                    bExt_Second_FIRE = 0;
-    	NormalDataReturn_485();    
+		good=1;
     }
     else if((RxBuffer[2]    ==   (PC_COMMAND | CMD_CALL_SEV)) && (RxBuffer[3] == 0x00)){
 		#ifdef	FLOOR_64
@@ -186,14 +191,27 @@ LocalType __attribute__((section(".usercode"))) HostCommandAct_485(void)
 		#else
 		CrtMoveFlr=(unsigned char)(RxBuffer[4] | CAR_READY);
 		#endif
-    	NormalDataReturn_485();    
+		good=1;
     }
     else if((RxBuffer[2]    ==   (PC_COMMAND | CMD_EXT_CALL_SEV)) && (RxBuffer[3] == 0x00)){
 		sRamDArry[mCrtExtMoveFlr]=(unsigned char)(RxBuffer[4]);
 		ExtKeyCnt=3;
-    	NormalDataReturn_485();    
+		good=1;
+    }
+    else if((RxBuffer[2]    ==   (PC_COMMAND | CMD_FAN_LIGHT_ETC)) && (RxBuffer[3] == 0x00)){
+		if( (RxBuffer[4] > 0) &&  (RxBuffer[4] < 0xff)){
+			ExtFanTimer=(unsigned char)(RxBuffer[4]-1);
+			ExtFanTimer=(ExtFanTimer % 100);
+			good=1;
+		}
+		if( (RxBuffer[5] > 0) &&  (RxBuffer[5] < 0xff)){
+			ExtLightTimer=(unsigned char)(RxBuffer[5]-1);
+			ExtLightTimer=(ExtLightTimer % 100);
+			good=1;
+		}
     }
 
+	if(good)	NormalDataReturn_485();	
 }
 
 
@@ -298,6 +316,8 @@ void  __attribute__((section(".usercode"))) CrtReqCheck(void)
 					    RxBuffer[j+1]=(unsigned char)((Com1Crc >> 8) & 0x00ff);
 					    RxBuffer[j+2]=0;
 					
+
+						Com1RxREGClear();
 						TXEN=0;  
 						SerialTime=0;
 					   	RxCurCnt=0;	

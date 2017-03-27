@@ -137,7 +137,7 @@ LocalType __attribute__((section(".usercode"))) Delta_WriteParameter_485(unsigne
 LocalType __attribute__((section(".usercode"))) Delta_WriteParameter_485_Multi(unsigned char addressH,unsigned char addressL,unsigned char WriteWordNm,unsigned char valH,unsigned char valL)
 {
 	unsigned int j;
-
+	
 	if(Com1SerialTime < 10)	return(0);
 
 //	Com1TxBuffer[0]=INVERTER_ADDR;

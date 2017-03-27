@@ -37,7 +37,7 @@ void __attribute__((section(".usercode")))   DspFloorSet(void)
 {
     LocalType i,j;  
 
-	if( !bDspSeq && (!PerfectAuto() || DoorOpenEndWaitChk() || (NoStart > 0) )){
+	if( !bDspSeq && (!PerfectAuto() || DoorOpenEndWaitChk() || (NoStart > 0) ) ){
 //    if( !bDspSeq && (bCarErr || bCarStopNoRun || bCarStop || !bAuto || DoorOpenEndWaitChk()) ){
         j=SegError;
     
@@ -270,15 +270,6 @@ void  __attribute__((section(".usercode")))    CarLowSpeedCmd_IO(void)
     if(bAuto && bManualAuto){
         if(bMoveDnOk && bMoveUpOk){
             bVoiceReady=1;			
-/*
-			if( WhoAutolanding == (unsigned int)YASKAWA_AUTOLANDING){			
-				if(bUnd)	ZeroSpeedCmd_IO();
-				else		DecreaseSpeedCmd_IO();			
-			}
-			else{
-	            DecreaseSpeedCmd_IO();
-			}
-*/
  	        DecreaseSpeedCmd_IO();
        }
    	    else{
@@ -404,8 +395,9 @@ void  __attribute__((section(".usercode")))   CarUpStartCmd_IO(void)
     if(bMoveUpOk){
         UpWard();
 
-        if(sRamDArry[mcurfloor]< cF_TOPFLR)  sRamDArry[mReqStopFloor]  = sRamDArry[mcurfloor]+1;
-        else                                 sRamDArry[mReqStopFloor]  = cF_TOPFLR;
+//	ver7.01	
+//        if(sRamDArry[mcurfloor]< cF_TOPFLR)  sRamDArry[mReqStopFloor]  = sRamDArry[mcurfloor]+1;
+//        else                                 sRamDArry[mReqStopFloor]  = cF_TOPFLR;
      	
         switch(sRamDArry[mCarMoveState]){
              case  0:
@@ -456,8 +448,10 @@ void  __attribute__((section(".usercode")))   CarDnStartCmd_IO(void)
 {
     if(bMoveDnOk){   
         DnWard();
-        if(sRamDArry[mcurfloor]>0)  sRamDArry[mReqStopFloor]  = sRamDArry[mcurfloor]-1;
-        else                        sRamDArry[mReqStopFloor]  = 0;
+
+//	ver7.01
+//        if(sRamDArry[mcurfloor]>0)  sRamDArry[mReqStopFloor]  = sRamDArry[mcurfloor]-1;
+//        else                        sRamDArry[mReqStopFloor]  = 0;
 
 
         switch(sRamDArry[mCarMoveState]){

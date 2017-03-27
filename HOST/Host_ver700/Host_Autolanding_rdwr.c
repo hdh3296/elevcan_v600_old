@@ -105,8 +105,10 @@ LocalType __attribute__((section(".usercode"))) MyDataOkChk(unsigned char addres
 {
 	if((ThisRdWrMode==PARAMETER_RD_OK_SEQ)){
 		if((ThisRdWrAddrH==addressH) && (ThisRdWrAddrL==addressL)){
-			ThisRdWrMode=RDWR_READY_SEQ;	
-			return(1);
+			if( (Com1TxBuffer[2]==addressH) && (Com1TxBuffer[3]==addressL)){ 
+				ThisRdWrMode=RDWR_READY_SEQ;	
+				return(1);
+			}
 		} 
 	}
 	return(0);
@@ -291,6 +293,7 @@ LocalType __attribute__((section(".usercode"))) Default_Inverter_ParameterRdWr(v
 		ParRdWrTime=0;
 		bParameterMdf=0;
 		ParRdWrNm=ERR_SEQ;	
+		ThisRdWrMode = RDWR_READY_SEQ;
 
 		#ifdef	DELTA_INVERTER_AUTOLANDING_CAN
 			ParRdWrNm=CUR_AMP_SEQ;
@@ -592,7 +595,6 @@ LocalType __attribute__((section(".usercode"))) Default_Inverter_ParameterRdWr(v
 						EVLowSpd=0;
 					}
  
-
 					Length1=((xVarMpm1000 * 10)/xVarMaxHz);
 					xVarCurMpm=(Length1 * EVLowSpd)/10;
 					CurDecPulseCalcu();
@@ -729,7 +731,9 @@ LocalType __attribute__((section(".usercode"))) Default_Inverter_ParameterRdWr(v
 	 
 						Length1=((xVarMpm1000 * 10)/xVarMaxHz);
 						xVarCurMpm=(Length1 * EVManualSpd)/10;
-	
+						ParRdWrNm=CUR_AMP_SEQ;
+
+///*	manual speed > 10.0  -> manual spd slow  
 						j=0;
 						while(xVarCurMpm > 10000){
 							EVManualSpd=(EVManualSpd-1000);
@@ -737,9 +741,7 @@ LocalType __attribute__((section(".usercode"))) Default_Inverter_ParameterRdWr(v
 							xVarCurMpm=(Length1 * EVManualSpd)/10;
 							j=1;	
 						};
-			
-						ParRdWrNm=CUR_AMP_SEQ;
-	
+				
 					    if(j==1){
 							EVManualSpd=(EVManualSpd/10);
 							portadr=(unsigned char)(EVManualSpd >> 8);
@@ -748,6 +750,7 @@ LocalType __attribute__((section(".usercode"))) Default_Inverter_ParameterRdWr(v
 							bL1000_Enter=1;
 							ParRdWrTime=900;					
 						}
+//
 				
 					}
 				}
@@ -811,7 +814,6 @@ LocalType __attribute__((section(".usercode"))) Inverter_ParameterRdWr(void)
 				ParRdWrNm=INVETER_RESET_SEQ;
 			}
 		}
-
 
 		if(BefParRdWrNm != ParRdWrNm){
 			BefParRdWrNm=ParRdWrNm;
