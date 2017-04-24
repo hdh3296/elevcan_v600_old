@@ -117,7 +117,7 @@ extern void    __attribute__((section(".usercode"))) VirtualMoveCntReDsp(void);
 #define MAX_GROUP                   18
 */
 
-
+/*
 #define USER_GROUP                  1
 #define FLR_DSP_GROUP               2
 #define FLR_GROUP                   3
@@ -134,26 +134,47 @@ extern void    __attribute__((section(".usercode"))) VirtualMoveCntReDsp(void);
 #define OUTPORT_GROUP               14
 #define ERROR_GROUP                 15
 #define EL_GROUP               		16
+*/
+
+#define USER_GROUP                  1
+#define FLR_GROUP					2
+#define TIMER_GROUP					3
+#define ONOFF2_GROUP				4
+#define OPEN_WAIT_GROUP				5
+#define NCNO1_GROUP					6
+#define NCNO2_GROUP					7
+#define NCNO3_GROUP					8
+#define INPORT1_GROUP				9
+#define INPORT2_GROUP				10
+#define OUTPORT_GROUP				11
+#define EL_GROUP					12
+#define ERROR_GROUP					13
+#define FLR_DSP_GROUP				14
+#define ONOFF1_GROUP				15
+#define SUB_DOOR_GROUP				16
+#define FLR_OFFSET_GROUP			17
+
+
 									
-#define INV_PAR_GROUP_00          	17
-#define INV_PAR_GROUP_01          	18
-#define INV_PAR_GROUP_02          	19
-#define INV_PAR_GROUP_03          	20
-#define INV_PAR_GROUP_04          	21
-#define INV_PAR_GROUP_05          	22
-#define INV_PAR_GROUP_06          	23
-#define INV_PAR_GROUP_07          	24
-#define INV_PAR_GROUP_08          	25
-#define INV_PAR_GROUP_09          	26
-#define INV_PAR_GROUP_10          	27
-#define INV_PAR_GROUP_11          	28
-#define INV_PAR_GROUP_12          	29
-#define INV_PAR_GROUP_13          	30
-#define INV_PAR_GROUP_14          	31
-#define INV_PAR_GROUP_END		  	32
+#define INV_PAR_GROUP_00          	18
+#define INV_PAR_GROUP_01          	19
+#define INV_PAR_GROUP_02          	20
+#define INV_PAR_GROUP_03          	21
+#define INV_PAR_GROUP_04          	22
+#define INV_PAR_GROUP_05          	23
+#define INV_PAR_GROUP_06          	24
+#define INV_PAR_GROUP_07          	25
+#define INV_PAR_GROUP_08          	26
+#define INV_PAR_GROUP_09          	27
+#define INV_PAR_GROUP_10          	28
+#define INV_PAR_GROUP_11          	29
+#define INV_PAR_GROUP_12          	30
+#define INV_PAR_GROUP_13          	31
+#define INV_PAR_GROUP_14          	32
+#define INV_PAR_GROUP_END		  	33
 
 #define MAX_GROUP_SPD3              INV_PAR_GROUP_00
-#define MAX_GROUP                   EL_GROUP
+#define MAX_GROUP                   (INV_PAR_GROUP_00-1)
 
 
 
@@ -190,14 +211,17 @@ extern void    __attribute__((section(".usercode"))) VirtualMoveCntReDsp(void);
 #define     SUBNM_NOTUSE3             	21  
 #define     SUBNM_NOTUSE4             	22  
 #define     SUBNM_LIMIT_SU             	24  
-#define     SUBNM_LIMIT_SD             	25  
-#define     SUBNM_LOW_SPD_PULSE     	26  
-#define     SUBNM_MID_SPD_PULSE     	27  
-#define     SUBNM_HIGH_SPD_PULSE     	28  
+#define     SUBNM_LOW_SPD_PULSE     	25  
+#define     SUBNM_MID_SPD_PULSE     	26  
+#define     SUBNM_HIGH_SPD_PULSE     	27  
+#define     SUBNM_USER_PLANK_MPM      	28  
 #define     SUBNM_BASE_PULSE     		29  
 #define     SUBNM_MPM_VARIABLE     		30  
 #define     SUBNM_MM_PER_PULSE     		31  
 
+
+
+#define     SUBNM_XXX     				26  
 
 
 
@@ -379,7 +403,7 @@ extern void    __attribute__((section(".usercode"))) VirtualMoveCntReDsp(void);
 #define     FINAL_ERR_DSP           28
 #define     User_G8         		29
 #define     SYSTEM_SET              30
-#define     ENCODER_RATE          	31
+#define     User_G9              	31
   
 
 

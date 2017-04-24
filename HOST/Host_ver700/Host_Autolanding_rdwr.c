@@ -17,37 +17,6 @@
 #ifdef	AUTO_LANDING_COMM
 
 
-LocalType __attribute__((section(".usercode"))) GetMinimumFloorPulse(void)
-{
-	unsigned int i;
-	unsigned long tmpflr1,tmpflr2,tmpflr3,tmpflr4;
-
-	if(MinimumFloorPulse ==0){
-		tmpflr4=0xffffffff;
-		for(i=1;i<=(unsigned int)cF_TOPFLR;i++){
-	    	tmpflr1=FLOOR_COUNT((unsigned char)(i-1));
-	    	tmpflr2=FLOOR_COUNT((unsigned char)(i));
-			tmpflr3=(tmpflr2 - tmpflr1);
-			if(tmpflr3 <= tmpflr4){
-				tmpflr4=tmpflr3;
-			}
-		}
-		MinimumFloorPulse= tmpflr4;
-	}
-	else{
-		MmToPulse(EVLowDecLength);
-		tmpflr1=PulseBuf;
-		tmpflr2=(tmpflr1 / 2);
-		tmpflr3=(tmpflr1 *  2);
-		tmpflr1=(tmpflr2 + tmpflr3);
-		if(MinimumFloorPulse < tmpflr1){
-			return(1);
-		}
-	}
-
-	return(0);
-
-}
 
 
 LocalType __attribute__((section(".usercode"))) ValidSpeedSearch(void)
@@ -60,7 +29,7 @@ LocalType __attribute__((section(".usercode"))) ValidSpeedSearch(void)
 		EVLowSpd=(EVLowSpd-1000);  //1hz
 		Length1=((xVarMpm1000 * 10)/xVarMaxHz);
 		xVarCurMpm=(Length1 * EVLowSpd)/10;
-		CurDecPulseCalcu();
+		A_CurDecPulseCalcu();
 		EVLowDecLength=CurSpdDecPulse;
 		i=GetMinimumFloorPulse();						
 	}while(i);
@@ -277,7 +246,6 @@ LocalType __attribute__((section(".usercode"))) Inverter_Par_Adr_RdWr(unsigned c
 
 
 
-
 LocalType __attribute__((section(".usercode"))) Default_Inverter_ParameterRdWr(void)
 {    
 #ifdef		AUTO_LANDING_485			
@@ -423,7 +391,7 @@ LocalType __attribute__((section(".usercode"))) Default_Inverter_ParameterRdWr(v
 					if(IntMyDataOkChk(tmp_address)){
 						xVarRpm= (This_Value); 
 						Length1=GET_LONG(RPM);
-						if(xVarRpm != Length1)	bParameterMdf=1;
+						if(xVarRpm != Length1)		bParameterMdf=1;
 						ParRdWrNm=ENCODER_PULSE_SEQ;	
 					}
 				}
@@ -456,8 +424,7 @@ LocalType __attribute__((section(".usercode"))) Default_Inverter_ParameterRdWr(v
 				if(IntMyDataOkChk(tmp_address)){
 					xVarEncoder= (This_Value );  
 					Length1=GET_LONG(ENCODER_PULSE);
-					if(xVarEncoder != Length1)	bParameterMdf=1;
-
+					if(xVarEncoder != Length1)		bParameterMdf=1;
 					ParRdWrNm=MAX_EV_SPD_SEQ;	
 					ParRdWrTime=0;
 				}
@@ -465,47 +432,10 @@ LocalType __attribute__((section(".usercode"))) Default_Inverter_ParameterRdWr(v
 			break;
 
 		case	MAX_EV_SPD_SEQ:
-			#ifdef	AUTO_LANDING_485
-				if(WhoAutolanding==L1000_AUTOLANDING_485){
-					xVarMpm=GET_LONG(NEW_MPM);
-					xVarMpm1000= (xVarMpm * 100);			// new
-					ParRdWrNm=MAX_HZ_SEQ;
-				}
-				else{
-					if(ThisRdWrMode == RDWR_READY_SEQ){
-						IntThisNewAddressData_Load(Addr_MaxEvSpd,0,0,0);
-					}
-					else{
-						if(IntMyDataOkChk(Addr_MaxEvSpd)){
-							xVarMpm1000= (This_Value * 10);  // 1000m/sec = 1.000 m/sec
-							xVarMpm1000 = (xVarMpm1000 * 60);      // m/m(60.00= 6000);  = 6000/5000=1.2
-		
-							xVarMpm=(xVarMpm1000/100);			// new
-							Length1=GET_LONG(NEW_MPM);
-							if(xVarMpm != Length1)	bParameterMdf=1;
-		
-							ParRdWrNm=MAX_HZ_SEQ;
-						}
-					}
-				}
-			#else
-				if(ThisRdWrMode == RDWR_READY_SEQ){
-					IntThisNewAddressData_Load(Addr_MaxEvSpd,0,0,0);
-				}
-				else{
-					if(IntMyDataOkChk(Addr_MaxEvSpd)){
-						xVarMpm1000= (This_Value * 10);  // 1000m/sec = 1.000 m/sec
-						xVarMpm1000 = (xVarMpm1000 * 60);      // m/m(60.00= 6000);  = 6000/5000=1.2
-	
-						xVarMpm=(xVarMpm1000/100);			// new
-						Length1=GET_LONG(NEW_MPM);
-						if(xVarMpm != Length1)	bParameterMdf=1;
-	
-						ParRdWrNm=MAX_HZ_SEQ;
-					}
-				}
-			#endif
-
+//			xVarMpm=GET_LONG(NEW_MPM);
+			xVarMpm=ThisUseMaxMpm;
+			xVarMpm1000= (xVarMpm * 100);			// new
+			ParRdWrNm=MAX_HZ_SEQ;
 			break;
 		case	MAX_HZ_SEQ:
 			if(ThisRdWrMode == RDWR_READY_SEQ){
@@ -536,7 +466,7 @@ LocalType __attribute__((section(".usercode"))) Default_Inverter_ParameterRdWr(v
 				if(IntMyDataOkChk(Addr_Dec_Time)){
 					xVarDecTime= (This_Value * 10);  // 10msec  -> 1msec
 					Length1=GET_LONG(BASE_DEC_TIME);
-					if(xVarDecTime != Length1)	bParameterMdf=1; 
+					if(xVarDecTime != Length1)		bParameterMdf=1; 
 					ParRdWrNm=S_CUV_TIME1_SEQ;	
 				}
 			}
@@ -571,16 +501,70 @@ LocalType __attribute__((section(".usercode"))) Default_Inverter_ParameterRdWr(v
 					
 					xDecMpm=(xVarMpm1000 * xDecMpm)/xVarMaxHz;
 
+					xDecMpm=(xDecMpm/100);							// new insert
 					Length1=GET_LONG(BASE_DEC_MPM);
 					if(xDecMpm != Length1)	bParameterMdf=1;
-
 					ParRdWrNm=SPEED_LOW_PORT_SEQ;
 					ParRdWrTime=0;
+
 				}
 			}
 			break;
 
 		case	SPEED_LOW_PORT_SEQ:
+			tmp_address=(Addr_LowSpdPort & 0xfff0);
+			tmp_address=(tmp_address | (unsigned int)(cF_SPEED_LOW_PORT));
+
+			if(ThisRdWrMode == RDWR_READY_SEQ){
+				IntThisNewAddressData_Load(tmp_address,0,0,0);
+			}
+			else{
+				if(IntMyDataOkChk(tmp_address)){
+					EVLowSpd= (This_Value * 10);  // hz read
+
+/*
+					if( (cF_SPEED_LOW_PORT ==0)){
+						EVLowSpd=0;
+					}
+*/
+ 
+					Length1=((xVarMpm1000 * 10)/xVarMaxHz);
+					xVarCurMpm=(Length1 * EVLowSpd)/1000;
+					xLowSpdMpm=GET_LONG(DEC_PULSE_SPD_LOW);
+					if(xVarCurMpm != xLowSpdMpm){
+						xLowSpdMpm=xVarCurMpm;
+						bParameterMdf=1;
+					}
+					ParRdWrTime=0;
+					ParRdWrNm=SPEED_MID_PORT_SEQ;
+
+/*	
+					CurDecPulseCalcu();
+					EVLowDecLength=CurSpdDecPulse;
+					Length1=GET_LONG(DEC_LENGTH_SPD_LOW);
+					if(EVLowDecLength != Length1)	bParameterMdf=1;
+					ParRdWrNm=SPEED_MID_PORT_SEQ;
+
+				    if(!FhmOnOffChk && (EVLowSpd>0)){
+						if(GetMinimumFloorPulse()){				
+							if(ValidSpeedSearch()){								
+								EVLowSpd=(EVLowSpd/10);
+								portadr=(unsigned char)(EVLowSpd >> 8);
+
+								IntThisNewAddressData_Load(tmp_address,1,portadr,(unsigned char)EVLowSpd);
+								ThisRdWrMode=PARAMETER_WR_SEQ;
+								bL1000_Enter=1;
+								ParRdWrTime=900;
+							}
+						}
+					}
+*/				
+				}
+			}
+
+
+
+/*
 			tmp_address=(Addr_LowSpdPort & 0xfff0);
 			tmp_address=(tmp_address | (unsigned int)(cF_SPEED_LOW_PORT));
 
@@ -618,8 +602,51 @@ LocalType __attribute__((section(".usercode"))) Default_Inverter_ParameterRdWr(v
 					}				
 				}
 			}
+*/
 			break;
 		case	SPEED_MID_PORT_SEQ:
+			tmp_address=(Addr_MidSpdPort & 0xfff0);
+			tmp_address=(tmp_address | (unsigned int)(cF_SPEED_MID_PORT));
+
+			if(ThisRdWrMode == RDWR_READY_SEQ){
+				IntThisNewAddressData_Load(tmp_address,0,0,0);
+			}
+			else{
+				if(IntMyDataOkChk(tmp_address)){
+					EVMidSpd= (This_Value * 10);  // hz read
+
+/*
+					if( (cF_SPEED_MID_PORT ==0)){
+						EVMidSpd=0;
+					}
+*/
+
+					Length1=((xVarMpm1000 * 10)/xVarMaxHz);
+					xVarCurMpm=(Length1 * EVMidSpd)/1000;
+
+//					xMidSpdMpm=GET_LONG(DEC_LENGTH_SPD_MID);
+					xMidSpdMpm=GET_LONG(DEC_PULSE_SPD_MID);
+					if(xVarCurMpm != xMidSpdMpm){
+						xMidSpdMpm=xVarCurMpm;
+						bParameterMdf=1;
+					}
+					ParRdWrTime=0;
+					ParRdWrNm=SPEED_HIGH_PORT_SEQ;
+/*
+
+					CurDecPulseCalcu();
+					EVMidDecLength=CurSpdDecPulse;
+					Length1=GET_LONG(DEC_LENGTH_SPD_MID);
+					if(EVMidDecLength != Length1)	bParameterMdf=1;	
+					ParRdWrTime=0;
+					ParRdWrNm=SPEED_HIGH_PORT_SEQ;
+*/
+				}
+			}
+
+
+
+/*
 			tmp_address=(Addr_MidSpdPort & 0xfff0);
 			tmp_address=(tmp_address | (unsigned int)(cF_SPEED_MID_PORT));
 
@@ -645,9 +672,11 @@ LocalType __attribute__((section(".usercode"))) Default_Inverter_ParameterRdWr(v
 					ParRdWrNm=SPEED_HIGH_PORT_SEQ;
 				}
 			}
+*/
 			break;
 
-		case	SPEED_HIGH_PORT_SEQ:
+		case	SPEED_HIGH_PORT_SEQ:			
+/*
 			tmp_address=(Addr_HighSpdPort & 0xfff0);
 			tmp_address=(tmp_address | (unsigned int)(cF_SPEED_HIGH_PORT));
 
@@ -664,12 +693,13 @@ LocalType __attribute__((section(".usercode"))) Default_Inverter_ParameterRdWr(v
 
 					Length1=((xVarMpm1000 * 10)/xVarMaxHz);
 					xVarCurMpm=(Length1 * EVHighSpd)/10;
+
 					CurDecPulseCalcu();
 					EVHighDecLength=CurSpdDecPulse;
 					Length1=GET_LONG(DEC_LENGTH_SPD_HIGH);
-					if(EVHighDecLength != Length1)	bParameterMdf=1;
+					if(EVHighDecLength != Length1)		bParameterMdf=1;
 
-
+*/
 					if(bParameterMdf){
 						SaveVerify = 0x55;
 
@@ -679,8 +709,10 @@ LocalType __attribute__((section(".usercode"))) Default_Inverter_ParameterRdWr(v
 
 						k=( (ENCODER_PULSE) % (ENCODER_PULSE));
 						l_LdTmpBufRam(k)=(unsigned long)xVarEncoder;
-						k=( (NEW_MPM) % (ENCODER_PULSE));
-						l_LdTmpBufRam(k)=(unsigned long)xVarMpm;
+
+//						k=( (NEW_MPM) % (ENCODER_PULSE));
+//						l_LdTmpBufRam(k)=(unsigned long)xVarMpm;
+
 						k=( (RPM) % (ENCODER_PULSE));
 						l_LdTmpBufRam(k)=(unsigned long)xVarRpm;
 
@@ -691,27 +723,30 @@ LocalType __attribute__((section(".usercode"))) Default_Inverter_ParameterRdWr(v
 						k=( (BASE_SCURVE_TIME) % (ENCODER_PULSE));
 						l_LdTmpBufRam(k)=(unsigned long)xVarSCurve;		
 
-						k=( (DEC_LENGTH_SPD_LOW) % (ENCODER_PULSE));
-						l_LdTmpBufRam(k)=(unsigned long)EVLowDecLength;		
+						k=( (DEC_PULSE_SPD_LOW) % (ENCODER_PULSE));
+						l_LdTmpBufRam(k)=(unsigned long)xLowSpdMpm;		
 
-						k=( (DEC_LENGTH_SPD_MID) % (ENCODER_PULSE));
-						l_LdTmpBufRam(k)=(unsigned long)EVMidDecLength;		
+						k=( (DEC_PULSE_SPD_MID) % (ENCODER_PULSE));
+						l_LdTmpBufRam(k)=(unsigned long)xMidSpdMpm;		
 
+/*
 						k=( (DEC_LENGTH_SPD_HIGH) % (ENCODER_PULSE));
 						l_LdTmpBufRam(k)=(unsigned long)EVHighDecLength;		
+*/
 
 						k=( (BASE_DEC_MPM) % (ENCODER_PULSE));
 						l_LdTmpBufRam(k)=(unsigned long)xDecMpm;		
 
 
 						flash_write(ENCODER_PULSE);
-						CaluDecreasePulse();
+						CaluDecreasePulse_spd3();
 						bParameterMdf=0;
 						SaveVerify=0;
 					}
 					ParRdWrNm=SPEED_MANUAL_PORT_SEQ;
-				}
-			}
+
+//				}
+//			}
 			break;
 		case	SPEED_MANUAL_PORT_SEQ:
 			tmp_address=(Addr_ManualSpdPort & 0xfff0);

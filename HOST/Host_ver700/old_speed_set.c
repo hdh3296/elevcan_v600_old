@@ -1,6 +1,6 @@
 
 
-
+/*
 #include <p30fxxxx.h>
 #include  "..\..\system_com\memory_map.h"
 
@@ -16,11 +16,9 @@
 #include  "default_setup.h" 
 
 
-//extern	UserDataType	NoStart;
-
-
 
 #ifndef	AUTO_LANDING_COMM
+
 
 void __attribute__((section(".usercode")))    RunSpeedCmd_IO_old(void)
 {
@@ -1106,4 +1104,8 @@ unsigned int  __attribute__((section(".usercode")))   SpeedSet_old(void)
 //ret==3    : SystemErr
 }
 
+
+
 #endif
+*/
+

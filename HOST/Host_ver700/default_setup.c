@@ -75,7 +75,7 @@ void  __attribute__((section(".usercode"))) IO_Mode(void)
 	bit_LdTmpBufRamSet  (F_OnOff2,bOilLopeTypeChk   	% 8);
 //	bit_LdTmpBufRamReset(F_OnOff2,bOnlyOneCall      	% 8);
 //	bit_LdTmpBufRamReset(F_OnOff2,bManualSusChk     	% 8);
-	bit_LdTmpBufRamSet  (F_OnOff2,bBrkOpenUse       	% 8);  //on
+	bit_LdTmpBufRamReset(F_OnOff2,bBrkOpenUse       	% 8);  //on
 //	bit_LdTmpBufRamReset(F_OnOff2,bKidsKeyChkUse    	% 8);
 //	bit_LdTmpBufRamReset(F_OnOff2,bCarKeyFirstService  	% 8);
 //	bit_LdTmpBufRamReset(F_OnOff2,bFamilyService    	% 8);
@@ -125,6 +125,9 @@ void  __attribute__((section(".usercode"))) IO_Mode(void)
 		b_LdTmpBufRam(F_SolOnTime)      = 40;					//23(sol on time)        
 		b_LdTmpBufRam(F_DoorWaitTime)   = 20;  					//24(door start time)
 
+	}
+	if(New_Law_SystemChk()){
+		bit_LdTmpBufRamSet(F_OnOff2,bBrkOpenUse       	% 8);
 	}
 
 
@@ -394,9 +397,9 @@ void  __attribute__((section(".usercode"))) IO_Mode(void)
 //	b_LdTmpBufRam(F_AutoLandingMode)= 0;     			//no Auto landing(user group 2)
 	
 	
-	b_LdTmpBufRam(F_Su2Sd2_Velocity)= 0;      	//mpm
-	b_LdTmpBufRam(F_X0X1_Velocity)  = 0;     	//mpm
-	b_LdTmpBufRam(F_AutoLandingMode)= 0;     	//no Auto landing(user group 2)
+	b_LdTmpBufRam(F_Su2Sd2_Velocity)= CHANGE_DEC_LIMIT_SUSD;      	//mpm
+	b_LdTmpBufRam(F_X0X1_Velocity)  = NOT_USE_SPEED;     			//mpm
+	b_LdTmpBufRam(F_AutoLandingMode)= 0;     						//no Auto landing(user group 2)
 	
 
 	b_LdTmpBufRam(F_ManualSpeed)    = P3_SPD;                   
@@ -406,9 +409,6 @@ void  __attribute__((section(".usercode"))) IO_Mode(void)
 	b_LdTmpBufRam(F_Speed1)        	= P1P3_SPD;     
 	b_LdTmpBufRam(F_Speed2)        	= P2P3_SPD;              
 	b_LdTmpBufRam(F_Speed3)        	= P1P2P3_SPD;                    
-//	b_LdTmpBufRam(F_LULD_MPM_SPD3)  = 0;     
-	b_LdTmpBufRam(F_SU2SD2_V_SPD3)	= 0;    
-	b_LdTmpBufRam(F_X0X1_V_SPD3)  	= 0;   
 
 	flash_write_DspChar(F_ManualSpeed);	// block2
 	
@@ -439,8 +439,7 @@ void  __attribute__((section(".usercode"))) IO_Mode(void)
 ///////////////////////////////////////////////////////////////
 */
 	
-	DefaultEncoderRpmMpm();
-	CaluDecreasePulse();
+	DefaultEncoderRpmMpm_spd3();
 
     asm("RESET");
 }
@@ -824,8 +823,8 @@ void  __attribute__((section(".usercode"))) DF_Mode(void)
 //	b_LdTmpBufRam(F_AutoLandingMode)= 0;     			//no Auto landing(user group 2)
 	
 
-	b_LdTmpBufRam(F_Su2Sd2_Velocity)= 0;      	//mpm
-	b_LdTmpBufRam(F_X0X1_Velocity)  = 0;     	//mpm
+	b_LdTmpBufRam(F_Su2Sd2_Velocity)= NOT_USE_SPEED;      	//mpm
+	b_LdTmpBufRam(F_X0X1_Velocity)  = NOT_USE_SPEED;     	//mpm
 	b_LdTmpBufRam(F_AutoLandingMode)= 0;     	//no Auto landing(user group 2)
 	
 
@@ -837,8 +836,8 @@ void  __attribute__((section(".usercode"))) DF_Mode(void)
 	b_LdTmpBufRam(F_Speed2)        	= P1P3_SPD;              
 	b_LdTmpBufRam(F_Speed3)        	= P1P3_SPD;                    
 //	b_LdTmpBufRam(F_LULD_MPM_SPD3)  = 0;     
-	b_LdTmpBufRam(F_SU2SD2_V_SPD3)	= 0;    
-	b_LdTmpBufRam(F_X0X1_V_SPD3)  	= 0;   
+//	b_LdTmpBufRam(F_SU2SD2_V_SPD3)	= NOT_USE_SPEED;    
+//	b_LdTmpBufRam(F_X0X1_V_SPD3)  	= NOT_USE_SPEED;   
 	
 	flash_write_DspChar(F_ManualSpeed);	// block2
 	
@@ -869,8 +868,7 @@ void  __attribute__((section(".usercode"))) DF_Mode(void)
 ///////////////////////////////////////////////////////////////
 */
 	
-	DefaultEncoderRpmMpm();
-	CaluDecreasePulse();
+	DefaultEncoderRpmMpm_spd3();
 
     asm("RESET");
 
@@ -1010,11 +1008,8 @@ void  __attribute__((section(".usercode"))) Setup_Default(void)
 	b_LdTmpBufRam(GS_PORT)          =SILK_GS    | BIT_NORMAL_OPEN;      	//1     
 	b_LdTmpBufRam(DS_PORT)          =SILK_DS    | BIT_NORMAL_OPEN;       	//1             
 	
-//	b_LdTmpBufRam(SU1_PORT)         =SILK_SU1   | BIT_NORMAL_OPEN;         	//1     66
-//	b_LdTmpBufRam(SD1_PORT)         =SILK_SD1   | BIT_NORMAL_OPEN;          //1     
 	b_LdTmpBufRam(SU1_PORT)         =SILK_SU1   | BIT_NORMAL_CLOSE;         //1     66
 	b_LdTmpBufRam(SD1_PORT)         =SILK_SD1   | BIT_NORMAL_CLOSE;         //1     
-
 	b_LdTmpBufRam(SFT_PORT)         =SILK_SFT   | BIT_NORMAL_OPEN;          //1     
 	b_LdTmpBufRam(OVL_PORT)         =SILK_OVL   | BIT_NORMAL_OPEN;          //1             
 	b_LdTmpBufRam(ULS_PORT)         =SILK_ULS   | BIT_NORMAL_OPEN;          //1     67
@@ -1050,7 +1045,6 @@ void  __attribute__((section(".usercode"))) Setup_Default(void)
 	b_LdTmpBufRam(X7_PORT)          =SILK_X7    | BIT_NORMAL_OPEN;			//1             
 	
 	b_LdTmpBufRam(FS0_PORT)         =SILK_FS0   | BIT_NORMAL_OPEN;          //1     74
-//	b_LdTmpBufRam(FS1_PORT)         =SILK_FS1   | BIT_NORMAL_OPEN;          //1     
 	b_LdTmpBufRam(FS1_PORT)         =SILK_FS1   | BIT_NORMAL_CLOSE;         //1     
 	b_LdTmpBufRam(FS2_PORT)         =SILK_FS2   | BIT_NORMAL_OPEN;          //1     
 	b_LdTmpBufRam(FS3_PORT)         =SILK_FS3   | BIT_NORMAL_OPEN;          //1             
@@ -1087,7 +1081,6 @@ void  __attribute__((section(".usercode"))) Setup_Default(void)
 	////////////////ncno3 group/////////////////////////////////
 	
 	b_LdTmpBufRam(FAN_PORT)         =SILK_FAN   | BIT_NORMAL_OPEN;
-//	b_LdTmpBufRam(LIT_PORT)         =SILK_LIT   | BIT_NORMAL_OPEN;  //     
 	b_LdTmpBufRam(LIT_PORT)         =SILK_LIT   | BIT_NORMAL_CLOSE;  //     
 	b_LdTmpBufRam(BUZ_PORT)         =SILK_BUZ   | BIT_NORMAL_OPEN;     
 	b_LdTmpBufRam(BELL_PORT)        =SILK_BELL  | BIT_NORMAL_OPEN;
@@ -1102,7 +1095,6 @@ void  __attribute__((section(".usercode"))) Setup_Default(void)
 	b_LdTmpBufRam(CL_S_PORT)        =SILK_CL_S  | BIT_NORMAL_OPEN;
 	b_LdTmpBufRam(BK2_PORT)         =SILK_BK2   | BIT_NORMAL_OPEN;             
 	b_LdTmpBufRam(D_S_PORT)         =SILK_D_S   | BIT_NORMAL_OPEN;     
-//	b_LdTmpBufRam(GBR_PORT)         =SILK_GBR   | BIT_NORMAL_OPEN;     
 	b_LdTmpBufRam(GBR_PORT)         =SILK_GBR   | BIT_NORMAL_CLOSE;     
 	b_LdTmpBufRam(BK1_PORT)         =SILK_BK1   | BIT_NORMAL_OPEN;
 	
@@ -1163,7 +1155,7 @@ void  __attribute__((section(".usercode"))) Setup_Default(void)
 	b_LdTmpBufRam(F_LocalNm)        = 0;				//14
 	b_LdTmpBufRam(F_PcbType)        = 0;				//???
 	
-	i_LdTmpBufRam(F_StopPulse0)     = 1000;				//31
+//	i_LdTmpBufRam(F_StopPulse0)     = 1000;				//31
 	
 	b_LdTmpBufRam(F_year)           = 0;				//18
 	b_LdTmpBufRam(F_month)          = 0;				//18
@@ -1183,33 +1175,10 @@ void  __attribute__((section(".usercode"))) Setup_Default(void)
 	b_LdTmpBufRam(F_NonService6)    = Init_ALL_FF;
 	b_LdTmpBufRam(F_NonService7)    = Init_ALL_FF;
 ///////////////////////////////////////////////////////////////
-	
-/*	
-	b_LdTmpBufRam(F_ManualSpeed)    = P3_SPD;          
-	b_LdTmpBufRam(F_BatterySpeed)   = NONE_USE_SPD;      
-	b_LdTmpBufRam(F_DecreaseSpeed)  = P1P2_SPD;                    
-	b_LdTmpBufRam(F_FhmSpeed)       = NONE_USE_SPD;     
-	b_LdTmpBufRam(F_Etc1Speed)      = NONE_USE_SPD;     
-	b_LdTmpBufRam(F_Etc2Speed)      = NONE_USE_SPD;     
-	b_LdTmpBufRam(F_Speed30)        = NONE_USE_SPD;     
-	b_LdTmpBufRam(F_Speed45)        = P1P3_SPD;              
-	b_LdTmpBufRam(F_Speed60)        = P1P2P3_SPD;                    
-	b_LdTmpBufRam(F_Speed90)        = NONE_USE_SPD;     
-	b_LdTmpBufRam(F_Speed105)       = NONE_USE_SPD;     
-	b_LdTmpBufRam(F_Speed120)       = NONE_USE_SPD;     
-	b_LdTmpBufRam(F_Speed150)       = NONE_USE_SPD;     
-	b_LdTmpBufRam(F_Speed180)       = NONE_USE_SPD;     
-	b_LdTmpBufRam(F_Speed210)       = NONE_USE_SPD;    
-	b_LdTmpBufRam(F_ElevSpeed)      = SPEED_60;
-	b_LdTmpBufRam(F_LimitSpeed)     = SPEED_210;
-	b_LdTmpBufRam(F_Su1Sd1_Velocity)= 90;      //mpm
-*/
 
-	b_LdTmpBufRam(F_Su2Sd2_Velocity)= 0;      	//mpm
-	b_LdTmpBufRam(F_X0X1_Velocity)  = 0;     	//mpm
-	b_LdTmpBufRam(F_AutoLandingMode)= 0;     	//no Auto landing(user group 2)
-	
-
+	b_LdTmpBufRam(F_Su2Sd2_Velocity)= CHANGE_DEC_LIMIT_SUSD;//mpm
+	b_LdTmpBufRam(F_X0X1_Velocity)  = NOT_USE_SPEED;     	//mpm
+	b_LdTmpBufRam(F_AutoLandingMode)= 0;     				//no Auto landing(user group 2)
 	b_LdTmpBufRam(F_ManualSpeed)    = P3_SPD;                   
 	b_LdTmpBufRam(F_BatterySpeed)   = NONE_USE_SPD;      
 	b_LdTmpBufRam(F_DecreaseSpeed)  = P1P2_SPD;                    
@@ -1217,9 +1186,6 @@ void  __attribute__((section(".usercode"))) Setup_Default(void)
 	b_LdTmpBufRam(F_Speed1)        	= P1P3_SPD;     
 	b_LdTmpBufRam(F_Speed2)        	= P2P3_SPD;              
 	b_LdTmpBufRam(F_Speed3)        	= P1P2P3_SPD;                    
-//	b_LdTmpBufRam(F_LULD_MPM_SPD3)  = 0;     
-	b_LdTmpBufRam(F_SU2SD2_V_SPD3)	= 0;    
-	b_LdTmpBufRam(F_X0X1_V_SPD3)  	= 0;   
 
 	flash_write_DspChar(F_ManualSpeed);	// block2
 	
@@ -1246,6 +1212,11 @@ void  __attribute__((section(".usercode"))) Setup_Default(void)
 ///////////////////////////////////////////////////////////////
 	
 
+	for(i=0;i<64;i++){
+		b_LdTmpBufRam(i)  = 0;
+	}
+    flash_write_DspChar(F_LEVEL01);
+
 
 #ifdef  TEST_SIMULATION  
 	GetFlashDataToBufRam(F_TopFlr);	
@@ -1254,8 +1225,12 @@ void  __attribute__((section(".usercode"))) Setup_Default(void)
 	#else
         b_LdTmpBufRam(F_TopFlr)         = 31;
 	#endif
+
+	b_LdTmpBufRam(F_OpTtTm)         = 7; 			//1 		
+
 	bit_LdTmpBufRamReset  (F_OnOff0,bDoorJumperOff        % 8); 
 	bit_LdTmpBufRamReset(F_OnOff3,bManWorkingChk      % 8);
+
 	flash_write_DspChar(F_TopFlr);	
 
 
@@ -1334,8 +1309,9 @@ void  __attribute__((section(".usercode"))) Setup_Default(void)
 		flash_write_DspChar(EMG_PORT);	// block2
 #endif
 
-	DefaultEncoderRpmMpm();
-	CaluDecreasePulse();
+
+
+	DefaultEncoderRpmMpm_spd3();
   
 	SWPAB   = 0;    
 }

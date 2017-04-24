@@ -5,7 +5,7 @@
 
 #define  	VERSION_0         		    '6'
 #define  	VERSION_1         		    'A'
-#define  	VERSION_2         		    '3'
+#define  	VERSION_2         		    '6'
 
 
 #define     LG                          0

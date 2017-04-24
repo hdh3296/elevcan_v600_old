@@ -38,7 +38,6 @@ void __attribute__((section(".usercode")))   DspFloorSet(void)
     LocalType i,j;  
 
 	if( !bDspSeq && (!PerfectAuto() || DoorOpenEndWaitChk() || (NoStart > 0) ) ){
-//    if( !bDspSeq && (bCarErr || bCarStopNoRun || bCarStop || !bAuto || DoorOpenEndWaitChk()) ){
         j=SegError;
     
         i=(j%10);    
@@ -377,10 +376,10 @@ LocalType  __attribute__((section(".usercode")))  OilTypeRunState(void)
 
 void  __attribute__((section(".usercode")))  UpDnRunOut(void)
 {
-    if(bAuto)	RunSpeedCmd_IO();
+    if(bAuto)	RunSpeedCmd_IO_spd3();
     else{
         if(OilTypeRunState()){
-            RunSpeedCmd_IO();
+            RunSpeedCmd_IO_spd3();
         }
         else{
             Mnanual_Speed_Sel();
@@ -795,7 +794,7 @@ void  __attribute__((section(".usercode")))    CarCurFloorRead(void)
 	    if(INVERTER_CHECK == LG)                                CarCurFloorRead_ELEV();                                             
 	    else if(INVERTER_CHECK == D_F)                          CarCurFloorRead_OnOff();                                             
 	    else{
-	    	CarCurFloorRead_IO();
+	    	CarCurFloorRead_IO_spd3();
 		}
 	#endif
 

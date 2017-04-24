@@ -52,7 +52,6 @@ unsigned int   DigitAttribute;
 unsigned int   OrgNcNo;
 
 
-unsigned long	TestYou;
 
 
 /*
@@ -175,41 +174,8 @@ const unsigned char GroupLineMessage[][17]={
                                     "USER:F-Error(00)",//29 
                                     "USER:User8      ",//30 
                                     "USER:System Mode",//31  
-                                    "USER: Stop Pulse",//32 
-///////////////////////////////////////////////////////////                                    
-                                    "DSP:Floor01     ",//1
-                                    "DSP:Floor02     ",//2
-                                    "DSP:Floor03     ",//3
-                                    "DSP:Floor04     ",//4
-                                    "DSP:Floor05     ",//5
-                                    "DSP:Floor06     ",//6
-                                    "DSP:Floor07     ",//7
-                                    "DSP:Floor08     ",//8
-                                    "DSP:Floor09     ",//9
-                                    "DSP:Floor10     ",//0
-                                    "DSP:Floor11     ",//11
-                                    "DSP:Floor12     ",//12
-                                    "DSP:Floor13     ",//13
-                                    "DSP:Floor14     ",//14
-                                    "DSP:Floor15     ",//15
-                                    "DSP:Floor16     ",//16
-                                    "DSP:Floor17     ",//17
-                                    "DSP:Floor18     ",//18
-                                    "DSP:Floor19     ",//19
-                                    "DSP:Floor20     ",//20
-                                    "DSP:Floor21     ",//21
-                                    "DSP:Floor22     ",//22
-                                    "DSP:Floor23     ",//23
-                                    "DSP:Floor24     ",//24
-                                    "DSP:Floor25     ",//25
-                                    "DSP:Floor26     ",//26
-                                    "DSP:Floor27     ",//27
-                                    "DSP:Floor28     ",//28
-                                    "DSP:Floor29     ",//29
-                                    "DSP:Floor30     ",//30
-                                    "DSP:Floor31     ",//31
-                                    "DSP:Floor32     ",//32
-///////////////////////////////////////////////////////////                                    
+                                    "USER:User9      ",//32 
+//////////////////////////////////////////////////////////////////
                                     "FLR:TopFlr      ",//1 
                                     "FLR:PrkFlr      ",//2 
                                     "FLR:NoUse Go Flr",//3 
@@ -280,42 +246,7 @@ const unsigned char GroupLineMessage[][17]={
                                     "TMR:Stop13  Time",//30
                                     "TMR:Stop14  Time",//31
                                     "TMR:Stop15  Time",//32
-///////////////////////////////////////////////////////////                                                                                                           
-                                    "ONOFF1:Floor01  ",//1 
-                                    "ONOFF1:Floor02  ",//2 
-                                    "ONOFF1:Floor03  ",//3 
-                                    "ONOFF1:Floor04  ",//4  
-                                    "ONOFF1:Floor05  ",//5  
-                                    "ONOFF1:Floor06  ",//6  
-                                    "ONOFF1:Floor07  ",//7  
-                                    "ONOFF1:Floor08  ",//8  
-                                    "ONOFF1:Floor09  ",//9  
-                                    "ONOFF1:Floor10  ",//10 
-                                    "ONOFF1:Floor11  ",//11 
-                                    "ONOFF1:Floor12  ",//12
-                                    "ONOFF1:Floor13  ",//13
-                                    "ONOFF1:Floor14  ",//14
-                                    "ONOFF1:Floor15  ",//15
-                                    "ONOFF1:Floor16  ",//16
-                                    "ONOFF1:Floor17  ",//17
-                                    "ONOFF1:Floor18  ",//18
-                                    "ONOFF1:Floor19  ",//19
-                                    "ONOFF1:Floor20  ",//20
-                                    "ONOFF1:Floor21  ",//21
-                                    "ONOFF1:Floor22  ",//22
-                                    "ONOFF1:Floor23  ",//23
-                                    "ONOFF1:Floor24  ",//24
-                                    "ONOFF1:Floor25  ",//25
-                                    "ONOFF1:Floor26  ",//26
-                                    "ONOFF1:Floor27  ",//27
-                                    "ONOFF1:Floor28  ",//28
-                                    "ONOFF1:Floor29  ",//29
-                                    "ONOFF1:Floor30  ",//30
-                                    "ONOFF1:Floor31  ",//31
-                                    "ONOFF1:Floor32  ",//32
-///////////////////////////////////////////////////////////                
-                                                                                           
-///////////////////////////////////////////////////////////                                                                                                           
+///////////////////////////////////////////////////////////                                                                                                                                                                                                      
                                     "ONOFF2:FHM Chk  ",//1 
                                     "ONOFF2:DrJmpChk ",//2 
                                     "ONOFF2:EncoderPh",//3 
@@ -348,109 +279,6 @@ const unsigned char GroupLineMessage[][17]={
                                     "ONOFF2:Not Use  ",//30
                                     "ONOFF2:Copy_Encd",//31
                                     "ONOFF2:Work Mode",//32
-///////////////////////////////////////////////////////////                                                                                                           
-                                    "DOOR-S:Floor01  ",//1 
-                                    "DOOR-S:Floor02  ",//2 
-                                    "DOOR-S:Floor03  ",//3 
-                                    "DOOR-S:Floor04  ",//4  
-                                    "DOOR-S:Floor05  ",//5  
-                                    "DOOR-S:Floor06  ",//6  
-                                    "DOOR-S:Floor07  ",//7  
-                                    "DOOR-S:Floor08  ",//8  
-                                    "DOOR-S:Floor09  ",//9  
-                                    "DOOR-S:Floor10  ",//10 
-                                    "DOOR-S:Floor11  ",//11 
-                                    "DOOR-S:Floor12  ",//12
-                                    "DOOR-S:Floor13  ",//13
-                                    "DOOR-S:Floor14  ",//14
-                                    "DOOR-S:Floor15  ",//15
-                                    "DOOR-S:Floor16  ",//16
-                                    "DOOR-S:Floor17  ",//17
-                                    "DOOR-S:Floor18  ",//18
-                                    "DOOR-S:Floor19  ",//19
-                                    "DOOR-S:Floor20  ",//20
-                                    "DOOR-S:Floor21  ",//21
-                                    "DOOR-S:Floor22  ",//22
-                                    "DOOR-S:Floor23  ",//23
-                                    "DOOR-S:Floor24  ",//24
-                                    "DOOR-S:Floor25  ",//25
-                                    "DOOR-S:Floor26  ",//26
-                                    "DOOR-S:Floor27  ",//27
-                                    "DOOR-S:Floor28  ",//28
-                                    "DOOR-S:Floor29  ",//29
-                                    "DOOR-S:Floor30  ",//30
-                                    "DOOR-S:Floor31  ",//31
-                                    "DOOR-S:Floor32  ",//32
-///////////////////////////////////////////////////////////                
-/*
-///////////////////////////////////////////////////////////              
-                                    "I_O:ManSpd  Port",//1  
-                                    "I_O:BatSpd  Port",//2  
-                                    "I_O:DecSpd  Port",//3  
-                                    "I_O:FHMSpd  Port",//4  
-                                    "I_O:Spd30   Port",//5  
-                                    "I_O:Spd45   Port",//6  
-                                    "I_O:Spd60   Port",//7  
-                                    "I_O:Spd90   Port",//8 
-                                    "I_O:Spd105  Port",//9 
-                                    "I_O:Spd120  Port",//10 
-                                    "I_O:Spd150  Port",//11 
-                                    "I_O:Spd180  Port",//12 
-                                    "I_O:Spd210  Port",//13 
-                                    "I_O:Etc1Spd Port",//14  
-                                    "I_O:Etc2Spd Port",//15  
-                                    "I_O:Elev Max Spd",//16 
-                                    "I_O:Limt Max Spd",//17
-                                    "I_O:MaxSuSd1 Spd",//18 
-                                    "I_O:MaxSuSd2 Spd",//19 
-                                    "I_O:MaxX0X1  Spd",//20                                   
-                                    "I_O:spd1        ",//21 
-                                    "I_O:spd2        ",//22 
-                                    "I_O:spd3        ",//23 
-                                    "I_O:Spd4        ",//24 
-                                    "I_O:Spd5        ",//25  
-                                    "I_O:Spd6        ",//26 
-                                    "I_O:Spd7        ",//27 
-                                    "I_O:Spd8        ",//28 
-                                    "I_O:Spd9        ",//29 
-                                    "I_O:Spd10       ",//30 
-                                    "I_O:Spd11       ",//31 
-                                    "I_O:Spd12       ",//32 
-///////////////////////////////////////////////////////////                                                                                                           
-///////////////////////////////////////////////////////////             
-                                    "PAR:EncoderPulse",//1  
-                                    "PAR: TM Mpm     ",//2  
-                                    "PAR:Motor Rpm   ",//3  
-                                    "PAR:Dec30 Length",//4  
-                                    "PAR:Dec45 Length",//5  
-                                    "PAR:Dec60 Length",//6  
-                                    "PAR:Dec90 Length",//7  
-                                    "PAR:Dec105Length",//8  
-                                    "PAR:Dec120Length",//9  
-                                    "PAR:Dec150Length",//10 
-                                    "PAR:Dec180Length",//11 
-                                    "PAR:Dec210Length",//12 
-                                    "PAR:Dec30 Pulse ",//13  
-                                    "PAR:Dec45 Pulse ",//14 
-                                    "PAR:Dec60 Pulse ",//15 
-                                    "PAR:Dec90 Pulse ",//16 
-                                    "PAR:Dec105 Pulse",//17 
-                                    "PAR:Dec120 Pulse",//18 
-                                    "PAR:Dec150 Pulse",//19 
-                                    "PAR:Dec180 Pulse",//20 
-                                    "PAR:Dec210 Pulse",//21 
-                                    "PAR:Min30  Pulse",//22 
-                                    "PAR:Min45  Pulse",//23 
-                                    "PAR:Min60  Pulse",//24 
-                                    "PAR:Min90  Pulse",//25 
-                                    "PAR:Min105 Pulse",//26 
-                                    "PAR:Min120 Pulse",//27 
-                                    "PAR:Min150 Pulse",//28 
-                                    "PAR:Min180 Pulse",//29 
-                                    "PAR:Min210 Pulse",//30 
-                                    "PAR:Mpm Variable",//31 
-                                    "PAR:MmPerPulse  ",//32 
-*/
 ///////////////////////////////////////////////////////////
                                     "W_FLR:(1)hm_hm_F",//1  
                                     "W_FLR:(2)hm_hm_F",//2  
@@ -584,21 +412,7 @@ const unsigned char GroupLineMessage[][17]={
                                     "NcNo3:VIRTUAL_Y5",//29 
                                     "NcNo3:VIRTUAL_Y6",//30 
                                     "NcNo3:VIRTUAL_Y7",//31 
-///////////////////////////////////////////newio insert
-
-
-/*
-                                    "NcNo3:nc        ",//24
-                                    "NcNo3:nc        ",//25 
-                                    "NcNo3:nc        ",//26
-                                    "NcNo3:nc        ",//27 
-                                    "NcNo3:nc        ",//28
-                                    "NcNo3:nc        ",//29 
-                                    "NcNo3:nc        ",//30
-                                    "NcNo3:nc        ",//31
-*/ 
-                                    "NcNo3:nc        ",//32
- 
+                                    "NcNo3:nc        ",//32 
 ///////////////////////////////////////////////////////////                                                                                                           
                                     "INP1:EMG        ",//1  
                                     "INP1:PRK        ",//2  
@@ -657,16 +471,6 @@ const unsigned char GroupLineMessage[][17]={
                                     "INP2:VIRTUAL_X5 ",//22 
                                     "INP2:VIRTUAL_X6 ",//23 
                                     "INP2:VIRTUAL_X7 ",//24
-/*
-                                    "INP2:nc         ",//17 
-                                    "INP2:nc         ",//18 
-                                    "INP2:nc         ",//19 
-                                    "INP2:nc         ",//20 
-                                    "INP2:nc         ",//21 
-                                    "INP2:nc         ",//22 
-                                    "INP2:nc         ",//23 
-                                    "INP2:nc         ",//24
-*/
                                     "INP2:nc         ",//25 
                                     "INP2:nc         ",//26
                                     "INP2:nc         ",//27 
@@ -709,55 +513,8 @@ const unsigned char GroupLineMessage[][17]={
                                     "OUTP:VIRTUAL_Y5 ",//29
                                     "OUTP:VIRTUAL_Y6 ",//30
                                     "OUTP:VIRTUAL_Y7 ",//31
-///////////////////////////////////////////newio insert
-/*
-                                    "OUTP:nc         ",//24
-                                    "OUTP:nc         ",//25 
-                                    "OUTP:nc         ",//26
-                                    "OUTP:nc         ",//27 
-                                    "OUTP:nc         ",//28
-                                    "OUTP:nc         ",//29 
-                                    "OUTP:nc         ",//30
-                                    "OUTP:nc         ",//31
-*/ 
                                     "OUTP:Not Use    ",//32 
-
 ///////////////////////////////////////////////////////////                                                                                                           
-///////////////////////////////////////////////////////////                    
-///////////////////////////////////////////////////////////                                                                                                   
-                                    "ER:NO ERRORE(01)",//1  
-                                    "ER:NO ERRORE(02)",//2  
-                                    "ER:NO ERRORE(03)",//3  
-                                    "ER:NO ERRORE(04)",//4  
-                                    "ER:NO ERRORE(05)",//5  
-                                    "ER:NO ERRORE(06)",//6  
-                                    "ER:NO ERRORE(07)",//7  
-                                    "ER:NO ERRORE(08)",//8  
-                                    "ER:NO ERRORE(09)",//9 
-                                    "ER:NO ERRORE(10)",//10 
-                                    "ER:NO ERRORE(11)",//11 
-                                    "ER:NO ERRORE(12)",//12 
-                                    "ER:NO ERRORE(13)",//13 
-                                    "ER:NO ERRORE(14)",//14 
-                                    "ER:NO ERRORE(15)",//15 
-                                    "ER:NO ERRORE(16)",//16 
-                                    "ER:NO ERRORE(17)",//17 
-                                    "ER:NO ERRORE(18)",//18 
-                                    "ER:NO ERRORE(19)",//19 
-                                    "ER:NO ERRORE(20)",//20 
-                                    "ER:NO ERRORE(21)",//21 
-                                    "ER:NO ERRORE(22)",//22 
-                                    "ER:NO ERRORE(23)",//23 
-                                    "ER:NO ERRORE(24)",//24 
-                                    "ER:NO ERRORE(25)",//25 
-                                    "ER:NO ERRORE(26)",//26 
-                                    "ER:NO ERRORE(27)",//27 
-                                    "ER:NO ERRORE(28)",//28 
-                                    "ER:NO ERRORE(29)",//29 
-                                    "ER:NO ERRORE(30)",//30 
-                                    "ER:NO ERRORE(31)",//31 
-                                    "ER:NO ERRORE(32)",//32 
-////////////////////////////////////////////////////////////////////////////////
                                     "E/L:EncoderPulse",//1  
                                     "E/L: TM Mpm     ",//2  
                                     "E/L:Motor Rpm   ",//3 
@@ -771,9 +528,9 @@ const unsigned char GroupLineMessage[][17]={
                                     "E/L:L_Spd DecLen",//11  
                                     "E/L:M_Spd DecLen",//12  
                                     "E/L:H_Spd DecLen",//13  
-                                    "E/L:Base Dec mpm",//14 
-                                    "E/L:Base D_Time ",//15  
-                                    "E/L:Base S_Time ",//16  
+                                    "E/L:DecSpd Mpm  ",//14 
+                                    "E/L:D_Time(sec) ",//15  
+                                    "E/L:S_Time(sec) ",//16  
                                     "E/L:SuSd2 Spd   ",//17 
                                     "E/L:X0X1  Spd   ",//18 
                                     "E/L:Position(mm)",//19 
@@ -786,11 +543,20 @@ const unsigned char GroupLineMessage[][17]={
                                     "E/L:Not Use     ",//26 
                                     "E/L:Not Use     ",//27  
                                     "E/L:Not Use     ",//28 
-                                    "E/L:Not Use     ",//29 
+                                    "E/L:Plank/Mpm   ",//29  
                                     "E/L:Base_Pos(mm)",//30 
                                     "E/L:Mpm Variable",//31 
                                     "E/L:MmPerPulse  ",//32
                                 };
+
+
+const	uint8_t	F_SpeMenuName[][17]={
+									"ER:NO ERRORE(01)",
+									"DSP:Floor01     ",
+									"ONOFF1:Floor01  ",
+									"DOOR-S:Floor01  ",
+									"Level:Floor01   ",
+								};
 
 
 #ifdef	FLOOR_64
@@ -905,18 +671,26 @@ const unsigned char ElevSpeedMessage_spd3[ELEV_SPEED_MESSAGE_CNT_SPD3][11]={
 
 
 
+//#define		TEST_AUTOLANDING				4
+
+const uint8_t 	AUTO_LANDING_FIRST[2][16]={
+                                    "E/L:L_Spd  Mpm  ",//11  
+                                    "E/L:M_Spd  Mpm  ",//12  
+							};
 
 
-#ifdef	AUTO_LANDING_485
-#define     AUTO_LANDING_MESSAGE_CNT  		4
+//#ifdef	AUTO_LANDING_485
+#define     AUTO_LANDING_MESSAGE_CNT  		5
 
 const unsigned char AUTO_LANDING_MSG[AUTO_LANDING_MESSAGE_CNT][11]={
                                     "Not Use    ",    
                                     "EDS_485    ",
                                     "VL_485     ",
                                     "L1000_485  ",
+                                    "UserLanding",
                                 };
 
+/*
 //#endif
 //#ifdef	AUTO_LANDING_CAN
 
@@ -937,6 +711,7 @@ const unsigned char AUTO_LANDING_MSG[AUTO_LANDING_MESSAGE_CNT][11]={
                                     "Not Use    ",
                                 };
 #endif
+*/
 
 
 /*
@@ -1132,21 +907,12 @@ const unsigned char NormalDspMessage[NORMAL_DSP_MESSAGE_CNT][11]={
                                       "485 Com Chk",
                                       "Slip  mm   ",
                                       "ZeroSpd mm ",
-                                      "DoorOpTime ",
+                                      "Slip mm-Flr",
                                       "EL StopTime",
                                       "EL MoveTime",
                                       "NoEncoderTm",
                                       "EncoderUpTm",
                                       "EncoderDnTm",
-/*
-                                      "Reserve13  ",
-                                      "Reserve12  ",
-                                      "Reserve11  ",
-                                      "Reserve10  ",
-                                      "Reserve9   ",
-                                      "Reserve8   ",
-                                      "Reserve7   ",
-*/
                                       "Reserve5   ",
                                       "Reserve4   ",
                                       "Reserve3   ",
@@ -1321,6 +1087,36 @@ const unsigned char blinkx[]        ="                ";
 
 
 
+void  __attribute__((section(".usercode")))	FirstMenuReDsp(uint8_t	sel)
+{
+	unsigned char	i;
+		
+	for(i=0;i<16;i++){
+		New485Ladder[i+2]=F_SpeMenuName[sel][i];
+	}
+	
+	switch(sel){
+		case	0:			// err  group
+			i=15;
+			break;
+		case	1:			// dsp group
+			i=11;
+			break;
+		case	2:			// onoff1 group
+			i=14;
+			break;
+		case	3:			//door sel group
+			i=14;
+			break;
+		case	4:			//door sel group
+			i=13;
+			break;
+	}		
+	New485Ladder[(i+0)]=( (LadderGroupSub+1) /  10)+ '0';
+	New485Ladder[(i+1)]=( (LadderGroupSub+1) % 10)+ '0';										
+}
+
+
 
 void  __attribute__((section(".usercode")))	PasswardCheck(void)
 {
@@ -1444,7 +1240,7 @@ void    __attribute__((section(".usercode"))) Chun_Dsp(unsigned int val,unsigned
 	Deciml_Dsp(4,dp);
 }
 
-
+/*
 void    __attribute__((section(".usercode"))) Man_Dsp(unsigned int val,unsigned int dp)
 {
 
@@ -1467,6 +1263,7 @@ void    __attribute__((section(".usercode"))) Man_Dsp(unsigned int val,unsigned 
 
 	Deciml_Dsp(5,dp);
 }
+
 
 
 void    __attribute__((section(".usercode"))) Sipman_Dsp(unsigned long vx,unsigned int dp)
@@ -1532,6 +1329,80 @@ void    __attribute__((section(".usercode"))) Chunman_Dsp(unsigned long vx,unsig
     New485Ladder[SECONDLINE_BASE+EditBlanck+7]=(value%10)       + '0';          
 
 	Deciml_Dsp(8,dp);
+}
+*/
+
+
+void    __attribute__((section(".usercode"))) ValueToChar(unsigned long vx)
+{
+    unsigned long value;
+	value=vx;
+	
+    New485Ladder[SECONDLINE_BASE+EditBlanck+0]=(value/10000000)  + '0';
+    value=value%10000000;              
+    New485Ladder[SECONDLINE_BASE+EditBlanck+1]=(value/1000000)   + '0';
+    value=value%1000000;              
+    New485Ladder[SECONDLINE_BASE+EditBlanck+2]=(value/100000)    + '0';
+    value=value%100000;              
+    New485Ladder[SECONDLINE_BASE+EditBlanck+3]=(value/10000)     + '0';
+    value=value%10000;              
+    New485Ladder[SECONDLINE_BASE+EditBlanck+4]=(value/1000)      + '0';
+    value=value%1000;                        
+    New485Ladder[SECONDLINE_BASE+EditBlanck+5]=(value/100)      + '0';
+    value=value%100;                        
+    New485Ladder[SECONDLINE_BASE+EditBlanck+6]=(value/10)       + '0';          
+    New485Ladder[SECONDLINE_BASE+EditBlanck+7]=(value%10)       + '0';          
+}
+
+
+
+void    __attribute__((section(".usercode"))) Chunman_Dsp(unsigned long vx,unsigned int dp)
+{
+	ValueToChar(vx);
+	Deciml_Dsp(8,dp);
+}
+
+void    __attribute__((section(".usercode"))) Bakman_Dsp(unsigned long vx,unsigned int dp)
+{
+	ValueToChar(vx);
+    New485Ladder[SECONDLINE_BASE+EditBlanck+0]=New485Ladder[SECONDLINE_BASE+EditBlanck+1];
+    New485Ladder[SECONDLINE_BASE+EditBlanck+1]=New485Ladder[SECONDLINE_BASE+EditBlanck+2];
+    New485Ladder[SECONDLINE_BASE+EditBlanck+2]=New485Ladder[SECONDLINE_BASE+EditBlanck+3];
+    New485Ladder[SECONDLINE_BASE+EditBlanck+3]=New485Ladder[SECONDLINE_BASE+EditBlanck+4];
+    New485Ladder[SECONDLINE_BASE+EditBlanck+4]=New485Ladder[SECONDLINE_BASE+EditBlanck+5];
+    New485Ladder[SECONDLINE_BASE+EditBlanck+5]=New485Ladder[SECONDLINE_BASE+EditBlanck+6];
+    New485Ladder[SECONDLINE_BASE+EditBlanck+6]=New485Ladder[SECONDLINE_BASE+EditBlanck+7];
+    New485Ladder[SECONDLINE_BASE+EditBlanck+7]=' ';
+	Deciml_Dsp(7,dp);
+}
+
+void    __attribute__((section(".usercode"))) Sipman_Dsp(unsigned long vx,unsigned int dp)
+{
+	ValueToChar(vx);
+    New485Ladder[SECONDLINE_BASE+EditBlanck+0]=New485Ladder[SECONDLINE_BASE+EditBlanck+2];
+    New485Ladder[SECONDLINE_BASE+EditBlanck+1]=New485Ladder[SECONDLINE_BASE+EditBlanck+3];
+    New485Ladder[SECONDLINE_BASE+EditBlanck+2]=New485Ladder[SECONDLINE_BASE+EditBlanck+4];
+    New485Ladder[SECONDLINE_BASE+EditBlanck+3]=New485Ladder[SECONDLINE_BASE+EditBlanck+5];
+    New485Ladder[SECONDLINE_BASE+EditBlanck+4]=New485Ladder[SECONDLINE_BASE+EditBlanck+6];
+    New485Ladder[SECONDLINE_BASE+EditBlanck+5]=New485Ladder[SECONDLINE_BASE+EditBlanck+7];
+    New485Ladder[SECONDLINE_BASE+EditBlanck+6]=' ';
+    New485Ladder[SECONDLINE_BASE+EditBlanck+7]=' ';
+	Deciml_Dsp(6,dp);
+}
+
+
+void    __attribute__((section(".usercode"))) Man_Dsp(unsigned long vx,unsigned int dp)
+{
+	ValueToChar(vx);
+    New485Ladder[SECONDLINE_BASE+EditBlanck+0]=New485Ladder[SECONDLINE_BASE+EditBlanck+3];
+    New485Ladder[SECONDLINE_BASE+EditBlanck+1]=New485Ladder[SECONDLINE_BASE+EditBlanck+4];
+    New485Ladder[SECONDLINE_BASE+EditBlanck+2]=New485Ladder[SECONDLINE_BASE+EditBlanck+5];
+    New485Ladder[SECONDLINE_BASE+EditBlanck+3]=New485Ladder[SECONDLINE_BASE+EditBlanck+6];
+    New485Ladder[SECONDLINE_BASE+EditBlanck+4]=New485Ladder[SECONDLINE_BASE+EditBlanck+7];
+    New485Ladder[SECONDLINE_BASE+EditBlanck+5]=' ';
+    New485Ladder[SECONDLINE_BASE+EditBlanck+6]=' ';
+    New485Ladder[SECONDLINE_BASE+EditBlanck+7]=' ';
+	Deciml_Dsp(5,dp);
 }
 
 
@@ -1768,6 +1639,24 @@ void    __attribute__((section(".usercode"))) Rs485ComDsp(void)
 }
 
 
+
+void    __attribute__((section(".usercode"))) DspBdName(unsigned int i)
+{
+	unsigned int j;
+	for(j=0;j<8;j++)	New485Ladder[SECONDLINE_BASE+EditBlanck+j]=BdName[i][j];
+/*
+	New485Ladder[SECONDLINE_BASE+EditBlanck+0]=BdName[i][0];
+	New485Ladder[SECONDLINE_BASE+EditBlanck+1]=BdName[i][1];
+	New485Ladder[SECONDLINE_BASE+EditBlanck+2]=BdName[i][2];
+	New485Ladder[SECONDLINE_BASE+EditBlanck+3]=BdName[i][3];
+	New485Ladder[SECONDLINE_BASE+EditBlanck+4]=BdName[i][4];
+	New485Ladder[SECONDLINE_BASE+EditBlanck+5]=BdName[i][5];
+	New485Ladder[SECONDLINE_BASE+EditBlanck+6]=BdName[i][6];
+	New485Ladder[SECONDLINE_BASE+EditBlanck+7]=BdName[i][7];
+*/
+}
+
+
 void    __attribute__((section(".usercode"))) CanComDsp(void)
 {
     LocalType  value;
@@ -1805,6 +1694,8 @@ void    __attribute__((section(".usercode"))) CanComDsp(void)
         case    0x1e:
         case    0x1f:
         case    0x20:
+			DspBdName(0);
+/*
             New485Ladder[SECONDLINE_BASE+EditBlanck+0]=BdName[0][0];
             New485Ladder[SECONDLINE_BASE+EditBlanck+1]=BdName[0][1];
             New485Ladder[SECONDLINE_BASE+EditBlanck+2]=BdName[0][2];
@@ -1813,7 +1704,7 @@ void    __attribute__((section(".usercode"))) CanComDsp(void)
             New485Ladder[SECONDLINE_BASE+EditBlanck+5]=BdName[0][5];
             New485Ladder[SECONDLINE_BASE+EditBlanck+6]=BdName[0][6];
             New485Ladder[SECONDLINE_BASE+EditBlanck+7]=BdName[0][7];
-
+*/
             New485Ladder[SECONDLINE_BASE+EditBlanck+5]= (sRamDArry[mCallMe]/10) + '0';
             New485Ladder[SECONDLINE_BASE+EditBlanck+6]= (sRamDArry[mCallMe]%10) + '0';
             break;
@@ -1849,6 +1740,8 @@ void    __attribute__((section(".usercode"))) CanComDsp(void)
         case    0x5e:
         case    0x5f:
         case    0x60:
+			DspBdName(1);
+/*
             New485Ladder[SECONDLINE_BASE+EditBlanck+0]=BdName[1][0];
             New485Ladder[SECONDLINE_BASE+EditBlanck+1]=BdName[1][1];
             New485Ladder[SECONDLINE_BASE+EditBlanck+2]=BdName[1][2];
@@ -1857,7 +1750,7 @@ void    __attribute__((section(".usercode"))) CanComDsp(void)
             New485Ladder[SECONDLINE_BASE+EditBlanck+5]=BdName[1][5];
             New485Ladder[SECONDLINE_BASE+EditBlanck+6]=BdName[1][6];
             New485Ladder[SECONDLINE_BASE+EditBlanck+7]=BdName[1][7];
-
+*/
             New485Ladder[SECONDLINE_BASE+EditBlanck+5]= ((sRamDArry[mCallMe]-0x40)/10) + '0';
             New485Ladder[SECONDLINE_BASE+EditBlanck+6]= ((sRamDArry[mCallMe]-0x40)%10) + '0';
             break;
@@ -1865,6 +1758,8 @@ void    __attribute__((section(".usercode"))) CanComDsp(void)
         case    0x81:
         case    0x82:
         case    0x83:
+			DspBdName(3);
+/*
             New485Ladder[SECONDLINE_BASE+EditBlanck+0]=BdName[3][0];
             New485Ladder[SECONDLINE_BASE+EditBlanck+1]=BdName[3][1];
             New485Ladder[SECONDLINE_BASE+EditBlanck+2]=BdName[3][2];
@@ -1873,10 +1768,12 @@ void    __attribute__((section(".usercode"))) CanComDsp(void)
             New485Ladder[SECONDLINE_BASE+EditBlanck+5]=BdName[3][5];
             New485Ladder[SECONDLINE_BASE+EditBlanck+6]=BdName[3][6];
             New485Ladder[SECONDLINE_BASE+EditBlanck+7]=BdName[3][7];
-
+*/
             New485Ladder[SECONDLINE_BASE+EditBlanck+3]= (sRamDArry[mCallMe] & 0x03) + '1';
             break;
         default:
+			DspBdName(4);
+/*
             New485Ladder[SECONDLINE_BASE+EditBlanck+0]=BdName[4][0];
             New485Ladder[SECONDLINE_BASE+EditBlanck+1]=BdName[4][1];
             New485Ladder[SECONDLINE_BASE+EditBlanck+2]=BdName[4][2];
@@ -1885,6 +1782,7 @@ void    __attribute__((section(".usercode"))) CanComDsp(void)
             New485Ladder[SECONDLINE_BASE+EditBlanck+5]=BdName[4][5];
             New485Ladder[SECONDLINE_BASE+EditBlanck+6]=BdName[4][6];
             New485Ladder[SECONDLINE_BASE+EditBlanck+7]=BdName[4][7];
+*/
             sRamDArry[mCallMe]=0x00;
             break;
     }   
@@ -1987,36 +1885,37 @@ void    __attribute__((section(".usercode"))) Input(LocalType  pt)
 	switch(pt){
 		case	0:
 			i=(LocalType)sRamDArry[I_EMG];
-			i= ~i;
-			SetBitData(i);
+//			i= ~i;
+//			SetBitData(i);
 			break;
 		case	1:
 			i=(LocalType)sRamDArry[I_SU1];
-			i= ~i;
-			SetBitData(i);
+//			i= ~i;
+//			SetBitData(i);
 			break;
 		case	2:
 			i=(LocalType)sRamDArry[I_GR];
-			i= ~i;
-			SetBitData(i);
+//			i= ~i;
+//			SetBitData(i);
 			break;
 		case	3:
 			i=(LocalType)sRamDArry[I_FIRE];
-			i= ~i;
-			SetBitData(i);
+//			i= ~i;
+//			SetBitData(i);
 			break;
 		case	4:
 			i=(LocalType)sRamDArry[I_X_0];
-			i= ~i;
-			SetBitData(i);
+//			i= ~i;
+//			SetBitData(i);
 			break;
 		case	5:
 			i=(LocalType)sRamDArry[I_FS0];
-			i= ~i;
-			SetBitData(i);
+//			i= ~i;
+//			SetBitData(i);
 			break;
 	}
-													
+
+	SetBitData(~i);												
 	EditBlanck=tmpedit;
 }
 
@@ -2087,6 +1986,54 @@ void    __attribute__((section(".usercode"))) MemDsp(void)
 }
 
 
+void    __attribute__((section(".usercode"))) CurrentSpeedDsp(unsigned int pt)
+{
+    unsigned int chun,bek,sip,il,org;
+
+/*
+	chun=0;
+	bek=0;
+	sip=0;
+	il=0;
+*/
+    org=(unsigned int)(CurMeterPerMin % 10000);
+	chun=(org/1000);
+
+    org=(unsigned int)(org % 1000);
+    bek=(org/100);
+
+    org=(unsigned int)(org % 100);
+    sip=(org/10);
+
+    il=(unsigned int)(org % 10);
+
+/*
+    sip=(org/100);
+
+
+    if(chun)    il=(chun%10);
+    
+    if(chun)    sip=(chun/10);
+    if(sip)     sip=(sip%10);
+
+    if(chun)    bek=(chun/100);
+    if(bek)     bek=(bek%10);
+
+    if(chun)    chun=chun/1000;
+    if(chun)    chun=(chun%10);
+*/
+	New485Ladder[2+(pt+0)]=' ';
+	New485Ladder[2+(pt+1)]=' ';
+	New485Ladder[2+(pt+2)] =chun + '0';
+	New485Ladder[2+(pt+3)] =bek  + '0';
+	New485Ladder[2+(pt+4)]=sip  + '0';
+	New485Ladder[2+(pt+5)]='.';
+	New485Ladder[2+(pt+6)]=il   + '0';
+	New485Ladder[2+(pt+7)]='m';
+	New485Ladder[2+(pt+8)]='p';
+	New485Ladder[2+(pt+9)]='m';
+}
+
 
 void    __attribute__((section(".usercode"))) SpeedDsp(void)
 {
@@ -2114,78 +2061,34 @@ void    __attribute__((section(".usercode"))) SpeedDsp(void)
 	else					tmpspddsp=0;
 
 	if( (bCarUpMove || bCarDnMove) || (tmpspddsp > 0) ){ 
-	
-	    chun=(unsigned int)CurMeterPerMin;
-	
-	    if(chun)    il=(chun%10);
-	    
-	    if(chun)    sip=(chun/10);
-	    if(sip)     sip=(sip%10);
-	
-	    if(chun)    bek=(chun/100);
-	    if(bek)     bek=(bek%10);;
-	
-	    if(chun)    chun=chun/1000;
-	    if(chun)    chun=(chun%10);
-        
+		if(PerfectAuto()){
+			CurrentSpeedDsp(6);
 
-   		if(New_Spd_SystemChk()){
-			if(PerfectAuto()){
-	            New485Ladder[2+6] =chun + '0';
-	            New485Ladder[2+7] =bek  + '0';
-	            New485Ladder[2+8]=sip   + '0';
-	            New485Ladder[2+9]='.';
-	            New485Ladder[2+10]=il   + '0';
-	            New485Ladder[2+11]='m';
-	            New485Ladder[2+12]='p';
-	            New485Ladder[2+13]='m';
-	            New485Ladder[2+14]=' ';
-	            New485Ladder[2+15]=' ';
+            New485Ladder[2+14]=' ';
+            New485Ladder[2+15]=' ';
 
-	            New485Ladder[2+14]='-';
-	            New485Ladder[2+15]=' ';
-	
-				if(bUnd){
-	            	New485Ladder[2+15]='D';
-				}
-				else if(CurSpeed==SPEED_LOW){
-	            	New485Ladder[2+15]='L';
-				}
-				else if(CurSpeed==SPEED_MID){
-	            	New485Ladder[2+15]='M';
-				}
-				else if(CurSpeed==SPEED_HIGH){
-	            	New485Ladder[2+15]='H';
-				}
-				else{
-	            	New485Ladder[2+15]='Z';
-				}
+            New485Ladder[2+14]='-';
+            New485Ladder[2+15]=' ';
+
+			if(bUnd){
+            	New485Ladder[2+15]='D';
+			}
+			else if(CurSpeed==SPEED_LOW){
+            	New485Ladder[2+15]='L';
+			}
+			else if(CurSpeed==SPEED_MID){
+            	New485Ladder[2+15]='M';
+			}
+			else if(CurSpeed==SPEED_HIGH){
+            	New485Ladder[2+15]='H';
 			}
 			else{
-	            New485Ladder[2+6]=' ';
-	            New485Ladder[2+7]=' ';
-	            New485Ladder[2+8] =chun + '0';
-	            New485Ladder[2+9] =bek  + '0';
-	            New485Ladder[2+10]=sip  + '0';
-	            New485Ladder[2+11]='.';
-	            New485Ladder[2+12]=il   + '0';
-	            New485Ladder[2+13]='m';
-	            New485Ladder[2+14]='p';
-	            New485Ladder[2+15]='m';
+            	New485Ladder[2+15]='Z';
 			}
 		}
 		else{
-	           New485Ladder[2+6]=' ';
-	           New485Ladder[2+7]=' ';
-	           New485Ladder[2+8] =chun + '0';
-	           New485Ladder[2+9] =bek  + '0';
-	           New485Ladder[2+10]=sip  + '0';
-	           New485Ladder[2+11]='.';
-	           New485Ladder[2+12]=il   + '0';
-	           New485Ladder[2+13]='m';
-	           New485Ladder[2+14]='p';
-	           New485Ladder[2+15]='m';
-		}	 
+			CurrentSpeedDsp(6);
+		}
 	}    
 	else{
 	    New485Ladder[2+6]=' ';
@@ -2325,11 +2228,27 @@ unsigned int __attribute__((section(".usercode"))) Default_Cur_State_Display(voi
 }
 
 
+unsigned int __attribute__((section(".usercode"))) yymmdd_Dsp(unsigned int pt)
+{
+	New485Ladder[SECONDLINE_BASE+(pt+0)] =(sRamDArry[Year]    >> 4)      + '0';          
+	New485Ladder[SECONDLINE_BASE+(pt+1)] =(sRamDArry[Year]    & 0x0f)    + '0';          
+	New485Ladder[SECONDLINE_BASE+(pt+2)] ='-';          
+	New485Ladder[SECONDLINE_BASE+(pt+3)] =(sRamDArry[Month]   >> 4)      + '0';          
+	New485Ladder[SECONDLINE_BASE+(pt+4)] =(sRamDArry[Month]   & 0x0f)    + '0';          
+	New485Ladder[SECONDLINE_BASE+(pt+5)] ='-';          
+	New485Ladder[SECONDLINE_BASE+(pt+6)] =(sRamDArry[Day]     >> 4)      + '0';          
+	New485Ladder[SECONDLINE_BASE+(pt+7)] =(sRamDArry[Day]     & 0x0f)    + '0';     
+	return(0);     
+}
+
+
+
+
 unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
 {
-    LocalType  i,j,k;
+    LocalType  i,j,k,sig;
 
-	unsigned long tx1,tx2,tx3;
+	unsigned long tx1,tx2,tx3,slippulse;
 
     k=cF_NormalDsp;
 
@@ -2359,19 +2278,18 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
             RpmDsp485();
             break;
         case    3:
-			AmpDsp(CurAmp);
-/*
-            New485Ladder[SECONDLINE_BASE+0] =(sRamDArry[Hour]    >> 4)      + '0';          
-            New485Ladder[SECONDLINE_BASE+1] =(sRamDArry[Hour]    &  0x0f)   + '0';          
-            New485Ladder[SECONDLINE_BASE+2] ='/';          
-            New485Ladder[SECONDLINE_BASE+3] =(sRamDArry[Minuate] >> 4)      + '0';          
-            New485Ladder[SECONDLINE_BASE+4] =(sRamDArry[Minuate] & 0x0f)    + '0';          
-            New485Ladder[SECONDLINE_BASE+5] ='/';          
-            New485Ladder[SECONDLINE_BASE+6] =(sRamDArry[sec]     >> 4)      + '0';          
-            New485Ladder[SECONDLINE_BASE+7] =(sRamDArry[sec]     & 0x0f)    + '0';          
-*/
+			if(WhoAutolanding==L1000_AUTOLANDING_485){
+//24.00a
+				tx1=(unsigned long)CurAmp;
+				tx2=(tx1 * (unsigned long)2400);
+				tx2=(tx2/(unsigned long)8192);
+				AmpDsp((unsigned int)tx2);
+			}
+			else	AmpDsp(CurAmp);
             break;
         case    4:
+			yymmdd_Dsp(0);
+/*
             New485Ladder[SECONDLINE_BASE+0] =(sRamDArry[Year]    >> 4)      + '0';          
             New485Ladder[SECONDLINE_BASE+1] =(sRamDArry[Year]    & 0x0f)    + '0';          
             New485Ladder[SECONDLINE_BASE+2] ='/';          
@@ -2380,6 +2298,7 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
             New485Ladder[SECONDLINE_BASE+5] ='/';          
             New485Ladder[SECONDLINE_BASE+6] =(sRamDArry[Day]     >> 4)      + '0';          
             New485Ladder[SECONDLINE_BASE+7] =(sRamDArry[Day]     & 0x0f)    + '0';          
+*/
             break;
         case    5:
             New485Ladder[SECONDLINE_BASE+0] =(sRamDArry[Year]    >> 4)      + '0';          
@@ -2438,29 +2357,56 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
         case    19:
 			if(!bMoveCar){
 				if(bSlipWard){					// upward
-					if(SlipOrgPulse >= SlipArrivePulse){
-						PulseToMm((unsigned long)(SlipOrgPulse - SlipArrivePulse));
-						Mm_Dsp((unsigned long)(MmBuf));
-	    				New485Ladder[SECONDLINE_BASE+EditBlanck+0] ='-';          
+					if(SlipOrgPulse > SlipArrivePulse){
+						slippulse=(SlipOrgPulse - SlipArrivePulse);
+						sig='-';
+//						PulseToMm((unsigned long)(SlipOrgPulse - SlipArrivePulse));
+//						Mm_Dsp((unsigned long)(MmBuf));
+//	    				New485Ladder[SECONDLINE_BASE+EditBlanck+0] ='-';          
 					}
 					else{
-						PulseToMm((unsigned long)(SlipArrivePulse-SlipOrgPulse));
-						Mm_Dsp((unsigned long)(MmBuf));
-	    				New485Ladder[SECONDLINE_BASE+EditBlanck+0] ='+';          
+						slippulse=(SlipArrivePulse-SlipOrgPulse);
+						sig='+';
+//						PulseToMm((unsigned long)(SlipArrivePulse-SlipOrgPulse));
+//						Mm_Dsp((unsigned long)(MmBuf));
+//	    				New485Ladder[SECONDLINE_BASE+EditBlanck+0] ='+';          
 					}
 				}
 				else{
 					if(SlipOrgPulse >= SlipArrivePulse){
-						PulseToMm((unsigned long)(SlipOrgPulse - SlipArrivePulse));
-						Mm_Dsp((unsigned long)(MmBuf));
-	    				New485Ladder[SECONDLINE_BASE+EditBlanck+0] ='+';          
+						slippulse=(SlipOrgPulse - SlipArrivePulse);
+						sig='+';
+
+//						PulseToMm((unsigned long)(SlipOrgPulse - SlipArrivePulse));
+//						Mm_Dsp((unsigned long)(MmBuf));
+//	    				New485Ladder[SECONDLINE_BASE+EditBlanck+0] ='+';          
 					}
 					else{
-						PulseToMm((unsigned long)(SlipArrivePulse-SlipOrgPulse));
-						Mm_Dsp((unsigned long)(MmBuf));
-	    				New485Ladder[SECONDLINE_BASE+EditBlanck+0] ='-';          
+						slippulse=(SlipArrivePulse-SlipOrgPulse);
+						sig='-';
+//						PulseToMm((unsigned long)(SlipArrivePulse-SlipOrgPulse));
+//						Mm_Dsp((unsigned long)(MmBuf));
+//	    				New485Ladder[SECONDLINE_BASE+EditBlanck+0] ='-';          
 					}
 				}
+
+				PulseToMm(slippulse);
+				Mm_Dsp((unsigned long)(MmBuf));
+	    		New485Ladder[SECONDLINE_BASE+EditBlanck+0] =(unsigned char)(sig);          
+
+
+
+				i=sRamDArry[mRunFloor];
+				i=(i * 2);
+	            New485Ladder[SECONDLINE_BASE+EditBlanck+10] ='/';          
+	            New485Ladder[SECONDLINE_BASE+EditBlanck+11] = cF_FLRDSPCH((unsigned long)i);          
+	            New485Ladder[SECONDLINE_BASE+EditBlanck+12] = cF_FLRDSPCH((unsigned long)(i+1));          
+
+				i=(sRamDArry[DEST_FLR] & ONLY_FLR);
+				i=(i * 2);
+	            New485Ladder[SECONDLINE_BASE+EditBlanck+13] ='-';          
+	            New485Ladder[SECONDLINE_BASE+EditBlanck+14] = cF_FLRDSPCH((unsigned long)i);          
+	            New485Ladder[SECONDLINE_BASE+EditBlanck+15] = cF_FLRDSPCH((unsigned long)(i+1));          
 			}
 			else	Mm_Dsp((unsigned long)(0));
         	break;
@@ -2473,11 +2419,18 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
 			else	Mm_Dsp((unsigned long)(0));
         	break;
         case    21:
-			Mm_Dsp((unsigned long)(TestYou));
+			Mm_Dsp((unsigned long)(Flr_Slip));
+
+			i=sRamDArry[mcurfloor];
+			i=(i * 2);
+            New485Ladder[SECONDLINE_BASE+EditBlanck+10] ='/';          
+            New485Ladder[SECONDLINE_BASE+EditBlanck+11] = cF_FLRDSPCH((unsigned long)i);          
+            New485Ladder[SECONDLINE_BASE+EditBlanck+12] = cF_FLRDSPCH((unsigned long)(i+1));          
+        	break;
+        case    22:
+//            CurEncoderPulse(PlusLevelOffset);
         	break;
 /*
-        case    22:
-        	break;
         case    23:
         	break;
         case    24:
@@ -2561,32 +2514,6 @@ unsigned int  __attribute__((section(".usercode"))) CalendarChk(void)
 
 
 
-/*
-unsigned int __attribute__((section(".usercode"))) SensorPositionDisplay(unsigned int pt)
-{
-    LocalType  i,val;
-
-	New485Ladder[FIRSTLINE_BASE+13]=(unsigned char)((pt/10) + '0');
-	New485Ladder[FIRSTLINE_BASE+14]=(unsigned char)((pt%10) + '0');
-
-	EditBlanck=7;
-
-	i=(pt * 2);
-	val=SensorPositionBuf[i];
-	if(val > 9999)	val = 9999;	
-	Chun_Dsp(val,0);
-
-	i++;
-	EditBlanck=(EditBlanck + 5);
-	val=SensorPositionBuf[i];
-	if(val > 9999)	val = 9999;	
-	Chun_Dsp(val,0);
-
-	EditBlanck=0;
-
-	return(0);		
-}
-*/
 
 
 
@@ -2598,62 +2525,65 @@ unsigned int __attribute__((section(".usercode"))) SensorPositionDisplay(unsigne
 
 	switch(pt){
 		case	SENSOR_LENGTH:
-			PulseToMm(GET_LONG(BASE_SENSOR_LENGTH));		
+			PulseToMm(GET_LONG(BASE_SENSOR_PULSE));		
 			break;
 		case	PLANK_LENGTH:
-			PulseToMm(GET_LONG(BASE_PLANK_LENGTH));		
+			PulseToMm(GET_LONG(BASE_PLANK_PULSE));		
 			break;
 		case	SDS_LENGTH:
 	    	OneceUseBuf1=FLOOR_COUNT(0);
-			OneceUseBuf2=GET_LONG(BASE_SDS_LENGTH);
+			OneceUseBuf2=GET_LONG(BASE_SDS_PULSE);
 			if(OneceUseBuf2 > 0)	OneceUseBuf2=(OneceUseBuf2- OneceUseBuf1);
 			PulseToMm(OneceUseBuf2);		
 			break;
 		case	SUS_LENGTH:
 	    	OneceUseBuf1=FLOOR_COUNT(cF_TOPFLR);
-			OneceUseBuf2=GET_LONG(BASE_SUS_LENGTH);
+			OneceUseBuf2=GET_LONG(BASE_SUS_PULSE);
 			if(OneceUseBuf2 > 0)	OneceUseBuf2=(OneceUseBuf1- OneceUseBuf2);
 			PulseToMm(OneceUseBuf2);		
 			break;
 		case	SD1_LENGTH:
 	    	OneceUseBuf1=FLOOR_COUNT(0);
-			OneceUseBuf2=GET_LONG(BASE_SD1_LENGTH);
+			OneceUseBuf2=GET_LONG(BASE_SD1_PULSE);
 			if(OneceUseBuf2 > 0)	OneceUseBuf2=(OneceUseBuf2- OneceUseBuf1);
 			PulseToMm(OneceUseBuf2);		
 			break;
 		case	SU1_LENGTH:
 	    	OneceUseBuf1=FLOOR_COUNT(cF_TOPFLR);
-			OneceUseBuf2=GET_LONG(BASE_SU1_LENGTH);
+			OneceUseBuf2=GET_LONG(BASE_SU1_PULSE);
 			if(OneceUseBuf2 > 0)	OneceUseBuf2=(OneceUseBuf1- OneceUseBuf2);
 			PulseToMm(OneceUseBuf2);		
 			break;
 		case	X1_LENGTH:		// dn limt
 	    	OneceUseBuf1=FLOOR_COUNT(0);
-			OneceUseBuf2=GET_LONG(BASE_X1_LENGTH);
+			OneceUseBuf2=GET_LONG(BASE_X1_PULSE);
 			if(OneceUseBuf2 > 0)	OneceUseBuf2=(OneceUseBuf2- OneceUseBuf1);
 			PulseToMm(OneceUseBuf2);		
 			break;
 		case	X0_LENGTH:		// up limt
 	    	OneceUseBuf1=FLOOR_COUNT(cF_TOPFLR);
-			OneceUseBuf2=GET_LONG(BASE_X0_LENGTH);
+			OneceUseBuf2=GET_LONG(BASE_X0_PULSE);
 			if(OneceUseBuf2 > 0)	OneceUseBuf2=(OneceUseBuf2- OneceUseBuf1);
 			PulseToMm(OneceUseBuf2);		
 			break;
 		case	CENTER_LENGTH:
-			OneceUseBuf2=GET_LONG(BASE_CENTER_LENGTH);
+			OneceUseBuf2=GET_LONG(BASE_CENTER_PULSE);
 			PulseToMm(OneceUseBuf2);		
 			break;
 		case	NC2_LENGTH:
 			PulseToMm((unsigned long)(0));		
 			break;
 		case	L_DEC_LENGTH:
-			MmBuf=(unsigned long)(GET_LONG(DEC_LENGTH_SPD_LOW));
+			GetDecreasePulse(SPEED_LOW);
+			PulseToMm(CurSpdDecPulse);		
 			break;
 		case	M_DEC_LENGTH:
-			MmBuf=(unsigned long)(GET_LONG(DEC_LENGTH_SPD_MID));
+			GetDecreasePulse(SPEED_MID);
+			PulseToMm(CurSpdDecPulse);		
 			break;
 		case	H_DEC_LENGTH:
-			MmBuf=(unsigned long)(GET_LONG(DEC_LENGTH_SPD_HIGH));
+			GetDecreasePulse(SPEED_HIGH);
+			PulseToMm(CurSpdDecPulse);		
 			break;
 //		case	LEVEL_POSITION:
 		default:
@@ -3006,69 +2936,72 @@ void  __attribute__((section(".usercode"))) GroupSelect_New(void)
 			LadderGroup=EL_GROUP;
             break;
         case    GROUP_10:
+			LadderGroup=FLR_OFFSET_GROUP;
+			break;
+        case    GROUP_11:
 			LadderGroup=OPEN_WAIT_GROUP;
             break;
-        case    GROUP_11:
+        case    GROUP_12:
 			LadderGroup=NCNO1_GROUP;
             break;
-        case    GROUP_12:
+        case    GROUP_13:
 			LadderGroup=NCNO2_GROUP;
             break;
-        case    GROUP_13:
+        case    GROUP_14:
 			LadderGroup=NCNO3_GROUP;
             break;
-        case    GROUP_14:
+        case    GROUP_15:
 			LadderGroup=INPORT1_GROUP;
             break;
-        case    GROUP_15:
+        case    GROUP_16:
 			LadderGroup=INPORT2_GROUP;
             break;
-        case    GROUP_16:
+        case    GROUP_17:
 			LadderGroup=OUTPORT_GROUP;
             break;            
-        case    GROUP_17:
+        case    GROUP_18:
 			LadderGroup=ERROR_GROUP;
             break;
-        case    GROUP_18:
+        case    GROUP_19:
 			LadderGroup=INV_PAR_GROUP_00;
 			break;
-        case    GROUP_19:
+        case    GROUP_20:
 			LadderGroup=INV_PAR_GROUP_01;
 			break;
-        case    GROUP_20:
+        case    GROUP_21:
 			LadderGroup=INV_PAR_GROUP_02;
 			break;
-        case    GROUP_21:
+        case    GROUP_22:
 			LadderGroup=INV_PAR_GROUP_03;
 			break;
-        case    GROUP_22:
+        case    GROUP_23:
 			LadderGroup=INV_PAR_GROUP_04;
 			break;
-        case    GROUP_23:
+        case    GROUP_24:
 			LadderGroup=INV_PAR_GROUP_05;
 			break;
-        case    GROUP_24:
+        case    GROUP_25:
 			LadderGroup=INV_PAR_GROUP_06;
 			break;
-        case    GROUP_25:
+        case    GROUP_26:
 			LadderGroup=INV_PAR_GROUP_07;
 			break;
-        case    GROUP_26:
+        case    GROUP_27:
 			LadderGroup=INV_PAR_GROUP_08;
 			break;
-        case    GROUP_27:
+        case    GROUP_28:
 			LadderGroup=INV_PAR_GROUP_09;
 			break;
-        case    GROUP_28:
+        case    GROUP_29:
 			LadderGroup=INV_PAR_GROUP_10;
 			break;
-      	case    GROUP_29:
+      	case    GROUP_30:
 			LadderGroup=INV_PAR_GROUP_11;
 			break;
-		case    GROUP_30:
+		case    GROUP_31:
 			LadderGroup=INV_PAR_GROUP_12;
 			break;
-        case    GROUP_31:
+        case    GROUP_32:
 			LadderGroup=INV_PAR_GROUP_13;
 			break;
 		default:
@@ -3082,9 +3015,8 @@ void  __attribute__((section(".usercode"))) GroupSelect_New(void)
 void  __attribute__((section(".usercode"))) GroupSelect(void)
 {
 
-//	if(New_Spd_SystemChk()){
 
-		if(bHostAutoLanding){
+		if(bInvCommActive485){
 			GroupSelect_New();
 		}
 		else{
@@ -3114,27 +3046,30 @@ void  __attribute__((section(".usercode"))) GroupSelect(void)
 					LadderGroup=EL_GROUP;
 		            break;
 		        case    GROUP_09:
+					LadderGroup=FLR_OFFSET_GROUP;
+					break;
+		        case    GROUP_10:
 					LadderGroup=OPEN_WAIT_GROUP;
 		            break;
-		        case    GROUP_10:
+		        case    GROUP_11:
 					LadderGroup=NCNO1_GROUP;
 		            break;
-		        case    GROUP_11:
+		        case    GROUP_12:
 					LadderGroup=NCNO2_GROUP;
 		            break;
-		        case    GROUP_12:
+		        case    GROUP_13:
 					LadderGroup=NCNO3_GROUP;
 		            break;
-		        case    GROUP_13:
+		        case    GROUP_14:
 					LadderGroup=INPORT1_GROUP;
 		            break;
-		        case    GROUP_14:
+		        case    GROUP_15:
 					LadderGroup=INPORT2_GROUP;
 		            break;
-		        case    GROUP_15:
+		        case    GROUP_16:
 					LadderGroup=OUTPORT_GROUP;
 		            break;            
-		        case    GROUP_16:
+		        case    GROUP_17:
 					LadderGroup=ERROR_GROUP;
 		            break;
 				default:
@@ -3282,9 +3217,12 @@ void  __attribute__((section(".usercode"))) NewMenuStart(void)
         case    EL_GROUP:
             MaxSubMenu=EL_GROUP_MAX;
             break;		
+        case    FLR_OFFSET_GROUP:
+            MaxSubMenu=(cF_TOPFLR+1);
+			break;
 		default:
 			#ifdef		AUTO_LANDING_COMM
-				if(bHostAutoLanding){
+				if(bInvCommActive485){
 					Inv_Par_NewMenuStart();
 				}
 			#endif
@@ -3312,6 +3250,15 @@ void  __attribute__((section(".usercode"))) DigitStringMessage(void)
     LocalType i,value;
 
     switch(LadderGroup){
+        case    FLR_OFFSET_GROUP:
+				if(DigitData > LULD_OFFSET_CENTER)	value=(DigitData-LULD_OFFSET_CENTER);
+				else								value=(DigitData);
+	            New485Ladder[SECONDLINE_BASE+EditBlanck+0]= (unsigned char)(value + '0');
+				New485Ladder[SECONDLINE_BASE+EditBlanck+1]='m';	
+				New485Ladder[SECONDLINE_BASE+EditBlanck+2]='m';	
+				if(DigitData > LULD_OFFSET_CENTER)	New485Ladder[SECONDLINE_BASE+EditBlanck-1]='-';
+				else								New485Ladder[SECONDLINE_BASE+EditBlanck-1]=' ';	
+				break;
 /*
         case    FLR_GROUP:
             if((LadderGroupSub == 2) || (LadderGroupSub == 4) || (LadderGroupSub == 5) || (LadderGroupSub == 6)){
@@ -3355,23 +3302,6 @@ void  __attribute__((section(".usercode"))) DigitStringMessage(void)
                 New485Ladder[SECONDLINE_BASE+EditBlanck+ShiftCnt+2]='e';          
                 New485Ladder[SECONDLINE_BASE+EditBlanck+ShiftCnt+3]='c';          
             }
-
-/*
-            else if((LadderGroupSub >= 13) && (LadderGroupSub <= 17)){
-                New485Ladder[SECONDLINE_BASE+EditBlanck+ShiftCnt+0]='H';          
-                New485Ladder[SECONDLINE_BASE+EditBlanck+ShiftCnt+1]='s';          
-                New485Ladder[SECONDLINE_BASE+EditBlanck+ShiftCnt+2]='e';          
-                New485Ladder[SECONDLINE_BASE+EditBlanck+ShiftCnt+3]='c';          
-            }
-            else if((LadderGroupSub > 12) && (LadderGroupSub <= 21)){
-                New485Ladder[SECONDLINE_BASE+EditBlanck+ShiftCnt+0]='m';          
-                New485Ladder[SECONDLINE_BASE+EditBlanck+ShiftCnt+1]='s';          
-                New485Ladder[SECONDLINE_BASE+EditBlanck+ShiftCnt+2]='e';          
-                New485Ladder[SECONDLINE_BASE+EditBlanck+ShiftCnt+3]='c';          
-            }
-*/
-
-//            else if((LadderGroupSub == 7) || (LadderGroupSub == 9) || (LadderGroupSub == 10) || (LadderGroupSub == 12)){
             else if((LadderGroupSub == 9) || (LadderGroupSub == 10)){
                 New485Ladder[SECONDLINE_BASE+EditBlanck+ShiftCnt+0]='H';          
                 New485Ladder[SECONDLINE_BASE+EditBlanck+ShiftCnt+1]='s';          
@@ -3591,8 +3521,8 @@ void  __attribute__((section(".usercode"))) DigitStringMessage(void)
 					}
 					SensorPositionDisplay(DigitData);
 					break;
-
-
+				default:
+					break;
 			}
 			break;
        default:
@@ -3714,16 +3644,6 @@ void  __attribute__((section(".usercode"))) Integer_Digit(void)
 	}
 
 
-/*
-#ifdef		AUTO_LANDING_COMM
-	if(bHostAutoLanding){
-		if( (LadderGroup >= INV_PAR_GROUP_00) && (LadderGroup < INV_PAR_GROUP_END)){
-			Inv_Par_DataSort(DigitData);					
-		}
-	}
-#endif
-*/
-
     DigitStringMessage();
 
 
@@ -3734,7 +3654,6 @@ void  __attribute__((section(".usercode"))) Integer_Digit(void)
 	        New485Ladder[SECONDLINE_BASE+EditBlanck+ShiftCnt+2]='n';   
 		}
 	}     
-
 }
 
 
@@ -3760,6 +3679,42 @@ void  __attribute__((section(".usercode"))) MinSec(void)
 /////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////
+void  __attribute__((section(".usercode"))) FlrOffsetGroup(void)
+{
+    LocalType i;
+
+	FirstMenuReDsp(4) ;     
+
+    i=(LadderGroupSub + GroupBaseAddr);
+    Cursor=0;
+    ShiftCnt=0;
+    EditBlanck=7;
+    EditStatus=DIGIT_STRING_EDIT;
+	DigitMaxValue=(LULD_OFFSET_MAX+1);
+    DigitMinValue=0;
+    DigitData=cF_FLRDSPCH((unsigned long)(i+0));  
+               
+    Integer_Digit();                   
+}
+
+
+void  __attribute__((section(".usercode"))) FlrOffsetGroupSave(void)
+{
+/*
+	offset=(offset *2);
+	offset=(offset + F_FlrDspCh);
+		
+    DspCharSave(offset,ShiftCnt);
+*/
+
+    LocalType i;
+
+    i=(LadderGroupSub + GroupBaseAddr);
+    GetFlashDataToBufRam(F_LEVEL01);
+    b_LdTmpBufRam(i)=(LocalType)(DigitData);
+    flash_write_DspChar(F_LEVEL01);
+}
+
 
 
 void  __attribute__((section(".usercode"))) FlrDspGroup(LocalType offset)
@@ -3776,6 +3731,8 @@ void  __attribute__((section(".usercode"))) FlrDspGroup(LocalType offset)
 
     New485Ladder[SECONDLINE_BASE+EditBlanck+0]=cF_FLRDSPCH((unsigned long)(i+0));  
     New485Ladder[SECONDLINE_BASE+EditBlanck+1]=cF_FLRDSPCH((unsigned long)(i+1));          
+
+	FirstMenuReDsp(1) ;                                   
 }
 
 
@@ -4021,20 +3978,15 @@ void  __attribute__((section(".usercode"))) TimerGroup(void)
             Integer_Digit();
             break;
 
+        case    0:
+        case    1:
+		case	2:
         case    12:
         case    18:
         case    19:
         case    20:
         case    21:
         case    22:
-//            Cursor=0;
-//            ShiftCnt=5;
-//            EditBlanck=5;
-//            EditStatus=DIGIT_EDIT;
-//            DigitMinValue=0;
-//            DigitMaxValue=65535;
-//            DigitData=iF_FLRDSPCH(F_BrkStTm10);
-
             Cursor=0;
             ShiftCnt=3;
             EditBlanck=5;
@@ -4090,7 +4042,7 @@ void  __attribute__((section(".usercode"))) TimerGroup(void)
             DigitData=iF_FLRDSPCH(F_BrkStTm50);
             Integer_Digit();
             break;
-*/
+
 
         case    0:
         case    1:
@@ -4105,13 +4057,13 @@ void  __attribute__((section(".usercode"))) TimerGroup(void)
             DigitData=cF_FLRDSPCH((unsigned long)i);
             Integer_Digit();
 			break;
+*/
+
         case    3:
             i=(LadderGroupSub + F_OpWtTm);
             Cursor=0;
             EditBlanck=6;
             EditStatus=DIGIT_EDIT;
-//            ShiftCnt=2;
-//            DigitMaxValue=95;
             ShiftCnt=3;
             DigitMaxValue=200;
             DigitMinValue=0;
@@ -4223,6 +4175,11 @@ void  __attribute__((section(".usercode"))) TimerGroupSave(void)
 void  __attribute__((section(".usercode"))) OnOffGroup(void)
 {
     LocalType i,j,BitValue;
+
+    if(LadderGroup == ONOFF1_GROUP){		
+		FirstMenuReDsp(2) ;                                   
+	}
+
 
     i=((LadderGroupSub/8) + GroupBaseAddr);
     j=(LadderGroupSub%8);
@@ -4524,11 +4481,9 @@ void  __attribute__((section(".usercode"))) IoGroupSave(void)
 
 
 void  __attribute__((section(".usercode"))) DoorGroup(void)
-{
-    LocalType i;
-    
-    i=(LadderGroupSub + GroupBaseAddr);
-
+{    
+	FirstMenuReDsp(3);
+                                   
     Cursor=0;
     ShiftCnt=0;
     EditBlanck=5;
@@ -4882,6 +4837,8 @@ void  __attribute__((section(".usercode"))) UserGroup(void)
             EditBlanck=5;
             EditStatus=CLOCK_EDIT;
 
+			yymmdd_Dsp((EditBlanck+0));
+/*
             New485Ladder[SECONDLINE_BASE+EditBlanck+0] =(sRamDArry[Year]    >> 4)      + '0';          
             New485Ladder[SECONDLINE_BASE+EditBlanck+1] =(sRamDArry[Year]    & 0x0f)    + '0';          
             New485Ladder[SECONDLINE_BASE+EditBlanck+2]='-';          
@@ -4890,12 +4847,15 @@ void  __attribute__((section(".usercode"))) UserGroup(void)
             New485Ladder[SECONDLINE_BASE+EditBlanck+5]='-';          
             New485Ladder[SECONDLINE_BASE+EditBlanck+6] =(sRamDArry[Day]     >> 4)      + '0';          
             New485Ladder[SECONDLINE_BASE+EditBlanck+7] =(sRamDArry[Day]     & 0x0f)    + '0';          
+*/
             break;
         case    OUT_DATE:
             Cursor=0;
             ShiftCnt=8;
             EditBlanck=5;
             EditStatus=CLOCK_EDIT;
+
+			yymmdd_Dsp((EditBlanck+0));
 
             New485Ladder[SECONDLINE_BASE+EditBlanck+0] =(cF_year    >> 4)      + '0';          
             New485Ladder[SECONDLINE_BASE+EditBlanck+1] =(cF_year    & 0x0f)    + '0';          
@@ -4905,6 +4865,7 @@ void  __attribute__((section(".usercode"))) UserGroup(void)
             New485Ladder[SECONDLINE_BASE+EditBlanck+5]='-';          
             New485Ladder[SECONDLINE_BASE+EditBlanck+6] =(cF_day     >> 4)      + '0';          
             New485Ladder[SECONDLINE_BASE+EditBlanck+7] =(cF_day     & 0x0f)    + '0';          
+
             break;
         case    DRIVE_METHOD:
             Cursor=0;
@@ -5030,6 +4991,7 @@ void  __attribute__((section(".usercode"))) UserGroup(void)
 		case    User_G5:
 		case    User_G6:
 		case    User_G8:
+		case    User_G9:
 				break;
 		case    FINAL_ERR_DSP:			
             Cursor=0;
@@ -5041,6 +5003,7 @@ void  __attribute__((section(".usercode"))) UserGroup(void)
             DigitData=0;
             Integer_Digit();
 			break;
+/*
 		case    ENCODER_RATE: 
             Cursor=0;
             ShiftCnt=5;
@@ -5053,6 +5016,7 @@ void  __attribute__((section(".usercode"))) UserGroup(void)
             DigitData=iF_FLRDSPCH((unsigned long)i);
             Integer_Digit();
            break;
+*/
         default:
             break;
     }
@@ -5071,6 +5035,7 @@ void  __attribute__((section(".usercode"))) UserGroup(void)
 unsigned int  __attribute__((section(".usercode"))) NewSpdForceSet(void)
 {
 	SaveVerify = 0x55;
+
 	GetFlashDataToBufRam(F_BLOCK2);
 	b_LdTmpBufRam(F_ManualSpeed)    = P3_SPD;                   
 	b_LdTmpBufRam(F_BatterySpeed)   = NONE_USE_SPD;      
@@ -5078,13 +5043,23 @@ unsigned int  __attribute__((section(".usercode"))) NewSpdForceSet(void)
 	b_LdTmpBufRam(F_FhmSpeed)       = NONE_USE_SPD;     
 	b_LdTmpBufRam(F_Speed1)        	= P1P3_SPD;     
 	b_LdTmpBufRam(F_Speed2)        	= P2P3_SPD;              
-	b_LdTmpBufRam(F_Speed3)        	= P1P2P3_SPD;                    
-	b_LdTmpBufRam(F_SU2SD2_V_SPD3)	= 0;    
-	b_LdTmpBufRam(F_X0X1_V_SPD3)  	= 0;   
+	b_LdTmpBufRam(F_Speed3)        	= P1P2P3_SPD;                 
+	b_LdTmpBufRam(F_Su2Sd2_Velocity)= CHANGE_DEC_LIMIT_SUSD;      	//mpm
+	b_LdTmpBufRam(F_X0X1_Velocity)  = NOT_USE_SPEED;     			//mpm   
 	flash_write_DspChar(F_BLOCK2);
 	
+
+	GetFlashDataToBufRam(F_BLOCK1);
+	bit_LdTmpBufRamSet(F_OnOff0,bFhmOnOff);	
+	flash_write_DspChar(F_BLOCK1);
+
+
+	ELGroupDataLoad();
 	DefaultDecreaseLength_spd3();
-	CaluDecreasePulse();
+	WriteFlash_spd3();
+
+
+	CaluDecreasePulse_spd3();
 
 	SaveVerify = 0x0;
 
@@ -5095,7 +5070,7 @@ unsigned int  __attribute__((section(".usercode"))) NewSpdForceSet(void)
 unsigned int  __attribute__((section(".usercode"))) UserGroupSave(void)
 {
     LocalType i,j,k,l;
-	LocalType block_pt,tmp_new_law,tmp_new_spd,tmp_old_spd;
+	LocalType block_pt,befsystem;
 
     GetFlashDataToBufRam(F_BLOCK2);
 
@@ -5297,14 +5272,10 @@ unsigned int  __attribute__((section(".usercode"))) UserGroupSave(void)
             b_LdTmpBufRam((unsigned long)i)=(LocalType)(DigitData);
             flash_write_DspChar(F_BLOCK2);
             break;
-        case    SYSTEM_SET:			
-			if(WhoAutolanding != 0){
-				DigitData= (DigitData | 0x02);
-			}
-			
+        case    SYSTEM_SET:						
 			i=(unsigned int)cF_SystemSet;
 			if( i == DigitData)	return(0);
-			
+			befsystem=i;
 
 			if( DigitData==OLD_LAW_OLD_SPD)	return(0);
 			if( DigitData==NEW_LAW_OLD_SPD)	return(0);
@@ -5314,19 +5285,8 @@ unsigned int  __attribute__((section(".usercode"))) UserGroupSave(void)
             b_LdTmpBufRam((unsigned long)i)=(unsigned char)(DigitData);
             flash_write_DspChar(F_BLOCK2);
 
-
-			if(New_Law_SystemChk())	tmp_new_law=1;
-			else					tmp_new_law=0;
-
-			if(New_Spd_SystemChk())	tmp_new_spd=1;
-			else					tmp_new_spd=0;
-
-			if(Old_Spd_SystemChk())	tmp_old_spd=1;
-			else					tmp_old_spd=0;
-
-
 			//////////////////////////BLOCK1//////////////////////////
-			if( (New_Law_SystemChk()) && (tmp_new_law==0)){
+			if((DigitData== OLD_LAW_NEW_SPD) &&  (befsystem == NEW_LAW_NEW_SPD)){
     			GetFlashDataToBufRam(F_BLOCK1);
 		        bit_LdTmpBufRamSet(F_OnOff0,bDoorJumperOff    		% 8); 
 		        bit_LdTmpBufRamSet(F_OnOff1,bBrkMgtUse        		% 8);
@@ -5334,103 +5294,6 @@ unsigned int  __attribute__((section(".usercode"))) UserGroupSave(void)
             	flash_write_DspChar(F_BLOCK1);				
 			}
 			//////////////////////////BLOCK1//////////////////////////
-
-			if( (New_Spd_SystemChk()) && (tmp_new_spd==0)){
-				NewSpdForceSet();
-			}
-
-/*
-			#ifndef	AUTO_LANDING_COMM
-			else if( (Old_Spd_SystemChk()) && (tmp_old_spd==0)){
-
-    			GetFlashDataToBufRam(F_BLOCK2);
-		        b_LdTmpBufRam(F_ManualSpeed)    = P3_SPD;          
-		        b_LdTmpBufRam(F_BatterySpeed)   = NONE_USE_SPD;      
-		        b_LdTmpBufRam(F_DecreaseSpeed)  = P1P2_SPD;                    
-		        b_LdTmpBufRam(F_FhmSpeed)       = NONE_USE_SPD;     
-		        b_LdTmpBufRam(F_Etc1Speed)      = NONE_USE_SPD;     
-		        b_LdTmpBufRam(F_Etc2Speed)      = NONE_USE_SPD;     
-		        b_LdTmpBufRam(F_Speed30)        = NONE_USE_SPD;     
-		        b_LdTmpBufRam(F_Speed45)        = NONE_USE_SPD;              
-		        b_LdTmpBufRam(F_Speed60)        = NONE_USE_SPD;                    
-		        b_LdTmpBufRam(F_Speed90)        = NONE_USE_SPD;     
-		        b_LdTmpBufRam(F_Speed105)       = NONE_USE_SPD;     
-		        b_LdTmpBufRam(F_Speed120)       = NONE_USE_SPD;     
-		        b_LdTmpBufRam(F_Speed150)       = NONE_USE_SPD;     
-		        b_LdTmpBufRam(F_Speed180)       = NONE_USE_SPD;     
-		        b_LdTmpBufRam(F_Speed210)       = NONE_USE_SPD;    
-		        b_LdTmpBufRam(F_ElevSpeed)      = SPEED_60;
-		        b_LdTmpBufRam(F_LimitSpeed)     = SPEED_210;
-		        b_LdTmpBufRam(F_Su1Sd1_Velocity)= 90;      //mpm
-		        b_LdTmpBufRam(F_Su2Sd2_Velocity)= 90;      //mpm
-		        b_LdTmpBufRam(F_X0X1_Velocity)  = 210;     //mpm
-				
-
-				NewMpm=GET_LONG(NEW_MPM);
-				if(NewMpm < 300)	NewMpm=(NewMpm * 10);
-
-				if(NewMpm == (unsigned long)300){
-					b_LdTmpBufRam(F_Speed30)        = P1P2P3_SPD;
-		        	b_LdTmpBufRam(F_ElevSpeed)      = SPEED_30;
-				}
-				else if(NewMpm == (unsigned long)450){
-					b_LdTmpBufRam(F_Speed45)        = P1P2P3_SPD;
-					b_LdTmpBufRam(F_Speed30)        = P2P3_SPD;
-
-		        	b_LdTmpBufRam(F_ElevSpeed)      = SPEED_45;
-				}      
-				else if(NewMpm == (unsigned long)600){
-					b_LdTmpBufRam(F_Speed60)        = P1P2P3_SPD;
-					b_LdTmpBufRam(F_Speed45)        = P2P3_SPD;
-					b_LdTmpBufRam(F_Speed30)        = P1P3_SPD;
-
-		        	b_LdTmpBufRam(F_ElevSpeed)      = SPEED_60;
-				}      
-				else if(NewMpm == (unsigned long)900){
-					b_LdTmpBufRam(F_Speed90)        = P1P2P3_SPD;
-					b_LdTmpBufRam(F_Speed60)        = P2P3_SPD;
-					b_LdTmpBufRam(F_Speed45)        = P1P3_SPD;
-
-		        	b_LdTmpBufRam(F_ElevSpeed)      = SPEED_90;
-				}      
-				else if(NewMpm == (unsigned long)1050){
-					b_LdTmpBufRam(F_Speed105)       = P1P2P3_SPD;
-					b_LdTmpBufRam(F_Speed60)        = P2P3_SPD;
-					b_LdTmpBufRam(F_Speed45)        = P1P3_SPD;
-
-		        	b_LdTmpBufRam(F_ElevSpeed)      = SPEED_105;
-				}      
-				else if(NewMpm == (unsigned long)1200){
-					b_LdTmpBufRam(F_Speed120)       = P1P2P3_SPD;
-					b_LdTmpBufRam(F_Speed60)        = P2P3_SPD;
-					b_LdTmpBufRam(F_Speed45)        = P1P3_SPD;
-
-		        	b_LdTmpBufRam(F_ElevSpeed)      = SPEED_120;
-				}      
-				else if(NewMpm == (unsigned long)1500){
-					b_LdTmpBufRam(F_Speed150)       = P1P2P3_SPD;
-					b_LdTmpBufRam(F_Speed60)        = P2P3_SPD;
-					b_LdTmpBufRam(F_Speed45)        = P1P3_SPD;
-
-		        	b_LdTmpBufRam(F_ElevSpeed)      = SPEED_150;
-				}      
-				else if(NewMpm == (unsigned long)1800){
-					b_LdTmpBufRam(F_Speed180)       = P1P2P3_SPD;
-					b_LdTmpBufRam(F_Speed60)        = P2P3_SPD;
-					b_LdTmpBufRam(F_Speed45)        = P1P3_SPD;
-
-		        	b_LdTmpBufRam(F_ElevSpeed)      = SPEED_180;
-				}      
-
-				flash_write_DspChar(F_BLOCK2);
-
-
-		        DefaultDecreaseLength_old();
-		        CaluDecreasePulse();
-
-			}
-			#endif
-*/
 
             break;
         case    NORMAL_DSP:
@@ -5589,45 +5452,16 @@ unsigned int  __attribute__((section(".usercode"))) UserGroupSave(void)
         case    INIT_DATA:
             switch(DigitData){
                 case    1:
-					bSaveFlash=1;
-					MoveCounterx=0;
-					PowerOnTime=0;
+					if(!bMoveCar){
+						bSaveFlash=1;
+						MoveCounterx=0;
+						EEP_Save_All();
+					}
                     break;
                 case    2:
 					if(!bMoveCar){
-
-/*
-						for(i=0;i<E_END;i++){
-							eDArry[i]=0;
-						}
-
-						sRamDArry[mBefErrCntPt]=0;
-						eDArry[eErrCntPt]=0;
-*/
-
 						Flash_ErrClear_All();
 						bSaveFlash=1;
-
-					
-/*
-	               	    for(i=0;i<ERR_SAVE_SIZE;){
-							eDArry[eErrCntPt]=EEPROM_Read_Byte(eErrCntPt);
-							if(eDArry[eErrCntPt] > 0){	
-			        			EEPROM_Write_Byte((unsigned int)(eErrCntPt),0);
-							}            
-	
-							if(!EEPROM_write_Ready()){
-		                  	    eDArry[eSysErCnt+i]=0x0;         
-		                        if( !EEPROM_Write_Byte(eSysErCnt+i,0x0)){
-									i++;
-								}
-							}
-	               	    }
-	
-	            	    sRamDArry[mBefErrCntPt]=0x0;
-	                    eDArry[eErrCntPt]=0x0;
-	                    bSaveErrCnt=0;
-*/
 					}
                     break;
                 case    3:
@@ -5642,11 +5476,13 @@ unsigned int  __attribute__((section(".usercode"))) UserGroupSave(void)
                     break;
             }
             break;
+/*
         case    ENCODER_RATE:
             i=F_StopPulse0;
             i_LdTmpBufRam((unsigned long)i)=(LocalType)(DigitData);
             flash_write_DspChar(F_BLOCK2);
             break;
+*/
         case    HALL_IND_SET:
             HibSet[0]=(New485Ladder[SECONDLINE_BASE+EditBlanck+0] 	- '0');
             HibSet[1]=(New485Ladder[SECONDLINE_BASE+EditBlanck+2] 	- '0');
@@ -5680,36 +5516,44 @@ unsigned int  __attribute__((section(".usercode"))) UserGroupSave(void)
 void  __attribute__((section(".usercode"))) ELGroup(void)
 {
 	unsigned long	tmpPlulsex;
+	unsigned int	i;
 
     switch(LadderGroupSub){
 ///////////////////////////////////////////////
 /////////////long type data////////////////////
 ///////////////////////////////////////////////
         case    SUBNM_ENCODER_PULSE:
+        case    SUBNM_MOTOR_RPM:
 		    Cursor=0;
 		    ShiftCnt=5;
 		    EditBlanck=5;
 		    EditStatus=DIGIT_EDIT;		
 		    DigitMaxValue=0xffff;
 		    DigitMinValue=0;
-		    DigitData=(unsigned int)(GET_LONG((unsigned long)ENCODER_PULSE));    
+			if(LadderGroupSub==SUBNM_ENCODER_PULSE)			DigitData=(unsigned int)(GET_LONG((unsigned long)ENCODER_PULSE));    
+			else if(LadderGroupSub==SUBNM_MOTOR_RPM)		DigitData=(unsigned int)(GET_LONG((unsigned long)RPM));    
 		    Integer_Digit();
             break;
         case    SUBNM_TM_MPM:
 		    Cursor=0;
 		    ShiftCnt=4;
-		    EditBlanck=5;
+		    EditBlanck=4;
 		    EditStatus=DIGIT_EDIT;		
-
-//		    DigitMaxValue=211;
 		    DigitMaxValue=2110;
 		    DigitMinValue=0;
-
 			DigitAttribute=1;	
-
 		    DigitData=(unsigned int)(GET_LONG((unsigned long)NEW_MPM));    
 		    Integer_Digit();
+
+			if(bPlankLandingOk){
+			    EditBlanck=10;		
+				New485Ladder[SECONDLINE_BASE+ (EditBlanck-1)] = '/';                     		
+			    tmpPlulsex=(unsigned int)(PlankMpm);    
+				Chun_Dsp(tmpPlulsex,1);
+			    EditBlanck=4;		
+			}
             break;
+/*
         case    SUBNM_MOTOR_RPM:
 		    Cursor=0;
 		    ShiftCnt=5;
@@ -5720,21 +5564,24 @@ void  __attribute__((section(".usercode"))) ELGroup(void)
 		    DigitData=(unsigned int)(GET_LONG((unsigned long)RPM));    
 		    Integer_Digit();
             break;
+*/
 /////////////////////////////////test
         case    SUBNM_BASE_PULSE:
 		    Cursor=0;
 		    ShiftCnt=3;
 		    EditBlanck=5;
 		    EditStatus=DIGIT_EDIT;		
-		    DigitMaxValue=999;
+		    DigitMaxValue=BEF_LULD_PULSE_MAX;
 		    DigitMinValue=0;
 		    DigitData=(unsigned int)(GET_LONG((unsigned long)BASE_BEF_LULD_PULSE));    
+			if(DigitData > BEF_LULD_PULSE_MAX)	DigitData=0;	
 		    Integer_Digit();
             break;
 /////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////
 /////////////char type data////////////////////
 ///////////////////////////////////////////////
+/*
         case    SUBNM_MANUAL_PORT:
 	    	Cursor=0;
 	        ShiftCnt=0;
@@ -5775,16 +5622,30 @@ void  __attribute__((section(".usercode"))) ELGroup(void)
 	        DigitData=cF_FLRDSPCH((unsigned long)F_FhmSpeed);
 	        Integer_Digit();
             break;
+*/
+        case    SUBNM_MANUAL_PORT:
+        case    SUBNM_BATTERY_PORT:
+        case    SUBNM_DEC_PORT:
+        case    SUBNM_FHM_PORT:
         case    SUBNM_LOW_SPD_PORT:
+        case    SUBNM_MID_SPD_PORT:
+        case    SUBNM_HIGH_SPD_PORT:
 	    	Cursor=0;
 	        ShiftCnt=0;
 	    	EditBlanck=5;
 	        EditStatus=DIGIT_STRING_EDIT;   
 	    	DigitMinValue=0;
 			DigitMaxValue=IO_PORT_MESSAGE_CNT-1;
-	        DigitData=cF_FLRDSPCH((unsigned long)F_Speed1);
+    		if(LadderGroupSub==SUBNM_LOW_SPD_PORT)		DigitData=cF_FLRDSPCH((unsigned long)F_Speed1);
+    		else if(LadderGroupSub==SUBNM_MID_SPD_PORT)	DigitData=cF_FLRDSPCH((unsigned long)F_Speed2);
+    		else if(LadderGroupSub==SUBNM_HIGH_SPD_PORT)DigitData=cF_FLRDSPCH((unsigned long)F_Speed3);
+    		else if(LadderGroupSub==SUBNM_FHM_PORT)		DigitData=cF_FLRDSPCH((unsigned long)F_FhmSpeed);
+    		else if(LadderGroupSub==SUBNM_DEC_PORT)		DigitData=cF_FLRDSPCH((unsigned long)F_DecreaseSpeed);
+    		else if(LadderGroupSub==SUBNM_BATTERY_PORT)	DigitData=cF_FLRDSPCH((unsigned long)F_BatterySpeed);
+    		else if(LadderGroupSub==SUBNM_MANUAL_PORT)	DigitData=cF_FLRDSPCH((unsigned long)F_ManualSpeed);
 	        Integer_Digit();
             break;
+/*
         case    SUBNM_MID_SPD_PORT:
 	    	Cursor=0;
 	        ShiftCnt=0;
@@ -5805,25 +5666,60 @@ void  __attribute__((section(".usercode"))) ELGroup(void)
 	        DigitData=cF_FLRDSPCH((unsigned long)F_Speed3);
 	        Integer_Digit();
             break;
+*/
+
         case    SUBNM_LOW_SPD_DEC_LENTH:
-		    Cursor=0;
-		    ShiftCnt=4;
-		    EditBlanck=5;
-		    EditStatus=DIGIT_EDIT;		
-		    DigitMaxValue=0xffff;
-		    DigitMinValue=0;
-		    DigitData=(unsigned int)(GET_LONG((unsigned long)DEC_LENGTH_SPD_LOW));    
-		    Integer_Digit();
+			if(bAutoLandingActive){			
+				for(i=0;i<16;i++){
+					New485Ladder[i+2]=AUTO_LANDING_FIRST[0][i];
+				}
+				
+				Cursor=0;
+				ShiftCnt=3;
+				EditBlanck=4;
+				EditStatus=DIGIT_EDIT;		
+				DigitMaxValue=999;
+				DigitMinValue=0;
+				DigitAttribute=1;	
+				DigitData=(unsigned int)(ThisUseLowSpd);    
+				Integer_Digit();
+			}
+			else{
+				Cursor=0;
+				ShiftCnt=4;
+				EditBlanck=5;
+				EditStatus=DIGIT_EDIT;		
+				DigitMaxValue=0xffff;
+				DigitMinValue=0;
+		    	DigitData=(unsigned int)(GET_LONG((unsigned long)DEC_LENGTH_SPD_LOW));    
+				Integer_Digit();
+			}	
             break;
         case    SUBNM_MID_SPD_DEC_LENTH:
-		    Cursor=0;
-		    ShiftCnt=5;
-		    EditBlanck=5;
-		    EditStatus=DIGIT_EDIT;		
-		    DigitMaxValue=0xffff;
-		    DigitMinValue=0;
-		    DigitData=(unsigned int)(GET_LONG((unsigned long)DEC_LENGTH_SPD_MID));    
-		    Integer_Digit();
+			if(bAutoLandingActive){			
+				for(i=0;i<16;i++){
+					New485Ladder[i+2]=AUTO_LANDING_FIRST[1][i];
+				}
+				Cursor=0;
+				ShiftCnt=4;
+				EditBlanck=4;
+				EditStatus=DIGIT_EDIT;		
+				DigitMaxValue=1500;
+				DigitMinValue=0;
+				DigitAttribute=1;	
+				DigitData=(unsigned int)(ThisUseMidSpd);    
+				Integer_Digit();
+			}
+			else{
+				Cursor=0;
+				ShiftCnt=5;
+				EditBlanck=5;
+				EditStatus=DIGIT_EDIT;		
+				DigitMaxValue=0xffff;
+				DigitMinValue=0;		
+		    	DigitData=(unsigned int)(GET_LONG((unsigned long)DEC_LENGTH_SPD_MID));    
+				Integer_Digit();
+			}	
             break;
         case    SUBNM_HIGH_SPD_DEC_LENTH:
 		    Cursor=0;
@@ -5837,23 +5733,23 @@ void  __attribute__((section(".usercode"))) ELGroup(void)
             break;
         case    SUBNM_BASE_DEC_MPM:
 		    Cursor=0;
-		    ShiftCnt=4;
+		    ShiftCnt=3;
 		    EditBlanck=5;
 		    EditStatus=DIGIT_EDIT;		
-		    DigitMaxValue=2100;
+		    DigitMaxValue=99;	// max 9.9 mpm
 		    DigitMinValue=0;
 			DigitAttribute=1;	
-			DigitData=(unsigned int)(GET_LONG((unsigned long)BASE_DEC_MPM));    
-			DigitData=(DigitData/100);
+			DigitData=(unsigned int)(ThisUseDecSpd);    
 		    Integer_Digit();
             break;
         case    SUBNM_BASE_DEC_TIME:
 		    Cursor=0;
-		    ShiftCnt=5;
+		    ShiftCnt=6;
 		    EditBlanck=5;
 		    EditStatus=DIGIT_EDIT;		
-		    DigitMaxValue=0xffff;
+		    DigitMaxValue=10000;		// max 10 sec  10.000msec
 		    DigitMinValue=0;
+			DigitAttribute=3;	
 		    DigitData=(unsigned int)(GET_LONG((unsigned long)BASE_DEC_TIME));    
 		    Integer_Digit();
             break;
@@ -5862,8 +5758,9 @@ void  __attribute__((section(".usercode"))) ELGroup(void)
 		    ShiftCnt=5;
 		    EditBlanck=5;
 		    EditStatus=DIGIT_EDIT;		
-		    DigitMaxValue=0xffff;
+		    DigitMaxValue=5000;		// max 5 sec   5.000 sec	
 		    DigitMinValue=0;
+			DigitAttribute=3;	
 		    DigitData=(unsigned int)(GET_LONG((unsigned long)BASE_SCURVE_TIME));    
 		    Integer_Digit();
             break;
@@ -5892,24 +5789,23 @@ void  __attribute__((section(".usercode"))) ELGroup(void)
             ShiftCnt=0;
             EditBlanck=5;
             EditStatus=DIGIT_STRING_EDIT;
-//            DigitMaxValue=SENSOR_POSITION_MESSAGE_CNT;
             DigitMaxValue= (cF_TOPFLR + SENSOR_POSITION_MESSAGE_CNT);
             DigitMinValue=0;
             DigitData=0;
             Integer_Digit();
 				break;
+/*
         case    SUBNM_NOTUSE1:
         case    SUBNM_NOTUSE2:
         case    SUBNM_NOTUSE3:
         case    SUBNM_NOTUSE4:
         case    SUBNM_LIMIT_SU:
-        case    SUBNM_LIMIT_SD:
         case    SUBNM_LOW_SPD_PULSE:
         case    SUBNM_MID_SPD_PULSE:
         case    SUBNM_HIGH_SPD_PULSE:
-
 		    EditStatus=NO_EDIT;		
-			break;		
+			break;
+*/		
 ///////////////////////////////////////////////
 /////////////long type data////////////////////
 ///////////////////////////////////////////////
@@ -5921,7 +5817,7 @@ void  __attribute__((section(".usercode"))) ELGroup(void)
 		    EditStatus=NO_EDIT;		
 		    DigitMaxValue=0xffff;
 		    DigitMinValue=0;
-    		tmpPlulsex=(GET_LONG((unsigned long)BASE_SU1_LENGTH));    
+    		tmpPlulsex=(GET_LONG((unsigned long)BASE_SU1_PULSE));    
 			CurEncoderPulse(tmpPlulsex);
             break;
         case    SUBNM_LIMIT_SD:
@@ -5931,53 +5827,44 @@ void  __attribute__((section(".usercode"))) ELGroup(void)
 		    EditStatus=NO_EDIT;		
 		    DigitMaxValue=0xffff;
 		    DigitMinValue=0;
-    		tmpPlulsex=(GET_LONG((unsigned long)BASE_SD1_LENGTH));    
+    		tmpPlulsex=(GET_LONG((unsigned long)BASE_SD1_PULSE));    
 			CurEncoderPulse(tmpPlulsex);
             break;
+*/
+
+        case    SUBNM_USER_PLANK_MPM:
+		    Cursor=0;
+		    ShiftCnt=3;
+		    EditBlanck=4;
+		    EditStatus=DIGIT_EDIT;		
+		    DigitMaxValue=999;
+		    DigitMinValue=0;
+			DigitAttribute=0;			
+		    DigitData=(unsigned int)(GET_LONG((unsigned long)B_USER_PLANK_LENGTH));    
+		    Integer_Digit();
+			New485Ladder[SECONDLINE_BASE+ (EditBlanck+3)] = 'm';                     		
+			New485Ladder[SECONDLINE_BASE+ (EditBlanck+4)] = 'm';                     		
+				
+////////////////////
+		    EditBlanck=10;		
+			New485Ladder[SECONDLINE_BASE+ (EditBlanck-1)] = '/';                     		
+			tmpPlulsex=(unsigned int)(PlankMpm);
+			Chun_Dsp(tmpPlulsex,1);
+/////////////////////////		
+		    EditBlanck=4;
+			break;
+/*
         case    SUBNM_LOW_SPD_PULSE:
 		    Cursor=0;
 		    ShiftCnt=0;
 		    EditBlanck=3;
 		    EditStatus=NO_EDIT;		
-		    DigitMaxValue=0xffff;
-		    DigitMinValue=0;
-    		tmpPlulsex=(GET_LONG((unsigned long)DEC_PULSE_SPD_LOW));    
-			CurEncoderPulse(tmpPlulsex);
-            break;
-        case    SUBNM_MID_SPD_PULSE:
-		    Cursor=0;
-		    ShiftCnt=0;
-		    EditBlanck=3;
-		    EditStatus=NO_EDIT;		
-		    DigitMaxValue=0xffff;
-		    DigitMinValue=0;
-    		tmpPlulsex=(GET_LONG((unsigned long)DEC_PULSE_SPD_MID));    
-			CurEncoderPulse(tmpPlulsex);
-            break;
-        case    SUBNM_HIGH_SPD_PULSE:
-		    Cursor=0;
-		    ShiftCnt=0;
-		    EditBlanck=3;
-		    EditStatus=NO_EDIT;		
-		    DigitMaxValue=0xffff;
-		    DigitMinValue=0;
-    		tmpPlulsex=(GET_LONG((unsigned long)DEC_PULSE_SPD_HIGH));    
-			CurEncoderPulse(tmpPlulsex);
+//		    DigitMaxValue=0xffff;
+//		    DigitMinValue=0;
+			CurEncoderPulse(SpdL_DecPulse);		
             break;
 */
 
-/*
-        case    SUBNM_BASE_PULSE:
-		    Cursor=0;
-		    ShiftCnt=0;
-		    EditBlanck=3;
-		    EditStatus=NO_EDIT;		
-		    DigitMaxValue=0xffff;
-		    DigitMinValue=0;
-		    DigitData=0;    
-		    Integer_Digit();
-            break;
-*/
         case    SUBNM_MPM_VARIABLE:
 		    Cursor=0;
 		    ShiftCnt=5;
@@ -5985,12 +5872,8 @@ void  __attribute__((section(".usercode"))) ELGroup(void)
 		    EditStatus=NO_EDIT;		
 		    DigitMaxValue=0xffff;
 		    DigitMinValue=0;
-
-    		tmpPlulsex=(GET_LONG((unsigned long)MPM_VARIABLE));    
-			CurEncoderPulse(tmpPlulsex);
-
-//		    DigitData=(unsigned int)(GET_LONG((unsigned long)MPM_VARIABLE));    
-//		    Integer_Digit();
+			tmpPlulsex=ThisUseMpmVariable;
+			Mm_Dsp((unsigned long)(tmpPlulsex));
             break;
         case    SUBNM_MM_PER_PULSE:
 		    Cursor=0;
@@ -5999,13 +5882,11 @@ void  __attribute__((section(".usercode"))) ELGroup(void)
 		    EditStatus=NO_EDIT;		
 		    DigitMaxValue=0xffff;
 		    DigitMinValue=0;
-    		tmpPlulsex=(GET_LONG((unsigned long)MM_PULSE));    
-			CurEncoderPulse(tmpPlulsex);
-
-//		    DigitData=(unsigned int)(GET_LONG((unsigned long)MM_PULSE));    
-//		    Integer_Digit();
+    		tmpPlulsex=ThisUseMmPerPulse;    
+			Mm_Dsp((unsigned long)(tmpPlulsex));
             break;
         default:
+		    EditStatus=NO_EDIT;		
             break;
     }
 }
@@ -6022,96 +5903,113 @@ void  __attribute__((section(".usercode"))) ELGroupSave(void)
 
     switch(LadderGroupSub){
         case    SUBNM_ENCODER_PULSE:
-			j=( (ENCODER_PULSE) % (ENCODER_PULSE));
+//			j=( (ENCODER_PULSE) % (ENCODER_PULSE));
+			j=ENCODER_PULSE;
 			break;
         case    SUBNM_TM_MPM:
-			j=( (NEW_MPM) % (ENCODER_PULSE));
+//			j=( (NEW_MPM) % (ENCODER_PULSE));
+			j=NEW_MPM;
 			break;
         case    SUBNM_MOTOR_RPM:
-			j=( (RPM) % (ENCODER_PULSE));
+//			j=( (RPM) % (ENCODER_PULSE));
+			j=RPM;
 			break;
         case    SUBNM_LOW_SPD_DEC_LENTH:
-			j=( (DEC_LENGTH_SPD_LOW) % (ENCODER_PULSE) );
+//			if(bAutoLandingActive)	j=( (DEC_PULSE_SPD_LOW) % (ENCODER_PULSE));
+//			else					j=( (DEC_LENGTH_SPD_LOW) % (ENCODER_PULSE));
+
+			if(bAutoLandingActive)	j=DEC_PULSE_SPD_LOW;
+			else					j=DEC_LENGTH_SPD_LOW;
 			break;
         case    SUBNM_MID_SPD_DEC_LENTH:
-			j=( (DEC_LENGTH_SPD_MID) % (ENCODER_PULSE));
+//			if(bAutoLandingActive)	j=( (DEC_PULSE_SPD_MID) % (ENCODER_PULSE));
+//			else					j=( (DEC_LENGTH_SPD_MID) % (ENCODER_PULSE));
+			if(bAutoLandingActive)	j=DEC_PULSE_SPD_MID;
+			else					j=DEC_LENGTH_SPD_MID;
 			break;
         case    SUBNM_HIGH_SPD_DEC_LENTH:
-			j=( (DEC_LENGTH_SPD_HIGH) % (ENCODER_PULSE));
+//			j=( (DEC_LENGTH_SPD_HIGH) % (ENCODER_PULSE));
+			j=DEC_LENGTH_SPD_HIGH;
 			break;
         case    SUBNM_BASE_DEC_MPM:
-			j=( (BASE_DEC_MPM) % (ENCODER_PULSE));
-			if(DigitData > DigitMaxValue)	DigitData=0;
-			DigitData=(DigitData * 100);	
+//			j=( (BASE_DEC_MPM) % (ENCODER_PULSE));
+			j=BASE_DEC_MPM;
+			DigitData=(unsigned int)(ConverteMpm(GET_LONG(MPM_VARIABLE),ThisUseMpmVariable,(unsigned long)(DigitData)));
 			break;
         case    SUBNM_BASE_DEC_TIME:
-			j=( (BASE_DEC_TIME) % (ENCODER_PULSE));
+//			j=( (BASE_DEC_TIME) % (ENCODER_PULSE));
+			j=BASE_DEC_TIME;
 			break;
         case    SUBNM_BASE_SCURVE_TIME:
-			j=( (BASE_SCURVE_TIME) % (ENCODER_PULSE));
+//			j=( (BASE_SCURVE_TIME) % (ENCODER_PULSE));
+			j=BASE_SCURVE_TIME;
 			break;
-
 /////////////////////
         case    SUBNM_BASE_PULSE:
-			j=( (BASE_BEF_LULD_PULSE) % (ENCODER_PULSE));
+//			j=( (BASE_BEF_LULD_PULSE) % (ENCODER_PULSE));
+			j=BASE_BEF_LULD_PULSE;
+			if(DigitData > DigitMaxValue)	DigitData=0;
+			break;
+        case    SUBNM_USER_PLANK_MPM:
+//			j=( (B_USER_PLANK_LENGTH) % (ENCODER_PULSE));
+			j=B_USER_PLANK_LENGTH;
 			if(DigitData > DigitMaxValue)	DigitData=0;
 			break;
 //////////////////////////////////////////////
         case    SUBNM_MANUAL_PORT:
-			i=( (F_ManualSpeed) % (F_BLOCK2));
+//			i=( (F_ManualSpeed) % (F_BLOCK2));
+			i=F_ManualSpeed;
 			break;
         case    SUBNM_BATTERY_PORT:
-			i=((F_BatterySpeed) % (F_BLOCK2));
+//			i=((F_BatterySpeed) % (F_BLOCK2));
+			i=F_BatterySpeed;
 			break;
         case    SUBNM_DEC_PORT:
-			i=( (F_DecreaseSpeed) % (F_BLOCK2));
+//			i=( (F_DecreaseSpeed) % (F_BLOCK2));
+			i=F_DecreaseSpeed;
 			break;
         case    SUBNM_FHM_PORT:
-			i=( (F_FhmSpeed) % (F_BLOCK2));
+//			i=( (F_FhmSpeed) % (F_BLOCK2));
+			i=F_FhmSpeed;
 			break;
         case    SUBNM_LOW_SPD_PORT:
-			i=( (F_Speed1) % (F_BLOCK2));
+//			i=( (F_Speed1) % (F_BLOCK2));
+			i=F_Speed1;
 			break;
         case    SUBNM_MID_SPD_PORT:
-			i=( (F_Speed2) % (F_BLOCK2));
+//			i=( (F_Speed2) % (F_BLOCK2));
+			i=F_Speed2;
 			break;
         case    SUBNM_HIGH_SPD_PORT:
-			i=( (F_Speed3) % (F_BLOCK2));
+//			i=( (F_Speed3) % (F_BLOCK2));
+			i=F_Speed3;
 			break;
         case    SUBNM_SU2SD2_SPD:
-			i=( (F_Su2Sd2_Velocity) % (F_BLOCK2));
+//			i=( (F_Su2Sd2_Velocity) % (F_BLOCK2));
+			i=F_Su2Sd2_Velocity;
 			break;
         case    SUBNM_X0X1_SPD:
-			i=( (F_X0X1_Velocity) % (F_BLOCK2));
+//			i=( (F_X0X1_Velocity) % (F_BLOCK2));
+			i=F_X0X1_Velocity;
 			break;
-//        case    SUBNM_NOTUSE0:
-//			break;
-        case    SUBNM_NOTUSE1:
-			break;
-        case    SUBNM_NOTUSE2:
-			break;
-////////////////////////////////
-        case    SUBNM_NOTUSE3:
-            break;
-        case    SUBNM_NOTUSE4:
-            break;
-/////////////////////////////////////
 		default:
 			break;
 	}
 
 
 	if(j != 0xff){
-		for(k=0;k<16;k++){
-			parameter_mirror[k]=FlashDspCharBuf[ENCODER_PULSE+k].long_data;  
-		}
+		k=ENCODER_PULSE;
+		j=(j % k);
+		ELGroupDataLoad();
 		l_LdTmpBufRam(j)=(unsigned long)DigitData;		
-		flash_write(ENCODER_PULSE);
-		CaluDecreasePulse();
+		WriteFlash_spd3();
+		CaluDecreasePulse_spd3();
 	}
 
 
 	if(i != 0xff){
+		k=F_BLOCK2;
+		i=(i % k);
 	    GetFlashDataToBufRam(F_BLOCK2);
 	    b_LdTmpBufRam(i)=(LocalType)(DigitData);
 	    flash_write_DspChar(F_BLOCK2);
@@ -6469,6 +6367,9 @@ void  __attribute__((section(".usercode"))) ErrorGroup(LocalType offset)
 {
     LocalType i,j;
 
+	FirstMenuReDsp(0) ;                                   
+
+
     EditStatus=NO_EDIT;
 
     offset=offset * ERR_SAVE_WIDE;
@@ -6602,9 +6503,12 @@ unsigned int  __attribute__((section(".usercode"))) SaveData(void)
         case    EL_GROUP:
 			ELGroupSave();
 			break;
+        case    FLR_OFFSET_GROUP:
+			FlrOffsetGroupSave();
+			break;
         default:
 			#ifdef		AUTO_LANDING_COMM
-				if(bHostAutoLanding){
+				if(bInvCommActive485){
 					Inv_Par_GroupSaveChk();
 				}	
 			#endif
@@ -6854,6 +6758,11 @@ unsigned int  __attribute__((section(".usercode"))) ShiftLeftCur(void)
 
 unsigned int  __attribute__((section(".usercode"))) GroupOnChk(void)
 {
+    if(LadderGroup==FLR_OFFSET_GROUP){
+    	if(INVERTER_CHECK != IO)	return(1);   // no display                                             
+	}
+
+
     if(bAllMenu)  		return(0);
 	if(bPasswardOk)		return(0);	
 
@@ -6876,7 +6785,6 @@ unsigned int  __attribute__((section(".usercode"))) MenuOnChk(void)
 
 	i=0;
 
-
 	switch(LadderGroup){
     	case    USER_GROUP:
 			switch(LadderGroupSub){
@@ -6893,17 +6801,13 @@ unsigned int  __attribute__((section(".usercode"))) MenuOnChk(void)
 				case	SUBNM_BASE_DEC_MPM:
 				case	SUBNM_BASE_PULSE:
 				case	SUBNM_BASE_SCURVE_TIME:			
-					#ifdef		AUTO_LANDING_485				
-						if(EDS_VL_485_Check())											i=0;
-						else if(WhoAutolanding==L1000_AUTOLANDING_485)					i=0;
-						else															i=1;
-					#elif defined(AUTO_LANDING_CAN)
-	 					if((WhoAutolanding == (unsigned int)EDS_AUTOLANDING_CAN))	i=0;
-						else														i=1;
-					#else															
-						i=1;
-					#endif
-					break;
+					if(bAutoLandingActive)			i=0;
+					else							i=1;	
+					break;				
+				case	SUBNM_HIGH_SPD_DEC_LENTH:			
+					if(!bAutoLandingActive)			i=0;
+					else							i=1;	
+					break;				
 			}
 			break;		
 		default:
@@ -6940,7 +6844,7 @@ unsigned int  __attribute__((section(".usercode"))) EditOnCheck(void)
 						break;
 					case	ERR_ST_CNT:
 					case	OUT_DATE:
-					case	ENCODER_RATE:
+//					case	ENCODER_RATE:
         			case    SYSTEM_SET:
 						if(!bUserOn)		i=0;
 						break;
@@ -7002,7 +6906,7 @@ unsigned int  __attribute__((section(".usercode"))) ESC_KeyCheck(void)
 	ret=0;
 
 	#ifdef		AUTO_LANDING_485
-		if(bsInvertErr && bHostAutoLanding){
+		if(bsInvertErr && bInvCommActive485){
 			if( (inverterClrTime > 20) && !bMoveCar){		// 2sec
 				if((LadderGroup==0) && (LadderGroupSub==0)){
 					if((LadderKey == ESCKEY)){
@@ -7055,11 +6959,9 @@ unsigned int  __attribute__((section(".usercode"))) KeyCheck(void)
 	ret=0;
 	if(bSpeedDsp && !bFhmRun)	return(0);
 
-	if(New_Spd_SystemChk())		max_group_sel=MAX_GROUP_SPD3;
-	else						max_group_sel=MAX_GROUP;
+	max_group_sel=MAX_GROUP_SPD3;
 
-
-	if(bHostAutoLanding){
+	if(bInvCommActive485){
 		#ifdef	AUTO_LANDING_485
 			if(WhoAutolanding==L1000_AUTOLANDING_485)	max_group_sel= (max_group_sel + 1);	
 			else										max_group_sel= (max_group_sel + (INV_PAR_GROUP_END - INV_PAR_GROUP_00));
@@ -7481,9 +7383,13 @@ unsigned int  __attribute__((section(".usercode"))) NewFlashData(void)
                 GroupBaseAddr=ENCODER_PULSE;
                 ELGroup();
                 break;
+	        case    FLR_OFFSET_GROUP:
+                GroupBaseAddr=F_LEVEL01;
+                FlrOffsetGroup();
+				break;
             default:                
 				#ifdef		AUTO_LANDING_COMM
-				if(bHostAutoLanding){
+				if(bInvCommActive485){
 					Inv_Par_Group();
 				}
 				#endif
@@ -7498,7 +7404,7 @@ unsigned int  __attribute__((section(".usercode"))) NewFlashData(void)
 
 
 #ifdef		AUTO_LANDING_COMM
-	if(bHostAutoLanding){
+	if(bInvCommActive485){
 		if( (LadderGroup >= INV_PAR_GROUP_00) && (LadderGroup < INV_PAR_GROUP_END)){
 			if(!bWarning){
 				for(i=0;i<16;i++){
@@ -7560,10 +7466,8 @@ unsigned int  __attribute__((section(".usercode"))) NewFlashData(void)
 	}
 
 
-    if(New_Spd_SystemChk()){
-	    if(sRamDArry[AUTO_TUNING] > AUTOTUN_SEQ_0)          TuningLoaderTime=0;
-	    else                                                TuningLoaderTime=15;	                                    
-	}
+    if(sRamDArry[AUTO_TUNING] > AUTOTUN_SEQ_0)          TuningLoaderTime=0;
+    else                                                TuningLoaderTime=15;	                                    
 
 
 	if((LadderGroup != USER_GROUP) || (LadderGroupSub != HALL_IND_SET) || !IN_AUTO || (sRamDArry[DSP1] != '9') || (sRamDArry[DSP2] != '1')){
@@ -7579,7 +7483,7 @@ unsigned int  __attribute__((section(".usercode"))) NewFlashData(void)
 
 
 	#ifdef	AUTO_LANDING_COMM				 
-	if(bHostAutoLanding){
+	if(bInvCommActive485){
 		TunningStartEndCheck();
 	}
 	#endif

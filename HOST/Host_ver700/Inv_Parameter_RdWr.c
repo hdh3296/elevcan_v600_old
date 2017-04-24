@@ -73,8 +73,6 @@ const unsigned char MOTOR_GROUP_MSG[MAX_MOTOR_PARAM][16]={
 unsigned char *MenuName;		
 
 
-
-
 unsigned int InverterAddress;
 unsigned int IM_Motor_ID;
 unsigned int PM_Motor_ID;
@@ -343,15 +341,12 @@ void  __attribute__((section(".usercode"))) Inv_Par_DataSort(unsigned int this_d
 		DigitMinValue=IV_This_Min;
 		DigitMaxValue=IV_This_Max;
 
-
-
 		Inverter_MotorGroup_Attribute();	// no attribute other inverter 
 		
 		EditStatus=DIGIT_EDIT;	
 		DigitData=this_data;	
 		NewdigitEdit(this_data);
-	}
-		
+	}		
 	ThisRdWrMode=RDWR_READY_SEQ;
 	ParRdWrNm=INVETER_NOT_SEL_SEQ;
 }
@@ -594,7 +589,7 @@ unsigned int  __attribute__((section(".usercode"))) Inv_Par_GroupSaveChk(void)
 		case    INV_PAR_GROUP_12:
 		case    INV_PAR_GROUP_13:
 		case    INV_PAR_GROUP_14:
-			if(bHostAutoLanding && !bParRd ){
+			if(bInvCommActive485 && !bParRd ){
 				if( !AutoTunningStartChk()){	
 					Inverter_Par_Group_Save();
 				}

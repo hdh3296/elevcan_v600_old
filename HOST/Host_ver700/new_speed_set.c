@@ -97,10 +97,35 @@ void __attribute__((section(".usercode")))    RunSpeedCmd_IO_spd3(void)
 
 
 
+LocalType  __attribute__((section(".usercode")))    Su1Sd1X0X1_100mm(unsigned long val)
+{
+	unsigned long 	tmppulse,basePulse,highpulse,lowpulse;
+
+	MmToPulse((unsigned long)OFFSET_LIMIT_SUSD);
+	basePulse=PulseBuf;
+	
+	tmppulse=val;
+	highpulse=(tmppulse + basePulse);
+	lowpulse =(tmppulse - basePulse);
+	
+	tmppulse=CurPulse;
+	if( (tmppulse > highpulse) || (tmppulse < lowpulse)){
+		return(1);
+	} 
+	else	return(0);
+}
+
+
+
+
+
+
 LocalType  __attribute__((section(".usercode")))    SpeedReSetting(unsigned int spd_sig)
 {
+
 	unsigned int 	spd_val,spd_change_sta,event_name;
-	unsigned long 	tmppulse,basePulse,highpulse,lowpulse;
+//	unsigned long 	tmppulse,basePulse,highpulse,lowpulse;
+	unsigned long 	tmppulse;
 
 	event_name=0;
 	spd_change_sta=0;
@@ -120,23 +145,9 @@ LocalType  __attribute__((section(".usercode")))    SpeedReSetting(unsigned int 
 				if( spd_val == CHANGE_DEC_LIMIT_SUSD){
 					if(!bFindSU){
 						bFindSU=1;
-
-						MmToPulse((unsigned long)OFFSET_LIMIT_SUSD);
-						basePulse=PulseBuf;
-	
-						tmppulse=GET_LONG(BASE_SU1_LENGTH);
-						highpulse=(tmppulse + basePulse);
-						lowpulse =(tmppulse - basePulse);
-	
-						tmppulse=CurPulse;
-						if( (tmppulse > highpulse) || (tmppulse < lowpulse)){
-							spd_change_sta=1;
-							#ifdef	DELTA_INVERTER_AUTOLANDING_CAN
-	    						sRamDArry[mcurfloor] = 0;
-								bStrongDec=1;	
-							#endif
-						} 
-						else	spd_change_sta=0;
+						tmppulse=GET_LONG(BASE_SU1_PULSE);
+						if(Su1Sd1X0X1_100mm(tmppulse))	spd_change_sta=1;
+						else							spd_change_sta=0;	
 					}	
 				}				else	spd_change_sta=1; 
 			}
@@ -146,8 +157,14 @@ LocalType  __attribute__((section(".usercode")))    SpeedReSetting(unsigned int 
 				if( !IN_X0){
 					event_name=3;									//x0
 					spd_val=cF_X0X1_VELOCITY;
-					if( spd_val >= CHANGE_DEC_LIMIT_SUSD)	spd_val=NOT_USE_SPEED;	 
-					spd_change_sta=1; 
+					if( spd_val == CHANGE_DEC_LIMIT_SUSD){
+						if(!bFindUpX0){
+							bFindUpX0=1;
+							tmppulse=GET_LONG(BASE_X0_PULSE);
+							if(Su1Sd1X0X1_100mm(tmppulse))	spd_change_sta=1;
+							else							spd_change_sta=0;	
+						}	
+					}					else	spd_change_sta=1; 
 				}
 			}	
 		}
@@ -160,23 +177,9 @@ LocalType  __attribute__((section(".usercode")))    SpeedReSetting(unsigned int 
 				if( spd_val == CHANGE_DEC_LIMIT_SUSD){
 					if(!bFindSD){
 						bFindSD=1;
-						MmToPulse((unsigned long)OFFSET_LIMIT_SUSD);
-						basePulse = PulseBuf;
-							
-						tmppulse=GET_LONG(BASE_SD1_LENGTH);
-						highpulse=(tmppulse + basePulse);
-						lowpulse =(tmppulse - basePulse);
-	
-						tmppulse=CurPulse;
-						if( (tmppulse > highpulse) || (tmppulse < lowpulse)){
-							spd_change_sta=1;
-							#ifdef	DELTA_INVERTER_AUTOLANDING_CAN
-	    						sRamDArry[mcurfloor] = 0;
-								bStrongDec=1;	
-							#endif
-
-						} 
-						else	spd_change_sta=0;
+						tmppulse=GET_LONG(BASE_SD1_PULSE);
+						if(Su1Sd1X0X1_100mm(tmppulse))	spd_change_sta=1;
+						else							spd_change_sta=0;	
 					}
 				}				else	spd_change_sta=1; 
 			}
@@ -185,9 +188,15 @@ LocalType  __attribute__((section(".usercode")))    SpeedReSetting(unsigned int 
 			if(USE_CHECK == MAN_USE){
 				if( !IN_X1){
 					event_name=4;									//x1
-					spd_val=cF_X0X1_VELOCITY; 
-					if( spd_val >= CHANGE_DEC_LIMIT_SUSD)	spd_val=NOT_USE_SPEED;	 
-					spd_change_sta=1; 
+					spd_val=cF_X0X1_VELOCITY;
+					if( spd_val == CHANGE_DEC_LIMIT_SUSD){
+						if(!bFindDnX1){
+							bFindDnX1=1;
+							tmppulse=GET_LONG(BASE_X1_PULSE);
+							if(Su1Sd1X0X1_100mm(tmppulse))	spd_change_sta=1;
+							else							spd_change_sta=0;	
+						}	
+					}					else	spd_change_sta=1; 
 				}
 			}	
 		}
@@ -233,8 +242,11 @@ LocalType  __attribute__((section(".usercode")))    SpeedReSetting(unsigned int 
 			if(cF_SPEED_LOW_PORT > NOT_USE_SPEED){
 				bSetSpeedOn=1;                    				
 				CurSpeed=spd_val;
+				GetDecreasePulse(spd_val);
+				DecreasePulse=CurSpdDecPulse;
 
-				DecreasePulse=GET_LONG(DEC_PULSE_SPD_LOW);
+//				DecreasePulse=GET_LONG(DEC_PULSE_SPD_LOW);
+
 
 				if(bCarUpMove)  StopMinimumPulse=DecreasePulse+CurPulse;
 				else            StopMinimumPulse=CurPulse-DecreasePulse;
@@ -247,7 +259,10 @@ LocalType  __attribute__((section(".usercode")))    SpeedReSetting(unsigned int 
 				bSetSpeedOn=1;                    				
 				CurSpeed=spd_val;
 
-				DecreasePulse=GET_LONG(DEC_PULSE_SPD_MID);
+				GetDecreasePulse(spd_val);
+				DecreasePulse=CurSpdDecPulse;
+
+//				DecreasePulse=GET_LONG(DEC_PULSE_SPD_MID);
 
 				if(bCarUpMove)  StopMinimumPulse=DecreasePulse+CurPulse;
 				else            StopMinimumPulse=CurPulse-DecreasePulse;
@@ -509,31 +524,68 @@ void  __attribute__((section(".usercode")))  CarCurFloorRead_IO_spd3(void)
 
 
 
+void  __attribute__((section(".usercode"))) ELGroupDataLoad(void)
+{	
+	unsigned int k;
+	for(k=0;k<32;k++)	parameter_mirror[k]=FlashDspCharBuf[ENCODER_PULSE+k].long_data;  
+}
+
+
+void  __attribute__((section(".usercode"))) WriteFlash_spd3(void)
+{
+    unsigned int i;
+
+	SaveVerify = 0x55;
+    flash_write(ENCODER_PULSE);
+    for(i=0;i<16;i++)   parameter_mirror[i]=parameter_mirror[i+16];
+    flash_write(ENCODER_PULSE + 16);
+}
+
 
 
 void  __attribute__((section(".usercode"))) DefaultDecreaseLength_spd3(void)
 {
 #ifndef	TEST_SIMULATION
-
-    unsigned int i;
- 
-    for(i=0;i<32;i++){
-        parameter_mirror[i]=GET_LONG(ENCODER_PULSE+i);
-    }    
-
-    parameter_mirror[DEC_LENGTH_SPD_LOW -ENCODER_PULSE]  	= DEFAULT_SPEED1_DEC_LENGTH;
-    parameter_mirror[DEC_LENGTH_SPD_MID -ENCODER_PULSE]  	= DEFAULT_SPEED2_DEC_LENGTH;
-    parameter_mirror[DEC_LENGTH_SPD_HIGH -ENCODER_PULSE]	= DEFAULT_SPEED3_DEC_LENGTH;
-
-    parameter_mirror[BASE_DEC_TIME -ENCODER_PULSE]  	= 0;
-    parameter_mirror[BASE_SCURVE_TIME -ENCODER_PULSE]	= 0;
-
-    flash_write(ENCODER_PULSE);
-    for(i=0;i<16;i++)   parameter_mirror[i]=parameter_mirror[i+16];
-    flash_write(ENCODER_PULSE + 16);
-
+    parameter_mirror[(DEC_LENGTH_SPD_LOW 	- ENCODER_PULSE)]  		= DEFAULT_SPEED1_DEC_LENGTH;
+    parameter_mirror[(DEC_LENGTH_SPD_MID	- ENCODER_PULSE)]		= DEFAULT_SPEED2_DEC_LENGTH;
+    parameter_mirror[(DEC_LENGTH_SPD_HIGH	- ENCODER_PULSE)]  		= DEFAULT_SPEED3_DEC_LENGTH;
 #endif	
 }       
+
+
+void  __attribute__((section(".usercode"))) CaluDecreasePulseCommon_spd3(uint16_t i)
+{
+#ifndef	TEST_SIMULATION	
+	unsigned long	tmp_mm;
+	tmp_mm=GET_LONG((unsigned long)(DEC_LENGTH_SPD_LOW+i));
+	MmToPulse(tmp_mm);
+	
+	switch(i){
+		case	0:
+			SpdL_DecPulse=PulseBuf;
+			break;
+		case	1:
+			SpdM_DecPulse=PulseBuf;
+			break;
+		case	2:
+			SpdH_DecPulse=PulseBuf;	
+			break;
+		default:
+			break;
+	}
+#endif
+}	
+
+
+
+unsigned int  __attribute__((section(".usercode"))) CaluDecreasePulse_spd3(void)
+{
+#ifndef	TEST_SIMULATION
+	bParameterChange=1;
+	ParameterChangeChk();
+	return(1);
+#endif
+}                                                                     
 
 
 
@@ -542,176 +594,90 @@ void  __attribute__((section(".usercode"))) DefaultEncoderRpmMpm_spd3(void)
 #ifndef	TEST_SIMULATION
 
     unsigned int i;
-
-    for(i=0;i<32;i++){
-        parameter_mirror[i]=GET_LONG(ENCODER_PULSE+i);
-    }    
-
+	unsigned long	tmpRpm,tmpMpm,tmpEncoderPulse,tmpMmPerPulse,tmpMpmVariable;	
+    
+	ELGroupDataLoad();
+    parameter_mirror[B_USER_PLANK_LENGTH-ENCODER_PULSE]     = 200;   // mm 
     parameter_mirror[NEW_MPM-ENCODER_PULSE]             	= SET_ELEV_SPEED_PER_MIM; //m/min
-//    parameter_mirror[ENCODER_PULSE-ENCODER_PULSE]   		= SET_ENCODER_PULSE;      //pulse/rotate
     parameter_mirror[RPM-ENCODER_PULSE]             		= SET_MOTOR_RPM;          //r/min
 
 	if(USE_CHECK == MAN_USE){
-    	parameter_mirror[ENCODER_PULSE-ENCODER_PULSE]   		= SET_ENCODER_PULSE_2048;      //pulse/rotate
+    	parameter_mirror[ENCODER_PULSE-ENCODER_PULSE]   	= SET_ENCODER_PULSE_2048;      //pulse/rotate
+		parameter_mirror[BASE_PLANK_PULSE-ENCODER_PULSE]   = 4878;   // mm 
 	}
 	else{
-    	parameter_mirror[ENCODER_PULSE-ENCODER_PULSE]   		= SET_ENCODER_PULSE_1024;      //pulse/rotate
+    	parameter_mirror[ENCODER_PULSE-ENCODER_PULSE]   	= SET_ENCODER_PULSE_1024;      //pulse/rotate
+		parameter_mirror[BASE_PLANK_PULSE-ENCODER_PULSE]     	= 2440;   // mm 
 	}
 
-    parameter_mirror[DEC_LENGTH_SPD_LOW -ENCODER_PULSE]  	= DEFAULT_SPEED1_DEC_LENGTH;
-    parameter_mirror[DEC_LENGTH_SPD_MID -ENCODER_PULSE]  	= DEFAULT_SPEED2_DEC_LENGTH;
-    parameter_mirror[DEC_LENGTH_SPD_HIGH -ENCODER_PULSE]	= DEFAULT_SPEED3_DEC_LENGTH;
 
-    parameter_mirror[BASE_DEC_TIME -ENCODER_PULSE]  		= 0;
-    parameter_mirror[BASE_SCURVE_TIME -ENCODER_PULSE]		= 0;
+    parameter_mirror[(DEC_LENGTH_SPD_LOW 	- ENCODER_PULSE)]  		= DEFAULT_SPEED1_DEC_LENGTH;
+    parameter_mirror[(DEC_LENGTH_SPD_MID	- ENCODER_PULSE)]		= DEFAULT_SPEED2_DEC_LENGTH;
+    parameter_mirror[(DEC_LENGTH_SPD_HIGH	- ENCODER_PULSE)]  		= DEFAULT_SPEED3_DEC_LENGTH;
 
-    flash_write(ENCODER_PULSE);
-    for(i=0;i<16;i++)   parameter_mirror[i]=parameter_mirror[i+16];
-    flash_write(ENCODER_PULSE + 16);
+
+    parameter_mirror[(BASE_DEC_TIME -ENCODER_PULSE)]  		= 1700;	//1.7sec
+    parameter_mirror[(BASE_SCURVE_TIME -ENCODER_PULSE)]		= 1000; //1.0sec
+    parameter_mirror[(BASE_DEC_MPM- ENCODER_PULSE)]  		= 12; //1.2mpm
+
+	WriteFlash_spd3();
+
+	ELGroupDataLoad();
+
+	tmpMmPerPulse=CaluOrgMmPerPulse();
+	tmpMpmVariable	= (tmpMmPerPulse * (unsigned long)600);
+
+    parameter_mirror[MM_PULSE -ENCODER_PULSE]  		= tmpMmPerPulse;
+   	parameter_mirror[MPM_VARIABLE -ENCODER_PULSE]  	= tmpMpmVariable;	
+//////////////////
+
+
+	parameter_mirror[BASE_BEF_LULD_PULSE-ENCODER_PULSE] = (unsigned long)50;	// 50mm
+
+	WriteFlash_spd3();
+
+	CaluDecreasePulse_spd3();
 
 #endif	
 }       
 
 
 
-#ifndef	TEST_SIMULATION
-void  __attribute__((section(".usercode"))) CaluDecreasePulseCommon_spd3(unsigned int i)
+unsigned int    __attribute__((section(".usercode"))) SpeedSelectCheck(unsigned int spd)
 {
-    unsigned long rpm,mpm,encoder_pulse,mm_per_pulse,dec_mm_rpm,tmp_dec_mm_rpm,tmp_dec_pulse,tmp_value;
+    unsigned long MinPulse;
 
-    mm_per_pulse=parameter_mirror[MM_PULSE-ENCODER_PULSE];
+	GetDecreasePulse(spd);
+	MinPulse=CurSpdDecPulse;
 
+    if(MinPulse==0) 		return(1);
 
-    dec_mm_rpm     =parameter_mirror[(DEC_LENGTH_SPD_LOW + i) - ENCODER_PULSE];
-    tmp_dec_mm_rpm =(dec_mm_rpm * 10000); 
-    tmp_dec_pulse  = (tmp_dec_mm_rpm/mm_per_pulse);
-    parameter_mirror[(DEC_PULSE_SPD_LOW + i) - ENCODER_PULSE]=tmp_dec_pulse;
-}	
+  	MinPulse= (MinPulse * 2);
 
-#endif
-
-
-
-
-void  __attribute__((section(".usercode"))) CaluDecreasePulse_spd3(void)
-{
-
-#ifndef	TEST_SIMULATION
-
-    unsigned int i;
-    unsigned long rpm,mpm,encoder_pulse,mm_per_pulse,dec_mm_rpm,tmp_dec_mm_rpm,tmp_dec_pulse,tmp_value;
-
-    for(i=0;i<32;i++){
-        parameter_mirror[i]=GET_LONG(ENCODER_PULSE+i);
-    }    
-
-
-    //move_length/pulse = (MPM * 1000)/(RPM * PULSE_PER_ROTATE)
-
-    mpm             = parameter_mirror[NEW_MPM-ENCODER_PULSE];
-    mpm             = mpm * 100 * 10000;                        //new length=mm * 10000 ==1200000000
-//    mpm             = mpm * 1000 * 10000;                     //    length=mm * 10000 ==1200000000
-
-    rpm             = parameter_mirror[RPM-ENCODER_PULSE];
-  
-    encoder_pulse   = parameter_mirror[ENCODER_PULSE-ENCODER_PULSE];
-
-
-    mm_per_pulse    = mpm / ( rpm *  encoder_pulse);  // 1200000000/1523712
-
-
-   	mm_per_pulse    = (mm_per_pulse / (unsigned long)4);
-    parameter_mirror[MM_PULSE-ENCODER_PULSE]     = mm_per_pulse;
-    parameter_mirror[MPM_VARIABLE-ENCODER_PULSE] = (mm_per_pulse * (unsigned long)600);
-
-
-////////////////	CaluDecreasePulseCommon_Auto();
-
-	CaluDecreasePulseCommon_spd3(0);    
-	CaluDecreasePulseCommon_spd3(1);
-	CaluDecreasePulseCommon_spd3(2);
-	CaluDecreasePulseCommon_spd3(3);
-
-	tmp_value=GET_LONG(BASE_BEF_LULD_PULSE);
-	if(tmp_value > 1000)	parameter_mirror[BASE_BEF_LULD_PULSE-ENCODER_PULSE] = (unsigned long)50;	// 50mm
-
-///////////////    							
-
-	SaveVerify = 0x55;
-
-    flash_write(ENCODER_PULSE);
-    for(i=0;i<16;i++)   parameter_mirror[i]=parameter_mirror[i+16];
-    flash_write(ENCODER_PULSE + 16);
-
-	SaveVerify = 0x0;
-
-#endif
-}                                                                     
-
-
-
-
+    if(TotalPulse>MinPulse) return(0);
+    else                    return(1);
+}
 
 
 
 
 unsigned int    __attribute__((section(".usercode"))) SpeedHighCheck(void)
 {
-    unsigned long MinPulse,tmpP;
-
     if(cF_SPEED_HIGH_PORT == 0)    return(2);     
-
-    MinPulse=GET_LONG(DEC_PULSE_SPD_HIGH);
-    if(MinPulse==0) 		return(1);
-
-//	ver7.01
-//	tmpP=(MinPulse / 2);
-//	MinPulse= ((MinPulse * 2) + tmpP);
-
-  	MinPulse= (MinPulse * 2);
-
-    if(TotalPulse>MinPulse) return(0);
-    else                    return(1);
+	return(SpeedSelectCheck((unsigned int)(SPEED_HIGH)));
 }
 
 
 unsigned int    __attribute__((section(".usercode"))) SpeedMidCheck(void)
 {
-
-    unsigned long MinPulse,tmpP;
-
     if(cF_SPEED_MID_PORT == 0)    return(2);     
-
-    MinPulse=GET_LONG(DEC_PULSE_SPD_MID);
-    if(MinPulse==0) 		return(1);
-
-//	ver7.01
-//	tmpP=(MinPulse / 2);
-//	MinPulse= ((MinPulse * 2) + tmpP);
-
-  	MinPulse= (MinPulse * 2);
-
-    if(TotalPulse>MinPulse) return(0);
-    else                    return(1);
+	return(SpeedSelectCheck((unsigned int)(SPEED_MID)));
 }
 
 unsigned int    __attribute__((section(".usercode"))) SpeedLowCheck(void)
 {
-    unsigned long MinPulse,tmpP;
-
     if(cF_SPEED_LOW_PORT == 0)    return(2);     
-
-    MinPulse=GET_LONG(DEC_PULSE_SPD_LOW);
-    if(MinPulse==0) 		return(1);
-
-//	ver7.01
-//	tmpP=(MinPulse / 2);
-//	MinPulse= ((MinPulse * 2) + tmpP);
-
-  	MinPulse= (MinPulse * 2);
-
-    if(TotalPulse>MinPulse) return(0);
-    else                    return(1);
+	return(SpeedSelectCheck((unsigned int)(SPEED_LOW)));
 }
 
 
@@ -728,12 +694,14 @@ unsigned int  __attribute__((section(".usercode")))   SpeedChange_spd3(void)
 
 	if(!SpeedHighCheck() && (CurSpeed < SPEED_HIGH)){   ////5xx
 	    CurSpeed=SPEED_HIGH;
-	    DecreasePulse=GET_LONG(DEC_PULSE_SPD_HIGH);
+		GetDecreasePulse(CurSpeed);
+		DecreasePulse=CurSpdDecPulse;
 	    ret=0;
 	}
 	else if(!SpeedMidCheck() && (CurSpeed < SPEED_MID)){
 	    CurSpeed=SPEED_MID;
-	    DecreasePulse=GET_LONG(DEC_PULSE_SPD_MID);
+		GetDecreasePulse(CurSpeed);
+		DecreasePulse=CurSpdDecPulse;
 	    ret=0;
 	}
 
@@ -797,17 +765,22 @@ unsigned int  __attribute__((section(".usercode")))   SpeedSet_spd3(void)
     if(ret==0){
 		if(!SpeedHighCheck()){
 		    CurSpeed=SPEED_HIGH;
-		    DecreasePulse=GET_LONG(DEC_PULSE_SPD_HIGH);
+			GetDecreasePulse(CurSpeed);
+			DecreasePulse=CurSpdDecPulse;
+
 		    ret=0;
 		}
 		else if(!SpeedMidCheck()){
 		    CurSpeed=SPEED_MID;
-		    DecreasePulse=GET_LONG(DEC_PULSE_SPD_MID);
+			GetDecreasePulse(CurSpeed);
+			DecreasePulse=CurSpdDecPulse;
+
 		    ret=0;
 		}
 		else if(!SpeedLowCheck()){
 		    CurSpeed=SPEED_LOW;
-		    DecreasePulse=GET_LONG(DEC_PULSE_SPD_LOW);
+			GetDecreasePulse(CurSpeed);
+			DecreasePulse=CurSpdDecPulse;
 		    ret=0;
 		}
 		else	ret=2;		
@@ -835,74 +808,4 @@ unsigned int  __attribute__((section(".usercode")))   SpeedSet_spd3(void)
 
 //	ver7.01
 
-
-unsigned int  __attribute__((section(".usercode")))   Spd3ReloadReqFlr(unsigned int updn)
-{
-    unsigned long 	MinPulsex,tmppulseCur;
-	unsigned int	reqflr;
-
-	if((INVERTER_CHECK == IO) && New_Spd_SystemChk()){
-	    switch(CurSpeed){
-	        case    SPEED_LOW:
-	   			MinPulsex=GET_LONG(DEC_PULSE_SPD_LOW);
-	            break;
-	        case    SPEED_MID:
-	   			MinPulsex=GET_LONG(DEC_PULSE_SPD_MID);
-	            break;
-	        case    SPEED_HIGH:
-	   			MinPulsex=GET_LONG(DEC_PULSE_SPD_HIGH);
-	            break;
-	        default:
-	            break;
-	    }
-	
-		MinPulsex=(MinPulsex * 2);
-		tmppulseCur=FLOOR_COUNT(sRamDArry[mcurfloor]);
-	
-		if(updn==0){	// upward
-	        if(sRamDArry[mcurfloor]< cF_TOPFLR)  reqflr  = (unsigned int)(sRamDArry[mcurfloor]+1);
-	        else                                 reqflr  = (unsigned int)(cF_TOPFLR);
-	
-			sRamDArry[mReqStopFloor]  = (unsigned char)(reqflr);	
-			OneceUseBuf1=(MinPulsex + tmppulseCur);
-			do{
-				OneceUseBuf2=FLOOR_COUNT(reqflr);
-				if(OneceUseBuf2 >= OneceUseBuf1){
-					sRamDArry[mReqStopFloor]  = (unsigned char)(reqflr);
-					return(0); 
-				}
-				else	reqflr++;
-			}while(reqflr <= (unsigned int)(cF_TOPFLR));
-		}
-		else{		// dnward
-	        if(sRamDArry[mcurfloor]>0)  reqflr  = (unsigned int)(sRamDArry[mcurfloor]-1);
-	        else                        reqflr  = 0;
-	
-			sRamDArry[mReqStopFloor]  = (unsigned char)(reqflr);	
-			OneceUseBuf1=(tmppulseCur - MinPulsex);
-			do{
-				OneceUseBuf2=FLOOR_COUNT(reqflr);
-				if(OneceUseBuf2 <= OneceUseBuf1){
-					sRamDArry[mReqStopFloor]  = (unsigned char)(reqflr);
-					return(0); 
-				}
-				else	reqflr--;
-				if(reqflr==0)	return(0);
-	
-			}while(reqflr > 0);
-		}
-	}
-	else{
-		if(updn==0){	// upward
-	        if(sRamDArry[mcurfloor]< cF_TOPFLR)  sRamDArry[mReqStopFloor]  = sRamDArry[mcurfloor]+1;
-	        else                                 sRamDArry[mReqStopFloor]  = cF_TOPFLR;
-		}
-		else{
-	        if(sRamDArry[mcurfloor]>0)  sRamDArry[mReqStopFloor]  = sRamDArry[mcurfloor]-1;
-	        else                        sRamDArry[mReqStopFloor]  = 0;
-		}
-	}
-
-	return(0);
-}
 

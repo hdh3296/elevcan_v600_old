@@ -53,7 +53,6 @@ void  __attribute__((section(".usercode")))    Mnanual_Speed_Sel(void)
     if(bCarUpMove){
         if(!IN_LU || !IN_LD ){
 			if(UpMnanuSpeedToDecSpeed()){	
-//            if(!IN_SU1 || bSearchHome || (bFhmRun && (sRamDArry[FHM_SEQ]== FHM_SEQ_3)) ){     
                 DecreaseSpeedCmd_IO();
             }
         } 
@@ -61,7 +60,6 @@ void  __attribute__((section(".usercode")))    Mnanual_Speed_Sel(void)
     else if(bCarDnMove){
         if(!IN_LU || !IN_LD){
 			if(DnMnanuSpeedToDecSpeed()){	
-//            if(!IN_SD1 || bSearchHome  || bFhmRun){
                 DecreaseSpeedCmd_IO();
             }
         }
@@ -71,8 +69,7 @@ void  __attribute__((section(".usercode")))    Mnanual_Speed_Sel(void)
 
 
 
-
-#ifdef	AUTO_LANDING_COMM
+/*
 void  __attribute__((section(".usercode"))) DefaultEncoderRpmMpm(void)
 {
 	if(New_Spd_SystemChk())		DefaultEncoderRpmMpm_spd3();
@@ -111,10 +108,13 @@ void __attribute__((section(".usercode")))    RunSpeedCmd_IO(void)
 
 
 
+
 void __attribute__((section(".usercode")))    CarCurFloorRead_IO(void)
 {
 	if(New_Spd_SystemChk())		CarCurFloorRead_IO_spd3();
 }
+
+
 
 
 void __attribute__((section(".usercode")))    SpeedChange(void)
@@ -122,65 +122,7 @@ void __attribute__((section(".usercode")))    SpeedChange(void)
 	if(New_Spd_SystemChk())		SpeedChange_spd3();
 }
 
-
-#else
-
-void  __attribute__((section(".usercode"))) DefaultEncoderRpmMpm(void)
-{
-	if(New_Spd_SystemChk())		DefaultEncoderRpmMpm_spd3();
-	else						DefaultEncoderRpmMpm_old();
-}
-
-
-
-void  __attribute__((section(".usercode"))) CaluDecreasePulse(void)
-{
-	if(New_Spd_SystemChk())		CaluDecreasePulse_spd3();
-	else						CaluDecreasePulse_old();
-}
-
-
-
-unsigned int    __attribute__((section(".usercode"))) SpeedSet(void)
-{
-	#ifdef	DELTA_INVERTER_AUTOLANDING_CAN
-		return(0);
-	#else
-		if(New_Spd_SystemChk())		return(SpeedSet_spd3());
-		else						return(SpeedSet_old());
-	#endif
-	
-}
-
-
-
-void __attribute__((section(".usercode")))    RunSpeedCmd_IO(void)
-{
-	#ifdef	DELTA_INVERTER_AUTOLANDING_CAN
-		CurSpeed=SPEED_HIGH; 
-	#else
-	if(New_Spd_SystemChk())		RunSpeedCmd_IO_spd3();
-	else						RunSpeedCmd_IO_old();
-	#endif
-
-}
-
-
-
-void __attribute__((section(".usercode")))    CarCurFloorRead_IO(void)
-{
-	if(New_Spd_SystemChk())		CarCurFloorRead_IO_spd3();
-	else						CarCurFloorRead_IO_old();
-}
-
-
-void __attribute__((section(".usercode")))    SpeedChange(void)
-{
-	if(New_Spd_SystemChk())		SpeedChange_spd3();
-	else						SpeedChange_old();
-}
-
-#endif
+*/
 
 
 

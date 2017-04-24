@@ -286,7 +286,7 @@ void  __attribute__((section(".usercode"))) CrtReqCheck(void)
 	
 				}
 			}
-
+/*
 		#ifndef	AUTO_LANDING_COMM
 			else{
 				if(CommonNewSoketChk(COM_PORT_COM1)){
@@ -331,7 +331,7 @@ void  __attribute__((section(".usercode"))) CrtReqCheck(void)
 				}
 			}
 		#endif
-
+*/
 			if(RxStatus != TX_SET){
 				SerialTime=0;
 			   	RxCurCnt=0;

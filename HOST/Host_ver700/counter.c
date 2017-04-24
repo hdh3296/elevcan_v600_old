@@ -13,7 +13,6 @@
 
 
 
-
 void __attribute__((section(".usercode")))    QEI_Init(void)
 {
 
@@ -92,13 +91,21 @@ unsigned int   __attribute__((section(".usercode")))  ReadEncoder(void)
 
 	if( TmpEncoderPulse > BefCurEncoderPulse){
 		BefCurEncoderPulse = (TmpEncoderPulse - BefCurEncoderPulse);
-		if(BefCurEncoderPulse <= 2000){
+		if(BefCurEncoderPulse <= 5000){
     		CurPulse=(CurPulse + BefCurEncoderPulse);
 			rry=1;
 		}	
 		else{
-			BefCurEncoderPulse = ((unsigned long)0xffff - BefCurEncoderPulse);
-			if(BefCurEncoderPulse <= 2000){
+//			BefCurEncoderPulse = ((unsigned long)0xffff - BefCurEncoderPulse);
+
+			vTmpEncoderPulse = ((unsigned long)0xffff - TmpEncoderPulse);
+			BefCurEncoderPulse = (BefCurEncoderPulse - vTmpEncoderPulse); 
+/*
+			BefCurEncoderPulse = ((unsigned long)0x10000 - BefCurEncoderPulse);
+			BefCurEncoderPulse = (BefCurEncoderPulse - TmpEncoderPulse); 
+*/
+
+			if(BefCurEncoderPulse <= 5000){
 		   		CurPulse=(CurPulse - BefCurEncoderPulse);
 				rry=1;
 			}				
@@ -106,13 +113,15 @@ unsigned int   __attribute__((section(".usercode")))  ReadEncoder(void)
 	}
 	else if(TmpEncoderPulse < BefCurEncoderPulse){
 		BefCurEncoderPulse = (BefCurEncoderPulse-TmpEncoderPulse);
-		if(BefCurEncoderPulse <= 2000){
+		if(BefCurEncoderPulse <= 5000){
     		CurPulse=(CurPulse - BefCurEncoderPulse);
 			rry=1;
 		}	
 		else{
 			BefCurEncoderPulse = ((unsigned long)0xffff - BefCurEncoderPulse);
-			if(BefCurEncoderPulse <= 2000){
+			BefCurEncoderPulse = (BefCurEncoderPulse + TmpEncoderPulse); 
+//			BefCurEncoderPulse = ((unsigned long)0xffff - BefCurEncoderPulse);
+			if(BefCurEncoderPulse <= 5000){
 		   		CurPulse=(CurPulse + BefCurEncoderPulse);
 				rry=1;
 			}				

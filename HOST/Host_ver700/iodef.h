@@ -69,6 +69,7 @@ extern void __attribute__((section(".usercode"))) HextoASCIIByte(void);
 #define		EDS_AUTOLANDING_485				1
 #define		VL_AUTOLANDING_485				2
 #define		L1000_AUTOLANDING_485			3
+#define		USER_AUTOLANDING				4
 #define		AUTO_LANDING_COMM				1
 #endif
 
@@ -422,12 +423,11 @@ typedef  union  _long_union
 #define  sUcmpFeedErrMsg      39
 #define  sDecForce      	  40
 #define  sOverRun      	  	  41
-#define  sTuning              42
-#define  sFhmError            43
+#define  sSlipOccur           42
+//#define  reserve        	43
 //////////////////////////////////////
-//							  44	
-//                            45
-//////////////////////////////////////
+#define  sFhmError            44
+#define  sTuning              45
 #define  sOVL                 46 
 #define  sPARKING             47   
 #define  sFireOn              48         
@@ -561,7 +561,7 @@ typedef  union  _long_union
 	#define  F_Speed180             139                     //1    
 	
 	#define  F_Speed210             140                     //1    
-	#define  F_Etc1Speed            141                     //1    33
+	#define  F_Etc1Speed         	141                     //1    33
 	#define  F_Etc2Speed            142                     //1    
 	#define  F_ElevSpeed            143                     //1     
 	
@@ -588,8 +588,8 @@ typedef  union  _long_union
 	#define  F_Speed2              	F_Speed60                     //1    
 	#define  F_Speed3              	F_Speed90                     //1    34
 	
-	#define  F_SU2SD2_V_SPD3		NC_IO3                     //1    
-	#define  F_X0X1_V_SPD3       	NC_IO4                     //1    
+//	#define  F_SU2SD2_V_SPD3		NC_IO3                     //1    
+//	#define  F_X0X1_V_SPD3       	NC_IO4                     //1    
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
@@ -620,8 +620,8 @@ typedef  union  _long_union
 #define  F_LocalNm              166                     //1    41
 #define  F_PcbType              167                     //1    41
 
-#define  F_EncoderRate          168                     //1    41
-#define  F_StopPulse0           169                     //1    41
+#define  F_user3          		168                     //1    41
+#define  F_user4           		169                     //1    41
 #define  F_user5                170                     //1    41
 #define  F_user6                171                     //1    41
 
@@ -883,7 +883,8 @@ typedef  union  _long_union
 #define  DEC_PULSE_30           BASE_1+ 12
 #define  DEC_PULSE_45           BASE_1+ 13
 #define  DEC_PULSE_60           BASE_1+ 14
-#define  DEC_PULSE_90           BASE_1+ 15
+//#define  DEC_PULSE_90           BASE_1+ 15
+
 #define  DEC_PULSE_105          BASE_1+ 16
 #define  DEC_PULSE_120          BASE_1+ 17
 #define  DEC_PULSE_150          BASE_1+ 18
@@ -891,13 +892,14 @@ typedef  union  _long_union
 #define  DEC_PULSE_210          BASE_1+ 20
 #define  MIN_DEC_PULSE_30       BASE_1+ 21
 #define  MIN_DEC_PULSE_45       BASE_1+ 22
-#define  MIN_DEC_PULSE_60       BASE_1+ 23
+//#define  MIN_DEC_PULSE_60       BASE_1+ 23
 //	#define  MIN_DEC_PULSE_90       BASE_1+ 24
 //	#define  MIN_DEC_PULSE_105      BASE_1+ 25
 //	#define  MIN_DEC_PULSE_120      BASE_1+ 26
 //	#define  MIN_DEC_PULSE_150      BASE_1+ 27 
 //	#define  MIN_DEC_PULSE_180		BASE_1+ 28 
-//	#define  MIN_DEC_PULSE_210      BASE_1+ 29 
+//#define  B_USER_MPM      		BASE_1+ 28 
+#define  B_USER_PLANK_LENGTH    BASE_1+ 29 				///////////plankz  ////200mm
 #define  MPM_VARIABLE           BASE_1+ 30 
 #define  MM_PULSE               BASE_1+ 31 
 
@@ -906,13 +908,13 @@ typedef  union  _long_union
 //////////////////////////////////////////////////////////
 #define  DEC_LENGTH_SPD_LOW   	DEC_LENGTH_30 
 #define  DEC_LENGTH_SPD_MID  	DEC_LENGTH_45 
-#define  DEC_LENGTH_SPD_HIGH	DEC_LENGTH_60 
+#define  DEC_LENGTH_SPD_HIGH	DEC_LENGTH_60			//test 
 #define  BASE_DEC_MPM       	DEC_LENGTH_90  
 
 #define  BASE_DEC_TIME          DEC_LENGTH_105  
 #define  BASE_SCURVE_TIME       DEC_LENGTH_120
-#define  BASE_SU1_LENGTH		DEC_LENGTH_150
-#define  BASE_SD1_LENGTH		DEC_LENGTH_180
+#define  BASE_SU1_PULSE			DEC_LENGTH_150
+#define  BASE_SD1_PULSE			DEC_LENGTH_180
 #define  BASE_BEF_LULD_PULSE	DEC_LENGTH_210
   
 #define  DEC_PULSE_SPD_LOW     	DEC_PULSE_30
@@ -920,15 +922,15 @@ typedef  union  _long_union
 #define  DEC_PULSE_SPD_HIGH     DEC_PULSE_60
 
 
-#define  BASE_SUS_LENGTH		BASE_1+ 16
-#define  BASE_SDS_LENGTH		BASE_1+ 17
-#define  BASE_X0_LENGTH			BASE_1+ 18
-#define  BASE_X1_LENGTH			BASE_1+ 19
-#define  BASE_PLANK_LENGTH		BASE_1+ 20
-#define  BASE_SENSOR_LENGTH		BASE_1+ 21
-#define  BASE_CENTER_LENGTH		BASE_1+ 22
+#define  BASE_SUS_PULSE			BASE_1+ 16
+#define  BASE_SDS_PULSE			BASE_1+ 17
+#define  BASE_X0_PULSE			BASE_1+ 18
+#define  BASE_X1_PULSE			BASE_1+ 19
+#define  BASE_PLANK_PULSE		BASE_1+ 20		//pulse
+#define  BASE_SENSOR_PULSE		BASE_1+ 21
+#define  BASE_CENTER_PULSE		BASE_1+ 22
 
-//#define  BASE_DEC_PULSE        	DEC_PULSE_90  
+
 //////////////////////////////////////////////////////////
 ///////////spd3 redefine/////////////////////////////////
 //////////////////////////////////////////////////////////
@@ -1030,6 +1032,8 @@ typedef  union  _long_union
 #define  F_BLOCK_14           	896
 #define  F_BLOCK_X0           	F_BLOCK_14       
 #define  F_BLOCK_X1           	F_BLOCK_X0+64
+#define  F_BLOCK_X2           	F_BLOCK_X0+128
+#define  F_BLOCK_X3           	F_BLOCK_X0+192
 
 #define  F_CurPulse0			F_BLOCK_X0+0   
 #define  F_CurPulse1			F_BLOCK_X0+1
@@ -1299,8 +1303,8 @@ typedef  union  _long_union
 #define  F_SysErSavePt27_Day	F_BLOCK_X1+157
 #define  F_SysErSavePt27_Floor	F_BLOCK_X1+158
 #define  F_SysErSavePt27_Name	F_BLOCK_X1+159
-#define  F_SysErSavePt27_Hour	F_BLOCK_X1+150
-#define  F_SysErSavePt27_Min	F_BLOCK_X1+151
+#define  F_SysErSavePt27_Hour	F_BLOCK_X1+160
+#define  F_SysErSavePt27_Min	F_BLOCK_X1+161
 
 #define  F_SysErSavePt28_Mon	F_BLOCK_X1+162
 #define  F_SysErSavePt28_Day	F_BLOCK_X1+163
@@ -1374,7 +1378,7 @@ typedef  union  _long_union
 
 #define  F_SysErSavePt38_Mon	F_BLOCK_X1+222
 #define  F_SysErSavePt38_Day	F_BLOCK_X1+223
-#define  F_SysErSavePt38_Floor	F_BLOCK_X1+214
+#define  F_SysErSavePt38_Floor	F_BLOCK_X1+224
 #define  F_SysErSavePt38_Name	F_BLOCK_X1+225
 #define  F_SysErSavePt38_Hour	F_BLOCK_X1+226
 #define  F_SysErSavePt38_Min	F_BLOCK_X1+227
@@ -1410,6 +1414,71 @@ typedef  union  _long_union
 //#define  F_eErrCntPt			F_BLOCK_X1+252
 
 
+#define  F_LEVEL01				F_BLOCK_X1+256
+#define  F_LEVEL02				F_BLOCK_X1+257
+#define  F_LEVEL03				F_BLOCK_X1+258
+#define  F_LEVEL04				F_BLOCK_X1+259
+#define  F_LEVEL05				F_BLOCK_X1+260
+#define  F_LEVEL06				F_BLOCK_X1+261
+#define  F_LEVEL07				F_BLOCK_X1+262
+#define  F_LEVEL08				F_BLOCK_X1+263
+#define  F_LEVEL09				F_BLOCK_X1+264
+#define  F_LEVEL10				F_BLOCK_X1+265
+#define  F_LEVEL11				F_BLOCK_X1+266
+#define  F_LEVEL12				F_BLOCK_X1+267
+#define  F_LEVEL13				F_BLOCK_X1+268
+#define  F_LEVEL14				F_BLOCK_X1+269
+#define  F_LEVEL15				F_BLOCK_X1+270
+#define  F_LEVEL16				F_BLOCK_X1+271
+#define  F_LEVEL17				F_BLOCK_X1+272
+#define  F_LEVEL18				F_BLOCK_X1+273
+#define  F_LEVEL19				F_BLOCK_X1+274
+#define  F_LEVEL20				F_BLOCK_X1+275
+#define  F_LEVEL21				F_BLOCK_X1+276
+#define  F_LEVEL22				F_BLOCK_X1+277
+#define  F_LEVEL23				F_BLOCK_X1+278
+#define  F_LEVEL24				F_BLOCK_X1+279
+#define  F_LEVEL25				F_BLOCK_X1+280
+#define  F_LEVEL26				F_BLOCK_X1+281
+#define  F_LEVEL27				F_BLOCK_X1+282
+#define  F_LEVEL28				F_BLOCK_X1+283
+#define  F_LEVEL29				F_BLOCK_X1+284
+#define  F_LEVEL30				F_BLOCK_X1+285
+#define  F_LEVEL31				F_BLOCK_X1+286
+#define  F_LEVEL32				F_BLOCK_X1+287
+#define  F_LEVEL33				F_BLOCK_X1+288
+#define  F_LEVEL34				F_BLOCK_X1+289
+#define  F_LEVEL35				F_BLOCK_X1+290
+#define  F_LEVEL36				F_BLOCK_X1+291
+#define  F_LEVEL37				F_BLOCK_X1+292
+#define  F_LEVEL38				F_BLOCK_X1+293
+#define  F_LEVEL39				F_BLOCK_X1+294
+#define  F_LEVEL40				F_BLOCK_X1+295
+#define  F_LEVEL41				F_BLOCK_X1+296
+#define  F_LEVEL42				F_BLOCK_X1+297
+#define  F_LEVEL43				F_BLOCK_X1+298
+#define  F_LEVEL44				F_BLOCK_X1+299
+#define  F_LEVEL45				F_BLOCK_X1+300
+#define  F_LEVEL46				F_BLOCK_X1+301
+#define  F_LEVEL47				F_BLOCK_X1+302
+#define  F_LEVEL48				F_BLOCK_X1+303
+#define  F_LEVEL49				F_BLOCK_X1+304
+#define  F_LEVEL50				F_BLOCK_X1+305
+#define  F_LEVEL51				F_BLOCK_X1+306
+#define  F_LEVEL52				F_BLOCK_X1+307
+#define  F_LEVEL53				F_BLOCK_X1+308
+#define  F_LEVEL54				F_BLOCK_X1+309
+#define  F_LEVEL55				F_BLOCK_X1+310
+#define  F_LEVEL56				F_BLOCK_X1+311
+#define  F_LEVEL57				F_BLOCK_X1+312
+#define  F_LEVEL58				F_BLOCK_X1+313
+#define  F_LEVEL59				F_BLOCK_X1+314
+#define  F_LEVEL60				F_BLOCK_X1+315
+#define  F_LEVEL61				F_BLOCK_X1+316
+#define  F_LEVEL62				F_BLOCK_X1+317
+#define  F_LEVEL63				F_BLOCK_X1+318
+#define  F_LEVEL64				F_BLOCK_X1+319
+
 
 
 
@@ -1420,11 +1489,9 @@ typedef  union  _long_union
 //#define  F_BLOCK11              704
 //#define  F_BLOCK12              768
 //#define  F_BLOCK13              832
-//#define  F_BLOCK14              896
-
-
+//#define  F_BLOCK14            896
 //#define  F_CurPulsePt			224			             
-//#define  F_MoveCountPt			225			             
+//#define  F_MoveCountPt		225			             
 
 
 //F_BLOCK14   end
@@ -1626,7 +1693,6 @@ extern  unsigned	int    	    AutoNoMoveTime;
 extern	unsigned	int    	    ExIOTimer;
 extern	unsigned	int    	    BreakTime;
 extern  unsigned 	int   		CAN_Buf[8];
-extern	unsigned	int			SensorPositionBuf[20];
 extern	unsigned	int			TunningTimer;
 extern	unsigned	int    		MotorStopTime;  
 
@@ -1658,6 +1724,8 @@ extern	UserDataType    StateBit9;
 extern	UserDataType    StateBit10;   
 extern	UserDataType    StateBit11;   
 extern	UserDataType    StateBit12;   
+extern	UserDataType    StateBit13;   
+extern	UserDataType    StateBit14;   
 extern  UserDataType    Vip_Floor;   
 
 
@@ -1719,25 +1787,41 @@ extern	unsigned long   PowerOnTime;
 
 extern  unsigned long 	BefCurEncoderPulse;
 extern  unsigned long   TmpEncoderPulse;
+extern	unsigned long   vTmpEncoderPulse;
+
 extern	unsigned long 	LevelEncoderPulse1,LevelEncoderPulse2;
 extern	unsigned long 	TestPulse1,UpDnEncoder;
 extern	unsigned long   DecStartPulse,DecTotalPulse;
 
 extern	unsigned long   LimitSusPulse,LimitSdsPulse,LimitSu1Pulse,LimitSd1Pulse,UpLimitX0Pulse,DnLimitX1Pulse,SensorPulse,PlankPulse,LuLdStopPulse,ZeroHzPulse;
-extern	unsigned long   LevelOnPulse,SlipOrgPulse,SlipArrivePulse;
+extern	unsigned long   LevelOnPulse,SlipOrgPulse,SlipArrivePulse,Flr_Slip;
+
 
 //extern	unsigned long 	xVarDecTime,xVarSCurve,MaxMpm,xVarCurMpm,xCurMpm_MaxMpmSpd,Length1,Length2,xVarMotorType,xVarRpm,xVarEncoder,xVarMpm,xVarMpm1000,xVarMaxHz,xDecMpm;
 //extern	unsigned long 	EVLowSpd,EVMidSpd,EVHighSpd,CurSpdDecPulse,EVLowDecLength,EVMidDecLength,EVHighDecLength,EVDecLength;
 
 extern	unsigned long 	MinimumFloorPulse;
 extern	unsigned long 	xVarDecTime,xVarSCurve;
-extern	unsigned long 	xVarCurMpm,xVarMotorType,xVarRpm,xVarEncoder,xVarMpm,xVarMpm1000,xVarMaxHz,xDecMpm;
+extern	unsigned long 	xVarCurMpm,xVarMotorType,xVarRpm,xVarEncoder,xVarMpm,xVarMpm1000,xVarMaxHz,xDecMpm,xLowSpdMpm,xMidSpdMpm;
 extern	unsigned long 	Length1,Length2;
 extern	unsigned long 	EVManualSpd,EVLowSpd,EVMidSpd,EVHighSpd,CurSpdDecPulse,EVLowDecLength,EVMidDecLength,EVHighDecLength,EVDecLength;
 extern	unsigned long 	tmpxMaxMpm,tmpxCurMpm,tmpxLastMpm,tmpxVarDecTime,tmpxVarSCurve,tmpVarLengthVal1,tmpVarLengthVal2;
-extern	unsigned long 	CMaxMpm   ,CCurMpm   ,CLastMpm   ,CVarDecTime  ,CVarSCurve   ,CVarLengthVal1 ,CVarLengthVal2;
 
 extern	unsigned long 	OneceUseBuf1,OneceUseBuf2,OneceUseBuf3;
+extern	unsigned long 	SpdL_DecPulse,SpdM_DecPulse,SpdH_DecPulse;
+
+extern	unsigned long 	ThisUseMaxMpm,ThisUseMpmVariable,ThisUseMmPerPulse,ThisUseDecSpd,ThisUseLowSpd,ThisUseMidSpd;
+
+
+extern	unsigned long	PlankMpm,PlankMmPerPulse,PlankMpmVariable;
+
+extern	unsigned long 	LastDecMpm,LastMpm,LastSpd_LMH;
+
+
+extern	unsigned long 	AvrBuf[11];
+extern	unsigned long 	AvrBefCurPulse,AvrPulse,AvrPulseMinimum;
+extern	unsigned int 	AvrPt;
+
 
 extern	unsigned long   xBefLuLdPulse;
 
@@ -2075,7 +2159,7 @@ extern	unsigned int 	AutotunUpDn;
 #define  bAutoTunningMsg   		GET_BITFIELD(&StateBit10).bit2 
 #define  bOnceMove      		GET_BITFIELD(&StateBit10).bit3 
 #define  bDeltaSpdOff			GET_BITFIELD(&StateBit10).bit4 
-#define  bHostAutoLanding       GET_BITFIELD(&StateBit10).bit5 
+#define  bParameterChange       GET_BITFIELD(&StateBit10).bit5 
 #define  bParameterMdf		    GET_BITFIELD(&StateBit10).bit6 
 #define  bFindSU				GET_BITFIELD(&StateBit10).bit7 
 
@@ -2099,6 +2183,26 @@ extern	unsigned int 	AutotunUpDn;
 #define  bBefbsFsd				GET_BITFIELD(&StateBit12).bit6 
 #define  bsFsd					GET_BITFIELD(&StateBit12).bit7 
 
+
+#define  bSlipOccur      		GET_BITFIELD(&StateBit13).bit0 
+#define  bBefbSlipOccur      	GET_BITFIELD(&StateBit13).bit1 
+#define  bNOTUSE_13_2   		GET_BITFIELD(&StateBit13).bit2 
+#define  bOnesLuldOn      		GET_BITFIELD(&StateBit13).bit3 
+#define  bAutoLandingActive		GET_BITFIELD(&StateBit13).bit4 
+#define  bPlankLandingOk       	GET_BITFIELD(&StateBit13).bit5 
+#define  bInvCommActive485		GET_BITFIELD(&StateBit13).bit6 
+#define  BefbPlankLandingOk		GET_BITFIELD(&StateBit13).bit7 
+
+
+
+#define  bIntLockErr      		GET_BITFIELD(&StateBit14).bit0 
+#define  bDoorErr      			GET_BITFIELD(&StateBit14).bit1 
+#define  bFindUpX0   			GET_BITFIELD(&StateBit14).bit2 
+#define  bFindDnX1      		GET_BITFIELD(&StateBit14).bit3 
+#define  bNOTUSE_14_4			GET_BITFIELD(&StateBit14).bit4 
+#define  bNOTUSE_14_5       	GET_BITFIELD(&StateBit14).bit5 
+#define  bNOTUSE_14_6			GET_BITFIELD(&StateBit14).bit6 
+#define  bNOTUSE_14_7			GET_BITFIELD(&StateBit14).bit7 
 
 //////////////////////////////////////////////////////////////
 #define  IN_SU1_PORT            GET_BITFIELD(&I_SU1_bit).bit0 
@@ -2239,7 +2343,7 @@ extern	unsigned int 	AutotunUpDn;
 #define  DecreasePulse          GET_LONGFIELD(&parameter_mirror[DECREASE_PULSE]).long_data
 #define  TmpFhmCounter1         GET_LONGFIELD(&parameter_mirror[TMP_FHM_COUNTER1]).long_data
 #define  TmpFhmCounter2         GET_LONGFIELD(&parameter_mirror[TMP_FHM_COUNTER2]).long_data
-#define  TmpMmPerMin            GET_LONGFIELD(&parameter_mirror[TMP_MM_PER_MIN]).long_data
+//#define  TmpMmPerMin            GET_LONGFIELD(&parameter_mirror[TMP_MM_PER_MIN]).long_data
 #define  PulsePer100Msec        GET_LONGFIELD(&parameter_mirror[PULSE_PER_100MSEC]).long_data
 #define  CurRpm                 GET_LONGFIELD(&parameter_mirror[CUR_RPM]).long_data
 #define  StartPulse             GET_LONGFIELD(&parameter_mirror[START_PULSE]).long_data
@@ -2427,7 +2531,7 @@ extern	unsigned int 	AutotunUpDn;
 #define  cF_LocalNm             GET_LONGFIELD(&FlashDspCharBuf[F_LocalNm/4])        .byte[F_LocalNm%4]
 #define  cF_PcbType             GET_LONGFIELD(&FlashDspCharBuf[F_PcbType/4])        .byte[F_PcbType%4]
 //#define  cF_EncoderRate         GET_LONGFIELD(&FlashDspCharBuf[F_EncoderRate/4])    .byte[F_EncoderRate%4]
-#define  iF_StopPulse           GET_LONGFIELD(&FlashDspCharBuf[F_StopPulse0/4])     .intger[(F_StopPulse0%4)/2]
+//#define  iF_StopPulse           GET_LONGFIELD(&FlashDspCharBuf[F_StopPulse0/4])     .intger[(F_StopPulse0%4)/2]
 #define  cF_SystemSet           GET_LONGFIELD(&FlashDspCharBuf[F_SystemSet/4])      .byte[F_SystemSet%4]
 
 #define  cF_year                GET_LONGFIELD(&FlashDspCharBuf[F_year/4])           .byte[F_year%4]
@@ -2614,8 +2718,6 @@ extern	unsigned int 	AutotunUpDn;
 #define  cF_X0X1_VELOCITY       GET_LONGFIELD(&FlashDspCharBuf[F_X0X1_Velocity/4])  .byte[F_X0X1_Velocity%4]
 
 
-
-
 #define  cF_SPEED_DEC_PORT      GET_LONGFIELD(&FlashDspCharBuf[F_DecreaseSpeed/4]).byte[F_DecreaseSpeed%4]
 #define  cF_SPEED_LOW_PORT      GET_LONGFIELD(&FlashDspCharBuf[F_Speed1/4])       .byte[F_Speed1%4]
 #define  cF_SPEED_MID_PORT    	GET_LONGFIELD(&FlashDspCharBuf[F_Speed2/4])       .byte[F_Speed2%4]
@@ -2626,8 +2728,8 @@ extern	unsigned int 	AutotunUpDn;
 
 #define  cF_ELEV_SPEED          GET_LONGFIELD(&FlashDspCharBuf[F_ElevSpeed/4])      .byte[F_ElevSpeed%4]
 #define  cF_LIMIT_SPEED         GET_LONGFIELD(&FlashDspCharBuf[F_LimitSpeed/4])     .byte[F_LimitSpeed%4]
-#define  cF_SU2SD2_V_SPD3     	GET_LONGFIELD(&FlashDspCharBuf[F_SU2SD2_V_SPD3/4])	.byte[F_SU2SD2_V_SPD3%4]
-#define  cF_X0X1_V_SPD3       	GET_LONGFIELD(&FlashDspCharBuf[F_X0X1_V_SPD3/4])  	.byte[F_X0X1_V_SPD3%4]
+//#define  cF_SU2SD2_V_SPD3     	GET_LONGFIELD(&FlashDspCharBuf[F_SU2SD2_V_SPD3/4])	.byte[F_SU2SD2_V_SPD3%4]
+//#define  cF_X0X1_V_SPD3       	GET_LONGFIELD(&FlashDspCharBuf[F_X0X1_V_SPD3/4])  	.byte[F_X0X1_V_SPD3%4]
 
 
 
@@ -3081,4 +3183,15 @@ extern	unsigned int Addr_Reset;
 
 
 
-extern	unsigned long	TestYou;
+
+
+#define	LULD_OFFSET_MAX				18
+#define	LULD_OFFSET_CENTER			9
+
+#define	BEF_LULD_PULSE_MAX			150
+
+
+
+#define	CLOSE_WAIT_ON				1		
+
+

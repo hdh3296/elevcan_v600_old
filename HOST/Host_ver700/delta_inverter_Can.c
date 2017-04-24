@@ -1,13 +1,14 @@
 
 
 #include <p30fxxxx.h>
+#include  	"iodef.h"
+
 #include 	"you_can_lib.h" 
 #include 	"you_can2.h" 
 
            
 #include  	"30f6010_io.h"            
 #include  	"host_io.h"            
-#include  	"iodef.h"
 #include  	"door.h"
 #include  	"com.h"
 #include  	"counter.h"
@@ -16,10 +17,6 @@
 #include  	"default_setup.h" 
 #include  	"Host_Autolanding.h" 
 #include  	"EDS_par_map.h" 
-
-
-
-
 
 
 	
@@ -39,50 +36,6 @@ extern UserDataType    EnterKey;
 #define		HOST_SDO_1		0x61		
 #define		HOST_SDO_2		0x62		
 
-
-
-
-/*
-
-#define		IV_POWER_ON_CHK		0x01
-#define		IV_FHM_SUCCESS		0x02
-#define		IV_FHM_EXCUTE		0x04
-#define		IV_PG_P_RECORD		0x08
-#define		IV_PG_P_RESET		0x10
-
-
-#define		FHM_CMD_EXCUT		(IV_FHM_EXCUTE 					| IV_POWER_ON_CHK)
-#define		FHM_CMD_P_RESET_H	(IV_FHM_EXCUTE | IV_PG_P_RESET 	| IV_POWER_ON_CHK)
-#define		FHM_CMD_P_RESET_L	(IV_FHM_EXCUTE  				| IV_POWER_ON_CHK)
-#define		FHM_CMD_P_RECORD_H	(IV_FHM_EXCUTE | IV_PG_P_RECORD | IV_POWER_ON_CHK)
-#define		FHM_CMD_P_RECORD_L	(IV_FHM_EXCUTE 					| IV_POWER_ON_CHK)
-#define		FHM_CMD_SUCCESS		(IV_FHM_SUCCESS 				| IV_POWER_ON_CHK)
-
-
-#define		AUTO_TUN_END		0x00
-#define		AUTO_TUN_STOPPING	0x02
-#define		AUTO_TUN_RUNNING	0x03
-
-
-
-#define		IV_READY_0		0x01
-#define		IV_ERROR_0		0x02
-#define		IV_WARNNING_0	0x04
-#define		IV_UP_0			0x08
-#define		IV_DOWN_0		0x10
-#define		IV_NORMAL_0		0x20
-#define		IV_CONST_SPD_0	0x40
-#define		IV_ZERO_SPD_0	0x80
-
-#define		IV_INSPE_1		0x01
-#define		IV_RESCUE_1		0x02
-#define		IV_RELEVEL_1	0x04
-#define		IV_RESERVE2_1	0x08
-#define		IV_RESERVE3_1	0x10
-#define		IV_DECREASE_1	0x20
-#define		IV_FSD_1		0x40
-#define		IV_BK_RELEASE_1	0x80
-*/
 
 
 
@@ -110,9 +63,10 @@ unsigned int	This_Value;
 
 
 
-
-
 #ifdef	AUTO_LANDING_CAN
+
+
+
 
 LocalType __attribute__((section(".usercode"))) Delta_ReadAttribute_CAN(unsigned char addressH,unsigned char addressL)
 {    

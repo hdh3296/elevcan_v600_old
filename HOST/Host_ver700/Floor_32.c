@@ -76,10 +76,10 @@ void __attribute__((section(".usercode"))) IO_INVERTER_NewFloorLoadCheck(void)
 	    if(i==1){
 	        save_CurSpeed=CurSpeed;
 
-	        if(bSetSpeedOn==0)  SpeedChange();        
+	        if(bSetSpeedOn==0)  SpeedChange_spd3();        
 	
 	        if(CurSpeed>save_CurSpeed){        
-	            RunSpeedCmd_IO();
+	            RunSpeedCmd_IO_spd3();
 	        }
 	            
 	       	if(bCarUpMove){

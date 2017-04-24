@@ -1,4 +1,13 @@
 
+/////////////////////////////////
+/////////////////////////////////
+//////memory 부족 으로 지움
+/////////////////////////////////
+/////////////////////////////////
+
+/*
+#ifndef	AUTO_LANDING_COMM
+
 
 #include <p30fxxxx.h>
 
@@ -16,8 +25,10 @@
 #include  "Host_NewProtocol.h" 
 
 
-UserDataType	CommonRcvBuf[100];
 
+
+
+UserDataType	CommonRcvBuf[100];
 UserDataType	CommonThisRxBuf[10];
 
 
@@ -32,6 +43,7 @@ unsigned int	CommonRxDlc=0;
 unsigned long	CommonRxEid=0;
 
 unsigned int	CommonConnectPort=0;
+
 unsigned int	CommonConnectPortTime=0;
 
 unsigned int	CommonRxThisPt=0;
@@ -47,7 +59,6 @@ unsigned int	CommonTxCnt=0;
 /////////////////////////////////
 /////////////////////////////////
 
-#ifndef	AUTO_LANDING_COMM
 
 unsigned int  __attribute__((section(".usercode"))) CommonNewSoketChk(unsigned int thisport)
 {
@@ -427,4 +438,6 @@ LocalType __attribute__((section(".usercode"))) CommonReceiveDataSave(unsigned i
 
 #endif
  
+*/
+
 

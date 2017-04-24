@@ -555,6 +555,7 @@ LocalType __attribute__((section(".usercode"))) HostWriteMyData(void)
 
 
 
+#ifndef	AUTO_LANDING_COMM
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -635,7 +636,6 @@ void    __attribute__((section(".usercode")))  Can2NewProtocolDataLoad(void)
 }
 
 
-#ifndef	AUTO_LANDING_COMM
 void    __attribute__((section(".usercode")))  Can2ConnectorValid(void)
 {
 	if(CommonNewSoketChk(COM_PORT_CAN2)){
@@ -658,6 +658,36 @@ void    __attribute__((section(".usercode")))  PcCommandMeCan2(void)
 {
 	unsigned char tmpbuf[8];
 
+    tmpbuf[0] =(UserDataType)(C2RX0B1 & 0x00ff);
+    tmpbuf[1] =(UserDataType)((C2RX0B1 >> 8) & 0x00ff);     
+
+    tmpbuf[2] =(UserDataType)(C2RX0B2 & 0x00ff);
+    tmpbuf[3] =(UserDataType)((C2RX0B2 >> 8) & 0x00ff);     
+
+    tmpbuf[4] =(UserDataType)(C2RX0B3 & 0x00ff);
+    tmpbuf[5] =(UserDataType)((C2RX0B3 >> 8) & 0x00ff);     
+
+    tmpbuf[6] =(UserDataType)(C2RX0B4 & 0x00ff);
+    tmpbuf[7] =(UserDataType)((C2RX0B4 >> 8) & 0x00ff);     
+
+    if( (tmpbuf[0]== 0x24) || (tmpbuf[0]== 0x23)){
+		CAN2_RxBuf[0] = tmpbuf[0];
+		CAN2_RxBuf[1] = tmpbuf[1];
+		CAN2_RxBuf[2] = tmpbuf[2];
+		CAN2_RxBuf[3] = tmpbuf[3];
+		CAN2_RxBuf[4] = tmpbuf[4];
+		CAN2_RxBuf[5] = tmpbuf[5];
+		CAN2_RxBuf[6] = tmpbuf[6];
+		CAN2_RxBuf[7] = tmpbuf[7];
+	}
+	else{
+		#ifndef	AUTO_LANDING_COMM
+		Can2ConnectorValid();
+		#endif
+	}
+
+
+/*
 	if(CommonRxCnt==0){
 	    tmpbuf[0] =(UserDataType)(C2RX0B1 & 0x00ff);
 	    tmpbuf[1] =(UserDataType)((C2RX0B1 >> 8) & 0x00ff);     
@@ -692,6 +722,8 @@ void    __attribute__((section(".usercode")))  PcCommandMeCan2(void)
 		Can2ConnectorValid();
 		#endif
 	}
+*/
+
 }
 //////////////////////////////////////////////////////////////
 
@@ -767,7 +799,9 @@ LocalType __attribute__((section(".usercode"))) Can2Check(void)
         return(0);
     }
     
+#ifndef	AUTO_LANDING_COMM
 	if(NewProtocolCan2Chk())	return(0);
+#endif
 
     switch(CAN2_RxBuf[0]){
         case    0x23:

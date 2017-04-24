@@ -188,7 +188,7 @@ void  __attribute__((section(".usercode"))) TmpSave(void)
 	    b_LdTmpBufRam(F_Ver2)           = VERSION_2;	
 	    flash_write_DspChar(F_BLOCK2);
 
-        CaluDecreasePulse();
+        CaluDecreasePulse_spd3();
 
 		bImportData=0;
     	SWR=1;
@@ -258,7 +258,6 @@ void    __attribute__((section(".usercode"))) LdDataTx(void)
          
     RxBuffer2[0]  = ACK;
     RxBuffer2[1]  = cF_COMPANY;
-
 	RxBuffer2[36] = ' ';                     
 	RxBuffer2[37] = ' ';                     
 	RxBuffer2[38] = ' ';                     

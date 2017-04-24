@@ -134,7 +134,7 @@ void  __attribute__((section(".usercode"))) SerialCheck(void)
 {
    	LocalType   buf1=0;
 
-	if(bHostAutoLanding){	
+	if(bInvCommActive485){
 		Com1Autolanding();
 	}
 	else{	
@@ -173,7 +173,7 @@ void _ISR_X _U1TXInterrupt(void)
 
     _U1TXIF=0;
 
-	if(bHostAutoLanding){	
+	if(bInvCommActive485){
 		Com1AutolandingTxInt();
 	}
 	else{
@@ -226,8 +226,7 @@ void _ISR_X _U1RXInterrupt(void)
     
 ///////////////////
 
-
-	if(bHostAutoLanding){	
+	if(bInvCommActive485){
 		Com1AutolandingRxInt(buf1);
 	}
 	else{	

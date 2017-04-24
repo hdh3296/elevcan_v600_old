@@ -705,12 +705,23 @@ UserDataType	__attribute__((section(".usercode"))) OpenCloseSet(void)
     if(bDoorCloseOk && (sRamDArry[mDoorSeq] >= DOOR_CLOSE_END)){
 #else
 	LocalType TmpDoorOpenOn=0;
-
+/*
     if(bDoorCloseOk && !bMoveCar && (!DoorJumperChkOnOffChk) && (PerfectAuto())){
     	if(bDoorCloseOk && (sRamDArry[mDoorSeq] >= DOOR_OPEN_WAIT)){
 			TmpDoorOpenOn=1;
 		}
 	}
+*/
+
+
+    if( !PerfectAuto())	bDoorErr=0;
+
+    if(bDoorErr && !bMoveCar){
+    	if(sRamDArry[mDoorSeq] == DOOR_OPEN_WAIT){
+			TmpDoorOpenOn=1;
+		}
+	}
+
 
     if(bDoorCloseOk && (TmpDoorOpenOn==0)){
 #endif

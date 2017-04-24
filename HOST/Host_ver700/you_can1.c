@@ -437,12 +437,6 @@ unsigned int  __attribute__((section(".usercode")))  FloorOnOffDataReceive(void)
 	ShadowsRamDArry[FLR_ON_OFF2]=(unsigned char)(C1RX0B2 & 0x00ff);	
 	ShadowsRamDArry[FLR_ON_OFF3]=(unsigned char)((C1RX0B2 >> 8) & 0x00ff);	
 
-/*
-	sRamDArry[ExtCmdFlrONOFF0]=(unsigned char)(C1RX0B1 & 0x00ff);	
-	sRamDArry[ExtCmdFlrONOFF1]=(unsigned char)((C1RX0B1 >> 8) & 0x00ff);	
-	sRamDArry[ExtCmdFlrONOFF2]=(unsigned char)(C1RX0B2 & 0x00ff);	
-	sRamDArry[ExtCmdFlrONOFF3]=(unsigned char)((C1RX0B2 >> 8) & 0x00ff);	
-*/
 
 	ExtCmdFlrONOFFCnt=0;
 	AccTimer=0;
@@ -994,6 +988,7 @@ unsigned int  __attribute__((section(".usercode")))  HibBoardDataReceive(void)
 
 
 
+#ifndef	AUTO_LANDING_COMM
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -1073,7 +1068,6 @@ void    __attribute__((section(".usercode")))  Can1NewProtocolDataLoad(void)
 }
 
 
-#ifndef	AUTO_LANDING_COMM
 void    __attribute__((section(".usercode")))  Can1ConnectorValid(void)
 {
 	if(CommonNewSoketChk(COM_PORT_CAN1)){
@@ -1081,9 +1075,6 @@ void    __attribute__((section(".usercode")))  Can1ConnectorValid(void)
 		CommonReceiveDataSave(COM_PORT_CAN1);
 	}
 }
-#endif
-
-
 
 
 void    __attribute__((section(".usercode")))  PcCommandMeCan1(void)
@@ -1136,6 +1127,9 @@ void    __attribute__((section(".usercode")))  PcCommandMeCan1(void)
 		#endif
 	}
 }
+
+
+#endif
 
 
 
@@ -1258,38 +1252,26 @@ void  _ISR_X _C1Interrupt(void)
 #endif
         }
         else if(C1ReceiveAdrStatus == SLAVE_TX_MASTER){
+            if(C1ReceiveMaterAdr==MyLocalAddr){
+                if(C1ReceiveSlaveAdr & 0x80){
+					if(C1ReceiveSlaveAdr == 0x8A)		FloorOnOffDataReceive();	
+					else if(C1ReceiveSlaveAdr == 0x8B)	ExtIODataReceive();	
+					else								CarBoardDataReceive();
+                }                          
+                else{
+                    HibBoardDataReceive();
+                }
+            }
+            else{
+                if(!(C1ReceiveSlaveAdr & 0x80)){
+                    ClearKeyData();
+                }
+            }
 
-////////hib_crt
-			if(C1ReceiveSlaveAdr == 0xfe){
-	            if(C1ReceiveMaterAdr==MyLocalAddr){
-					PcCommandMeCan1();
-				}
-			}
-
-			else{	
-////////
-	            if(C1ReceiveMaterAdr==MyLocalAddr){
-	                if(C1ReceiveSlaveAdr & 0x80){
-						if(C1ReceiveSlaveAdr == 0x8A)		FloorOnOffDataReceive();	
-						else if(C1ReceiveSlaveAdr == 0x8B)	ExtIODataReceive();	
-						else								CarBoardDataReceive();
-	                }                          
-	                else{
-	                    HibBoardDataReceive();
-	                }
-	            }
-	            else{
-	                if(!(C1ReceiveSlaveAdr & 0x80)){
-	                    ClearKeyData();
-	                }
-	            }
-	
-	            if((C1ReceiveSlaveAdr == sRamDArry[mCallMe]) && (C1ReceiveMaterAdr==MyLocalAddr)){
-	                ThisReceiveSlave++;
-	            }
-			}
+            if((C1ReceiveSlaveAdr == sRamDArry[mCallMe]) && (C1ReceiveMaterAdr==MyLocalAddr)){
+                ThisReceiveSlave++;
+            }
         }
-
         C1INTFbits.RX0IF=0;
         C1RX0CONbits.RXFUL=0;
         C1Loop=0;
@@ -1467,7 +1449,10 @@ unsigned int  __attribute__((section(".usercode")))  Can1Check(void)
     unsigned int tmpeidH,tmpeidL;
     unsigned int tmpsidH,tmpsidL;
 
+
+#ifndef	AUTO_LANDING_COMM
 	if(NewProtocolCan1Chk())	return(0);
+#endif
 
 
     sel=0;

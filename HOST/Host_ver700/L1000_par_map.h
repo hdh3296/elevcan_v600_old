@@ -145,6 +145,7 @@
 
 #define		L1000_INV_CUR_AMP_ADDRH		0x00	// U1  inverter current A	
 #define		L1000_INV_CUR_AMP_ADDRL		0x42	// 03  inverter current A 		
+//#define		L1000_INV_CUR_AMP_ADDRL		0x40	// 03  inverter current A 		
 
 #define		L1000_INV_RESET_ADDRH		0x20	// reset address  //??????????????		
 #define		L1000_INV_RESET_ADDRL		0x02	// reset address  //??????????????		
