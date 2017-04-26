@@ -47,3 +47,5 @@ cpu_18f4480/voice_4480/voice.X/Makefile
 *.lnk
 *.hex
 /HOST/Host_2015_1/*.hex
+/cpu_18f4480/slave_4480/CAN_IO_ALL_65k80/can_io_all_65k80.si4project/cache/parse
+/cpu_18f4480/slave_4480/CAN_IO_ALL_65k80/can_io_all_65k80.si4project
