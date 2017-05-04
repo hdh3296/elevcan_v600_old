@@ -2428,7 +2428,7 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
             New485Ladder[SECONDLINE_BASE+EditBlanck+12] = cF_FLRDSPCH((unsigned long)(i+1));          
         	break;
         case    22:
-//            CurEncoderPulse(PlusLevelOffset);
+            CurEncoderPulse(cF_FLRDSPCH((unsigned long)(F_not_use1)));
         	break;
 /*
         case    23:
@@ -5453,7 +5453,6 @@ unsigned int  __attribute__((section(".usercode"))) UserGroupSave(void)
             switch(DigitData){
                 case    1:
 					if(!bMoveCar){
-						bSaveFlash=1;
 						MoveCounterx=0;
 						EEP_Save_All();
 					}
@@ -5461,7 +5460,6 @@ unsigned int  __attribute__((section(".usercode"))) UserGroupSave(void)
                 case    2:
 					if(!bMoveCar){
 						Flash_ErrClear_All();
-						bSaveFlash=1;
 					}
                     break;
                 case    3:
@@ -6873,8 +6871,8 @@ unsigned int  __attribute__((section(".usercode"))) EditOnCheck(void)
 	               	case    NCNO1_AUTO:
 	               	case    NCNO1_UB:
 	               	case    NCNO1_DB:
-	               	case    NCNO1_GS:
-	               	case    NCNO1_DS:
+//	               	case    NCNO1_GS:
+//	               	case    NCNO1_DS:
 						i=0;
 						break;
 					default:

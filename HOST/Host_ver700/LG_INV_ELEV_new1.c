@@ -391,9 +391,9 @@ void  __attribute__((section(".usercode")))  UpDnRunOut(void)
 
 void  __attribute__((section(".usercode")))   CarUpStartCmd_IO(void)
 {
+
     if(bMoveUpOk){
         UpWard();
-
 //	ver7.01	
 //        if(sRamDArry[mcurfloor]< cF_TOPFLR)  sRamDArry[mReqStopFloor]  = sRamDArry[mcurfloor]+1;
 //        else                                 sRamDArry[mReqStopFloor]  = cF_TOPFLR;
@@ -406,7 +406,6 @@ void  __attribute__((section(".usercode")))   CarUpStartCmd_IO(void)
                 OUT_BK1(0);                     
                 OUT_BK2(0);
                 OUT_P4(0);    
-
                 sRamDArry[mCarMoveState]=1;
                 break;
              case  1:
@@ -417,18 +416,23 @@ void  __attribute__((section(".usercode")))   CarUpStartCmd_IO(void)
 
                 if(ElevMoveTime > cF_STTM1){
                     if(INVERTER_CHECK != LG)    OUT_P4(1);
+					AllRunOut=1;
                 }
                 if(ElevMoveTime > cF_STTM2){
                     OUT_U_W(1);
+					AllRunOut=2;
                 }                                               
                 if(ElevMoveTime > cF_STTM3){
                     OUT_BK2(1);
+					AllRunOut=3;
                 }              
                 if(ElevMoveTime > cF_STTM4){
                      OUT_BK1(1);                     
+					AllRunOut=4;
                 }
                 if(ElevMoveTime > cF_STTM5){
                     UpDnRunOut();
+					AllRunOut=5;
                 }
                 break;                  
               default:
@@ -472,18 +476,23 @@ void  __attribute__((section(".usercode")))   CarDnStartCmd_IO(void)
 
                 if(ElevMoveTime > cF_STTM1){
                     if(INVERTER_CHECK != LG)    OUT_P4(1);
+					AllRunOut=1;
                 }
                 if(ElevMoveTime > cF_STTM2){
                     OUT_D_W(1);
+					AllRunOut=2;
                 }                                               
                 if(ElevMoveTime > cF_STTM3){
                     OUT_BK2(1);
+					AllRunOut=3;
                 }              
                 if(ElevMoveTime > cF_STTM4){
                     OUT_BK1(1);                     
+					AllRunOut=4;
                 }
                 if(ElevMoveTime > cF_STTM5){
                     UpDnRunOut();
+					AllRunOut=5;
                 }
                 break;                  
 
@@ -767,7 +776,6 @@ void   __attribute__((section(".usercode")))   CarStopCmd(void)
 void  __attribute__((section(".usercode")))    CarUpStartCmd(void)
 {
 	if(bPowerSaveMoveValid){
-	    bSaveFlash=1;
 		bOnceMove=1;
 	    CarUpStartCmd_IO();
 	}
@@ -777,7 +785,6 @@ void  __attribute__((section(".usercode")))    CarUpStartCmd(void)
 void  __attribute__((section(".usercode")))    CarDnStartCmd(void)
 {
 	if(bPowerSaveMoveValid){
-	    bSaveFlash=1;
 		bOnceMove=1;
 	    CarDnStartCmd_IO();
 	}

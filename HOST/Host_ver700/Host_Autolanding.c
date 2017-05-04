@@ -164,7 +164,7 @@ unsigned int  __attribute__((section(".usercode")))   CalMinimumFloorPulse(void)
 	OneceUseBuf3=0xfffffff0;
 
 	tmptop=(unsigned int)(cF_TOPFLR);
-	for(ret=1;ret<=tmptop;tmptop++){
+	for(ret=1;ret<=tmptop;ret++){
 		OneceUseBuf1=FLOOR_COUNT((ret-1));		
 		OneceUseBuf2=FLOOR_COUNT(ret);
 		if(OneceUseBuf2 > OneceUseBuf1){
@@ -191,6 +191,7 @@ unsigned int  __attribute__((section(".usercode")))   DefaultLowMpmSet(void)
 
 	unsigned long	tmpCurMpm,tmpMaxMpm;
 
+
 	CalMinimumFloorPulse();
 	if(OneceUseBuf3 ==0){
 		LastMpm=200;	// 20mpm
@@ -199,6 +200,8 @@ unsigned int  __attribute__((section(".usercode")))   DefaultLowMpmSet(void)
 
 	if(bPlankLandingOk)	tmpMaxMpm=PlankMpm;
 	else				tmpMaxMpm=GET_LONG(NEW_MPM);
+
+
 
 	for(tmpCurMpm=tmpMaxMpm;tmpCurMpm>100;tmpCurMpm--){
         asm("CLRWDT");
@@ -209,11 +212,17 @@ unsigned int  __attribute__((section(".usercode")))   DefaultLowMpmSet(void)
 				tmpCurMpm=1;  // end,,return
 			}
 		}
+		else{
+			LastMpm=200;
+			tmpCurMpm=1;	
+		}
 	}
+
 
 	if(LastMpm<200){
 		LastMpm=200;		// minimum mpm 20.0mpm
 	}
+
 	return(0);
 }
 
@@ -239,11 +248,13 @@ unsigned long  __attribute__((section(".usercode"))) ConverteMpm(unsigned long T
 
 unsigned int  __attribute__((section(".usercode")))   SaveSpdMLD(unsigned int pt,unsigned long spd)
 {
+
 	ELGroupDataLoad();
 	spd=ConverteMpm(GET_LONG(MPM_VARIABLE),ThisUseMpmVariable,spd);
   	parameter_mirror[(pt - (unsigned int)ENCODER_PULSE)]  = (unsigned long)spd; 
 	WriteFlash_spd3();
 	SaveVerify = 0x0;
+
 }
 
 
@@ -257,6 +268,7 @@ unsigned int  __attribute__((section(".usercode")))   ReCaluMidSpd(void)
 	unsigned long tmpSpdGap;
 
 	save=0;
+
 
 	if(LastSpd_LMH==SPEED_MID){
 		LastSpd_LMH=0;
@@ -278,6 +290,7 @@ unsigned int  __attribute__((section(".usercode")))   ReCaluMidSpd(void)
 			save=1;
 		}
 	}
+
 
 	if(save){
 		SaveSpdMLD((unsigned int)(DEC_PULSE_SPD_MID),LastMpm);		
@@ -322,6 +335,7 @@ unsigned int  __attribute__((section(".usercode")))   ReCaluLowSpd(void)
 			save=1;
 		}
 	}
+
 
 	if(save){
 		SaveSpdMLD((unsigned int)(DEC_PULSE_SPD_LOW),LastMpm);
@@ -814,6 +828,7 @@ unsigned int  __attribute__((section(".usercode")))   ParameterChangeChk(void)
 unsigned int  __attribute__((section(".usercode")))   UserAutoLandingScurveLoad(void)
 {
 	unsigned long	tmpMaxMpm,tmpSCurve;
+
 
 	bParameterChange=1;
 	ThisUseLowSpd=0;

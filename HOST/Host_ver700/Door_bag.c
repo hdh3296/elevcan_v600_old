@@ -86,11 +86,12 @@ LocalType	__attribute__((section(".usercode"))) MainSubDoorFlrChk(LocalType flr)
 
 
 
-
 UserDataType __attribute__((section(".usercode"))) NoUseNoOpen(void)
 {
     LocalType i,j,k;
-  
+          
+	if(OnlyOneCallOnOffChk)	return(1);		// modify            
+
     i=sRamDArry[mcurfloor]/8;
     j=sRamDArry[mcurfloor]%8;
     k=0x01;
@@ -181,7 +182,7 @@ void	__attribute__((section(".usercode"))) ValidDoorSel(void)
             break;
     }
 
-    if(!NoUseNoOpen())      NewDoorSelect=NO_DOOR;
+	if(!NoUseNoOpen())      NewDoorSelect=NO_DOOR;
 
     if(NewDoorSelect==NO_DOOR){
         NewDoorSelect = NO_DOOR;
@@ -461,7 +462,6 @@ void  __attribute__((section(".usercode"))) MainDoorOpenCmd_abc(void)
     if((USE_CHECK == BAGGAGE_USE) || (USE_CHECK == CARLIFT_USE)){
         if(!bHoleDoorOpenEnd && (!IN_LU || !IN_LD) )  OUT_HOP(1);   //main sub hole door  open    1
     }
-
 }
 
 

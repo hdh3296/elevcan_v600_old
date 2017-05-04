@@ -78,6 +78,7 @@ void _ISR_X _QEIInterrupt(void)
 }
 
 
+/*
 
 unsigned int   __attribute__((section(".usercode")))  ReadEncoder(void)
 {
@@ -100,10 +101,10 @@ unsigned int   __attribute__((section(".usercode")))  ReadEncoder(void)
 
 			vTmpEncoderPulse = ((unsigned long)0xffff - TmpEncoderPulse);
 			BefCurEncoderPulse = (BefCurEncoderPulse - vTmpEncoderPulse); 
-/*
-			BefCurEncoderPulse = ((unsigned long)0x10000 - BefCurEncoderPulse);
-			BefCurEncoderPulse = (BefCurEncoderPulse - TmpEncoderPulse); 
-*/
+
+//			BefCurEncoderPulse = ((unsigned long)0x10000 - BefCurEncoderPulse);
+//			BefCurEncoderPulse = (BefCurEncoderPulse - TmpEncoderPulse); 
+
 
 			if(BefCurEncoderPulse <= 5000){
 		   		CurPulse=(CurPulse - BefCurEncoderPulse);
@@ -138,3 +139,56 @@ unsigned int   __attribute__((section(".usercode")))  ReadEncoder(void)
 
 	return(0); 
 }
+*/
+
+
+unsigned int   __attribute__((section(".usercode")))  ReadEncoder(void)
+{
+	unsigned int rry;
+
+	rry=0;
+
+	if(BefCurEncoderPulse > 0xffff)	BefCurEncoderPulse=0;
+
+ 	TmpEncoderPulse=(unsigned long)POSCNT;	
+
+	if( TmpEncoderPulse > BefCurEncoderPulse){
+		BefCurEncoderPulse = (TmpEncoderPulse - BefCurEncoderPulse);
+		if(BefCurEncoderPulse <= 2000){
+    		CurPulse=(CurPulse + BefCurEncoderPulse);
+			rry=1;
+		}	
+		else{
+			BefCurEncoderPulse = ((unsigned long)0xffff - BefCurEncoderPulse);
+			if(BefCurEncoderPulse <= 2000){
+		   		CurPulse=(CurPulse - BefCurEncoderPulse);
+				rry=1;
+			}				
+		}
+	}
+	else if(TmpEncoderPulse < BefCurEncoderPulse){
+		BefCurEncoderPulse = (BefCurEncoderPulse-TmpEncoderPulse);
+		if(BefCurEncoderPulse <= 2000){
+    		CurPulse=(CurPulse - BefCurEncoderPulse);
+			rry=1;
+		}	
+		else{
+			BefCurEncoderPulse = ((unsigned long)0xffff - BefCurEncoderPulse);
+			if(BefCurEncoderPulse <= 2000){
+		   		CurPulse=(CurPulse + BefCurEncoderPulse);
+				rry=1;
+			}				
+		}
+	}
+
+	if(rry==1){
+		BefCurEncoderPulse=TmpEncoderPulse;
+		CounterTime=0;
+	}
+
+	if(CurPulse >= 0xfffff000)	CurPulse=BASE_PULSE;	
+	if(CurPulse <= 50000)		CurPulse=BASE_PULSE;	
+
+	return(0); 
+}
+

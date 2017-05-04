@@ -1499,36 +1499,6 @@ typedef  union  _long_union
 
 
 
-/*
-#define  BASE_ADDR              0
-#define  O_eVer                 BASE_ADDR                       
-#define  O_eTopFlr              3           //O_eVer+3                    
-#define  O_ePrkFlr              4           //O_eTopFlr+1                 
-#define  O_eOpWtTm              5           //O_ePrkFlr+1                 
-#define  O_eOpTtTm              6           //O_eOpWtTm+1                 
-#define  O_eUserLamp            7           //O_eOpTtTm+1                 
-#define  O_eFixFloor            8           //O_eUserLamp+1               
-#define  O_eFixFloorTime        9           //O_eFixFloor+1                
-#define  O_eNonService0         10          //O_eFixFloorTime+1                
-#define  O_eNonService1         11          //O_eFixFloorTime+1                
-#define  O_eNonService2         12          //O_eFixFloorTime+1                
-#define  O_eNonService3         13          //O_eFixFloorTime+1                
-#define  O_eFlrDspCh            14          //O_eNonService+4            
-#define  O_eSysErCnt            78          //O_eFlrDspCh+64             
-#define  O_ePassward            162         //O_eSysErCnt+ERR_SAVE_SIZE 
-#define  O_eMvCounter           166         //O_ePassward+4            
-#define  O_eSerialNm            168         //O_eMvCounter+2            
-#define  O_eFireSafeFlr         170         //O_eSerialNm+2             
-#define  O_eSubDoorFlr1         171         //O_eFireSafeFlr+1          
-#define  O_eSubDoorFlr2         172         //O_eSubDoorFlr1+1          
-#define  O_eSubDoorFlr3         173         //O_eSubDoorFlr2+1          
-#define  O_eErrStopCnt          174         //O_eSubDoorFlr3+1          
-#define  O_eErrCntPt            175         //O_eErrStopCnt+1           
-#define  O_eNextFlrTime         176         //O_eErrCntPt+1             
-#define  O_eLuLdOffTime         177         //O_eNextFlrTime+1            
-#define  O_eNcNoBit             178         //O_eLuLdOffTime+1          
-#define  O_eEnd                 179         //O_eNcNoBit+4              
-*/
 
 
 
@@ -1696,7 +1666,9 @@ extern  unsigned 	int   		CAN_Buf[8];
 extern	unsigned	int			TunningTimer;
 extern	unsigned	int    		MotorStopTime;  
 
-
+extern	UserDataType    BatOpenCnt;
+extern	UserDataType    AllRunOut;
+extern	UserDataType    LuLdOffTime;
 extern	UserDataType	NoStart;
 extern  UserDataType    OldFireBuf;  
 extern  UserDataType    AutoBit;
@@ -2001,7 +1973,7 @@ extern	unsigned int 	AutotunUpDn;
 #define  bCarUpMove             GET_BITFIELD(&Etc1Bit).bit1 
 #define  bCarDnMove             GET_BITFIELD(&Etc1Bit).bit2 
 #define  bFhmCount              GET_BITFIELD(&Etc1Bit).bit3 
-#define  bSaveFlash             GET_BITFIELD(&Etc1Bit).bit4 
+//#define  bSaveFlash             GET_BITFIELD(&Etc1Bit).bit4 
 #define  bWaterAndArrive        GET_BITFIELD(&Etc1Bit).bit5 
 #define  bInPortErr         	GET_BITFIELD(&Etc1Bit).bit6 
 #define  bCarOnceStop           GET_BITFIELD(&Etc1Bit).bit7 
@@ -2186,7 +2158,7 @@ extern	unsigned int 	AutotunUpDn;
 
 #define  bSlipOccur      		GET_BITFIELD(&StateBit13).bit0 
 #define  bBefbSlipOccur      	GET_BITFIELD(&StateBit13).bit1 
-#define  bNOTUSE_13_2   		GET_BITFIELD(&StateBit13).bit2 
+#define  bSaveEmg   			GET_BITFIELD(&StateBit13).bit2 
 #define  bOnesLuldOn      		GET_BITFIELD(&StateBit13).bit3 
 #define  bAutoLandingActive		GET_BITFIELD(&StateBit13).bit4 
 #define  bPlankLandingOk       	GET_BITFIELD(&StateBit13).bit5 
