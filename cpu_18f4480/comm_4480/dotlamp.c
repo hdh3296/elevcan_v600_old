@@ -305,199 +305,288 @@ unsigned char   Lamp(unsigned char id)
 #elif defined(__TYPE_ES15)
 
 #if defined(__TYPE_DIRECT_BCD)
-	// Direct 방식이면 1:1 출력 
-	// BCD 방식이면 이진수 방식으로
-	switch(RcvBuf[IdPt])
-	{
-		case	1:
-			BCD1_LAMP=1;
-			BCD2_LAMP=0;
-			BCD3_LAMP=0;
-			BCD4_LAMP=0;
-			BCD5_LAMP=0;
-			BCD6_LAMP=0;
-			BCD7_LAMP=0;
-			BCD8_LAMP=0;			
-			break;
-		case	2:
-			BCD1_LAMP=0;
-			BCD2_LAMP=1;
-			BCD3_LAMP=0;
-			BCD4_LAMP=0;
-			BCD5_LAMP=0;
-			BCD6_LAMP=0;
-			BCD7_LAMP=0;
-			BCD8_LAMP=0;
-			break;
-		case	3:
-			BCD1_LAMP=0;
-			BCD2_LAMP=0;
-			BCD3_LAMP=1;
-			BCD4_LAMP=0;
-			BCD5_LAMP=0;
-			BCD6_LAMP=0;
-			BCD7_LAMP=0;
-			BCD8_LAMP=0;
 
-			break;
-		case	4:
-			BCD1_LAMP=0;
-			BCD2_LAMP=0;
-			BCD3_LAMP=0;
-			BCD4_LAMP=1;
-			BCD5_LAMP=0;
-			BCD6_LAMP=0;
-			BCD7_LAMP=0;
-			BCD8_LAMP=0;
-			break;
-		case	5:
-			BCD1_LAMP=0;
-			BCD2_LAMP=0;
-			BCD3_LAMP=0;
-			BCD4_LAMP=0;
-			BCD5_LAMP=1;
-			BCD6_LAMP=0;
-			BCD7_LAMP=0;
-			BCD8_LAMP=0;
-			break;
-		case	6:
-			BCD1_LAMP=0;
-			BCD2_LAMP=0;
-			BCD3_LAMP=0;
-			BCD4_LAMP=0;
-			BCD5_LAMP=0;
-			BCD6_LAMP=1;
-			BCD7_LAMP=0;
-			BCD8_LAMP=0;
-			break;
-		case	7:
-			BCD1_LAMP=0;
-			BCD2_LAMP=0;
-			BCD3_LAMP=0;
-			BCD4_LAMP=0;
-			BCD5_LAMP=0;
-			BCD6_LAMP=0;
-			BCD7_LAMP=1;
-			BCD8_LAMP=0;
-			break;
-		case	8:
-			BCD1_LAMP=0;
-			BCD2_LAMP=0;
-			BCD3_LAMP=0;
-			BCD4_LAMP=0;
-			BCD5_LAMP=0;
-			BCD6_LAMP=0;
-			BCD7_LAMP=0;
-			BCD8_LAMP=1;
-			break;
-	}	
-/*	
-	// BCD 방식으로 출력 
-	switch(RcvBuf[IdPt])
+	/*--> 1(HIGH)값을 주면 출력 접점은 출력을준다. 출력값은 0V이다. <--*/
+	if ((RcvBuf[IdPt+DSP1] == '0') && (RcvBuf[IdPt+DSP2] == 'G'))
 	{
-		case	1:
-			BCD1_LAMP=1;
-			BCD2_LAMP=0;
-			BCD3_LAMP=0;
-			BCD4_LAMP=0;
-			break;
-		case	2:
-			BCD1_LAMP=0;
-			BCD2_LAMP=1;
-			BCD3_LAMP=0;
-			BCD4_LAMP=0;
-			break;
-		case	3:
-			BCD1_LAMP=1;
-			BCD2_LAMP=1;
-			BCD3_LAMP=0;
-			BCD4_LAMP=0;
-			break;
-		case	4:
-			BCD1_LAMP=0;
-			BCD2_LAMP=0;
-			BCD3_LAMP=1;
-			BCD4_LAMP=0;
-			break;
-		case	5:
-			BCD1_LAMP=1;
-			BCD2_LAMP=0;
-			BCD3_LAMP=1;
-			BCD4_LAMP=0;
-			break;
-		case	6:
-			BCD1_LAMP=0;
-			BCD2_LAMP=1;
-			BCD3_LAMP=1;
-			BCD4_LAMP=0;
-			break;
-		case	7:
-			BCD1_LAMP=1;
-			BCD2_LAMP=1;
-			BCD3_LAMP=1;
-			BCD4_LAMP=0;
-			break;
-		case	8:
-			BCD1_LAMP=0;
-			BCD2_LAMP=0;
-			BCD3_LAMP=0;
-			BCD4_LAMP=1;
-			break;
-		case	9:
-			BCD1_LAMP=1;
-			BCD2_LAMP=0;
-			BCD3_LAMP=0;
-			BCD4_LAMP=1;
-			break;
-		case	10:
-			BCD1_LAMP=0;
-			BCD2_LAMP=1;
-			BCD3_LAMP=0;
-			BCD4_LAMP=1;
-			break;
-		case	11:
-			BCD1_LAMP=1;
-			BCD2_LAMP=1;
-			BCD3_LAMP=0;
-			BCD4_LAMP=1;
-			break;
-		case	12:
-			BCD1_LAMP=0;
-			BCD2_LAMP=0;
-			BCD3_LAMP=1;
-			BCD4_LAMP=1;
-			break;
-		case	13:
-			BCD1_LAMP=1;
-			BCD2_LAMP=0;
-			BCD3_LAMP=1;
-			BCD4_LAMP=1;
-			break;
-		case	14:
-			BCD1_LAMP=0;
-			BCD2_LAMP=1;
-			BCD3_LAMP=1;
-			BCD4_LAMP=1;
-			break;
-		case	15:
-			BCD1_LAMP=1;
-			BCD2_LAMP=1;
-			BCD3_LAMP=1;
-			BCD4_LAMP=1;
-			break;
+		BCD1_LAMP=0;
+		BCD2_LAMP=1; 
+		BCD3_LAMP=0;
+		BCD4_LAMP=0;
+		BCD5_LAMP=1;
 	}
-*/	
+	else if ((RcvBuf[IdPt+DSP1] == '0') && (RcvBuf[IdPt+DSP2] == 'L'))
+	{
+		BCD1_LAMP=1;
+		BCD2_LAMP=0;
+		BCD3_LAMP=0;
+		BCD4_LAMP=0;
+		BCD5_LAMP=1;
+	}
+	else if ((RcvBuf[IdPt+DSP1] == '0') && (RcvBuf[IdPt+DSP2] == 'M'))
+	{
+		BCD1_LAMP=0;
+		BCD2_LAMP=0;
+		BCD3_LAMP=0;
+		BCD4_LAMP=0;
+		BCD5_LAMP=1;
+	}
+	else if ((RcvBuf[IdPt+DSP1] == '0') && (RcvBuf[IdPt+DSP2] == 'B'))
+	{
+		BCD1_LAMP=1;
+		BCD2_LAMP=1;
+		BCD3_LAMP=0;
+		BCD4_LAMP=0;
+		BCD5_LAMP=1;
+	}
+	else if (RcvBuf[IdPt+DSP1] == '0')
+	{
+		if (RcvBuf[IdPt+DSP2] == '0')
+		{
+			// 이런 경우는 없음 .
+		}		
+		else if (RcvBuf[IdPt+DSP2] == '1')
+		{
+			BCD1_LAMP=0; // M0
+				BCD2_LAMP=0; // M1
+				BCD3_LAMP=0; // M2
+				BCD4_LAMP=0; // M3
+				BCD5_LAMP=0; // M4
+		}
+		else if (RcvBuf[IdPt+DSP2] == '2')
+		{
+			BCD1_LAMP=1;
+				BCD2_LAMP=0;
+				BCD3_LAMP=0;
+				BCD4_LAMP=0;
+				BCD5_LAMP=0;
+		}
+		else if (RcvBuf[IdPt+DSP2] == '3')
+		{
+			BCD1_LAMP=1;
+				BCD2_LAMP=1;
+				BCD3_LAMP=0;
+				BCD4_LAMP=0;
+				BCD5_LAMP=0;
+		}
+		else if (RcvBuf[IdPt+DSP2] == '4')
+		{
+			BCD1_LAMP=0;
+				BCD2_LAMP=1;
+				BCD3_LAMP=0;
+				BCD4_LAMP=0;
+				BCD5_LAMP=0;
+		}
+		else if (RcvBuf[IdPt+DSP2] == '5')
+		{
+			BCD1_LAMP=0;
+				BCD2_LAMP=1;
+				BCD3_LAMP=1;
+				BCD4_LAMP=0;
+				BCD5_LAMP=0;
+		}
+		else if (RcvBuf[IdPt+DSP2] == '6')
+		{
+			BCD1_LAMP=1;
+				BCD2_LAMP=1;
+				BCD3_LAMP=1;
+				BCD4_LAMP=0;
+				BCD5_LAMP=0;
+		}
+		else if (RcvBuf[IdPt+DSP2] == '7')
+		{
+			BCD1_LAMP=1;
+				BCD2_LAMP=0;
+				BCD3_LAMP=1;
+				BCD4_LAMP=0;
+				BCD5_LAMP=0;
+		}
+		else if (RcvBuf[IdPt+DSP2] == '8')
+		{
+			BCD1_LAMP=0;
+				BCD2_LAMP=0;
+				BCD3_LAMP=1;
+				BCD4_LAMP=0;
+				BCD5_LAMP=0;
+		}
+		else if (RcvBuf[IdPt+DSP2] == '9')
+		{
+			BCD1_LAMP=0;
+				BCD2_LAMP=0;
+				BCD3_LAMP=1;
+				BCD4_LAMP=1;
+				BCD5_LAMP=0;
+		}
+	}
+	else if (RcvBuf[IdPt+DSP1] == '1')
+	{
+		if (RcvBuf[IdPt+DSP2] == '0')
+		{
+			BCD1_LAMP=1;
+				BCD2_LAMP=0;
+				BCD3_LAMP=1;
+				BCD4_LAMP=1;
+				BCD5_LAMP=0;
+			
+		}		
+		else if (RcvBuf[IdPt+DSP2] == '1')
+		{
+			BCD1_LAMP=1;
+				BCD2_LAMP=1;
+				BCD3_LAMP=1;
+				BCD4_LAMP=1;
+				BCD5_LAMP=0;
+		}
+		else if (RcvBuf[IdPt+DSP2] == '2')
+		{
+			BCD1_LAMP=0;
+				BCD2_LAMP=1;
+				BCD3_LAMP=1;
+				BCD4_LAMP=1;
+				BCD5_LAMP=0;
+		}
+		else if (RcvBuf[IdPt+DSP2] == '3')
+		{
+			BCD1_LAMP=0;
+				BCD2_LAMP=1;
+				BCD3_LAMP=0;
+				BCD4_LAMP=1;
+				BCD5_LAMP=0;
+		}
+		else if (RcvBuf[IdPt+DSP2] == '4')
+		{
+			BCD1_LAMP=1;
+				BCD2_LAMP=1;
+				BCD3_LAMP=0;
+				BCD4_LAMP=1;
+				BCD5_LAMP=0;
+		}
+		else if (RcvBuf[IdPt+DSP2] == '5')
+		{
+			BCD1_LAMP=1;
+				BCD2_LAMP=0;
+				BCD3_LAMP=0;
+				BCD4_LAMP=1;
+				BCD5_LAMP=0;
+		}
+		else if (RcvBuf[IdPt+DSP2] == '6')
+		{
+			BCD1_LAMP=0;
+				BCD2_LAMP=0;
+				BCD3_LAMP=0;
+				BCD4_LAMP=1;
+				BCD5_LAMP=0;
+		}
+		else if (RcvBuf[IdPt+DSP2] == '7')
+		{
+			BCD1_LAMP=0;
+				BCD2_LAMP=0;
+				BCD3_LAMP=0;
+				BCD4_LAMP=1;
+				BCD5_LAMP=1;
+		}
+		else if (RcvBuf[IdPt+DSP2] == '8')
+		{
+			BCD1_LAMP=1;
+				BCD2_LAMP=0;
+				BCD3_LAMP=0;
+				BCD4_LAMP=1;
+				BCD5_LAMP=1;
+		}
+		else if (RcvBuf[IdPt+DSP2] == '9')
+		{
+			BCD1_LAMP=1;
+				BCD2_LAMP=1;
+				BCD3_LAMP=0;
+				BCD4_LAMP=1;
+				BCD5_LAMP=1;
+		}
+	}
+	else if (RcvBuf[IdPt+DSP1] == '2')
+	{
+		if (RcvBuf[IdPt+DSP2] == '0')
+		{
+			BCD1_LAMP=0;
+				BCD2_LAMP=1;
+				BCD3_LAMP=0;
+				BCD4_LAMP=1;
+				BCD5_LAMP=1;
+			
+		}		
+		else if (RcvBuf[IdPt+DSP2] == '1')
+		{
+			BCD1_LAMP=0;
+				BCD2_LAMP=1;
+				BCD3_LAMP=1;
+				BCD4_LAMP=1;
+				BCD5_LAMP=1;
+		}
+		else if (RcvBuf[IdPt+DSP2] == '2')
+		{
+			BCD1_LAMP=1;
+				BCD2_LAMP=1;
+				BCD3_LAMP=1;
+				BCD4_LAMP=1;
+				BCD5_LAMP=1;
+		}
+		else if (RcvBuf[IdPt+DSP2] == '3')
+		{
+			BCD1_LAMP=1;
+				BCD2_LAMP=0;
+				BCD3_LAMP=1;
+				BCD4_LAMP=1;
+				BCD5_LAMP=1;
+		}
+		else if (RcvBuf[IdPt+DSP2] == '4')
+		{
+			BCD1_LAMP=0;
+				BCD2_LAMP=0;
+				BCD3_LAMP=1;
+				BCD4_LAMP=1;
+				BCD5_LAMP=1;
+		}
+		else if (RcvBuf[IdPt+DSP2] == '5')
+		{
+			BCD1_LAMP=0;
+				BCD2_LAMP=0;
+				BCD3_LAMP=1;
+				BCD4_LAMP=0;
+				BCD5_LAMP=1;
+		}
+		else if (RcvBuf[IdPt+DSP2] == '6')
+		{
+			BCD1_LAMP=1;
+				BCD2_LAMP=0;
+				BCD3_LAMP=1;
+				BCD4_LAMP=0;
+				BCD5_LAMP=1;
+		}
+		else if (RcvBuf[IdPt+DSP2] == '7')
+		{
+			BCD1_LAMP=1;
+				BCD2_LAMP=1;
+				BCD3_LAMP=0;
+				BCD4_LAMP=1;
+				BCD5_LAMP=1;
+		}
+		else if (RcvBuf[IdPt+DSP2] == '8')
+		{
+			BCD1_LAMP=0;
+				BCD2_LAMP=1;
+				BCD3_LAMP=1;
+				BCD4_LAMP=0;
+				BCD5_LAMP=1;
+		}
+	}	
 
 
-	
-/* 예전 
-DOOR_OPEN_LAMP= !Open;
-PARKING_LAMP= !Parking;
-MANUAL_LAMP=  !Auto;
-EMG_LAMP_B=   Emg;
-EMG_LAMP  =   !Emg;
-*/
-	
+
+	//Segment not dispaly  	    	
+    SEG_F=Fire;        	 
+    SEG_G1=OverLoad;       	 
+    SEG_G2=1; // 24V 전원 공급 용.(n24) 
+	/*---> FULL 은 기본적으로  FULL 접점에서 출력 나온다. <---*/	
+
 
 #else
 
@@ -727,17 +816,14 @@ EMG_LAMP  =   !Emg;
 	}
 */
 
-#elif defined(__TYPE_DIRECT_BCD)
-	// AT, MT 출력을 자동일때와 자동이 아닐때(즉, 수동일때) 로 구분하여 출력 
-	AUTO_LAMP=0;
-	if(RcvBuf[IdPt+1] & S1_AUTO)		 AUTO_LAMP=1; 
-	MANUAL_LAMP=1;
-	if(RcvBuf[IdPt+1] & S1_AUTO)			 MANUAL_LAMP=0;
+
+	
 #else
    AUTO_LAMP=0;
    if(RcvBuf[IdPt+2] & S2_LAMP_USER)        AUTO_LAMP=1;
    MANUAL_LAMP=0;
    if(RcvBuf[IdPt+1] & S1_MANUAL)           MANUAL_LAMP=1;
+   
 #endif	
 
 
