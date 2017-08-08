@@ -74,6 +74,7 @@ void main(void)
 	MainTimer=0;
 	msec100=0;
 
+
 	for(i=0;i<65530;i++)	CLRWDT();
 
 	LoRa_Init( );

@@ -155,8 +155,8 @@ tLoRaSettings LoRaSettings =
 {
 //    870000000,      // RFFrequency
 //    434000000,      // RFFrequency
-//    433701250,      // RFFrequency   1,3,5 호기
-    433826250,      // RFFrequency   2,4 호기
+    433701250,      // RFFrequency   1,3,5 호기
+//    433826250,      // RFFrequency   2,4 호기
 //    433951250,        // RFFrequency 6,8,10, 호기
 //    434076250,        // RFFrequency   7,9호기
     14,               // Power

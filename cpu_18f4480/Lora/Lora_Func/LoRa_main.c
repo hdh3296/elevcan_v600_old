@@ -60,9 +60,13 @@ uint8_t MyFuncId=0;
 double	abc[5];
 
 
+uint16_t	IOBoardRxTimer=0;
 uint16_t	MyFuncTimeOut=0;
 uint16_t	youRxTime=0;
 uint8_t		rxstate=0;
+
+uint8_t  	tmpHostbuf[80];
+uint8_t  	tmpHostDtatCnt=0;
 
 
 /*
@@ -80,6 +84,7 @@ uint8_t		rxstate=0;
 
 extern volatile bit xRB0                @ ((unsigned)&PORTB*8)+0;
 extern volatile bit xRB1                @ ((unsigned)&PORTB*8)+1;
+
 
 
 void YouMyFuncRead(void)
@@ -109,7 +114,6 @@ uint16_t	CanLowDataLoad(uint8_t *buf)
 			if(j>4)	j=4;	
 			savept=(j * ONE_BLOCK);
 			if(Can1RxDataTotalCnt==0)	Can1RxDataTotalCnt=FIVE_BLOCK;
-//			Can1RxDataTotalCnt=FIVE_BLOCK;
 		}
 		else{
 			ThisRxAdr=(uint8_t)(Can1RxEid & 0xff);
@@ -124,27 +128,29 @@ uint16_t	CanLowDataLoad(uint8_t *buf)
 		}
 	}
 	else{	
-		ThisRxAdr=(uint8_t)(Can1RxEid & 0xff);
-		if( ThisRxAdr == 0x8b){
-			savept=0;
-			if(Can1RxDataTotalCnt==0)	Can1RxDataTotalCnt=ONE_BLOCK;
-//			Can1RxDataTotalCnt=ONE_BLOCK;
-		}
-		else{
-			if(Can1RxBuf[ONE_BLOCK+4]==0){
-				savept=ONE_BLOCK;
-				Can1RxDataTotalCnt=TWO_BLOCK;
+		if( !(Can1RxEid & 0x2000)){
+			ThisRxAdr=(uint8_t)(Can1RxEid & 0xff);
+			if( ThisRxAdr == 0x8b){
+				savept=0;
+				if(Can1RxDataTotalCnt==0)	Can1RxDataTotalCnt=ONE_BLOCK;
+				IOBoardRxTimer=0;
 			}
-			else if(Can1RxBuf[ONE_BLOCK+4]==ThisRxAdr){
-				savept=ONE_BLOCK;
-			}				
-			else if(Can1RxBuf[TWO_BLOCK+4]==0){
-				savept=TWO_BLOCK;
-				Can1RxDataTotalCnt=THREE_BLOCK;
+			else{
+				if(Can1RxBuf[ONE_BLOCK+4]==0){
+					savept=ONE_BLOCK;
+					Can1RxDataTotalCnt=TWO_BLOCK;
+				}
+				else if(Can1RxBuf[ONE_BLOCK+4]==ThisRxAdr){
+					savept=ONE_BLOCK;
+				}				
+				else if(Can1RxBuf[TWO_BLOCK+4]==0){
+					savept=TWO_BLOCK;
+					Can1RxDataTotalCnt=THREE_BLOCK;
+				}
+				else if(Can1RxBuf[TWO_BLOCK+4]==ThisRxAdr){
+					savept=TWO_BLOCK;
+				}				
 			}
-			else if(Can1RxBuf[TWO_BLOCK+4]==ThisRxAdr){
-				savept=TWO_BLOCK;
-			}				
 		}
 	}
 
@@ -165,9 +171,40 @@ unsigned int MasterCanRxDataTxToRf(void)
 	if(Can1RxTimer<(RX_ALIVE_TIME)){		// 3sec
 		if(Can1RxDataTotalCnt >= FIVE_BLOCK){
 			SX1276SetTxPacket( &Can1RxBuf,Can1RxDataTotalCnt);	
-			MyFuncTimeOut=0;
 			for(i=0;i<Can1RxDataTotalCnt;i++)	Can1RxBuf[i]=0;		
 			Can1RxDataTotalCnt=0;
+			youRxTime=0;
+			rxstate=0;
+		}
+	}
+	else{
+		rxstate=0;
+		Can1RxTimer=0;
+		Can1RxDataTotalCnt=0;
+		for(i=0;i<CAN1_MAX_RX_BUF;i++)	Can1RxBuf[i]=0;
+	}
+
+	return(0);
+}
+
+
+
+unsigned int SlaveCanRxDataTxToRf(void)
+{
+	uint8_t		i;
+	if(Can1RxTimer<RX_ALIVE_TIME){		// 3sec
+		if(Can1RxDataTotalCnt >= ONE_BLOCK){
+			SX1276SetTxPacket( &Can1RxBuf,Can1RxDataTotalCnt);
+			MyFuncTimeOut=0;
+			
+			if(IOBoardRxTimer > 1200){
+				for(i=0;i<Can1RxDataTotalCnt;i++)	Can1RxBuf[i]=0;		
+				Can1RxDataTotalCnt=0;
+			}
+			else{
+				for(i=0;i<Can1RxDataTotalCnt;i++)	Can1RxBuf[ONE_BLOCK+i]=0;		
+				Can1RxDataTotalCnt=ONE_BLOCK;
+			}
 		}
 	}
 	else{
@@ -180,8 +217,7 @@ unsigned int MasterCanRxDataTxToRf(void)
 }
 
 
-//unsigned char test[13]={0x30,0x41,0x00,0x00,0x03,0xfe,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
-
+/*
 unsigned int SlaveCanRxDataTxToRf(void)
 {
 	uint8_t		i;
@@ -201,14 +237,16 @@ unsigned int SlaveCanRxDataTxToRf(void)
 	}
 	return(0);
 }
-
+*/
 
 
 void MyFuncTimeOutChk(void)
 {
-	if(MyFuncTimeOut>3000){
+	if(MyFuncTimeOut>7000){
 		MyFuncTimeOut=0;
+    	asm("reset");
 
+/*
 		if(MyFuncId == IAM_MASTER){
 			Can1RxDataTotalCnt=0;
 		}
@@ -219,17 +257,9 @@ void MyFuncTimeOutChk(void)
 //			Can1RxDataTotalCnt=0;
 //		}
         SX1276StartRx();			
-	}
-
-/*
-	if(MyFuncId == IAM_MASTER){
-		if(Can1RxTimer>1000){
-			Can1RxDataTotalCnt=0;
-			Can1RxTimer=0;
-		}
-	}
 */
 
+	}
 }
 
 
@@ -246,24 +276,27 @@ void OnMaster( void )
 		RF_TXLED= !RF_TXLED;
         break;
     case RF_RX_DONE:
-		MyFuncTimeOut=0;
         SX1276GetRxPacket( Can1TxBuf, ( uint16_t* )&datanm);
-		Can1TxDataTotalCnt=(uint8_t)datanm;
-		if(Can1TxBuf[3] & 0x20){	// if host receive host data cancle   eid = 0x02000
-			Can1TxDataTotalCnt=0;
-		}
-		else{
-			RF_RXLED = !RF_RXLED;
-			youRxTime=0;
-			rxstate=1;
+		if(datanm >= ONE_BLOCK){
+			Can1TxDataTotalCnt=(uint8_t)datanm;
+			if(Can1TxBuf[3] & 0x20){	// if host receive host data cancle   eid = 0x02000
+				Can1TxDataTotalCnt=0;
+			}
+			else{
+				RF_RXLED = !RF_RXLED;
+				youRxTime=500;
+				rxstate++;
+				MyFuncTimeOut=0;
+			}
 		}
         break;
     case RF_TX_DONE:
-		MyFuncTimeOut=0;
         SX1276StartRx();
+		rxstate=0;
+		youRxTime=500;
         break;
     default:
-		if((youRxTime>500) && (rxstate==1)){
+		if((youRxTime>1000) || (rxstate >= 2)){
 			rxstate=0;
 			youRxTime=0;	
 			SX1276SetRFState(RFLR_STATE_RX_TIMEOUT);
@@ -285,50 +318,42 @@ void OnSlave( void )
     switch( SX1276Process())
     {
     case RF_RX_DONE:
-		youRxTime=0;
-		if(MyFuncId == IAM_SLAVE){
-			rxstate=0;
-		    SX1276GetRxPacket( tmpbuf, ( uint16_t* )&datanm);
-			if(tmpbuf[3] & 0x20){	// if host receive host data ok
-				for(i=0;i<datanm;i++)	Can1TxBuf[i]=tmpbuf[i];	
-				Can1TxDataTotalCnt=(uint8_t)datanm;
-	 			SlaveCanRxDataTxToRf();
-				RF_RXLED = !RF_RXLED;
-			}
-		}
-		else if(MyFuncId == IAM_REPEATER){
-	        SX1276GetRxPacket( Can1RxBuf, ( uint16_t* )&datanm);
-			Can1RxDataTotalCnt=(uint8_t)datanm;
-			if(Can1RxBuf[3] & 0x20){	// if host receive host data cancle   eid = 0x02000
-				//rxstate=1;  //master data rx
-				Can1RxTimer=0;
-				RF_RXLED = !RF_RXLED;
-			}
-			else{
-				if(Can1RxBuf[4] == 0x8B){
-					//rxstate=2;	//slave data rx
-					Can1RxTimer=0;
-					RF_TXLED = !RF_TXLED;
+	    SX1276GetRxPacket( tmpbuf, ( uint16_t* )&datanm);
+//		if(datanm >= 65){
+//			youRxTime=0;
+			if( (tmpbuf[3] & 0x20) && (datanm >= 65)){	// if host receive host data ok
+				youRxTime=0;
+				rxstate=0;
+				if(MyFuncId == IAM_SLAVE){
+					for(i=0;i<datanm;i++)	Can1TxBuf[i]=tmpbuf[i];	
+					Can1TxDataTotalCnt=(uint8_t)datanm;
+		 			SlaveCanRxDataTxToRf();
+					RF_RXLED = !RF_RXLED;				
+				}
+				else{
+					for(i=0;i<datanm;i++)	tmpHostbuf[i]=tmpbuf[i];	
+					tmpHostDtatCnt=(uint8_t)datanm;
+					rxstate=1;
+					RF_RXLED = !RF_RXLED;				
 				}
 			}
-			MyFuncTimeOut=0;
-		}
+//		}
         break;
     case RF_TX_DONE:
 		RF_TXLED=!RF_TXLED;
-		MyFuncTimeOut=0;
         SX1276StartRx();
         break;
     default:
 		if(MyFuncId == IAM_REPEATER){
 			if(rxstate==1){  //master data rx
-				if(youRxTime>250){				//200msec		
-					MasterCanRxDataTxToRf();
+				if(youRxTime>150){				//200msec		
+					for(i=0;i<tmpHostDtatCnt;i++)	Can1TxBuf[i]=tmpHostbuf[i];	
+					Can1TxDataTotalCnt=(uint8_t)tmpHostDtatCnt;
+		 			SlaveCanRxDataTxToRf();
 					rxstate=0;
 				}
 			}
-			else if(rxstate==2){  //slave data rx
-				SlaveCanRxDataTxToRf();
+			else{
 				rxstate=0;
 			}
 		}
@@ -357,9 +382,9 @@ int LoRa_Init( void )
 //	TRISC1=0;				//RF_TXLED
 //	TRISC2=0;				//RF_RXLED
 
-	RUNLED=1;
-	RF_TXLED=1;
-	RF_RXLED=1;
+	RUNLED=0;
+	RF_TXLED=0;
+	RF_RXLED=0;
 
 
 	InitSPI();
@@ -409,6 +434,7 @@ int Lora_Msec1_Interrpt( void )
 	youRxTime++;
 	MyFuncTimeOut++;
 	Can1RxTimer++;
+	IOBoardRxTimer++;
 }
 
 

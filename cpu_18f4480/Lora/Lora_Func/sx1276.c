@@ -84,7 +84,7 @@ void SX1276Reset( void )
 
     // Wait 1ms
     uint32_t startTick = GET_TICK_COUNT( );
-    while( ( GET_TICK_COUNT( ) - startTick ) < TICK_RATE_MS( 1 ) );    
+    while( ( GET_TICK_COUNT( ) - startTick ) < TICK_RATE_MS( 10 ) );    
 
 
     SX1276SetReset( RADIO_RESET_OFF );
