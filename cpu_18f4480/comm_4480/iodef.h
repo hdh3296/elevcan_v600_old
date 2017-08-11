@@ -68,7 +68,7 @@
 
 
 
-#define __TYPE_DIRECT_BCD // BCD1_LAMP ~ BCD4_LAMP에 대하여 출력값을 직접 입력해야 한다. (Direct 또는 BCD에 따라)
+//#define __TYPE_DIRECT_BCD // BCD1_LAMP ~ BCD4_LAMP에 대하여 출력값을 직접 입력해야 한다. (Direct 또는 BCD에 따라)
 
 
 
