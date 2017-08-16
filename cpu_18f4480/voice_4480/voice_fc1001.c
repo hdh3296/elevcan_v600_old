@@ -129,6 +129,7 @@ date    :       1999,9,21
 #define         FLOOR_P                	FLOOR_B7+92	//100 파킹 Floor
 #define         CARBTN_M                FLOOR_B7+93	//101 
 
+
 	
 	
 #define NO_MENT 0xff // 멘트 없음
@@ -247,6 +248,10 @@ date    :       1999,9,21
 
 #define ELE_bOUT_OP  	(((RcvBuf[IdPt + SL_OUT_OP] & 0x01) == 0x0)?	0:1)
 #define ELE_bOUT_CL 	(((RcvBuf[IdPt + SL_OUT_OP] & (0x01 << 1)) == 0x0)?		0:1)
+#define ELE_bOUT_SOP 	(((RcvBuf[IdPt + SL_OUT_OP] & (0x01 << 2)) == 0x0)?		0:1)
+#define ELE_bOUT_SCL 	(((RcvBuf[IdPt + SL_OUT_OP] & (0x01 << 3)) == 0x0)?		0:1)
+#define ELE_bOUT_D_S 	(((RcvBuf[IdPt + SL_OUT_OP] & (0x01 << 4)) == 0x0)?		0:1)
+
 
 
 
@@ -321,6 +326,7 @@ bit active_key;
 bit bVoicePlaying; // 현재 음성 방송 중인지 아닌지
 bit bCloseVoice;
 bit bSetCarBtnVoice;
+
 
 typedef struct
 {
@@ -848,7 +854,7 @@ unsigned char   GetVoice_OpenCloseUpDn(unsigned char xTmpCurVoice)
         }      
 
 		// open 출력이 나갈때 open 멘트 나가도록 수정 2017-03-09
-		if ( (ELE_bOUT_OP) && (xbOpened == FALSE) && !bVoicePlaying )	//open
+		if ( (ELE_bOUT_OP || ELE_bOUT_SOP) && (xbOpened == FALSE) && !bVoicePlaying )	//open
 		{
 			if (bOppositeDoor_Enab) 
 			{
@@ -857,7 +863,9 @@ unsigned char   GetVoice_OpenCloseUpDn(unsigned char xTmpCurVoice)
 			}
 			else	
 			{
-				xTmpCurVoice = OPEN_MENT; // 문이 열립니다 !
+				if(ELE_bOUT_SOP) 
+					xTmpCurVoice = OPPOSITE_OPEN_MENT; // 반대편 문이 열립니다. !!!!
+				else xTmpCurVoice = OPEN_MENT; // 문이 열립니다 !
 			}
 			xbOpened = TRUE;
 			UpDnVoiceTimer = 0;
@@ -1573,6 +1581,7 @@ void SetDipSW()
     {
         bSetCarBtnVoice = FALSE;
     }
+	
     if (!_DIPSW1)
     {
         TestVoicePlay();
