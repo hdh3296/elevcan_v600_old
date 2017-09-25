@@ -200,7 +200,9 @@ int UpKeyLoad(unsigned char Curid)
 	for(id=1;id<MAX_ELEV;id++){			
 		if(UpKeyCalu[SelHostAdr] > UpKeyCalu[id])	SelHostAdr=id;   
 		else if(UpKeyCalu[SelHostAdr] == UpKeyCalu[id]){
-			SelHostAdr=BefUpHallElev;
+			if(id==BefUpHallElev){							// ver8->ver9  modify
+				SelHostAdr=BefUpHallElev;
+			}
 		}
 	}
 	
@@ -295,7 +297,9 @@ int DnKeyLoad(unsigned char Curid)
 	for(id=1;id<MAX_ELEV;id++){			
 		if(DnKeyCalu[SelHostAdr] > DnKeyCalu[id])     SelHostAdr=id;		
 		else if(DnKeyCalu[SelHostAdr] == DnKeyCalu[id]){
-			SelHostAdr=BefDnHallElev;
+			if(id==BefDnHallElev){							// ver8->ver9  modify
+				SelHostAdr=BefDnHallElev;
+			}
 		}
 	}
 

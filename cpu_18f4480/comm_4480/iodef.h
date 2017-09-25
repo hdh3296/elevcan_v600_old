@@ -12,8 +12,8 @@
 
 
 //#define		NEW_CAR						1
-//#define		NEW_HIB_HPI					1
-#define		NEW_ES15					1
+#define		NEW_HIB_HPI					1
+//#define		NEW_ES15					1
 //#define		NEW_VOICE					1
 //#define		NEW_CAN_IO_32_BCD			1
 //#define		NEW_CAN_IO_32_FLR_ONOFF		1
@@ -74,12 +74,13 @@
 
 
 
-#define     EXT_VERSION     	0x08
+#define     EXT_VERSION     	0x09
 
 #define     SUB_DOOR_BIT    	0x01
 #define		HIB_PARKING_BIT 	0x02 
 #define     HALL_SENSOR     	0x04
 #define     IAM_SINGLE_MODE     0x08
+#define     IAM_CALL_CLOSE      0x10
 
 #define     OTHER_CAR_CLEAR     0x40
 #define     IAM_FLR32     		0x80

@@ -1660,6 +1660,9 @@ void	MyConfigSet(void)
 	
 	if(b_MyFamily)  	CanKeyValue[2] = (CanKeyValue[2] | IAM_SINGLE_MODE);
 	else            	CanKeyValue[2] = (CanKeyValue[2] & ~(IAM_SINGLE_MODE));
+
+	if(ButtonType==1)  	CanKeyValue[2] = (CanKeyValue[2] | IAM_CALL_CLOSE);			// ver8->ver9  modify
+	else            	CanKeyValue[2] = (CanKeyValue[2] & ~(IAM_CALL_CLOSE));		// ver8->ver9  modify
 	
 	CanKeyValue[2] 		= (CanKeyValue[2] & ~(HALL_SENSOR));
 
