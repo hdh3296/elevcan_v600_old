@@ -16,7 +16,8 @@
 #include  "default_setup.h" 
 
 
-//extern	UserDataType	NoStart;
+
+//unsigned long NewDecPulse;
 
 
 
@@ -279,18 +280,206 @@ LocalType  __attribute__((section(".usercode")))    SpeedReSetting(unsigned int 
 }
 
 
+///////////////////////////////////////////////////
 
 
+unsigned int	__attribute__((section(".usercode")))  CarCurFloorUpCal(void)
+{
+    unsigned long tmpNextPulse,tmpOrgPulse,tmpPulseBuf;
+    unsigned long tmpCurP;
+    UserDataType  ret=0;
+
+	ret=0;
+
+    if(bMoveCar && bCarUpMove){
+		if(sRamDArry[mcurfloor] < cF_TOPFLR){
+			tmpCurP=(unsigned long)CurPulse;
+			tmpOrgPulse=FLOOR_COUNT((sRamDArry[mcurfloor]));
+			tmpNextPulse=FLOOR_COUNT((sRamDArry[mcurfloor]+1));
+			
+			if(tmpNextPulse>tmpOrgPulse){
+				tmpPulseBuf=(unsigned long)((tmpNextPulse-tmpOrgPulse)/2);
+				tmpPulseBuf=(unsigned long)(tmpOrgPulse + tmpPulseBuf);							
+				if((unsigned long)tmpCurP >= (unsigned long)tmpPulseBuf){
+					ret=1;
+					FloorChangeCnt++;
+					if(FloorChangeCnt > ((UserDataType)(UP_DN_CNTX))){
+						if( sRamDArry[mcurfloor] != sRamDArry[mLuLdFloor]){
+							bEqualFloorError=1;
+						}
+
+						sRamDArry[mcurfloor]++;
+						ret=0;
+					}
+				}
+			}
+		}
+	}
+
+	if(ret==0){
+		FloorChangeCnt=0;
+	}	
+
+	return(0);
+}	
 	
+
+unsigned int	__attribute__((section(".usercode")))  CarCurFloorDnCal(void)
+{
+    unsigned long tmpNextPulse,tmpOrgPulse,tmpPulseBuf;
+    unsigned long tmpCurP;
+    UserDataType  ret=0;
+
+	ret=0;
+
+    if(bMoveCar && bCarDnMove){
+		if(sRamDArry[mcurfloor] > 0){
+			tmpCurP=(unsigned long)CurPulse;
+			tmpOrgPulse=FLOOR_COUNT((sRamDArry[mcurfloor]));
+			tmpNextPulse=FLOOR_COUNT((sRamDArry[mcurfloor]-1));
+
+			if(tmpOrgPulse>tmpNextPulse){
+				tmpPulseBuf=(unsigned long)((tmpOrgPulse-tmpNextPulse)/2);
+				tmpPulseBuf=(unsigned long)(tmpNextPulse + tmpPulseBuf);				
+				if((unsigned long)tmpCurP <= (unsigned long)tmpPulseBuf){
+					ret=1;
+					FloorChangeCnt++;
+					if(FloorChangeCnt > ((UserDataType)(UP_DN_CNTX))){
+						if( sRamDArry[mcurfloor] != sRamDArry[mLuLdFloor]){
+							bEqualFloorError=1;
+						}
+						sRamDArry[mcurfloor]--;
+						ret=0;
+					}
+				}
+			}
+		}
+	}
+
+	if(ret==0){
+		FloorChangeCnt=0;
+	}	
+	return(0);
+}	
+
+
+unsigned int	__attribute__((section(".usercode")))  CarUpDecSpdCal(void)
+{
+    LocalType ReqFlrX,ret;  
+    unsigned long tmpDecPulse,tmpReqFlrPulse,tmpThisDecPulse;
+    unsigned long tmpCurP;
+
+	ret=0;
+
+	if(PerfectAuto()){
+    	ReqFlrX=(LocalType)(sRamDArry[mReqStopFloor] & ONLY_FLR);     	
+
+        if(ReqFlrX >= cF_TOPFLR){
+            tmpReqFlrPulse=FLOOR_COUNT(cF_TOPFLR);
+        }
+        else{
+            tmpReqFlrPulse=FLOOR_COUNT(ReqFlrX);
+        }
+
+        tmpDecPulse=DecreasePulse;
+        tmpThisDecPulse=(tmpReqFlrPulse - tmpDecPulse);
+		tmpCurP=(unsigned long)CurPulse;
 	
+        if((unsigned long)tmpCurP >= (unsigned long)tmpThisDecPulse){
+			ret=1;
+			FloorDecreaseCnt++;
+			if(FloorDecreaseCnt > ((UserDataType)(UP_DN_CNTX))){
+				ret=0;
+				if(bDac || (sRamDArry[mcurfloor] >= cF_TOPFLR) || (ReqFlrX >= cF_TOPFLR)){   
+	                bUnd=1;
+	                CarLowSpeedCmd_IO();
+	                if(sRamDArry[mcurfloor] >= cF_TOPFLR){
+							#ifdef	FLOOR_64
+							sRamDArry[mReqStopFloor]  = (sRamDArry[mcurfloor] | DN_READY);
+							#else
+							sRamDArry[mReqStopFloor]  = (sRamDArry[mcurfloor] | CAR_READY);
+							#endif
+	                }
+	            }
+	            else{
+					if(ReqFlrX < cF_TOPFLR)	sRamDArry[mReqStopFloor]++;
+				}
+			}
+        }
+	}
+
+    if(ret == 0){
+		FloorDecreaseCnt=0;
+	}
+
+	return(0);
+}	
+
+
+
+unsigned int	__attribute__((section(".usercode")))  CarDnDecSpdCal(void)
+{
+    LocalType 	ReqFlrX,ret;  
+    unsigned long tmpDecPulse,tmpReqFlrPulse,tmpThisDecPulse;
+    unsigned long tmpCurP;
+
+	ret=0;
+
+	if(PerfectAuto()){
+    	ReqFlrX=(LocalType)(sRamDArry[mReqStopFloor] & ONLY_FLR);     	
+
+        if(ReqFlrX == 0){
+            tmpReqFlrPulse=FLOOR_COUNT(0);
+        }
+        else{
+            tmpReqFlrPulse=FLOOR_COUNT(ReqFlrX);
+        }
+
+        tmpDecPulse=DecreasePulse;
+        tmpThisDecPulse=(tmpReqFlrPulse + tmpDecPulse);
+		tmpCurP=(unsigned long)CurPulse;
 	
+        if((unsigned long)tmpCurP <= (unsigned long)tmpThisDecPulse){
+			ret=1;
+			FloorDecreaseCnt++;
+			if(FloorDecreaseCnt > ((UserDataType)(UP_DN_CNTX))){
+				ret=0;
+	            if(bDac || (sRamDArry[mcurfloor] == 0) || (ReqFlrX == 0)){   
+	                bUnd=1;
+	                CarLowSpeedCmd_IO();
+	                if(sRamDArry[mcurfloor] == 0){
+						#ifdef	FLOOR_64
+	                    sRamDArry[mReqStopFloor]  = (sRamDArry[mcurfloor] | UP_READY);
+						#else
+	                    sRamDArry[mReqStopFloor]  = (sRamDArry[mcurfloor] | CAR_READY);
+						#endif
+	                }
+	            }
+	            else{
+	 				if(ReqFlrX > 0)	sRamDArry[mReqStopFloor]--;
+				}
+			}
+        }
+	}
+
+    if(ret == 0){
+		FloorDecreaseCnt=0;
+	}
+
+	return(0);
+}	
+/////////////////////////////
+
+
+
+
 void  __attribute__((section(".usercode")))  CarCurFloorRead_IO_spd3(void)
 {
 
-    unsigned long decrease_pulse;
-    unsigned long tmppulse1,tmppulse2,newFloor;
+//    unsigned long decrease_pulse;
+//    unsigned long tmppulse1,tmppulse2,newFloor;
 
-    LocalType ReqFlr;  
+//    LocalType ReqFlr;  
 
 
     CurFTime=0;
@@ -298,11 +487,7 @@ void  __attribute__((section(".usercode")))  CarCurFloorRead_IO_spd3(void)
 
     if(bFhmRun) return;
 
-
-////////////////////////////////////	ForceSettingSpeed();
-
-
-    ReqFlr=(LocalType)(sRamDArry[mReqStopFloor] & ONLY_FLR);     	
+//	UP_DN_CNTX=(UserDataType)cF_F_YouTestVal;
 
 
     if(sRamDArry[mcurfloor] > cF_TOPFLR){
@@ -324,6 +509,12 @@ void  __attribute__((section(".usercode")))  CarCurFloorRead_IO_spd3(void)
 		SpeedReSetting(1);
 		SpeedReSetting(2);
 
+
+		CarCurFloorUpCal();
+		CarUpDecSpdCal();
+
+
+/*
         if(sRamDArry[mcurfloor] >= cF_TOPFLR){
             tmppulse1=FLOOR_COUNT(cF_TOPFLR);
             tmppulse2=FLOOR_COUNT(cF_TOPFLR-1);
@@ -337,39 +528,44 @@ void  __attribute__((section(".usercode")))  CarCurFloorRead_IO_spd3(void)
         newFloor=(unsigned long)(newFloor >> 1);
         newFloor=(unsigned long)(tmppulse2 + newFloor);
 
-        if((unsigned long)CurPulse >= (unsigned long)newFloor){
+
+		NewCalPulse=newFloor;
+        if((unsigned long)CurPulse >= (unsigned long)NewCalPulse){
             if(sRamDArry[mcurfloor] < cF_TOPFLR) sRamDArry[mcurfloor]++;
         }
+*/
 
-
-        if(ReqFlr >= cF_TOPFLR){
-            tmppulse1=FLOOR_COUNT(cF_TOPFLR);
-        }
-        else{
-            tmppulse1=FLOOR_COUNT(ReqFlr);
-        }
-            
-        tmppulse2=DecreasePulse;
-        decrease_pulse=(tmppulse1-tmppulse2);
-
-
-        if((unsigned long)CurPulse >= (unsigned long)decrease_pulse){
-            if(bDac || (sRamDArry[mcurfloor] >= cF_TOPFLR) || (ReqFlr >= cF_TOPFLR)){   
-                bUnd=1;
-                CarLowSpeedCmd_IO();
-                if(sRamDArry[mcurfloor] >= cF_TOPFLR){
+/*
+		if(PerfectAuto()){
+	        if(ReqFlr >= cF_TOPFLR){
+	            tmppulse1=FLOOR_COUNT(cF_TOPFLR);
+	        }
+	        else{
+	            tmppulse1=FLOOR_COUNT(ReqFlr);
+	        }
+	            
+	        tmppulse2=DecreasePulse;
+	        decrease_pulse=(tmppulse1-tmppulse2);
+			NewDecPulse=decrease_pulse;
+	
+	        if((unsigned long)CurPulse >= (unsigned long)NewDecPulse){
+	            if(bDac || (sRamDArry[mcurfloor] >= cF_TOPFLR) || (ReqFlr >= cF_TOPFLR)){   
+	                bUnd=1;
+	                CarLowSpeedCmd_IO();
+	                if(sRamDArry[mcurfloor] >= cF_TOPFLR){
 						#ifdef	FLOOR_64
 						sRamDArry[mReqStopFloor]  = (sRamDArry[mcurfloor] | DN_READY);
 						#else
 						sRamDArry[mReqStopFloor]  = (sRamDArry[mcurfloor] | CAR_READY);
 						#endif
-                }
-            }
-            else{
-            	if(ReqFlr < cF_TOPFLR)	sRamDArry[mReqStopFloor]++;
-			}   
-        }
-
+	                }
+	            }
+	            else{
+	            	if(ReqFlr < cF_TOPFLR)	sRamDArry[mReqStopFloor]++;
+				}   
+	        }
+		}
+*/
 
 
 #ifdef	FLOOR_64
@@ -400,10 +596,6 @@ void  __attribute__((section(".usercode")))  CarCurFloorRead_IO_spd3(void)
 		    	sRamDArry[mAckStopFloor] = (sRamDArry[mcurfloor] | CAR_READY);
 			}
 			else{
-/*
-               	if(CurPulse > StopMinimumPulse) sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] | CAR_READY);
-               	else                            sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] & ~CAR_READY);
-*/   
 				sRamDArry[mReqStopFloor]  = (sRamDArry[mReqStopFloor] | CAR_READY);
             }
         }
@@ -428,7 +620,11 @@ void  __attribute__((section(".usercode")))  CarCurFloorRead_IO_spd3(void)
 		SpeedReSetting(2);
 
 
+		CarCurFloorDnCal();
+		CarDnDecSpdCal();
 
+
+/*
         if(sRamDArry[mcurfloor] == 0){
             tmppulse1=FLOOR_COUNT(1);
             tmppulse2=FLOOR_COUNT(0);
@@ -442,38 +638,44 @@ void  __attribute__((section(".usercode")))  CarCurFloorRead_IO_spd3(void)
         newFloor=(unsigned long)(newFloor >> 1);
         newFloor=(unsigned long)(tmppulse2 + newFloor);
 
-        if((unsigned long)CurPulse <= (unsigned long)newFloor){
+		NewCalPulse=newFloor;
+        if((unsigned long)CurPulse <= (unsigned long)NewCalPulse){
             if(sRamDArry[mcurfloor] > 0 ) sRamDArry[mcurfloor]--;
         }
+*/
 
-
-        if(ReqFlr == 0){
-            tmppulse1=FLOOR_COUNT(0);
-        }
-        else{
-            tmppulse1=FLOOR_COUNT(ReqFlr);
-        }
-
-        tmppulse2=DecreasePulse;
-        decrease_pulse=(tmppulse1 + tmppulse2);
-
-
-        if((unsigned long)CurPulse <= (unsigned long)decrease_pulse){
-            if(bDac || (sRamDArry[mcurfloor] == 0) || (ReqFlr == 0)){   
-                bUnd=1;
-                CarLowSpeedCmd_IO();
-                if(sRamDArry[mcurfloor] == 0){
-					#ifdef	FLOOR_64
-                    sRamDArry[mReqStopFloor]  = (sRamDArry[mcurfloor] | UP_READY);
-					#else
-                    sRamDArry[mReqStopFloor]  = (sRamDArry[mcurfloor] | CAR_READY);
-					#endif
-                }
-            }
-            else{
- 				if(ReqFlr > 0)	sRamDArry[mReqStopFloor]--;
-			}
-        }
+/*
+		if(PerfectAuto()){
+	        if(ReqFlr == 0){
+	            tmppulse1=FLOOR_COUNT(0);
+	        }
+	        else{
+	            tmppulse1=FLOOR_COUNT(ReqFlr);
+	        }
+	
+	        tmppulse2=DecreasePulse;
+	        decrease_pulse=(tmppulse1 + tmppulse2);
+			NewDecPulse=decrease_pulse;
+		
+	//        if((unsigned long)CurPulse <= (unsigned long)decrease_pulse){
+	        if((unsigned long)CurPulse <= (unsigned long)NewDecPulse){
+	            if(bDac || (sRamDArry[mcurfloor] == 0) || (ReqFlr == 0)){   
+	                bUnd=1;
+	                CarLowSpeedCmd_IO();
+	                if(sRamDArry[mcurfloor] == 0){
+						#ifdef	FLOOR_64
+	                    sRamDArry[mReqStopFloor]  = (sRamDArry[mcurfloor] | UP_READY);
+						#else
+	                    sRamDArry[mReqStopFloor]  = (sRamDArry[mcurfloor] | CAR_READY);
+						#endif
+	                }
+	            }
+	            else{
+	 				if(ReqFlr > 0)	sRamDArry[mReqStopFloor]--;
+				}
+	        }
+		}
+*/
 
 
 		#ifdef	FLOOR_64
@@ -516,6 +718,8 @@ void  __attribute__((section(".usercode")))  CarCurFloorRead_IO_spd3(void)
     }
     else{
         bUnd=0;
+		FloorChangeCnt=0;
+		FloorDecreaseCnt=0;
         sRamDArry[mReqStopFloor]  = sRamDArry[mcurfloor];            
     }
     

@@ -805,6 +805,7 @@ LocalType __attribute__((section(".usercode"))) Can2Check(void)
 
     switch(CAN2_RxBuf[0]){
         case    0x23:
+        case    0x33:
             HostReadMyData();
             break;
         case    0x24:

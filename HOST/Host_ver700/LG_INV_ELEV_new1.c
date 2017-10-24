@@ -87,9 +87,12 @@ void __attribute__((section(".usercode")))   DspFloorSet(void)
 	sRamDArry[DSP1]  = cF_FLRDSPCH((unsigned long)i);
 	sRamDArry[DSP2]  = cF_FLRDSPCH((unsigned long)(i+1)); 
 
-	if( bFhmRun && (sRamDArry[FHM_SEQ] < FHM_SEQ_3)){
-        sRamDArry[DSP1]  = '0';
-        sRamDArry[DSP2]  = '0'; 
+//ver6.a9x
+	if( (bFhmRun && (sRamDArry[FHM_SEQ] < FHM_SEQ_3)) || (bBaseFloorSet)){
+		if(bMoveCar){
+	        sRamDArry[DSP1]  = '0';
+	        sRamDArry[DSP2]  = '0';
+		} 
 	}
 }
 

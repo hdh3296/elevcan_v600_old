@@ -849,15 +849,23 @@ unsigned int  __attribute__((section(".usercode")))  HibBoardDataReceive(void)
             }
         }
     }
-
+//////////////////zzzzzzzzzzzzzz
     else if(cmd==CAN_KEY_CONFIRM){
-        if((USE_CHECK == BAGGAGE_USE) || (USE_CHECK == CARLIFT_USE)){
+        if(seconddoor & 0x10){	//VERSION  6.AD  (hib/es15==call/close  mode)  
+        	if((i & UPDN_READY) == DN_READY){
+	            if(seconddoor & 0x01)   sRamDArry[mDoor]  = (sRamDArry[mDoor] | 0x08);
+	            else                    sRamDArry[mDoor]  = (sRamDArry[mDoor] | 0x02);   
+			}
+        }
+        else if((USE_CHECK == BAGGAGE_USE) || (USE_CHECK == CARLIFT_USE)){
         	if((i & UPDN_READY) == DN_READY){
 	            if(seconddoor & 0x01)   sRamDArry[mDoor]  = (sRamDArry[mDoor] | 0x08);
 	            else                    sRamDArry[mDoor]  = (sRamDArry[mDoor] | 0x02);   
 			}
         }
     }
+
+
 /*
     else if(cmd==CAN_VIP_COMMAND){    
         if(i & UPDN_READY){
@@ -922,7 +930,13 @@ unsigned int  __attribute__((section(".usercode")))  HibBoardDataReceive(void)
 	        }
     }
     else if(cmd==CAN_KEY_CONFIRM){
-        if((USE_CHECK == BAGGAGE_USE) || (USE_CHECK == CARLIFT_USE)){
+        if(seconddoor & 0x10){	//VERSION  6.AD  (hib/es15==call/close  mode)  
+        	if((i & UPDN_READY) == DN_READY){
+	            if(seconddoor & 0x01)   sRamDArry[mDoor]  = (sRamDArry[mDoor] | 0x08);
+	            else                    sRamDArry[mDoor]  = (sRamDArry[mDoor] | 0x02);   
+			}
+        }
+        else if((USE_CHECK == BAGGAGE_USE) || (USE_CHECK == CARLIFT_USE)){
         	if((i & UPDN_CAR_READY) == DN_READY){
 	            if(seconddoor & 0x01)   sRamDArry[mDoor]  = (sRamDArry[mDoor] | 0x08);
 	            else                    sRamDArry[mDoor]  = (sRamDArry[mDoor] | 0x02);   

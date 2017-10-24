@@ -143,7 +143,6 @@
 #define  	mCarKey41         	45
 #define  	mCarKey49         	46
 #define  	mCarKey57         	47
-
 #define  	HibUpCall0        	48                       
 #define  	HibUpCall1        	49                       
 #define  	HibUpCall2        	50                      
@@ -161,14 +160,98 @@
 #define  	HibDnCall6        	62                      
 #define  	HibDnCall7        	63               
 
-#define  	TestBuf        		64               
+#define  	S5_STATE        	64               
+#define  	S6_STATE        	65               
+#define  	S7_STATE        	66               
+#define  	S8_STATE        	67               
+#define  	S9_STATE        	68               
+#define  	S10_STATE        	69               
+#define  	S11_STATE        	70               
+#define  	S12_STATE        	71               
 
-#define  	Year              	80
-#define  	Month             	81
-#define  	Day               	82
-#define  	Hour              	83
-#define  	Minuate           	84
-#define  	sec               	85
+
+#define  	S13_STATE        	72               
+#define  	S14_STATE        	73               
+#define  	S15_STATE        	74               
+#define  	S16_STATE        	75               
+#define  	S17_STATE        	76               
+#define  	S18_STATE        	77               
+#define  	S19_STATE        	78               
+#define  	S20_STATE        	79               
+
+#define  	S21_STATE        	80               
+#define  	S22_STATE        	81               
+#define  	S23_STATE        	82               
+#define  	S24_STATE        	83               
+#define  	S25_STATE        	84               
+#define  	S26_STATE        	85               
+#define  	S27_STATE        	86               
+#define  	S28_STATE        	87               
+
+#define  	S29_STATE        	88               
+#define  	S30_STATE        	89               
+#define  	S31_STATE        	90               
+#define  	S32_STATE        	91               
+#define  	S33_STATE        	92   // notuse            
+#define  	S34_STATE        	93   // notuse            
+#define  	S35_STATE        	94   // notuse            
+#define  	S36_STATE        	95   // notuse
+            
+
+/////////////////////////////////////////////////////
+#define  	COMMON_EL_STATE0	150
+#define  	COMMON_EL_STATE1	151
+#define  	COMMON_EL_STATE2	152
+#define  	COMMON_EL_STATE3	153
+#define  	COMMON_EL_STATE4	154
+#define  	COMMON_EL_STATE5	155
+#define  	COMMON_EL_STATE6	156
+#define  	COMMON_EL_STATE7	157
+
+#define  	COMMON_EL_STATE8	158
+#define  	COMMON_EL_STATE9	159
+#define  	COMMON_EL_STATE10	160
+#define  	COMMON_EL_STATE11	161
+#define  	COMMON_EL_STATE12	162
+#define  	COMMON_EL_STATE13	163
+#define  	COMMON_EL_STATE14	164
+#define  	COMMON_EL_STATE15	165
+
+#define  	COMMON_EL_STATE16	166
+#define  	COMMON_EL_STATE17	167
+#define  	COMMON_EL_STATE18	168
+#define  	COMMON_EL_STATE19	169
+#define  	COMMON_EL_STATE20	170
+#define  	COMMON_EL_STATE21	171
+#define  	COMMON_EL_STATE22	172
+#define  	COMMON_EL_STATE23	173
+
+#define  	COMMON_EL_STATE24	174
+#define  	COMMON_EL_STATE25	175
+#define  	COMMON_EL_STATE26	176
+#define  	COMMON_EL_STATE27	177
+#define  	COMMON_EL_STATE28	178
+#define  	COMMON_EL_STATE29	179
+#define  	COMMON_EL_STATE30	180
+#define  	COMMON_EL_STATE31	181
+
+#define  	COMMON_EL_STATE32	182
+#define  	COMMON_EL_STATE33	183
+#define  	COMMON_EL_STATE34	184
+#define  	COMMON_EL_STATE35	185
+#define  	COMMON_EL_STATE36	186
+#define  	COMMON_EL_STATE37	187
+#define  	COMMON_EL_STATE38	188
+#define  	COMMON_EL_STATE39	189
+////////////////////////////////////////////////////
+
+#define  	Year              	190
+#define  	Month             	191
+#define  	Day               	192
+#define  	Hour              	193
+#define  	Minuate           	194
+#define  	sec               	195
+
 
 #define  	mcurfloor         	200
 #define  	mBefcurfloor      	201
@@ -180,7 +263,7 @@
 #define  	mBefErrCntPt      	207
 #define  	LD_INSP           	208
 #define  	FHM_SEQ           	209
-#define  	SelDoorStatus     	210
+//#define  	SelDoorStatus     	210
 #define  	mFireSeq          	211
 #define  	mVFlrCnt          	212
 #define  	mVFlr1            	213

@@ -162,6 +162,16 @@ void  __attribute__((section(".usercode"))) SerialCheck(void)
 		_U1OERR=0;
 	}
 
+	if(SerialTime > 2){
+		Com1RxREGClear();
+/*
+		if(_U1RXDA)	buf1=U1RXREG;
+		if(_U1RXDA)	buf1=U1RXREG;
+		if(_U1RXDA)	buf1=U1RXREG;
+		if(_U1RXDA)	buf1=U1RXREG;
+		if(_U1RXDA)	buf1=U1RXREG;
+*/
+	}
 }
 
 
@@ -184,13 +194,15 @@ void _ISR_X _U1TXInterrupt(void)
 	#else
 		if(RxStatus != TX_SET){
 	      	RxStatus = STX_CHK;
+			DebugFlow0=13;   
 		}
 	    else if(RxCurCnt >= (RxBuffer[3]+6)){
 	      SerialTime=0;
+			DebugFlow0=14;   
 	    }
 	#endif
-	
-	    else{
+		    else{
+			DebugFlow0=12;   
 	      U1TXREG=RxBuffer[RxCurCnt];
 	      RxCurCnt++;
 	      SerialTime=0;
@@ -200,6 +212,7 @@ void _ISR_X _U1TXInterrupt(void)
 	        RxCurCnt=0;
 	        RxBuffer[RxCurCnt]=0;
 	      	RxStatus = STX_CHK;
+			DebugFlow0=15;   
 	      }
 	    }
 	}
@@ -214,7 +227,8 @@ void _ISR_X _U1RXInterrupt(void)
 
     _U1RXIF=0;
 
-	if(_U1RXDA)    buf1=U1RXREG;
+//	while(_U1RXDA)	buf1=U1RXREG;
+   	if(_U1RXDA)    buf1=U1RXREG;
 	
     if(_U1FERR){
         _U1FERR=0;
@@ -223,8 +237,8 @@ void _ISR_X _U1RXInterrupt(void)
     if(_U1PERR){
         _U1PERR=0;
     }
-    
-///////////////////
+ 
+	DebugFlow1++;
 
 	if(bInvCommActive485){
 		Com1AutolandingRxInt(buf1);
@@ -232,6 +246,7 @@ void _ISR_X _U1RXInterrupt(void)
 	else{	
 		
 	    if(RxStatus != TX_SET){   
+
 			if(SerialTime > 3){
 				RxCurCnt=0;
 			}		
@@ -244,8 +259,7 @@ void _ISR_X _U1RXInterrupt(void)
 	        else	        RxCurCnt++;
 	
 	        RxBuffer[RxCurCnt]=buf1;
-	
-	
+		
 	        switch(RxStatus){
 	            case    STX_CHK:
 	                if((buf1==ACK) || (buf1==ENQ)){
@@ -311,10 +325,7 @@ void _ISR_X _U1RXInterrupt(void)
 			My485Address=cF_GroupNm;
 			My485Address=(My485Address << 3);
 			My485Address=(My485Address | cF_LocalNm);
-	
-	
-	
-	
+		
 	        RxBuffer[RxCurCnt]=buf1;
 	
 	        switch(RxCurCnt){
@@ -325,15 +336,18 @@ void _ISR_X _U1RXInterrupt(void)
 					else{
 						RxCurCnt=0;
 					}
+					DebugFlow0=3;   
 					break;
 	            case    1:
 					if(RxBuffer[1]== 0xfe){
 						RxCurCnt++;
 					}
 					else	RxCurCnt=0;
+					DebugFlow0=4;   
 					break;
 	            case    2:
 					RxCurCnt++;
+					DebugFlow0=5;   
 	
 	/*
 					if((RxBuffer[2]== 0x23) || (RxBuffer[2]== 0x24)){ 
@@ -345,12 +359,14 @@ void _ISR_X _U1RXInterrupt(void)
 					break;
 	            case    3:
 					RxCurCnt++;
+					DebugFlow0=6;   
 					break;
 				default:
 					temp=RxBuffer[3];
 					temp=(unsigned char)(temp + 5);
 					if(RxCurCnt == temp){
 	                    RxStatus=RX_GOOD;	
+						DebugFlow0=7;   
 					}
 					else if(RxCurCnt > temp){
 						RxCurCnt=0;

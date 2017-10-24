@@ -394,11 +394,14 @@ unsigned int  __attribute__((section(".usercode")))   ReCaluDecSpd(void)
 
 unsigned int  __attribute__((section(".usercode")))   MidLowSpdSet(void)
 {
-	ReCaluLowSpd();
-	ReCaluMidSpd();
-	ReCaluDecSpd();
+	if(WhoAutolanding==USER_AUTOLANDING){
+		ReCaluLowSpd();
+		ReCaluMidSpd();
+		ReCaluDecSpd();
+	}
 	return(0);
 }
+
 
 unsigned int  __attribute__((section(".usercode")))   RunningReSettingMidLowSpd(void)
 {
@@ -668,7 +671,6 @@ unsigned int  __attribute__((section(".usercode"))) PlankMpmVariableReCal(void)
 	tmpPlankLength	=GET_LONG(B_USER_PLANK_LENGTH);						//200mm
 	tmpPlankPulse	=GET_LONG(BASE_PLANK_PULSE);						//pulse
 
-
 	tmpPlankLength=(tmpPlankLength * 10000);
 	if(tmpPlankPulse>0)	PlankMmPerPulse=(tmpPlankLength/tmpPlankPulse);
 	else				PlankMmPerPulse=0;
@@ -712,6 +714,8 @@ void  __attribute__((section(".usercode"))) GetOrgMpmVariable(void)
 void  __attribute__((section(".usercode"))) SearchMpm(void)
 {	
 #ifndef	TEST_SIMULATION
+	unsigned long	tmpMaxMpmA,tmpMpmVarB;
+
 	if(bPlankLandingOk){
 		GetPlankMpmVariable();
 	}
@@ -722,6 +726,18 @@ void  __attribute__((section(".usercode"))) SearchMpm(void)
 	CaluDecreasePulseCommon_spd3(0);	
 	CaluDecreasePulseCommon_spd3(1);	
 	CaluDecreasePulseCommon_spd3(2);	
+
+	MaxEncoderPerMsec=0;
+	if(ThisUseMpmVariable > 0){
+		tmpMpmVarB=ThisUseMaxMpm;
+		tmpMaxMpmA=(tmpMpmVarB / (unsigned long)(10));
+		tmpMaxMpmA=(tmpMpmVarB + tmpMaxMpmA);
+		tmpMaxMpmA=(tmpMaxMpmA * (unsigned long)(10000));
+		tmpMpmVarB=ThisUseMpmVariable;
+		tmpMaxMpmA=(tmpMaxMpmA/tmpMpmVarB);
+		MaxEncoderPerMsec=tmpMaxMpmA;
+	}
+
 #endif
 }
 

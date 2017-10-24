@@ -56,7 +56,7 @@ void __attribute__((section(".usercode")))    QEI_Init(void)
 
 
 ////////////////encoder////
-MAXCNT =0xfffe; 
+MAXCNT =0xffff; 
 //////////////QEIIE  =0;
 QEICONbits.QEIM   =6;
 
@@ -78,7 +78,10 @@ void _ISR_X _QEIInterrupt(void)
 }
 
 
-/*
+
+unsigned long 	TestEncoder=0,TestAvrEncoder=0;
+unsigned int 	TestEncoderCnt=0;
+
 
 unsigned int   __attribute__((section(".usercode")))  ReadEncoder(void)
 {
@@ -86,105 +89,64 @@ unsigned int   __attribute__((section(".usercode")))  ReadEncoder(void)
 
 	rry=0;
 
-	if(BefCurEncoderPulse > 0xffff)	BefCurEncoderPulse=0;
-
- 	TmpEncoderPulse=(unsigned long)POSCNT;	
-
-	if( TmpEncoderPulse > BefCurEncoderPulse){
-		BefCurEncoderPulse = (TmpEncoderPulse - BefCurEncoderPulse);
-		if(BefCurEncoderPulse <= 5000){
-    		CurPulse=(CurPulse + BefCurEncoderPulse);
-			rry=1;
-		}	
-		else{
-//			BefCurEncoderPulse = ((unsigned long)0xffff - BefCurEncoderPulse);
-
-			vTmpEncoderPulse = ((unsigned long)0xffff - TmpEncoderPulse);
-			BefCurEncoderPulse = (BefCurEncoderPulse - vTmpEncoderPulse); 
-
-//			BefCurEncoderPulse = ((unsigned long)0x10000 - BefCurEncoderPulse);
-//			BefCurEncoderPulse = (BefCurEncoderPulse - TmpEncoderPulse); 
-
-
-			if(BefCurEncoderPulse <= 5000){
-		   		CurPulse=(CurPulse - BefCurEncoderPulse);
-				rry=1;
-			}				
-		}
+/*
+	if(MaxEncoderPerMsec==0){
+		MaxEncoderPerMsec=1000;
 	}
-	else if(TmpEncoderPulse < BefCurEncoderPulse){
-		BefCurEncoderPulse = (BefCurEncoderPulse-TmpEncoderPulse);
-		if(BefCurEncoderPulse <= 5000){
-    		CurPulse=(CurPulse - BefCurEncoderPulse);
-			rry=1;
-		}	
-		else{
-			BefCurEncoderPulse = ((unsigned long)0xffff - BefCurEncoderPulse);
-			BefCurEncoderPulse = (BefCurEncoderPulse + TmpEncoderPulse); 
-//			BefCurEncoderPulse = ((unsigned long)0xffff - BefCurEncoderPulse);
-			if(BefCurEncoderPulse <= 5000){
-		   		CurPulse=(CurPulse + BefCurEncoderPulse);
-				rry=1;
-			}				
-		}
-	}
-
-	if(rry==1){
-		BefCurEncoderPulse=TmpEncoderPulse;
-		CounterTime=0;
-	}
-
-	if(CurPulse >= 0xfffff000)	CurPulse=BASE_PULSE;	
-	if(CurPulse <= 50000)		CurPulse=BASE_PULSE;	
-
-	return(0); 
-}
 */
 
-
-unsigned int   __attribute__((section(".usercode")))  ReadEncoder(void)
-{
-	unsigned int rry;
-
-	rry=0;
-
 	if(BefCurEncoderPulse > 0xffff)	BefCurEncoderPulse=0;
 
- 	TmpEncoderPulse=(unsigned long)POSCNT;	
+ 	TmpCurEncoderPulse=(unsigned long)POSCNT;	
 
-	if( TmpEncoderPulse > BefCurEncoderPulse){
-		BefCurEncoderPulse = (TmpEncoderPulse - BefCurEncoderPulse);
-		if(BefCurEncoderPulse <= 2000){
+	if( TmpCurEncoderPulse > BefCurEncoderPulse){
+		BefCurEncoderPulse = (TmpCurEncoderPulse - BefCurEncoderPulse);
+		TestAvrEncoder=BefCurEncoderPulse;
+		if(BefCurEncoderPulse <= MaxEncoderPerMsec){
     		CurPulse=(CurPulse + BefCurEncoderPulse);
 			rry=1;
 		}	
 		else{
-			BefCurEncoderPulse = ((unsigned long)0xffff - BefCurEncoderPulse);
-			if(BefCurEncoderPulse <= 2000){
+			BefCurEncoderPulse = ((unsigned long)0x10000 - BefCurEncoderPulse);
+			TestAvrEncoder=BefCurEncoderPulse;
+			if(BefCurEncoderPulse <= MaxEncoderPerMsec){
 		   		CurPulse=(CurPulse - BefCurEncoderPulse);
 				rry=1;
-			}				
-		}
+			}
+		}		
 	}
-	else if(TmpEncoderPulse < BefCurEncoderPulse){
-		BefCurEncoderPulse = (BefCurEncoderPulse-TmpEncoderPulse);
-		if(BefCurEncoderPulse <= 2000){
+	else if(TmpCurEncoderPulse < BefCurEncoderPulse){
+		BefCurEncoderPulse = (BefCurEncoderPulse-TmpCurEncoderPulse);
+		TestAvrEncoder=BefCurEncoderPulse;
+		if(BefCurEncoderPulse <= MaxEncoderPerMsec){
     		CurPulse=(CurPulse - BefCurEncoderPulse);
 			rry=1;
 		}	
 		else{
-			BefCurEncoderPulse = ((unsigned long)0xffff - BefCurEncoderPulse);
-			if(BefCurEncoderPulse <= 2000){
+			BefCurEncoderPulse = ((unsigned long)0x10000 - BefCurEncoderPulse);
+			TestAvrEncoder=BefCurEncoderPulse;
+			if(BefCurEncoderPulse <= MaxEncoderPerMsec){
 		   		CurPulse=(CurPulse + BefCurEncoderPulse);
 				rry=1;
 			}				
 		}
 	}
+	else{
+		TestAvrEncoder=0;
+	}
+
+	if(TestAvrEncoder > MaxEncoderPerMsec){
+		TestEncoder = TestAvrEncoder;
+		TestEncoderCnt++;
+	}
+
 
 	if(rry==1){
-		BefCurEncoderPulse=TmpEncoderPulse;
 		CounterTime=0;
 	}
+
+
+	BefCurEncoderPulse=TmpCurEncoderPulse;
 
 	if(CurPulse >= 0xfffff000)	CurPulse=BASE_PULSE;	
 	if(CurPulse <= 50000)		CurPulse=BASE_PULSE;	

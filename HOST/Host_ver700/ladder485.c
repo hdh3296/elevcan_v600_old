@@ -8,7 +8,6 @@
 
 
 void  __attribute__((section(".usercode"))) Delta_Par_DataSort(unsigned int this_data);
-
 void  __attribute__((section(".usercode"))) Pc_Command(void);
 
 //////////////////////////////////////
@@ -908,11 +907,11 @@ const unsigned char NormalDspMessage[NORMAL_DSP_MESSAGE_CNT][11]={
                                       "Slip  mm   ",
                                       "ZeroSpd mm ",
                                       "Slip mm-Flr",
-                                      "EL StopTime",
-                                      "EL MoveTime",
-                                      "NoEncoderTm",
-                                      "EncoderUpTm",
-                                      "EncoderDnTm",
+                                      "  Debug00  ",
+                                      "  Debug01  ",
+                                      "  Debug02  ",
+                                      "  Debug03  ",
+                                      "  Debug04  ",
                                       "Reserve5   ",
                                       "Reserve4   ",
                                       "Reserve3   ",
@@ -2045,17 +2044,26 @@ void    __attribute__((section(".usercode"))) SpeedDsp(void)
 	bExportData=0;
 	bImportData=0;
 
+/*
 	New485Ladder[2+0]='F';
 	New485Ladder[2+1]='L';
 	New485Ladder[2+2]=':';
-
-
 	if(sRamDArry[DSP1] == 0)	sRamDArry[DSP1] = '?';	
 	if(sRamDArry[DSP2] == 0)	sRamDArry[DSP2] = '?';	
 	New485Ladder[2+3]=sRamDArry[DSP1];
 	New485Ladder[2+4]=sRamDArry[DSP2];
-
 	New485Ladder[2+5]=' ';
+*/
+
+	New485Ladder[2+0]='F';
+	New485Ladder[2+1]=':';
+	if(sRamDArry[DSP1] == 0)	sRamDArry[DSP1] = '?';	
+	if(sRamDArry[DSP2] == 0)	sRamDArry[DSP2] = '?';	
+	New485Ladder[2+2]=sRamDArry[DSP1];
+	New485Ladder[2+3]=sRamDArry[DSP2];
+	New485Ladder[2+4]=' ';
+	New485Ladder[2+5]=' ';
+
 
 	if(CurMeterPerMin > 1)	tmpspddsp=1;
 	else					tmpspddsp=0;
@@ -2102,6 +2110,16 @@ void    __attribute__((section(".usercode"))) SpeedDsp(void)
 	    New485Ladder[2+14]='o';
 	    New485Ladder[2+15]='p';
 	}
+
+
+//////test/////////////
+	New485Ladder[2+4]='/';
+	il=(UserDataType)(sRamDArry[mLuLdFloor] * 2);	        		
+	il=(il + F_FlrDspCh);   
+	New485Ladder[2+5]  = cF_FLRDSPCH((unsigned long)il);
+	New485Ladder[2+6]  = cF_FLRDSPCH((unsigned long)(il+1)); 
+//////test/////////////
+
 }
 
 
@@ -2427,16 +2445,26 @@ unsigned int __attribute__((section(".usercode"))) DefaultDisplay(void)
             New485Ladder[SECONDLINE_BASE+EditBlanck+11] = cF_FLRDSPCH((unsigned long)i);          
             New485Ladder[SECONDLINE_BASE+EditBlanck+12] = cF_FLRDSPCH((unsigned long)(i+1));          
         	break;
-        case    22:
-            CurEncoderPulse(cF_FLRDSPCH((unsigned long)(F_not_use1)));
+        case    22:   // debug00
+//            CurEncoderPulse(cF_FLRDSPCH((unsigned long)(F_not_use1)));
+//            CurEncoderPulse(CounterTime);
+//            CurEncoderPulse(RxCurCnt);	
+            CurEncoderPulse(TestEncoderCnt);	
+        	break;
+        case    23:		// debug01
+            CurEncoderPulse(U1STA);
+//            CurEncoderPulse(RxStatus);
+//            CurEncoderPulse(TestEncoder);	
+        	break;
+        case    24:		// debug02
+            CurEncoderPulse(DebugFlow0);
+//            CurEncoderPulse(TestAvrEncoder);
+        	break;
+        case    25:		//// debug03
+            CurEncoderPulse(DebugFlow1);
+//            CurEncoderPulse(MaxEncoderPerMsec);
         	break;
 /*
-        case    23:
-        	break;
-        case    24:
-        	break;
-        case    25:
-        	break;
         case    26:
         	break;
 */
@@ -4991,7 +5019,6 @@ void  __attribute__((section(".usercode"))) UserGroup(void)
 		case    User_G5:
 		case    User_G6:
 		case    User_G8:
-		case    User_G9:
 				break;
 		case    FINAL_ERR_DSP:			
             Cursor=0;
@@ -5003,20 +5030,23 @@ void  __attribute__((section(".usercode"))) UserGroup(void)
             DigitData=0;
             Integer_Digit();
 			break;
-/*
-		case    ENCODER_RATE: 
-            Cursor=0;
-            ShiftCnt=5;
-            EditBlanck=5;
-            EditStatus=DIGIT_EDIT;
-            DigitMaxValue=65535;
-            DigitMinValue=0;
 
-            i=F_StopPulse0;
-            DigitData=iF_FLRDSPCH((unsigned long)i);
+		case    YOU_TEST_VAL: 
+/*
+            Cursor=0;
+            ShiftCnt=3;
+            EditBlanck=3;
+            EditStatus=DIGIT_EDIT;
+            DigitMaxValue=201;
+            DigitMinValue=0;
+            i=F_YouTestVal;
+            DigitData=cF_FLRDSPCH((unsigned long)i);
+			if(DigitData > 200){
+				DigitData = 200;
+			} 
             Integer_Digit();
-           break;
 */
+           break;
         default:
             break;
     }
@@ -5499,6 +5529,14 @@ unsigned int  __attribute__((section(".usercode"))) UserGroupSave(void)
 				bHibSet=1;
 			}	
 			break;
+/*
+        case    YOU_TEST_VAL:
+            i=F_YouTestVal;
+            b_LdTmpBufRam((unsigned long)i)=(LocalType)(DigitData);
+            flash_write_DspChar(F_BLOCK2);
+            break;
+*/
+
         default:
             break;
 
@@ -5563,7 +5601,7 @@ void  __attribute__((section(".usercode"))) ELGroup(void)
 		    Integer_Digit();
             break;
 */
-/////////////////////////////////test
+/////////////////////////////////////////////////////////////
         case    SUBNM_BASE_PULSE:
 		    Cursor=0;
 		    ShiftCnt=3;
@@ -6789,6 +6827,14 @@ unsigned int  __attribute__((section(".usercode"))) MenuOnChk(void)
         		case    LG_INV_IN_BD:
         			if(INVERTER_CHECK != LG)	i=1;                                             
 					break;	
+
+///////////////////////////////////////////////
+				case	ERR_ST_CNT:
+				case	OUT_DATE:
+					if( !bPasswardOk && !bAllMenu)	i=1;
+					break;
+///////////////////////////////////////////////
+
 				default:
 					break;
 			}	
@@ -6922,7 +6968,7 @@ unsigned int  __attribute__((section(".usercode"))) ESC_KeyCheck(void)
 						switch(WhoAutolanding){
 							case	EDS_AUTOLANDING_485:
 							case	VL_AUTOLANDING_485:
-								if( (InvErrNm == 1) || (InvErrNm == 2) || (InvErrNm == 3) || (InvErrNm == 15)){
+								if( (InvErrNm == 11) || (InvErrNm == 12) || (InvErrNm == 13) || (InvErrNm == 14)){
 									inverterTwoClrTime=0;							
 									BefInvErrNm=InvErrNm;
 									bInvRecoveryErr=1;

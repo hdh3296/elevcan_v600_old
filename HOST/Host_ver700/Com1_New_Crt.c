@@ -13,7 +13,9 @@
 #include	"Host_NewProtocol.h" 
 
 
-void  __attribute__((section(".usercode"))) NormalDataReturn_485(void)
+unsigned char   NewCmdReq;
+
+unsigned int  __attribute__((section(".usercode"))) ExtNormalDataReturn_485(void)
 {
    	unsigned char   My485Address=0,ThisCmd;
     unsigned int   j,mpm; 
@@ -28,6 +30,126 @@ void  __attribute__((section(".usercode"))) NormalDataReturn_485(void)
 	long_type1	long_type;
 
 
+	if(NewCmdReq != 0x33)	return(0);
+
+
+	My485Address=cF_GroupNm;
+	My485Address=(My485Address << 3);
+	My485Address=(My485Address | cF_LocalNm);
+
+	
+	RxBuffer[0]=0xfe;
+	RxBuffer[1]=My485Address;
+	RxBuffer[2]=0xB3;
+	RxBuffer[3]=0x28;
+	
+	
+	for(j=0;j<40;j++){
+		RxBuffer[4+j]=(sRamDArry[COMMON_EL_STATE0 + j]);
+	}
+
+
+/*
+/////////////////////////////////////////////
+	j=cF_START_FLOOR;
+	
+	long_type.byte[0] = sRamDArry[FLR_ON_OFF0];
+	long_type.byte[1] = sRamDArry[FLR_ON_OFF1];
+	long_type.byte[2] = sRamDArry[FLR_ON_OFF2];
+	long_type.byte[3] = sRamDArry[FLR_ON_OFF3];     
+	
+	long_type.long_data = (long_type.long_data << j);
+	
+	
+	RxBuffer[12]= long_type.byte[0];
+	RxBuffer[13]= long_type.byte[1];
+	RxBuffer[14]= long_type.byte[2];
+	RxBuffer[15]= long_type.byte[3];     
+	
+	RxBuffer[16]=0;
+	RxBuffer[17]=0;
+	RxBuffer[18]=0;
+	
+	if(sRamDArry[mEqualFloor] & UPDN_CAR_READY)	RxBuffer[16]=(sRamDArry[mEqualFloor]      + (unsigned char)(cF_START_FLOOR));
+	if(sRamDArry[mHighFloor] & UPDN_CAR_READY)	RxBuffer[17]=(sRamDArry[mHighFloor]       + (unsigned char)(cF_START_FLOOR));
+	if(sRamDArry[mLowFloor] & UPDN_CAR_READY)	RxBuffer[18]=(sRamDArry[mLowFloor]        + (unsigned char)(cF_START_FLOOR));
+
+	RxBuffer[19]= sRamDArry[mDoor];
+//////////////////////////////////////////////////////
+
+	RxBuffer[20]= sRamDArry[mCarOpCl];
+	RxBuffer[21]= sRamDArry[mCarKey1];
+	RxBuffer[22]= sRamDArry[mCarKey9];
+	RxBuffer[23]= sRamDArry[mCarKey17];     
+	RxBuffer[24]= sRamDArry[mCarKey25];
+	RxBuffer[25]= sRamDArry[mSysStatus];
+	RxBuffer[26]= sRamDArry[O_OP];
+	RxBuffer[27]= sRamDArry[O_U_W];
+/////////////////////////////////////////////
+
+	RxBuffer[28]= sRamDArry[O_Y_0];
+	RxBuffer[29]= sRamDArry[I_EMG];
+	RxBuffer[30]= sRamDArry[I_SU1];
+	RxBuffer[31]= sRamDArry[I_GR];     
+	RxBuffer[32]= sRamDArry[I_FIRE];
+	RxBuffer[33]=(sRamDArry[mMostLongDst]    + (unsigned char)(cF_START_FLOOR));
+	RxBuffer[34]= (unsigned char)(cF_START_FLOOR);
+	RxBuffer[35]=(cF_TOPFLR       + (unsigned char)(cF_START_FLOOR));
+
+////////////////////////////////////////////
+
+	mpm=(unsigned int)CurMeterPerMin;
+	RxBuffer[36]= (unsigned char)mpm;
+	RxBuffer[37]= (unsigned char)(mpm >> 8);
+	RxBuffer[38]= sRamDArry[mExtIN0];
+	RxBuffer[39]= sRamDArry[I_X_0];     
+	RxBuffer[40]= sRamDArry[I_FS0];
+	RxBuffer[41]= sRamDArry[S5_STATE_37];
+	RxBuffer[42]= sRamDArry[mCrtExtMoveFlr];
+	RxBuffer[43]= sRamDArry[mCallMe];
+	RxBuffer[43]= ThisCmd;
+
+
+    Com1Crc=0xffff;
+    for(j=0;j<(RxBuffer[3]+4);j++){
+        Crc_Calulate_Cmm1((unsigned int)RxBuffer[j]);
+    }
+    RxBuffer[j]=(unsigned char)(Com1Crc & 0x00ff);
+    RxBuffer[j+1]=(unsigned char)((Com1Crc >> 8) & 0x00ff);
+    RxBuffer[j+2]=0;
+
+
+	Com1RxREGClear();
+
+	TXEN=0;  
+	SerialTime=0;
+   	RxCurCnt=0;	
+   	RxStatus=TX_SET;
+    U1TXREG=RxBuffer[RxCurCnt];
+   	RxCurCnt=1;   
+*/
+
+	return(0);
+}
+
+
+
+void  __attribute__((section(".usercode"))) NormalDataReturn_485(void)
+{
+   	unsigned char   My485Address=0,ThisCmd;
+    unsigned int   j,mpm; 
+
+	typedef  union  _long_Type
+	{
+	    unsigned char byte[4];
+	    unsigned int  intger[2];
+	    unsigned long long_data; 
+	}long_type1;
+
+	long_type1	long_type;
+
+	NewCmdReq=RxBuffer[0];
+
 	ThisCmd=RxBuffer[2];
 
 	My485Address=cF_GroupNm;
@@ -39,7 +161,6 @@ void  __attribute__((section(".usercode"))) NormalDataReturn_485(void)
 	RxBuffer[1]=My485Address;
 	RxBuffer[2]=0xA3;
 	RxBuffer[3]=0x28;
-//	RxBuffer[3]=0x58;
 		
 
 	RxBuffer[4] =(sRamDArry[S0_FLOOR]        + (unsigned char)(cF_START_FLOOR));
@@ -129,6 +250,10 @@ void  __attribute__((section(".usercode"))) NormalDataReturn_485(void)
 	RxBuffer[43]= sRamDArry[mCallMe];
 	RxBuffer[43]= ThisCmd;
 
+
+	ExtNormalDataReturn_485();
+
+
     Com1Crc=0xffff;
     for(j=0;j<(RxBuffer[3]+4);j++){
         Crc_Calulate_Cmm1((unsigned int)RxBuffer[j]);
@@ -146,6 +271,7 @@ void  __attribute__((section(".usercode"))) NormalDataReturn_485(void)
    	RxStatus=TX_SET;
     U1TXREG=RxBuffer[RxCurCnt];
    	RxCurCnt=1;   
+
 
 }
 
@@ -246,8 +372,10 @@ LocalType __attribute__((section(".usercode"))) HostWriteMyData_485(void)
 void  __attribute__((section(".usercode"))) CrtReqCheck(void)
 {
 	unsigned int i,j;
+
 	
 	if((RxStatus==RX_GOOD) && (SerialTime > 3)){
+		DebugFlow0=9;   
 
 	    Com1Crc=0xffff;
 	    for(j=0;j<(RxBuffer[3]+4);j++){
@@ -261,7 +389,8 @@ void  __attribute__((section(".usercode"))) CrtReqCheck(void)
 
 	
 		if( (j == Com1Crc) && (RxBuffer[1]== 0xfe)){
-		    if( (RxBuffer[2]== 0x23) || (RxBuffer[2]== 0x24)){
+			DebugFlow0=10;   
+		    if( (RxBuffer[2]== 0x23) || (RxBuffer[2]== 0x24) || (RxBuffer[2]== 0x33)){
 				RxBuffer[0]=RxBuffer[2];
 				RxBuffer[1]=RxBuffer[3];
 				RxBuffer[2]=RxBuffer[4];
@@ -273,7 +402,9 @@ void  __attribute__((section(".usercode"))) CrtReqCheck(void)
 	
 			    switch(RxBuffer[0]){
 			        case    0x23:
+			        case    0x33:
 		        		NormalDataReturn_485();
+						DebugFlow0=11;   
 			            break;
 			        case    0x24:
 			            if(RxBuffer[2] & PC_COMMAND){

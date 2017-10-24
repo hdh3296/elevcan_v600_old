@@ -1143,7 +1143,7 @@ void  __attribute__((section(".usercode"))) Setup_Default(void)
 	b_LdTmpBufRam(F_Passward2)      = '0';				//2
 	b_LdTmpBufRam(F_Passward3)      = '0';				//2
 	
-	i_LdTmpBufRam(F_SerialNm10)     = 0;				//not use
+	b_LdTmpBufRam(F_YouTestVal)     = 0;				//not use
 	
 	b_LdTmpBufRam(F_ErrStopCnt)     = 0xff;				//19
 	b_LdTmpBufRam(F_NormalDsp)      = 0x0;				//6

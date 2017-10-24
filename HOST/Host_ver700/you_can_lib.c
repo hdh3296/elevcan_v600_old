@@ -19,6 +19,77 @@ unsigned int   CAN_Buf[8];
 unsigned int tmppower;
 
 
+
+extern	unsigned int   CAN2_RxBuf[13];
+
+
+unsigned int ExtLoadCanBuffer(unsigned int i)
+{
+    unsigned int   j,mpm; 
+    unsigned int   this_pt; 
+
+	typedef  union  _long_Type
+	{
+	    unsigned char byte[4];
+	    unsigned int  intger[2];
+	    unsigned long long_data; 
+	}long_type1;
+
+	long_type1	long_type;
+
+
+	if(CAN2_RxBuf[0] != 0x33)	return(0);
+
+
+    switch(i){
+        case    0:
+			for(j=0;j<8;j++)	CAN_Buf[i]=(sRamDArry[COMMON_EL_STATE0 + 0 +j]);
+            break;
+        case    1:
+			for(j=0;j<8;j++)	CAN_Buf[i]=(sRamDArry[COMMON_EL_STATE0 + 8 +j]);
+            break;
+        case    2:
+			for(j=0;j<8;j++)	CAN_Buf[i]=(sRamDArry[COMMON_EL_STATE0 + 16 +j]);
+            break;
+        case    3:            
+			for(j=0;j<8;j++)	CAN_Buf[i]=(sRamDArry[COMMON_EL_STATE0 + 24 +j]);
+            break;
+        case    4:            
+			for(j=0;j<8;j++)	CAN_Buf[i]=(sRamDArry[COMMON_EL_STATE0 + 32 + j]);
+            break;
+/*
+        case    5:            
+            CAN_Buf[0]= sRamDArry[mCarKey33];
+            CAN_Buf[1]= sRamDArry[mCarKey41];
+            CAN_Buf[2]= sRamDArry[mCarKey49];
+            CAN_Buf[3]= sRamDArry[mCarKey57];     
+            CAN_Buf[4]= sRamDArry[FLR_ON_OFF4];
+            CAN_Buf[5]= sRamDArry[FLR_ON_OFF5];
+            CAN_Buf[6]= sRamDArry[FLR_ON_OFF6];
+            CAN_Buf[7]= sRamDArry[FLR_ON_OFF7];
+            break;
+        case    6:            
+        case    7:            
+        case    8:            
+        case    9:            
+        case    10:            
+            CAN_Buf[0]= 0;
+            CAN_Buf[1]= 0;
+            CAN_Buf[2]= 0;
+            CAN_Buf[3]= 0;     
+            CAN_Buf[4]= 0;
+            CAN_Buf[5]= 0;
+            CAN_Buf[6]= 0;
+            CAN_Buf[7]= 0;
+            break;
+*/
+    }
+
+	return(0);
+} 
+
+
+
 void LoadCanBuffer(unsigned int i)
 {
     unsigned int   j,mpm; 
@@ -33,9 +104,6 @@ void LoadCanBuffer(unsigned int i)
 
 	long_type1	long_type;
 
-//	mpm=(unsigned int)CurMeterPerMin;
-//    j=sRamDArry[mStartFloor];
-//    j=cF_START_FLOOR;	//delete value 
 
     switch(i){
         case    0:
@@ -48,17 +116,10 @@ void LoadCanBuffer(unsigned int i)
             CAN_Buf[6]= sRamDArry[DSP1];
             CAN_Buf[7]= sRamDArry[DSP2];
 		
-/*	
-			if(sRamDArry[mSysStatus] <= 35){
-            	CAN_Buf[1]= (CAN_Buf[1] & ~S1_AUTO);
-			}
-*/
-
 			if(bDspClr){
 	            CAN_Buf[6]= ' ';
 	            CAN_Buf[7]= ' ';
 			}
-
             break;
         case    1:
 			j=cF_START_FLOOR;
@@ -124,11 +185,6 @@ void LoadCanBuffer(unsigned int i)
             CAN_Buf[7]=(cF_TOPFLR       + (unsigned char)(cF_START_FLOOR));
             break;
         case    4:            
-
-//			mpm=(unsigned int)CurMeterPerMin;
-//            CAN_Buf[0]= (unsigned char)mpm;
-//            CAN_Buf[1]= (unsigned char)(mpm >> 8);
-
             CAN_Buf[0]= (unsigned char)(sRamDArry[mMpmL]);
             CAN_Buf[1]= (unsigned char)(sRamDArry[mMpmH]);
             CAN_Buf[2]= sRamDArry[mExtIN0];
@@ -163,6 +219,10 @@ void LoadCanBuffer(unsigned int i)
             CAN_Buf[7]= 0;
             break;
     }
+
+
+	ExtLoadCanBuffer(i);
+
 } 
 
 

@@ -403,7 +403,7 @@ extern void    __attribute__((section(".usercode"))) VirtualMoveCntReDsp(void);
 #define     FINAL_ERR_DSP           28
 #define     User_G8         		29
 #define     SYSTEM_SET              30
-#define     User_G9              	31
+#define     YOU_TEST_VAL            31
   
 
 

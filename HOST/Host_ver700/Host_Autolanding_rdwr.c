@@ -240,7 +240,6 @@ LocalType __attribute__((section(".usercode"))) Inverter_Par_Adr_RdWr(unsigned c
 				break;
 		}
 
-
 	return(0);
 }	
 
@@ -531,6 +530,7 @@ LocalType __attribute__((section(".usercode"))) Default_Inverter_ParameterRdWr(v
 					Length1=((xVarMpm1000 * 10)/xVarMaxHz);
 					xVarCurMpm=(Length1 * EVLowSpd)/1000;
 					xLowSpdMpm=GET_LONG(DEC_PULSE_SPD_LOW);
+
 					if(xVarCurMpm != xLowSpdMpm){
 						xLowSpdMpm=xVarCurMpm;
 						bParameterMdf=1;
@@ -700,51 +700,58 @@ LocalType __attribute__((section(".usercode"))) Default_Inverter_ParameterRdWr(v
 					if(EVHighDecLength != Length1)		bParameterMdf=1;
 
 */
+
 					if(bParameterMdf){
-						SaveVerify = 0x55;
-
-						for(k=0;k<16;k++){
-							parameter_mirror[k]=FlashDspCharBuf[ENCODER_PULSE+k].long_data;  
+						if(FlashWrCnt<10){
+							FlashWrCnt++;
+							SaveVerify = 0x55;
+	
+							for(k=0;k<16;k++){
+								parameter_mirror[k]=FlashDspCharBuf[ENCODER_PULSE+k].long_data;  
+							}
+	
+							k=( (ENCODER_PULSE) % (ENCODER_PULSE));
+							l_LdTmpBufRam(k)=(unsigned long)xVarEncoder;
+	
+	//						k=( (NEW_MPM) % (ENCODER_PULSE));
+	//						l_LdTmpBufRam(k)=(unsigned long)xVarMpm;
+	
+							k=( (RPM) % (ENCODER_PULSE));
+							l_LdTmpBufRam(k)=(unsigned long)xVarRpm;
+	
+	
+							k=( (BASE_DEC_TIME) % (ENCODER_PULSE));
+							l_LdTmpBufRam(k)=(unsigned long)xVarDecTime;
+			
+							k=( (BASE_SCURVE_TIME) % (ENCODER_PULSE));
+							l_LdTmpBufRam(k)=(unsigned long)xVarSCurve;		
+	
+							k=( (DEC_PULSE_SPD_LOW) % (ENCODER_PULSE));
+							l_LdTmpBufRam(k)=(unsigned long)xLowSpdMpm;		
+	
+							k=( (DEC_PULSE_SPD_MID) % (ENCODER_PULSE));
+							l_LdTmpBufRam(k)=(unsigned long)xMidSpdMpm;		
+	
+	/*
+							k=( (DEC_LENGTH_SPD_HIGH) % (ENCODER_PULSE));
+							l_LdTmpBufRam(k)=(unsigned long)EVHighDecLength;		
+	*/
+	
+							k=( (BASE_DEC_MPM) % (ENCODER_PULSE));
+							l_LdTmpBufRam(k)=(unsigned long)xDecMpm;		
+	
+	
+							flash_write(ENCODER_PULSE);
+							CaluDecreasePulse_spd3();
+							bParameterMdf=0;
+							SaveVerify=0;
 						}
-
-						k=( (ENCODER_PULSE) % (ENCODER_PULSE));
-						l_LdTmpBufRam(k)=(unsigned long)xVarEncoder;
-
-//						k=( (NEW_MPM) % (ENCODER_PULSE));
-//						l_LdTmpBufRam(k)=(unsigned long)xVarMpm;
-
-						k=( (RPM) % (ENCODER_PULSE));
-						l_LdTmpBufRam(k)=(unsigned long)xVarRpm;
-
-
-						k=( (BASE_DEC_TIME) % (ENCODER_PULSE));
-						l_LdTmpBufRam(k)=(unsigned long)xVarDecTime;
-		
-						k=( (BASE_SCURVE_TIME) % (ENCODER_PULSE));
-						l_LdTmpBufRam(k)=(unsigned long)xVarSCurve;		
-
-						k=( (DEC_PULSE_SPD_LOW) % (ENCODER_PULSE));
-						l_LdTmpBufRam(k)=(unsigned long)xLowSpdMpm;		
-
-						k=( (DEC_PULSE_SPD_MID) % (ENCODER_PULSE));
-						l_LdTmpBufRam(k)=(unsigned long)xMidSpdMpm;		
-
-/*
-						k=( (DEC_LENGTH_SPD_HIGH) % (ENCODER_PULSE));
-						l_LdTmpBufRam(k)=(unsigned long)EVHighDecLength;		
-*/
-
-						k=( (BASE_DEC_MPM) % (ENCODER_PULSE));
-						l_LdTmpBufRam(k)=(unsigned long)xDecMpm;		
-
-
-						flash_write(ENCODER_PULSE);
-						CaluDecreasePulse_spd3();
-						bParameterMdf=0;
-						SaveVerify=0;
 					}
-					ParRdWrNm=SPEED_MANUAL_PORT_SEQ;
+					else{
+						FlashWrCnt=0;
+					}
 
+					ParRdWrNm=SPEED_MANUAL_PORT_SEQ;
 //				}
 //			}
 			break;

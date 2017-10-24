@@ -9,6 +9,8 @@
 #include  "COM.h"
 
 
+extern	unsigned int	__attribute__((section(".usercode")))  CarCurFloorUpCal(void);
+extern	unsigned int	__attribute__((section(".usercode")))  CarCurFloorUpCal(void);
 
 extern void __attribute__((section(".usercode"))) HextoASCIIByte(void);
 
@@ -424,7 +426,7 @@ typedef  union  _long_union
 #define  sDecForce      	  40
 #define  sOverRun      	  	  41
 #define  sSlipOccur           42
-//#define  reserve        	43
+#define  sSlowSw        	  43
 //////////////////////////////////////
 #define  sFhmError            44
 #define  sTuning              45
@@ -613,7 +615,7 @@ typedef  union  _long_union
 #define  F_UserLamp2            161                     //1     
 
 #define  F_AutoLandingMode      162                     //1(2) 40
-#define  F_SerialNm10           163                     //1(2)
+#define  F_YouTestVal           163                     //1(2)
 
 #define  F_NormalDsp            164                     //1    41
 #define  F_GroupNm              165                     //1    41
@@ -908,7 +910,7 @@ typedef  union  _long_union
 //////////////////////////////////////////////////////////
 #define  DEC_LENGTH_SPD_LOW   	DEC_LENGTH_30 
 #define  DEC_LENGTH_SPD_MID  	DEC_LENGTH_45 
-#define  DEC_LENGTH_SPD_HIGH	DEC_LENGTH_60			//test 
+#define  DEC_LENGTH_SPD_HIGH	DEC_LENGTH_60			
 #define  BASE_DEC_MPM       	DEC_LENGTH_90  
 
 #define  BASE_DEC_TIME          DEC_LENGTH_105  
@@ -1516,6 +1518,7 @@ extern  unsigned int	AirConDataRcvPt;
 extern	unsigned int 	AirConRcvTimer;
 
 
+extern	UserDataType    RelevelFloor;
 extern	UserDataType    WhoAutolanding;
 
 extern	UserDataType	PassWardKeyBuf[4];     
@@ -1671,41 +1674,7 @@ extern	UserDataType    AllRunOut;
 extern	UserDataType    LuLdOffTime;
 extern	UserDataType	NoStart;
 extern  UserDataType    OldFireBuf;  
-extern  UserDataType    AutoBit;
-extern  UserDataType    EmerBit;
-extern  UserDataType    SlipBit;
-extern  UserDataType    LuLdBit;
-extern  UserDataType    OpenEndBit;
-extern  UserDataType    BefDlsBit;
-extern  UserDataType    BefDestFBit;
-extern  UserDataType    EepRWBit;
-extern  UserDataType    Etc1Bit;
-extern  UserDataType    Etc2Bit;
-extern  UserDataType    Etc3Bit;
-extern  UserDataType    PC1Bit;
-extern  UserDataType    StateBit0;
-extern  UserDataType    StateBit1;   
-extern  UserDataType    StateBit2;   
-extern	UserDataType    StateBit3;   
-extern	UserDataType    StateBit4;   
-extern	UserDataType    StateBit5;   
-extern	UserDataType    StateBit6;   
-extern	UserDataType    StateBit7;   
-extern	UserDataType    StateBit8;   
-extern	UserDataType    StateBit9;   
-extern	UserDataType    StateBit10;   
-extern	UserDataType    StateBit11;   
-extern	UserDataType    StateBit12;   
-extern	UserDataType    StateBit13;   
-extern	UserDataType    StateBit14;   
 extern  UserDataType    Vip_Floor;   
-
-
-extern  UserDataType    S0_STATE_bit;
-extern  UserDataType    S1_STATE_bit;
-extern  UserDataType    S2_STATE_bit;
-extern  UserDataType    S3_STATE_bit;
-extern  UserDataType    S4_STATE_bit;
 
 extern  UserDataType    I_SU1_bit;
 extern  UserDataType    I_EMG_bit;
@@ -1720,7 +1689,7 @@ extern	UserDataType    Virtual_OUT_bit;
 extern	UserDataType    EXT_OUT0_bit;
 extern	UserDataType    Virtual_IN_bit;
 
-extern  UserDataType    DoorStatus_bit;
+//////////extern  UserDataType    DoorStatus_bit;
 extern  UserDataType    FhmToggle;
 extern  UserDataType    FhmSeq;
 extern  UserDataType    PowerFailTime;
@@ -1758,8 +1727,7 @@ extern	unsigned long   CurMpm_100;  // 000.000
 extern	unsigned long   PowerOnTime;
 
 extern  unsigned long 	BefCurEncoderPulse;
-extern  unsigned long   TmpEncoderPulse;
-extern	unsigned long   vTmpEncoderPulse;
+extern  unsigned long   TmpCurEncoderPulse;
 
 extern	unsigned long 	LevelEncoderPulse1,LevelEncoderPulse2;
 extern	unsigned long 	TestPulse1,UpDnEncoder;
@@ -1849,6 +1817,332 @@ extern	unsigned int 	AutotunUpDn;
 
 //////
 
+#define  S1_OPEN1               GET_BITFIELD(&sRamDArry[S1_STATE]).bit0
+#define  S1_CLOSE1              GET_BITFIELD(&sRamDArry[S1_STATE]).bit1
+#define  S1_OVERLOAD1           GET_BITFIELD(&sRamDArry[S1_STATE]).bit2
+#define  S1_EMG1                GET_BITFIELD(&sRamDArry[S1_STATE]).bit3
+#define  S1_POWER_FAIL          GET_BITFIELD(&sRamDArry[S1_STATE]).bit4
+#define  S1_AUTO1               GET_BITFIELD(&sRamDArry[S1_STATE]).bit5
+#define  S1_MANUAL1             GET_BITFIELD(&sRamDArry[S1_STATE]).bit6
+#define  S1_UP1                 GET_BITFIELD(&sRamDArry[S1_STATE]).bit7
+
+
+#define  S2_DN1                 GET_BITFIELD(&sRamDArry[S2_STATE]).bit0
+#define  S2_CAR_MOVE1           GET_BITFIELD(&sRamDArry[S2_STATE]).bit1
+#define  S2_EXT_BUT_CLR1        GET_BITFIELD(&sRamDArry[S2_STATE]).bit2
+#define  S2_FLOW1               GET_BITFIELD(&sRamDArry[S2_STATE]).bit3
+#define  S2_FIRE1               GET_BITFIELD(&sRamDArry[S2_STATE]).bit4
+#define  S2_CAR_BUT_CLR1        GET_BITFIELD(&sRamDArry[S2_STATE]).bit5
+#define  S2_REOPEN1             GET_BITFIELD(&sRamDArry[S2_STATE]).bit6
+#define  S2_LAMP_USER1          GET_BITFIELD(&sRamDArry[S2_STATE]).bit7
+
+
+#define  S3_VIP1                GET_BITFIELD(&sRamDArry[S3_STATE]).bit0
+#define  S3_PARKING1            GET_BITFIELD(&sRamDArry[S3_STATE]).bit1
+#define  S3_SHIFT1              GET_BITFIELD(&sRamDArry[S3_STATE]).bit2
+#define  S3_UPDN_VO1            GET_BITFIELD(&sRamDArry[S3_STATE]).bit3
+#define  S3_OPEN_SUB1           GET_BITFIELD(&sRamDArry[S3_STATE]).bit4
+#define  S3_FULL1               GET_BITFIELD(&sRamDArry[S3_STATE]).bit5
+#define  S3_CUR_KEY1            GET_BITFIELD(&sRamDArry[S3_STATE]).bit6
+#define  S3_STOP1               GET_BITFIELD(&sRamDArry[S3_STATE]).bit7
+
+
+
+#define  S4_CAR_MOST_SERVICE1    GET_BITFIELD(&sRamDArry[S4_STATE]).bit0
+#define  S4_FAMILY_SERVICE1      GET_BITFIELD(&sRamDArry[S4_STATE]).bit1
+#define  S4_SECOND_FIRE1      	 GET_BITFIELD(&sRamDArry[S4_STATE]).bit2
+#define  S4_WAIT_FLR_SERVICE1    GET_BITFIELD(&sRamDArry[S4_STATE]).bit3
+#define  S4_PARKING_READY1    	 GET_BITFIELD(&sRamDArry[S4_STATE]).bit4
+#define  S4_USERLAMP3    	 	 GET_BITFIELD(&sRamDArry[S4_STATE]).bit5
+#define  S4_USERLAMP4    	 	 GET_BITFIELD(&sRamDArry[S4_STATE]).bit6
+#define  S4_NEW_LAW_SYSTEM1    	 GET_BITFIELD(&sRamDArry[S4_STATE]).bit7
+
+
+
+#define  bMoveOk           	    GET_BITFIELD(&sRamDArry[S5_STATE]).bit0
+#define  bMoveUpOk         	    GET_BITFIELD(&sRamDArry[S5_STATE]).bit1 
+#define  bMoveDnOk         	    GET_BITFIELD(&sRamDArry[S5_STATE]).bit2 
+#define  bMoveCar       	    GET_BITFIELD(&sRamDArry[S5_STATE]).bit3
+#define  bCarUpMove    	    	GET_BITFIELD(&sRamDArry[S5_STATE]).bit4 
+#define  bCarDnMove      	    GET_BITFIELD(&sRamDArry[S5_STATE]).bit5 
+#define  bUpWard           	    GET_BITFIELD(&sRamDArry[S5_STATE]).bit6
+#define  bDnWard        	    GET_BITFIELD(&sRamDArry[S5_STATE]).bit7 
+
+
+#define  bCarErr       	    	GET_BITFIELD(&sRamDArry[S6_STATE]).bit0 
+#define  bCarStopNoRun        	GET_BITFIELD(&sRamDArry[S6_STATE]).bit1
+#define  bCarStop       		GET_BITFIELD(&sRamDArry[S6_STATE]).bit2 
+#define  bCarErrOn       		GET_BITFIELD(&sRamDArry[S6_STATE]).bit3 
+#define  bMotorRestartOn        GET_BITFIELD(&sRamDArry[S6_STATE]).bit4
+#define  bInvOutAllClr			GET_BITFIELD(&sRamDArry[S6_STATE]).bit5
+#define  bInspect     	    	GET_BITFIELD(&sRamDArry[S6_STATE]).bit6 
+#define  bNOTUSE_6_7     	    GET_BITFIELD(&sRamDArry[S6_STATE]).bit7
+
+
+
+#define  bsSlip         	    GET_BITFIELD(&sRamDArry[S7_STATE]).bit0 
+#define  bsEmergency      	    GET_BITFIELD(&sRamDArry[S7_STATE]).bit1
+#define  bsUls       			GET_BITFIELD(&sRamDArry[S7_STATE]).bit2
+#define  bsDls         	    	GET_BITFIELD(&sRamDArry[S7_STATE]).bit3 
+#define  bsLuLdNoOff       	    GET_BITFIELD(&sRamDArry[S7_STATE]).bit4
+#define  bsNextFloor    	    GET_BITFIELD(&sRamDArry[S7_STATE]).bit5 
+#define  bAutoButtonErr        	GET_BITFIELD(&sRamDArry[S7_STATE]).bit6 
+#define  bLope_Occur      	    GET_BITFIELD(&sRamDArry[S7_STATE]).bit7
+
+
+#define  bDoorJumper     	    GET_BITFIELD(&sRamDArry[S8_STATE]).bit0
+#define  bInPortErr       	    GET_BITFIELD(&sRamDArry[S8_STATE]).bit1 
+#define  bDZ_Err	    		GET_BITFIELD(&sRamDArry[S8_STATE]).bit2 
+#define  bsLope         	    GET_BITFIELD(&sRamDArry[S8_STATE]).bit3
+#define  bEncoderErr			GET_BITFIELD(&sRamDArry[S8_STATE]).bit4 
+#define  bEncoderABErr     	    GET_BITFIELD(&sRamDArry[S8_STATE]).bit5
+#define  bSlip_Occur   			GET_BITFIELD(&sRamDArry[S8_STATE]).bit6 
+#define  bsInvertErr   			GET_BITFIELD(&sRamDArry[S8_STATE]).bit7
+
+
+
+
+#define  bUpDnSet				GET_BITFIELD(&sRamDArry[S9_STATE]).bit0 
+#define  bVoiceReady       	    GET_BITFIELD(&sRamDArry[S9_STATE]).bit1
+#define  bFindBoard     	    GET_BITFIELD(&sRamDArry[S9_STATE]).bit2 
+#define  bReOpen        	    GET_BITFIELD(&sRamDArry[S9_STATE]).bit3 
+#define  bManualUpKey			GET_BITFIELD(&sRamDArry[S9_STATE]).bit4
+#define  bManualDnKey			GET_BITFIELD(&sRamDArry[S9_STATE]).bit5 
+#define  bOnLuLd          	    GET_BITFIELD(&sRamDArry[S9_STATE]).bit6 
+#define  bCarUpDnChButClr		GET_BITFIELD(&sRamDArry[S9_STATE]).bit7
+
+
+
+#define  bReadyCall      		GET_BITFIELD(&sRamDArry[S10_STATE]).bit0 
+#define  bOldFireBuz      		GET_BITFIELD(&sRamDArry[S10_STATE]).bit1 
+#define  bAutoTunningMsg   		GET_BITFIELD(&sRamDArry[S10_STATE]).bit2 
+#define  bOnceMove      		GET_BITFIELD(&sRamDArry[S10_STATE]).bit3 
+#define  bDeltaSpdOff			GET_BITFIELD(&sRamDArry[S10_STATE]).bit4 
+#define  bParameterChange       GET_BITFIELD(&sRamDArry[S10_STATE]).bit5 
+#define  bParameterMdf		    GET_BITFIELD(&sRamDArry[S10_STATE]).bit6 
+#define  bFindSU				GET_BITFIELD(&sRamDArry[S10_STATE]).bit7 
+
+#define  bParRd      			GET_BITFIELD(&sRamDArry[S11_STATE]).bit0 
+#define  bParWr      			GET_BITFIELD(&sRamDArry[S11_STATE]).bit1 
+#define  bDftDspOn   			GET_BITFIELD(&sRamDArry[S11_STATE]).bit2 
+#define  bInvMdfy      			GET_BITFIELD(&sRamDArry[S11_STATE]).bit3 
+#define  bWarning				GET_BITFIELD(&sRamDArry[S11_STATE]).bit4 
+#define  bL1000_Enter       	GET_BITFIELD(&sRamDArry[S11_STATE]).bit5 
+#define  bManDeltaSpdOff		GET_BITFIELD(&sRamDArry[S11_STATE]).bit6 
+#define  bsOpeNoOn					GET_BITFIELD(&sRamDArry[S11_STATE]).bit7 
+
+#define  bTempCall  	    	GET_BITFIELD(&sRamDArry[S12_STATE]).bit0
+#define  bCarService         	GET_BITFIELD(&sRamDArry[S12_STATE]).bit1
+#define  bD_F_FloorOn           GET_BITFIELD(&sRamDArry[S12_STATE]).bit2
+#define  bDoorOpenHold			GET_BITFIELD(&sRamDArry[S12_STATE]).bit3
+#define  bAutoTunning           GET_BITFIELD(&sRamDArry[S12_STATE]).bit4
+#define  bsInvCurNext         	GET_BITFIELD(&sRamDArry[S12_STATE]).bit5
+#define  bHomeUpDn				GET_BITFIELD(&sRamDArry[S12_STATE]).bit6
+#define  bFhmRun         	    GET_BITFIELD(&sRamDArry[S12_STATE]).bit7
+
+#define  bSearchHome       	    GET_BITFIELD(&sRamDArry[S13_STATE]).bit0
+#define  bAuto					GET_BITFIELD(&sRamDArry[S13_STATE]).bit1 
+#define  bManualAuto			GET_BITFIELD(&sRamDArry[S13_STATE]).bit2 
+#define  bsFsd              	GET_BITFIELD(&sRamDArry[S13_STATE]).bit3 
+#define  bManOnCar              GET_BITFIELD(&sRamDArry[S13_STATE]).bit4 
+#define  bWaterAndArrive        GET_BITFIELD(&sRamDArry[S13_STATE]).bit5 
+#define  bsCleNoOn         		GET_BITFIELD(&sRamDArry[S13_STATE]).bit6 
+#define  bCarOnceStop           GET_BITFIELD(&sRamDArry[S13_STATE]).bit7 
+
+
+#define  bIntLockErr      		GET_BITFIELD(&sRamDArry[S14_STATE]).bit0 
+#define  bDoorErr      			GET_BITFIELD(&sRamDArry[S14_STATE]).bit1 
+#define  bFindUpX0   			GET_BITFIELD(&sRamDArry[S14_STATE]).bit2 
+#define  bFindDnX1      		GET_BITFIELD(&sRamDArry[S14_STATE]).bit3 
+#define  bBaseFloorSet			GET_BITFIELD(&sRamDArry[S14_STATE]).bit4 
+#define  bLevelOnOnce       	GET_BITFIELD(&sRamDArry[S14_STATE]).bit5 
+#define  bOnesLuOrLdOn			GET_BITFIELD(&sRamDArry[S14_STATE]).bit6 
+#define  bTestKey				GET_BITFIELD(&sRamDArry[S14_STATE]).bit7 
+
+#define  bSaveErrCnt            GET_BITFIELD(&sRamDArry[S15_STATE]).bit0 
+#define  bSlowSwErr          	GET_BITFIELD(&sRamDArry[S15_STATE]).bit1 	//VERSION 6.AC  -> VERSION  6.AD
+#define  bDoorOpenEnd           GET_BITFIELD(&sRamDArry[S15_STATE]).bit2
+#define  bFR2Start1             GET_BITFIELD(&sRamDArry[S15_STATE]).bit3
+#define  bPasswardOk            GET_BITFIELD(&sRamDArry[S15_STATE]).bit4
+#define  bUnd                   GET_BITFIELD(&sRamDArry[S15_STATE]).bit5
+#define  bDac                   GET_BITFIELD(&sRamDArry[S15_STATE]).bit6
+#define  bsBreakMgtOpen         GET_BITFIELD(&sRamDArry[S15_STATE]).bit7
+
+#define  bOpenEnd               GET_BITFIELD(&sRamDArry[S16_STATE]).bit0 
+#define  bCarDoorCloseEnd       GET_BITFIELD(&sRamDArry[S16_STATE]).bit1   
+#define  bHoleDoorCloseEnd      GET_BITFIELD(&sRamDArry[S16_STATE]).bit2   
+#define  bDoorCloseOk           GET_BITFIELD(&sRamDArry[S16_STATE]).bit3 
+#define  bsHdsRunOff            GET_BITFIELD(&sRamDArry[S16_STATE]).bit4
+#define  bsCleRunOff            GET_BITFIELD(&sRamDArry[S16_STATE]).bit5
+#define  bSetSpeedOn			GET_BITFIELD(&sRamDArry[S16_STATE]).bit6
+#define  bAllMenu				GET_BITFIELD(&sRamDArry[S16_STATE]).bit7
+
+
+#define  bSlipCheckStart        GET_BITFIELD(&sRamDArry[S17_STATE]).bit0 
+#define  bSaveDec				GET_BITFIELD(&sRamDArry[S17_STATE]).bit1 
+#define  bDoorOpenCmd           GET_BITFIELD(&sRamDArry[S17_STATE]).bit2 
+#define  bDoorCloseCmd          GET_BITFIELD(&sRamDArry[S17_STATE]).bit3 
+#define  bHoleDoorOpenEnd       GET_BITFIELD(&sRamDArry[S17_STATE]).bit4 
+#define  bOpenDoorOk            GET_BITFIELD(&sRamDArry[S17_STATE]).bit5 
+#define  bEqualFloorError       GET_BITFIELD(&sRamDArry[S17_STATE]).bit6 
+#define  bHibCallClear          GET_BITFIELD(&sRamDArry[S17_STATE]).bit7 
+
+#define  bOneStep               GET_BITFIELD(&sRamDArry[S18_STATE]).bit0 
+#define  bTwoStep               GET_BITFIELD(&sRamDArry[S18_STATE]).bit1 
+#define  bThreeStep             GET_BITFIELD(&sRamDArry[S18_STATE]).bit2 
+#define  bFourStep              GET_BITFIELD(&sRamDArry[S18_STATE]).bit3 
+#define  bUserOn				GET_BITFIELD(&sRamDArry[S18_STATE]).bit4 
+#define  bInvErrCnt             GET_BITFIELD(&sRamDArry[S18_STATE]).bit5 
+#define  bDspSeq                GET_BITFIELD(&sRamDArry[S18_STATE]).bit6 
+#define  bLevelFind             GET_BITFIELD(&sRamDArry[S18_STATE]).bit7 
+
+
+
+#define  bLevelOpen            GET_BITFIELD(&sRamDArry[S19_STATE]).bit0 
+#define  bOneLuOrLd        		GET_BITFIELD(&sRamDArry[S19_STATE]).bit1 
+#define  bOnceOpen              GET_BITFIELD(&sRamDArry[S19_STATE]).bit2 
+#define  bDoorCloseOkSensor     GET_BITFIELD(&sRamDArry[S19_STATE]).bit3 
+#define  bsBreakOpen            GET_BITFIELD(&sRamDArry[S19_STATE]).bit4 
+#define  bBK1        			GET_BITFIELD(&sRamDArry[S19_STATE]).bit5 
+#define  bsSusErr               GET_BITFIELD(&sRamDArry[S19_STATE]).bit6 
+#define  bsSdsErr               GET_BITFIELD(&sRamDArry[S19_STATE]).bit7 
+
+#define  bOnceVip               GET_BITFIELD(&sRamDArry[S20_STATE]).bit0 
+#define  bDoorOpenValid			GET_BITFIELD(&sRamDArry[S20_STATE]).bit1 
+#define  bExportData            GET_BITFIELD(&sRamDArry[S20_STATE]).bit2 
+#define  bImportData            GET_BITFIELD(&sRamDArry[S20_STATE]).bit3 
+#define  bDspClr                GET_BITFIELD(&sRamDArry[S20_STATE]).bit4 
+#define  bPowerChkStart         GET_BITFIELD(&sRamDArry[S20_STATE]).bit5 
+#define  bWritechk              GET_BITFIELD(&sRamDArry[S20_STATE]).bit6 
+#define  bWaterSensing          GET_BITFIELD(&sRamDArry[S20_STATE]).bit7 
+
+#define  bSlipWard           	GET_BITFIELD(&sRamDArry[S21_STATE]).bit0 
+#define  bNotStopRelevel        GET_BITFIELD(&sRamDArry[S21_STATE]).bit1 
+#define  bPasswardUse           GET_BITFIELD(&sRamDArry[S21_STATE]).bit2 
+#define  bCompanyCtl        	GET_BITFIELD(&sRamDArry[S21_STATE]).bit3 
+#define  bLoaderActive          GET_BITFIELD(&sRamDArry[S21_STATE]).bit4 
+#define  bDoorOpenEndFind       GET_BITFIELD(&sRamDArry[S21_STATE]).bit5 
+#define  bSolControl            GET_BITFIELD(&sRamDArry[S21_STATE]).bit6 
+#define  bReLoadEncoder        	GET_BITFIELD(&sRamDArry[S21_STATE]).bit7 
+
+#define  bSlipOccur      		GET_BITFIELD(&sRamDArry[S22_STATE]).bit0 
+#define  bsOverRun      		GET_BITFIELD(&sRamDArry[S22_STATE]).bit1 
+#define  bSaveEmg   			GET_BITFIELD(&sRamDArry[S22_STATE]).bit2 
+#define  bOnesLuldOn      		GET_BITFIELD(&sRamDArry[S22_STATE]).bit3 
+#define  bAutoLandingActive		GET_BITFIELD(&sRamDArry[S22_STATE]).bit4 
+#define  bPlankLandingOk       	GET_BITFIELD(&sRamDArry[S22_STATE]).bit5 
+#define  bInvCommActive485		GET_BITFIELD(&sRamDArry[S22_STATE]).bit6 
+#define  bInvRecoveryErr		GET_BITFIELD(&sRamDArry[S22_STATE]).bit7 
+
+#define  bSlavePrk      		GET_BITFIELD(&sRamDArry[S23_STATE]).bit0 
+#define  bMotor_Overheat      	GET_BITFIELD(&sRamDArry[S23_STATE]).bit1 
+#define  bsLuOrLdErr    		GET_BITFIELD(&sRamDArry[S23_STATE]).bit2 
+#define  bNewFire2        		GET_BITFIELD(&sRamDArry[S23_STATE]).bit3 
+#define  bFindSD         		GET_BITFIELD(&sRamDArry[S23_STATE]).bit4 
+#define  bSafety_scrSft       	GET_BITFIELD(&sRamDArry[S23_STATE]).bit5 
+#define  bRelevelErr		    GET_BITFIELD(&sRamDArry[S23_STATE]).bit6 
+#define  bErrClearOnce        	GET_BITFIELD(&sRamDArry[S23_STATE]).bit7 
+
+#define  bsUcmpFeedErr      	GET_BITFIELD(&sRamDArry[S24_STATE]).bit0 
+#define  bHibSet  				GET_BITFIELD(&sRamDArry[S24_STATE]).bit1 
+#define  bFireTimeRun    		GET_BITFIELD(&sRamDArry[S24_STATE]).bit2 
+#define  bFirstFire        		GET_BITFIELD(&sRamDArry[S24_STATE]).bit3 
+#define  bSecondFire         	GET_BITFIELD(&sRamDArry[S24_STATE]).bit4
+#define  bSpeedDsp         		GET_BITFIELD(&sRamDArry[S24_STATE]).bit5
+#define  bFlrMatchChk        	GET_BITFIELD(&sRamDArry[S24_STATE]).bit6 
+#define  bRunningOpenOn        	GET_BITFIELD(&sRamDArry[S24_STATE]).bit7 
+
+#define  bsEarthquake      		GET_BITFIELD(&sRamDArry[S25_STATE]).bit0 
+#define  bFireFlrOn      		GET_BITFIELD(&sRamDArry[S25_STATE]).bit1 
+#define  bSlaveEarthquake    	GET_BITFIELD(&sRamDArry[S25_STATE]).bit2 
+#define  bSubSlavePrk        	GET_BITFIELD(&sRamDArry[S25_STATE]).bit3 
+#define  bSlaveFire         	GET_BITFIELD(&sRamDArry[S25_STATE]).bit4 
+#define  bSubSlaveFire       	GET_BITFIELD(&sRamDArry[S25_STATE]).bit5 
+#define  bSafeFire		    	GET_BITFIELD(&sRamDArry[S25_STATE]).bit6 
+#define  bPowerSaveMoveValid    GET_BITFIELD(&sRamDArry[S25_STATE]).bit7 
+
+
+#define  bStrongDec      		GET_BITFIELD(&sRamDArry[S26_STATE]).bit0 
+#define  bInvComErr      		GET_BITFIELD(&sRamDArry[S26_STATE]).bit1 
+#define  bReqFlrLoad   			GET_BITFIELD(&sRamDArry[S26_STATE]).bit2 
+#define  bReLoadEncoderExe      GET_BITFIELD(&sRamDArry[S26_STATE]).bit3 
+#define  bFlrMatchErr			GET_BITFIELD(&sRamDArry[S26_STATE]).bit4 
+#define  bDoorSlowExe       	GET_BITFIELD(&sRamDArry[S26_STATE]).bit5 
+#define  bCalcuMpmOn		    GET_BITFIELD(&sRamDArry[S26_STATE]).bit6 
+#define  bFinalErrSaveChk		GET_BITFIELD(&sRamDArry[S26_STATE]).bit7 
+
+
+#define  bDeltaGroupEdit      	GET_BITFIELD(&sRamDArry[S27_STATE]).bit0 
+#define  bAutoRunningErr      	GET_BITFIELD(&sRamDArry[S27_STATE]).bit1 
+#define  bErrSaveFlag   		GET_BITFIELD(&sRamDArry[S27_STATE]).bit2 
+#define  bZeroHzSet      		GET_BITFIELD(&sRamDArry[S27_STATE]).bit3 
+#define  bExtButClr			GET_BITFIELD(&sRamDArry[S27_STATE]).bit4 
+#define  bCarButClr       	GET_BITFIELD(&sRamDArry[S27_STATE]).bit5 
+#define  bNOTUSE_27_6		    GET_BITFIELD(&sRamDArry[S27_STATE]).bit6 
+#define  bNOTUSE_27_7			GET_BITFIELD(&sRamDArry[S27_STATE]).bit7 
+
+
+#define  bNOTUSE_28_0      		GET_BITFIELD(&sRamDArry[S28_STATE]).bit0 
+#define  bNOTUSE_28_1			GET_BITFIELD(&sRamDArry[S28_STATE]).bit1 
+#define  bNOTUSE_28_2   		GET_BITFIELD(&sRamDArry[S28_STATE]).bit2 
+#define  bNOTUSE_28_3      		GET_BITFIELD(&sRamDArry[S28_STATE]).bit3 
+#define  bNOTUSE_28_4			GET_BITFIELD(&sRamDArry[S28_STATE]).bit4 
+#define  bNOTUSE_28_5       	GET_BITFIELD(&sRamDArry[S28_STATE]).bit5 
+#define  bNOTUSE_28_6			GET_BITFIELD(&sRamDArry[S28_STATE]).bit6 
+#define  bNOTUSE_28_7			GET_BITFIELD(&sRamDArry[S28_STATE]).bit7 
+
+
+
+
+
+#define  bBefbRelevelErr		GET_BITFIELD(&sRamDArry[S32_STATE]).bit0 
+#define  bBefbsEmergency		GET_BITFIELD(&sRamDArry[S32_STATE]).bit1 
+#define  bBefbsSlip				GET_BITFIELD(&sRamDArry[S32_STATE]).bit2 
+#define  bBefbSlipOccur      	GET_BITFIELD(&sRamDArry[S32_STATE]).bit3 
+#define  bBefbDZ_Err			GET_BITFIELD(&sRamDArry[S32_STATE]).bit4 
+#define  bNOTUSE_34_5			GET_BITFIELD(&sRamDArry[S32_STATE]).bit5 
+#define  bNOTUSE_34_6			GET_BITFIELD(&sRamDArry[S32_STATE]).bit6 
+#define  bNOTUSE_34_7			GET_BITFIELD(&sRamDArry[S32_STATE]).bit7 
+
+#define  bBefbsFsd   	    	GET_BITFIELD(&sRamDArry[S33_STATE]).bit0 
+#define  bBefbsLuLdHome    	    GET_BITFIELD(&sRamDArry[S33_STATE]).bit1
+#define  bBefbsUls      	    GET_BITFIELD(&sRamDArry[S33_STATE]).bit2
+#define  bBefbsLope     	    GET_BITFIELD(&sRamDArry[S33_STATE]).bit3
+#define  bBefbTestTop      	    GET_BITFIELD(&sRamDArry[S33_STATE]).bit4
+#define  bBefbTestLow      	    GET_BITFIELD(&sRamDArry[S33_STATE]).bit5
+#define  bBefbsInvCurNext      	GET_BITFIELD(&sRamDArry[S33_STATE]).bit6
+#define  bBefbPowerFail      	GET_BITFIELD(&sRamDArry[S33_STATE]).bit7
+
+#define  bBefbsDls      	    GET_BITFIELD(&sRamDArry[S34_STATE]).bit0 
+#define  bBefbsHdsRunOff   	    GET_BITFIELD(&sRamDArry[S34_STATE]).bit1
+#define  bBefbsCleRunOff   	    GET_BITFIELD(&sRamDArry[S34_STATE]).bit2 
+#define  bBefbsOpeNoOn     	    GET_BITFIELD(&sRamDArry[S34_STATE]).bit3 
+#define  bBefbsLuLdNoOff   	    GET_BITFIELD(&sRamDArry[S34_STATE]).bit4
+#define  bBefbsNextFloor   	    GET_BITFIELD(&sRamDArry[S34_STATE]).bit5 
+#define  bBefbAutoButtonErr     GET_BITFIELD(&sRamDArry[S34_STATE]).bit6 
+#define  bBefbsCleNoOn     	    GET_BITFIELD(&sRamDArry[S34_STATE]).bit7
+
+#define  bBefDoorJumper      	GET_BITFIELD(&sRamDArry[S35_STATE]).bit0 
+#define  bBefbMotor_Overheat	GET_BITFIELD(&sRamDArry[S35_STATE]).bit1 
+#define  bBefbsUcmpFeedErr   	GET_BITFIELD(&sRamDArry[S35_STATE]).bit2 
+#define  bBef_IN_MM      		GET_BITFIELD(&sRamDArry[S35_STATE]).bit3 
+#define  bBefbsEarthquake		GET_BITFIELD(&sRamDArry[S35_STATE]).bit4 
+#define  bBefbEqualFloorError	GET_BITFIELD(&sRamDArry[S35_STATE]).bit5 
+#define  bBefAutoManual			GET_BITFIELD(&sRamDArry[S35_STATE]).bit6 
+#define  bBefbsOverRun			GET_BITFIELD(&sRamDArry[S35_STATE]).bit7 
+
+#define  bBefbEncoderErr      	GET_BITFIELD(&sRamDArry[S36_STATE]).bit0 
+#define  bBefbEncoderABErr      GET_BITFIELD(&sRamDArry[S36_STATE]).bit1 
+#define  bBefbsBreakMgtOpen   	GET_BITFIELD(&sRamDArry[S36_STATE]).bit2 
+#define  bBefbsSusErr      		GET_BITFIELD(&sRamDArry[S36_STATE]).bit3 
+#define  bBefbsSdsErr			GET_BITFIELD(&sRamDArry[S36_STATE]).bit4 
+#define  bBefbsInvertErr       	GET_BITFIELD(&sRamDArry[S36_STATE]).bit5 
+#define  bBefbsBreakOpen		GET_BITFIELD(&sRamDArry[S36_STATE]).bit6 
+#define  bBefsLuOrLdErr			GET_BITFIELD(&sRamDArry[S36_STATE]).bit7 
+
+
+
+/*
 #define  S1_OPEN1               GET_BITFIELD(&S1_STATE_bit).bit0
 #define  S1_CLOSE1              GET_BITFIELD(&S1_STATE_bit).bit1
 #define  S1_OVERLOAD1           GET_BITFIELD(&S1_STATE_bit).bit2
@@ -1858,6 +2152,7 @@ extern	unsigned int 	AutotunUpDn;
 #define  S1_MANUAL1             GET_BITFIELD(&S1_STATE_bit).bit6
 #define  S1_UP1                 GET_BITFIELD(&S1_STATE_bit).bit7
 
+
 #define  S2_DN1                 GET_BITFIELD(&S2_STATE_bit).bit0
 #define  S2_CAR_MOVE1           GET_BITFIELD(&S2_STATE_bit).bit1
 #define  S2_EXT_BUT_CLR1        GET_BITFIELD(&S2_STATE_bit).bit2
@@ -1866,7 +2161,6 @@ extern	unsigned int 	AutotunUpDn;
 #define  S2_CAR_BUT_CLR1        GET_BITFIELD(&S2_STATE_bit).bit5
 #define  S2_REOPEN1             GET_BITFIELD(&S2_STATE_bit).bit6
 #define  S2_LAMP_USER1          GET_BITFIELD(&S2_STATE_bit).bit7
-
 
 
 #define  S3_VIP1                GET_BITFIELD(&S3_STATE_bit).bit0
@@ -1888,7 +2182,6 @@ extern	unsigned int 	AutotunUpDn;
 #define  S4_USERLAMP3    	 	 GET_BITFIELD(&S4_STATE_bit).bit5
 #define  S4_USERLAMP4    	 	 GET_BITFIELD(&S4_STATE_bit).bit6
 #define  S4_NEW_LAW_SYSTEM1    	 GET_BITFIELD(&S4_STATE_bit).bit7
-
 
 
 
@@ -1968,6 +2261,8 @@ extern	unsigned int 	AutotunUpDn;
 #define  bBefbPowerFail         GET_BITFIELD(&EepRWBit).bit5
 #define  bMotorRestartOn      	GET_BITFIELD(&EepRWBit).bit6
 #define  bFhmRun         	    GET_BITFIELD(&EepRWBit).bit7
+
+
 
 #define  bSearchHome       	    GET_BITFIELD(&Etc1Bit).bit0
 #define  bCarUpMove             GET_BITFIELD(&Etc1Bit).bit1 
@@ -2136,6 +2431,10 @@ extern	unsigned int 	AutotunUpDn;
 #define  bFindSU				GET_BITFIELD(&StateBit10).bit7 
 
 
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+
 #define  bParRd      			GET_BITFIELD(&StateBit11).bit0 
 #define  bParWr      			GET_BITFIELD(&StateBit11).bit1 
 #define  bDftDspOn   			GET_BITFIELD(&StateBit11).bit2 
@@ -2171,10 +2470,12 @@ extern	unsigned int 	AutotunUpDn;
 #define  bDoorErr      			GET_BITFIELD(&StateBit14).bit1 
 #define  bFindUpX0   			GET_BITFIELD(&StateBit14).bit2 
 #define  bFindDnX1      		GET_BITFIELD(&StateBit14).bit3 
-#define  bNOTUSE_14_4			GET_BITFIELD(&StateBit14).bit4 
-#define  bNOTUSE_14_5       	GET_BITFIELD(&StateBit14).bit5 
-#define  bNOTUSE_14_6			GET_BITFIELD(&StateBit14).bit6 
+#define  bBaseFloorSet			GET_BITFIELD(&StateBit14).bit4 
+#define  bLevelOnOnce       	GET_BITFIELD(&StateBit14).bit5 
+#define  bOnesLuOrLdOn			GET_BITFIELD(&StateBit14).bit6 
 #define  bNOTUSE_14_7			GET_BITFIELD(&StateBit14).bit7 
+
+*/
 
 //////////////////////////////////////////////////////////////
 #define  IN_SU1_PORT            GET_BITFIELD(&I_SU1_bit).bit0 
@@ -2544,7 +2845,6 @@ extern	unsigned int 	AutotunUpDn;
 
 
 
-//////TEST
 #define  cF_SU1                 GET_LONGFIELD(&FlashDspCharBuf[SU1_PORT/4])         .byte[SU1_PORT%4]
 #define  cF_SD1                 GET_LONGFIELD(&FlashDspCharBuf[SD1_PORT/4])         .byte[SD1_PORT%4]  
 #define  cF_SFT                 GET_LONGFIELD(&FlashDspCharBuf[SFT_PORT/4])         .byte[SFT_PORT%4]  
@@ -2613,10 +2913,6 @@ extern	unsigned int 	AutotunUpDn;
 /////////////cc
 
 
-
-//////TEST
-
-////out test
 #define  cF_OP                  GET_LONGFIELD(&FlashDspCharBuf[OP_PORT/4])          .byte[OP_PORT%4]
 #define  cF_CL                  GET_LONGFIELD(&FlashDspCharBuf[CL_PORT/4])          .byte[CL_PORT%4]
 #define  cF_OP_S                GET_LONGFIELD(&FlashDspCharBuf[OP_S_PORT/4])        .byte[OP_S_PORT%4]
@@ -2696,7 +2992,7 @@ extern	unsigned int 	AutotunUpDn;
 #define  cF_SPEED_HIGH_PORT   	GET_LONGFIELD(&FlashDspCharBuf[F_Speed3/4])       .byte[F_Speed3%4]
 
 #define  cF_AUTO_LANDING     	GET_LONGFIELD(&FlashDspCharBuf[F_AutoLandingMode/4]).byte[F_AutoLandingMode%4]
-
+#define  cF_F_YouTestVal     	GET_LONGFIELD(&FlashDspCharBuf[F_YouTestVal/4]).byte[F_YouTestVal%4]
 
 #define  cF_ELEV_SPEED          GET_LONGFIELD(&FlashDspCharBuf[F_ElevSpeed/4])      .byte[F_ElevSpeed%4]
 #define  cF_LIMIT_SPEED         GET_LONGFIELD(&FlashDspCharBuf[F_LimitSpeed/4])     .byte[F_LimitSpeed%4]
@@ -3036,6 +3332,7 @@ extern  UserDataType    MotorMoveTime;
 
 
 
+extern	unsigned    int   	DebugFlow0,DebugFlow1;     
 
 
 #define  bExt_FIRE         		GET_BITFIELD(&ShadowsRamDArry[S2_STATE]).bit4   
@@ -3050,6 +3347,8 @@ extern  UserDataType    MotorMoveTime;
 
 
 
+extern	UserDataType	FloorChangeCnt;
+extern	UserDataType	FloorDecreaseCnt;
 
 extern	unsigned int	DeltaNoAck;
 extern	unsigned int	InverterPDORxTime;
@@ -3139,6 +3438,9 @@ extern	unsigned int Addr_Reset;
 
 
 //extern	unsigned	int			youtesttime;
+extern	unsigned long 	MaxEncoderPerMsec;
+extern	unsigned long 	TestEncoder,TestAvrEncoder;
+extern	unsigned int 	TestEncoderCnt;
 
 
 
@@ -3166,4 +3468,18 @@ extern	unsigned int Addr_Reset;
 
 #define	CLOSE_WAIT_ON				1		
 
+#define	UP_DN_CNTX					2
 
+
+
+
+#define  STATE0_MAN_INCAR1		GET_BITFIELD(&sRamDArry[COMMON_EL_STATE0]).bit0
+#define  STATE0_INVALIDSTOP1	GET_BITFIELD(&sRamDArry[COMMON_EL_STATE0]).bit1
+#define  STATE0_DOOR_OP_ERR1	GET_BITFIELD(&sRamDArry[COMMON_EL_STATE0]).bit2
+#define  STATE0_DOOR_CL_ERR1	GET_BITFIELD(&sRamDArry[COMMON_EL_STATE0]).bit3
+
+
+extern	unsigned int	DoorOnceOpenTime;
+extern	unsigned int	DoorCloseCnt;
+
+extern	unsigned    int    	FlashWrCnt;
