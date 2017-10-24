@@ -998,21 +998,26 @@ UserDataType  __attribute__((section(".usercode"))) LoadSensorPotionInit(void)
    
 /*
 #define  	SET_ULS_POSITION    0
-#define  	REAL_ULS_PO      	1
+#define  	REAL_ULS_POSITION   1
 #define  	SET_SUS_POSITION    2
-#define  	REAL_SUS_PO      	3
+#define  	REAL_SUS_POSITION   3
 #define  	SET_SUS1_POSITION   4
-#define  	REAL_SUS1_PO      	5
+#define  	REAL_SUS1_POSITION  5
 #define  	SET_X0_POSITION    	6
-#define  	REAL_X0_PO      	7
+#define  	REAL_X0_POSITION    7
 #define  	SET_DLS_POSITION    8
-#define  	REAL_DLS_PO      	9
+#define  	REAL_DLS_POSITION   9
 #define  	SET_SDS_POSITION    10
-#define  	REAL_SDS_PO      	11
+#define  	REAL_SDS_POSITION   11
 #define  	SET_SDS1_POSITION   12
-#define  	REAL_SDS1_PO      	13
+#define  	REAL_SDS2_POSITION  13
 #define  	SET_X1_POSITION    	14
-#define  	REAL_X1_PO      	15
+#define  	REAL_X1_POSITION    15
+#define  	NC00_POSITION      	16
+#define  	NC01_POSITION      	17
+#define  	NC02_POSITION      	18
+#define  	NC03_POSITION      	19
+#define  	POSITION_END      	20
 */
 
 	for(i=0;i<POSITION_END;i++)	SensorPositionBuf[i]	=0;
@@ -9436,7 +9441,7 @@ void  __attribute__((section(".usercode")))   IO_Check(void)
     sRamDArry[S4_STATE]		= (unsigned char)(S4_STATE_bit);
 	sRamDArry[S5_STATE_37]	= (unsigned char)(EXT_OUT0_bit);
 
-    sRamDArry[SelDoorStatus]=DoorStatus_bit;
+////    sRamDArry[SelDoorStatus]=DoorStatus_bit;
 }      
 
 
@@ -9712,7 +9717,7 @@ int   __attribute__((section(".usercode"))) main(void)
     sRamDArry[S2_STATE]=S2_STATE_bit=0;
     sRamDArry[S3_STATE]=S3_STATE_bit=0;
     sRamDArry[S4_STATE]=S4_STATE_bit=0;
-    sRamDArry[SelDoorStatus]=DoorStatus_bit=0;
+//    sRamDArry[SelDoorStatus]=DoorStatus_bit=0;
 
 	Init485_Bd();
 
