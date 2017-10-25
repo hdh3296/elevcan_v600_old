@@ -618,9 +618,15 @@ void interrupt isr(void)
             
             if(UpButtonTime < (BUT_CANLE_T - OnTime)){
                 UpButtonTime++;   
+				if(bCurOpenKey){
+					if(UpButtonTime > 150)	UpButtonTime=150;
+				}
             }
             if(DnButtonTime < (BUT_CANLE_T - OnTime)){
                 DnButtonTime++;   
+				if(bCurOpenKey){
+					if(DnButtonTime > 150)	DnButtonTime=150;
+				}
             }
     
             sec1++;

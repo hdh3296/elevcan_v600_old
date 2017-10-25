@@ -12,7 +12,7 @@
 
 
 #define     BUTTON_CANCLE          	0    // 버튼 취소        	== 1 , 취소 불가  == 0     
-#define     BUTTON_EVERY_ON			0    // 장애우 버튼 타입 	== 1 , 일반타입   == 0 
+#define     BUTTON_EVERY_ON			1    // 장애우 버튼 타입 	== 1 , 일반타입   == 0 
 #define     LAMP_4          		0    // USER LAMP4       	== 1 , USER LAMP2 == 0 
 #define     HIB_HPI_SET         	0    // HPI					== 1 , HIB        == 0 
 #define     SUBDOOR_SET     		0    // 서브  도어          == 1 , 메인 도어  == 0  
