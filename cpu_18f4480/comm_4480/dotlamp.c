@@ -157,6 +157,7 @@ bit	bErrorCar;
 bit	bNew_Law=0;
 
 
+#if defined(__TYPE_DIRECT_BCD)
 
 void out_lcdDisplay(unsigned char id)
 {
@@ -540,6 +541,8 @@ void out_1_1_flr(unsigned char id)
 	}
 
 }
+
+#endif
 
 void    CompanyChk(unsigned char id)        
 {
