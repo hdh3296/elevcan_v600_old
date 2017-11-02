@@ -158,154 +158,11 @@ bit	bNew_Law=0;
 
 
 
-
-
-void    CompanyChk(unsigned char id)        
+void out_lcdDisplay(unsigned char id)
 {
-    unsigned int    IdPt;
-    unsigned char   TmpCompany;
+	unsigned int    IdPt;
 
 	IdPt=IsBufferPt(id);
-    
-    if(!MaskSetBit){
-       if((RcvBuf[IdPt+DSP1] == 'C') && (RcvBuf[IdPt+DSP2] == 'M') && !(RcvBuf[IdPt+1] & S1_AUTO))  {
-	        TmpCompany=(unsigned char)RxSidBuffer;
-			if(TmpCompany != Company){ 
-	            Company=TmpCompany;
-	            CmpSetBit=1;
-			}      
-        }
-    }
-}
-
-
-
-unsigned char   Lamp(unsigned char id)
-{
-    unsigned int    IdPt;
-    unsigned char   virkey;
-
-
-#ifdef	__COUNT_CAR
-    unsigned char   f_dsp,s_dsp;
-#endif
-   
-//    IdPt=(id * HOST_DATA_RECOD) + RCV_DATA;
-	IdPt=IsBufferPt(id);
-    
-    FDsp=0;
-
-//    HostCallMe=0;
-    if(CallMeAdr == RcvBuf[IdPt + SL_mCallMe]){
- 	 	HostCallMe=1;
-	}
-
-
-	ThisStstus = RcvBuf[IdPt + SL_mSysStatus];
-	DspFlr[0]=RcvBuf[IdPt+DSP1];
-	DspFlr[1]=RcvBuf[IdPt+DSP2];
-	DspFlr[2]=0;
-
-
-
-
-
-
-
-/*
-    if((RcvBuf[IdPt+DSP1] == 'J') && (RcvBuf[IdPt+DSP2] == 'D') && !(RcvBuf[IdPt+1] & S1_AUTO))	SetupBit=1;
-    else                                                                                        SetupBit=0;      
-
-    if(SetupBit)    return(0);
-*/
-
-    TopFloor=RcvBuf[IdPt + SL_mTopFlr];
-
-    CurFloor=RcvBuf[IdPt];
-
-    MaxLongFlr=RcvBuf[IdPt + SL_mMostLongDst];
-
-#ifdef	CARD_KEY
-	if((RcvBuf[IdPt + 35] & 0x08))		bCardKeyValid=0;
-	else									bCardKeyValid=1;
-#endif
-
-
-#if  defined(__TYPE_HIB_HPI)   ||  defined(__TYPE_ES15)
-	if(RcvBuf[IdPt+SL_mCrtExtMoveFlr] & UP_READY){
-		if((RcvBuf[IdPt+SL_mCrtExtMoveFlr] & (~UPDN_READY)) == MyAddress){
-			if( !UP_KEY_LAMP){
-				UpKeyBit=1;
-				UpButtonTime=10;
-			}
-		}
-	}
-
-	if(RcvBuf[IdPt+SL_mCrtExtMoveFlr] & DN_READY){
-		if((RcvBuf[IdPt+SL_mCrtExtMoveFlr] & (~UPDN_READY)) == MyAddress){
-			if( !DN_KEY_LAMP){
-				DnKeyBit=1;
-				DnButtonTime=10;
-			}
-		}
-	}
-#elif defined(__TYPE_CAR)
-	if(RcvBuf[IdPt+SL_mCrtExtMoveFlr]>0){
-		virkey=(RcvBuf[IdPt+SL_mCrtExtMoveFlr] & ONLY_FLR);
-		if( (virkey==0) && (RcvBuf[IdPt+SL_mCrtExtMoveFlr] & DN_READY) ){
-			virkey=64;	
-			VirCarKeySet(virkey);	
-		}
-		else if( !(RcvBuf[IdPt+SL_mCrtExtMoveFlr] & UPDN_READY)){ 
-			VirCarKeySet(virkey);				
-		}
-	}
-#endif
-
- 
-////////////////dot type dsp hib,hpi////////////////////////////////////////////
-#if defined(__DSP_DOT)
-
-    if((RcvBuf[IdPt+DSP1]!= befDspChar[0]) || (RcvBuf[IdPt+DSP2] != befDspChar[1])){
-        FloorChange=1;   
-        BefCurFloor=CurFloor;
-		BefStstus=0xff;
-		shift=0;
-
-		befDspChar[0]=RcvBuf[IdPt+DSP1];
-		befDspChar[1]=RcvBuf[IdPt+DSP2];
-
-
-
-	    if( (RcvBuf[IdPt+DSP1] == ' ') && (RcvBuf[IdPt+DSP2] == ' ')){
-			RcvBuf[IdPt+DSP1] = 0x3d;
-			RcvBuf[IdPt+DSP2] = 0x3d;
-	    }	
-	    else if( (RcvBuf[IdPt+DSP1] < '0') || (RcvBuf[IdPt+DSP1] > 'Z')){
-			RcvBuf[IdPt+DSP1] = 0x30;
-			RcvBuf[IdPt+DSP2] = 0x30;
-	    }
-	    else if( (RcvBuf[IdPt+DSP2] < '0') || (RcvBuf[IdPt+DSP2] > 'Z')){
-			RcvBuf[IdPt+DSP1] = 0x30;
-			RcvBuf[IdPt+DSP2] = 0x30;
-	    }
-	}
-
-    Floor_Char_load(0,RcvBuf[IdPt+DSP1],RcvBuf[IdPt+DSP2]);
-
-
-
-#ifdef	__COUNT_CAR
-	f_dsp=RcvBuf[MyAddress-1];
-	s_dsp=(f_dsp % 10) + '0';
-	f_dsp=(f_dsp / 10) + '0';
-    Floor_Char_load(0,f_dsp,s_dsp);
-#endif
-////////////////dot type es15////////////////////////////////////////////
-#elif defined(__TYPE_ES15)
-
-#if defined(__TYPE_DIRECT_BCD)
-
 	/*--> 1(HIGH)값을 주면 출력 접점은 출력을준다. 출력값은 0V이다. <--*/
 	if ((RcvBuf[IdPt+DSP1] == '0') && (RcvBuf[IdPt+DSP2] == 'G'))
 	{
@@ -578,14 +435,263 @@ unsigned char   Lamp(unsigned char id)
 				BCD5_LAMP=1;
 		}
 	}	
+	
+	
+	
+		//Segment not dispaly			
+		SEG_F=Fire; 		 
+		SEG_G1=OverLoad;		 
+		SEG_G2=1; // 24V 전원 공급 용.(n24) 
+		/*---> FULL 은 기본적으로  FULL 접점에서 출력 나온다. <---*/ 
+
+}
+
+
+void out_1_1_flr(unsigned char id)
+{
+	unsigned int    IdPt;
+
+	IdPt=IsBufferPt(id);
+
+
+	switch(RcvBuf[IdPt])
+	{
+		case	1:
+			BCD1_LAMP=1;
+			BCD2_LAMP=0;
+			BCD3_LAMP=0;
+			BCD4_LAMP=0;
+			BCD5_LAMP=0;
+			BCD6_LAMP=0;
+			BCD7_LAMP=0;
+			BCD8_LAMP=0;			
+			break;
+		case	2:
+			BCD1_LAMP=0;
+			BCD2_LAMP=1;
+			BCD3_LAMP=0;
+			BCD4_LAMP=0;
+			BCD5_LAMP=0;
+			BCD6_LAMP=0;
+			BCD7_LAMP=0;
+			BCD8_LAMP=0;
+			break;
+		case	3:
+			BCD1_LAMP=0;
+			BCD2_LAMP=0;
+			BCD3_LAMP=1;
+			BCD4_LAMP=0;
+			BCD5_LAMP=0;
+			BCD6_LAMP=0;
+			BCD7_LAMP=0;
+			BCD8_LAMP=0;
+
+			break;
+		case	4:
+			BCD1_LAMP=0;
+			BCD2_LAMP=0;
+			BCD3_LAMP=0;
+			BCD4_LAMP=1;
+			BCD5_LAMP=0;
+			BCD6_LAMP=0;
+			BCD7_LAMP=0;
+			BCD8_LAMP=0;
+			break;
+		case	5:
+			BCD1_LAMP=0;
+			BCD2_LAMP=0;
+			BCD3_LAMP=0;
+			BCD4_LAMP=0;
+			BCD5_LAMP=1;
+			BCD6_LAMP=0;
+			BCD7_LAMP=0;
+			BCD8_LAMP=0;
+			break;
+		case	6:
+			BCD1_LAMP=0;
+			BCD2_LAMP=0;
+			BCD3_LAMP=0;
+			BCD4_LAMP=0;
+			BCD5_LAMP=0;
+			BCD6_LAMP=1;
+			BCD7_LAMP=0;
+			BCD8_LAMP=0;
+			break;
+		case	7:
+			BCD1_LAMP=0;
+			BCD2_LAMP=0;
+			BCD3_LAMP=0;
+			BCD4_LAMP=0;
+			BCD5_LAMP=0;
+			BCD6_LAMP=0;
+			BCD7_LAMP=1;
+			BCD8_LAMP=0;
+			break;
+		case	8:
+			BCD1_LAMP=0;
+			BCD2_LAMP=0;
+			BCD3_LAMP=0;
+			BCD4_LAMP=0;
+			BCD5_LAMP=0;
+			BCD6_LAMP=0;
+			BCD7_LAMP=0;
+			BCD8_LAMP=1;
+			break;
+	}
+
+}
+
+void    CompanyChk(unsigned char id)        
+{
+    unsigned int    IdPt;
+    unsigned char   TmpCompany;
+
+	IdPt=IsBufferPt(id);
+    
+    if(!MaskSetBit){
+       if((RcvBuf[IdPt+DSP1] == 'C') && (RcvBuf[IdPt+DSP2] == 'M') && !(RcvBuf[IdPt+1] & S1_AUTO))  {
+	        TmpCompany=(unsigned char)RxSidBuffer;
+			if(TmpCompany != Company){ 
+	            Company=TmpCompany;
+	            CmpSetBit=1;
+			}      
+        }
+    }
+}
 
 
 
-	//Segment not dispaly  	    	
-    SEG_F=Fire;        	 
-    SEG_G1=OverLoad;       	 
-    SEG_G2=1; // 24V 전원 공급 용.(n24) 
-	/*---> FULL 은 기본적으로  FULL 접점에서 출력 나온다. <---*/	
+unsigned char   Lamp(unsigned char id)
+{
+    unsigned int    IdPt;
+    unsigned char   virkey;
+
+
+#ifdef	__COUNT_CAR
+    unsigned char   f_dsp,s_dsp;
+#endif
+   
+//    IdPt=(id * HOST_DATA_RECOD) + RCV_DATA;
+	IdPt=IsBufferPt(id);
+    
+    FDsp=0;
+
+//    HostCallMe=0;
+    if(CallMeAdr == RcvBuf[IdPt + SL_mCallMe]){
+ 	 	HostCallMe=1;
+	}
+
+
+	ThisStstus = RcvBuf[IdPt + SL_mSysStatus];
+	DspFlr[0]=RcvBuf[IdPt+DSP1];
+	DspFlr[1]=RcvBuf[IdPt+DSP2];
+	DspFlr[2]=0;
+
+
+
+
+
+
+
+/*
+    if((RcvBuf[IdPt+DSP1] == 'J') && (RcvBuf[IdPt+DSP2] == 'D') && !(RcvBuf[IdPt+1] & S1_AUTO))	SetupBit=1;
+    else                                                                                        SetupBit=0;      
+
+    if(SetupBit)    return(0);
+*/
+
+    TopFloor=RcvBuf[IdPt + SL_mTopFlr];
+
+    CurFloor=RcvBuf[IdPt];
+
+    MaxLongFlr=RcvBuf[IdPt + SL_mMostLongDst];
+
+#ifdef	CARD_KEY
+	if((RcvBuf[IdPt + 35] & 0x08))		bCardKeyValid=0;
+	else									bCardKeyValid=1;
+#endif
+
+
+#if  defined(__TYPE_HIB_HPI)   ||  defined(__TYPE_ES15)
+	if(RcvBuf[IdPt+SL_mCrtExtMoveFlr] & UP_READY){
+		if((RcvBuf[IdPt+SL_mCrtExtMoveFlr] & (~UPDN_READY)) == MyAddress){
+			if( !UP_KEY_LAMP){
+				UpKeyBit=1;
+				UpButtonTime=10;
+			}
+		}
+	}
+
+	if(RcvBuf[IdPt+SL_mCrtExtMoveFlr] & DN_READY){
+		if((RcvBuf[IdPt+SL_mCrtExtMoveFlr] & (~UPDN_READY)) == MyAddress){
+			if( !DN_KEY_LAMP){
+				DnKeyBit=1;
+				DnButtonTime=10;
+			}
+		}
+	}
+#elif defined(__TYPE_CAR)
+	if(RcvBuf[IdPt+SL_mCrtExtMoveFlr]>0){
+		virkey=(RcvBuf[IdPt+SL_mCrtExtMoveFlr] & ONLY_FLR);
+		if( (virkey==0) && (RcvBuf[IdPt+SL_mCrtExtMoveFlr] & DN_READY) ){
+			virkey=64;	
+			VirCarKeySet(virkey);	
+		}
+		else if( !(RcvBuf[IdPt+SL_mCrtExtMoveFlr] & UPDN_READY)){ 
+			VirCarKeySet(virkey);				
+		}
+	}
+#endif
+
+ 
+////////////////dot type dsp hib,hpi////////////////////////////////////////////
+#if defined(__DSP_DOT)
+
+    if((RcvBuf[IdPt+DSP1]!= befDspChar[0]) || (RcvBuf[IdPt+DSP2] != befDspChar[1])){
+        FloorChange=1;   
+        BefCurFloor=CurFloor;
+		BefStstus=0xff;
+		shift=0;
+
+		befDspChar[0]=RcvBuf[IdPt+DSP1];
+		befDspChar[1]=RcvBuf[IdPt+DSP2];
+
+
+
+	    if( (RcvBuf[IdPt+DSP1] == ' ') && (RcvBuf[IdPt+DSP2] == ' ')){
+			RcvBuf[IdPt+DSP1] = 0x3d;
+			RcvBuf[IdPt+DSP2] = 0x3d;
+	    }	
+	    else if( (RcvBuf[IdPt+DSP1] < '0') || (RcvBuf[IdPt+DSP1] > 'Z')){
+			RcvBuf[IdPt+DSP1] = 0x30;
+			RcvBuf[IdPt+DSP2] = 0x30;
+	    }
+	    else if( (RcvBuf[IdPt+DSP2] < '0') || (RcvBuf[IdPt+DSP2] > 'Z')){
+			RcvBuf[IdPt+DSP1] = 0x30;
+			RcvBuf[IdPt+DSP2] = 0x30;
+	    }
+	}
+
+    Floor_Char_load(0,RcvBuf[IdPt+DSP1],RcvBuf[IdPt+DSP2]);
+
+
+
+#ifdef	__COUNT_CAR
+	f_dsp=RcvBuf[MyAddress-1];
+	s_dsp=(f_dsp % 10) + '0';
+	f_dsp=(f_dsp / 10) + '0';
+    Floor_Char_load(0,f_dsp,s_dsp);
+#endif
+////////////////dot type es15////////////////////////////////////////////
+#elif defined(__TYPE_ES15)
+
+
+
+#if defined(__TYPE_DIRECT_BCD)
+
+	//out_lcdDisplay(id); // 만일, LCD 용이면 이 함수를 사요하세요. 
+	out_1_1_flr(id);
+		
 
 
 #else
