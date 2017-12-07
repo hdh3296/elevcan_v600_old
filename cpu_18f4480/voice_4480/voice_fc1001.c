@@ -31,7 +31,7 @@ date    :       1999,9,21
 #define         HWAJAE_MENT            3
 #define         OVERLOAD_MENT          4
 #define         EMERGENCY_MENT         5
-#define         CLOSE_MENT             6
+#define         CLOSE_MENT_FRONT       6
 #define         POWER_DOWN_MENT        7
 #define         FLOOR_B7               8
 #define         FLOOR_B6                FLOOR_B7+1  //9
@@ -117,22 +117,25 @@ date    :       1999,9,21
 #define         CARBTN_F31          	FLOOR_B7+81 //89
 #define         CARBTN_F32          	FLOOR_B7+82 //90
 #define         PARKING_MENT      		FLOOR_B7+83 //91
-#define         OPEN_MENT      		    FLOOR_B7+84	//92
+#define         OPEN_MENT_FRONT    	    FLOOR_B7+84	//92
 #define         CANCLE_MENT      		FLOOR_B7+85	//93
 #define         PUSH_MENT      		    FLOOR_B7+86	//94
 #define         SILENCE_MENT            FLOOR_B7+87 //95
 #define         SONG_MENT               FLOOR_B7+88 //96
 #define         BEEP_MENT               FLOOR_B7+89 //97 삐 소리
 #define			CARBTN_L				FLOOR_B7+90 //98	
-#define			OPPOSITE_OPEN_MENT		FLOOR_B7+91 //99
+#define			OPEN_MENT_BACK			FLOOR_B7+91 //99
 /* --> 주의 : 층도착 멘트에 대해서는 딩동 조건을 넣어 줘야 하므로 <--*/
 #define         FLOOR_P                	FLOOR_B7+92	//100 파킹 Floor
 #define         CARBTN_M                FLOOR_B7+93	//101 
 
+#define			CLOSE_MENT_BACK			FLOOR_B7+94	// 102
+#define			CARBTN_CANCEL_F01		FLOOR_B7+95	// 103
+#define			CARBTN_CANCEL_F02		FLOOR_B7+96	// 104
 
 	
 	
-#define NO_MENT 0xff // 멘트 없음
+#define 		NO_MENT 				0xff // 멘트 끝
 
 
 
@@ -250,7 +253,8 @@ date    :       1999,9,21
 #define ELE_bOUT_CL 	(((RcvBuf[IdPt + SL_OUT_OP] & (0x01 << 1)) == 0x0)?		0:1)
 #define ELE_bOUT_SOP 	(((RcvBuf[IdPt + SL_OUT_OP] & (0x01 << 2)) == 0x0)?		0:1)
 #define ELE_bOUT_SCL 	(((RcvBuf[IdPt + SL_OUT_OP] & (0x01 << 3)) == 0x0)?		0:1)
-#define ELE_bOUT_D_S 	(((RcvBuf[IdPt + SL_OUT_OP] & (0x01 << 4)) == 0x0)?		0:1)
+#define ELE_bOUT_NONE 	(((RcvBuf[IdPt + SL_OUT_OP] & (0x01 << 4)) == 0x0)?		0:1)
+#define ELE_bOUT_D_S 	(((RcvBuf[IdPt + SL_OUT_OP] & (0x01 << 5)) == 0x0)?		0:1)
 
 
 
@@ -363,8 +367,6 @@ tag_Sequence	PlaySeq;
 bit bDingdong;
 unsigned int BeefDelayTimer = 0;
 
-bit bSetOppositeDoor;
-bit bOppositeDoor_Enab;
 
 unsigned int RealayTestTimer = 0;
 
@@ -399,7 +401,7 @@ extern unsigned char  GetVoice_BeepByBuz(unsigned char);
 
 
 
-
+volatile unsigned char aaaaa = 0;
 
 //##################################//
 // 메인 함수				    	//
@@ -485,7 +487,9 @@ void main(void)
             TmpCurVoice = GetVoice_State(TmpCurVoice, CurVoice);
             if (bDingdong == FALSE) TmpCurVoice = GetVoice_OpenCloseUpDn(TmpCurVoice);
             TmpCurVoice = GetVoice_Floor(TmpCurVoice, GetFloorMent());
-            if (bSetCarBtnVoice) TmpCurVoice = GetVoice_CarCall(TmpCurVoice, CurCarKey, BefCarKey);
+            if (bSetCarBtnVoice) TmpCurVoice = GetVoice_CarCall(TmpCurVoice, 
+																CurCarKey, 
+																BefCarKey);
             if (bSetSong) TmpCurVoice = GetVoice_Song(TmpCurVoice);
         }
 
@@ -557,7 +561,6 @@ void main(void)
         case CURFLOORVOICE_PLAY_SEQ:
             SPI_Play(CurFloorVoice);
             bDingdong = FALSE;
-			if(bSetOppositeDoor)	bOppositeDoor_Enab = TRUE;
             PlaySeq = CURVOICE_PLAYING_SEQ;
             break;
         case CURVOICE_PLAY_SEQ:
@@ -856,23 +859,24 @@ unsigned char   GetVoice_OpenCloseUpDn(unsigned char xTmpCurVoice)
 		// open 출력이 나갈때 open 멘트 나가도록 수정 2017-03-09
 		if ( (ELE_bOUT_OP || ELE_bOUT_SOP) && (xbOpened == FALSE) && !bVoicePlaying )	//open
 		{
-			if (bOppositeDoor_Enab) 
-			{
-				bOppositeDoor_Enab = FALSE;
-				xTmpCurVoice = OPPOSITE_OPEN_MENT; // 반대편 문이 열립니다.
-			}
-			else	
-			{
-				if(ELE_bOUT_SOP) 
-					xTmpCurVoice = OPPOSITE_OPEN_MENT; // 반대편 문이 열립니다. !!!!
-				else xTmpCurVoice = OPEN_MENT; // 문이 열립니다 !
-			}
+			if(ELE_bOUT_SOP) 
+				xTmpCurVoice = OPEN_MENT_BACK; 	
+			else xTmpCurVoice = OPEN_MENT_FRONT;
+			
 			xbOpened = TRUE;
 			UpDnVoiceTimer = 0;
 		}
-		else if (xbOpened && ELE_bOUT_CL)   // close : 문이 이미 열려있는 상태에서 close 출력이 나오면 
+		else if (xbOpened && (ELE_bOUT_CL || ELE_bOUT_SCL))   // close : 문이 이미 열려있는 상태에서 close 출력이 나오면 
 		{
-			xTmpCurVoice = CLOSE_MENT; // 문이 닫힙니다 !
+			if (ELE_bOUT_D_S)
+			{
+				xTmpCurVoice = CLOSE_MENT_BACK;
+			}
+			else
+			{
+				xTmpCurVoice = CLOSE_MENT_FRONT; // 문이 닫힙니다 !
+			}
+			
 			xbOpened = FALSE;
 		}
 
@@ -1644,7 +1648,6 @@ void InitVoice(void)
     OverLoadVoiceCnt = 0;
     bAfterCancel = FALSE;
     bBeepEnab = TRUE;
-	bOppositeDoor_Enab = FALSE;
 	_BATTERY = BAT_OFF;
 	bHajaeMentEn = TRUE;
 }
@@ -1653,7 +1656,6 @@ void SetVoice(void)
 {
     bSetAfterCancel = TRUE; // 카콜 취소시 층멘트 후 취소 나오게 할지 여부 
     bSetSong = FALSE; // 주행 중 음악 
-	bSetOppositeDoor = FALSE; // 반대편 문이 열립니다.
 }
 
 
