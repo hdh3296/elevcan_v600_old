@@ -7531,8 +7531,9 @@ void __attribute__((section(".usercode")))  DoorOpClSystem(void)
 			}
 
 			LuLdOffErrChk();
-
+			if(!bUnd)	sRamDArry[mDoor]=(sRamDArry[mDoor] & CLEAR_ALL_DOOR_KEY);
 			break;                         
+
          case  STOP_ELEVATOR:
 				EncoderClear();
 				RunningOpenAction();            			
