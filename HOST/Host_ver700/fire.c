@@ -366,14 +366,16 @@ unsigned int  __attribute__((section(".usercode")))   FireConditionChk(void)
 				if(bFireFlrOn)	bFirstFire=1;
 			}	
 */
-			if( !IN_FR1){
-				bFirstFire=1;
-			}	
-			else{
-				if(!IN_FR2 && !bExt_Second_FIRE){
-					bSafeFire=1;
+			if(bFireFlrOn){
+				if( !IN_FR1){
+					bFirstFire=1;
+				}	
+				else{
+					if(!IN_FR2 && !bExt_Second_FIRE){
+						bSafeFire=1;
+					}
+	
 				}
-
 			}
 			return(1);         
 		}	

@@ -2763,7 +2763,7 @@ void  __attribute__((section(".usercode"))) OutData(void)
 //ver 6.a9x
     if(INVERTER_CHECK == IO){
 		if(IN_AUTO){
-			if(CurSelOutPortChk(cF_P4))	OUT_DAC(0);
+			if(CurSelOutPortChk(cF_P4) && (bManualUpKey || bManualDnKey))	OUT_DAC(0);
 			else						OUT_DAC(1);
 		}
 		else{
