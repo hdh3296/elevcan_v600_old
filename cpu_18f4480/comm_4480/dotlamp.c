@@ -124,13 +124,13 @@ const   unsigned        char    PARKING[]={
 
 
 
-unsigned        char    EMG_buf[]		={"EMG"};
-unsigned        char    PARKING_buf[]	={"PARKING"};
+unsigned        char    EMG_buf[]		={"ABAPNR"};
+unsigned        char    PARKING_buf[]	={"CAPKUHL"};
 unsigned        char    INS_buf[]		={"INS"};
-unsigned        char    FIRE_buf[]		={"FIRE"};
-unsigned        char    STOP1_buf[]		={"STOP"};
-unsigned        char    FULL_buf[]		={"FULL"};
-unsigned        char    OVL_buf[]		={"OVERLOAD"};
+unsigned        char    FIRE_buf[]		={"COWAP"};
+unsigned        char    STOP1_buf[]		={"COLPY3KA"};
+unsigned        char    FULL_buf[]		={"COVHBU"};
+unsigned        char    OVL_buf[]		={"CEPELPY3"};
 unsigned        char    ETC_ERR_buf[]	={"E"};
 
 
