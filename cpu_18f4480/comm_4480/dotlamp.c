@@ -122,16 +122,16 @@ const   unsigned        char    PARKING[]={
    0x00,0x00,0x00 
 };
 
-
-
+// 최대 14자리 문자 저장 가능
+// 러시아용 
 unsigned        char    EMG_buf[]		={"ABAPNR"};
-unsigned        char    PARKING_buf[]	={"CAPKUHL"};
-unsigned        char    INS_buf[]		={"INS"};
-unsigned        char    FIRE_buf[]		={"COWAP"};
-unsigned        char    STOP1_buf[]		={"COLPY3KA"};
-unsigned        char    FULL_buf[]		={"COVHBU"};
-unsigned        char    OVL_buf[]		={"CEPELPY3"};
-unsigned        char    ETC_ERR_buf[]	={"E"};
+unsigned        char    PARKING_buf[]	={"UAPKOBKA"};
+unsigned        char    INS_buf[]		={"PEBNMNR"};
+unsigned        char    FIRE_buf[]		={"UOXAP"};
+unsigned        char    STOP1_buf[]		={"UOLPGMKA"};
+unsigned        char    FULL_buf[]		={"UOVHDN"};
+unsigned        char    OVL_buf[]		={"UEPELPGM"};
+
 
 
 extern	void Dsp_Char_load(unsigned char Cdata,unsigned char *ptx);
