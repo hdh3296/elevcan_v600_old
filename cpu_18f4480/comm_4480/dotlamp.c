@@ -129,7 +129,7 @@ unsigned        char    PARKING_buf[]	={"UAPKOBKA"};
 unsigned        char    INS_buf[]		={"PEBNMNR"};
 unsigned        char    FIRE_buf[]		={"UOXAP"};
 unsigned        char    STOP1_buf[]		={"UOLPGMKA"};
-unsigned        char    FULL_buf[]		={"UOVHDN"};
+unsigned        char    FULL_buf[]		={"UOVHDW"};
 unsigned        char    OVL_buf[]		={"UEPELPGM"};
 
 
