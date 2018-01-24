@@ -382,6 +382,16 @@ void  __attribute__((section(".usercode"))) NormalDataReturn(void)
             youCAN2TxEidSet(sel,C2TmdEidH,C2TmdEidL+C2DataSeq);
             LoadCanBuffer(C2DataSeq-xx);
 
+////////////////////////////////////////////////////////////////
+			if( (C2DataSeq-xx) == 1){
+	            CAN_Buf[0] = sRamDArry[FLR_ON_OFF0];
+	            CAN_Buf[1] = sRamDArry[FLR_ON_OFF1];
+	            CAN_Buf[2] = sRamDArry[FLR_ON_OFF2];
+	            CAN_Buf[3] = sRamDArry[FLR_ON_OFF3];
+			}     
+////////////////////////////////////////////////////////////
+
+
 			if(C2DataSeq >= 8){
 				CAN_Buf[7] = CAN2_RxBuf[2];
 			}
