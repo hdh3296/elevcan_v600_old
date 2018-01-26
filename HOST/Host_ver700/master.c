@@ -7531,7 +7531,6 @@ void __attribute__((section(".usercode")))  DoorOpClSystem(void)
 			}
 
 			LuLdOffErrChk();
-			if(!bUnd)	sRamDArry[mDoor]=(sRamDArry[mDoor] & CLEAR_ALL_DOOR_KEY);
 			break;                         
 
          case  STOP_ELEVATOR:
@@ -8039,10 +8038,12 @@ unsigned int __attribute__((section(".usercode")))  NextFloorCheck(void)
 
 
 
-   if(sRamDArry[mBefcurfloor] != sRamDArry[mcurfloor]){
-      NextFloorTime=0;  
-      sRamDArry[mBefcurfloor] = sRamDArry[mcurfloor];
-   }
+   
+	if(sRamDArry[mBefcurfloor] != sRamDArry[mcurfloor]){
+		NextFloorTime=0;  
+		sRamDArry[mBefcurfloor] = sRamDArry[mcurfloor];
+		sRamDArry[mDoor]=(sRamDArry[mDoor] & CLEAR_ALL_DOOR_KEY);
+	}
 
 
 	ntime=(BASE_NEXT_FLR_TIME + (cF_NEXTFLRTIME * 10));
