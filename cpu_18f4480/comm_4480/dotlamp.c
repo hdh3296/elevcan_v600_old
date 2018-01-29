@@ -128,7 +128,7 @@ unsigned        char    EMG_buf[]		={"ABAPNR"};
 unsigned        char    PARKING_buf[]	={"UAPKOBKA"};
 unsigned        char    INS_buf[]		={"PEBNMNR"};
 unsigned        char    FIRE_buf[]		={"UOXAP"};
-unsigned        char    STOP1_buf[]		={"UOLPGMKA"};
+unsigned        char    STOP1_buf[]		={"CTOU"};
 unsigned        char    FULL_buf[]		={"UOVHDW"};
 unsigned        char    OVL_buf[]		={"UEPELPGM"};
 
