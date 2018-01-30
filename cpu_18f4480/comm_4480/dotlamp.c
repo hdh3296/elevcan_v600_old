@@ -123,7 +123,20 @@ const   unsigned        char    PARKING[]={
 };
 
 
+#if defined(RUSSIA_FONT)
+// 최대 14자리 문자 저장 가능
+// 러시아용 
+unsigned        char    EMG_buf[]		={"ABAPNR"};
+unsigned        char    PARKING_buf[]	={"UAPKOBKA"};
+unsigned        char    INS_buf[]		={"PEBNMNR"};
+unsigned        char    FIRE_buf[]		={"UOXAP"};
+unsigned        char    STOP1_buf[]		={"CTOU"};
+unsigned        char    FULL_buf[]		={"UOVHDW"};
+unsigned        char    OVL_buf[]		={"UEPELPGM"};
 
+
+#else
+// 일반용 
 unsigned        char    EMG_buf[]		={"EMG"};
 unsigned        char    PARKING_buf[]	={"PARKING"};
 unsigned        char    INS_buf[]		={"INS"};
@@ -133,6 +146,7 @@ unsigned        char    FULL_buf[]		={"FULL"};
 unsigned        char    OVL_buf[]		={"OVERLOAD"};
 unsigned        char    ETC_ERR_buf[]	={"E"};
 
+#endif
 
 extern	void Dsp_Char_load(unsigned char Cdata,unsigned char *ptx);
 extern	unsigned char VirCarKeySet(unsigned char virkey);
