@@ -1,7 +1,7 @@
 
 
 #define     LOCAL_NM        0      // Local number
-#define     SENSOR_TYPE     3      // sensor type : 0 = not use,1= reopen, 2= call . 3 = russia hall door sensor
+#define     SENSOR_TYPE     0      // sensor type : 0 = not use,1= reopen, 2= call . 3 = russia hall door sensor
 #define     BAGGAGE         0      // button type : 0 = man use,1=call(auto ready),close 2= call(any time),close(È­¹°¿ë)
 #define     CALL_OFFSET     0      // call offset
 #define     SEARCH4         'Y'
