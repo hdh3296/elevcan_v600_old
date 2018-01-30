@@ -197,6 +197,14 @@ void out_lcdDisplay(unsigned char id)
 		BCD4_LAMP=0;
 		BCD5_LAMP=1;
 	}
+	else if((RcvBuf[IdPt+DSP1] == 'B') && (RcvBuf[IdPt+DSP2] == '1'))
+	{
+		BCD1_LAMP=1;
+		BCD2_LAMP=1;
+		BCD3_LAMP=0;
+		BCD4_LAMP=0;
+		BCD5_LAMP=1;
+	}
 	else if (RcvBuf[IdPt+DSP1] == '0')
 	{
 		if (RcvBuf[IdPt+DSP2] == '0')
@@ -692,8 +700,8 @@ unsigned char   Lamp(unsigned char id)
 
 #if defined(__TYPE_DIRECT_BCD)
 
-	//out_lcdDisplay(id); // 만일, LCD 용이면 이 함수를 사요하세요. 
-	out_1_1_flr(id);
+	out_lcdDisplay(id); // 만일, LCD 용이면 이 함수를 사요하세요. 
+	//out_1_1_flr(id);
 		
 
 
