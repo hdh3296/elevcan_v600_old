@@ -133,7 +133,7 @@ unsigned        char    FIRE_buf[]		={"UOXAP"};
 unsigned        char    STOP1_buf[]		={"CTOU"};
 unsigned        char    FULL_buf[]		={"UOVHDW"};
 unsigned        char    OVL_buf[]		={"UEPELPGM"};
-
+unsigned        char    urgent_call_buf[]	={"CPOYHDW_BDMOB"};
 
 #else
 // ÀÏ¹Ý¿ë 
