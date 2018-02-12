@@ -11,8 +11,9 @@ date    :       1999,9,21
 #include        "..\comm_4480\comdata.h"
 #include        "..\comm_4480\setup.h"
 #include        "..\comm_4480\spi.h"
-
 #include        "Voice_Ext_IO_8.h"
+
+typedef unsigned int	bool;
 
 
 #define NormalBoard_DoorSlow	1 // 일반형 보드로 도어 슬로우 제어 기능 사용 시(릴레이 출력), 확장IO보드 사용시에는 디파인 막아야 한다. 
@@ -128,6 +129,10 @@ date    :       1999,9,21
 /* --> 주의 : 층도착 멘트에 대해서는 딩동 조건을 넣어 줘야 하므로 <--*/
 #define         FLOOR_P                	FLOOR_B7+92	//100 파킹 Floor
 #define         CARBTN_M                FLOOR_B7+93	//101 
+#define         MOTEL_PRIVATE_ROOM      FLOOR_B7+94	//102 
+#define         MOTEL_PRIVATE_PARKING	FLOOR_B7+95	//103 
+
+
 
 	
 	
@@ -899,32 +904,42 @@ unsigned char   GetVoice_OpenCloseUpDn(unsigned char xTmpCurVoice)
 }
 
 
+bool is_car_moving_when_auto()
+{
+	return ELE_bCAR_MOVE && ELE_bAUTO;
+}
+
 unsigned char   GetVoice_Song(unsigned char xBefVoice)
 {
     unsigned char tmCurVoice;
     static bit bSong = FALSE;
+	static unsigned int destfloor_ment_outed;
 
     if (xBefVoice != NO_MENT)
         return xBefVoice;
 
-    if (ELE_bCAR_MOVE && ELE_bAUTO)
+    if (is_car_moving_when_auto())
     {
         if (ELE_bFLOW) bSong = FALSE;
-        if (!VoiceBusy() && bSong && ELE_bUP)
+        if (!VoiceBusy() && bSong && ELE_bUP && !destfloor_ment_outed)
         {
-            tmCurVoice = SONG_MENT;
+            tmCurVoice = MOTEL_PRIVATE_ROOM; // !!!
+            destfloor_ment_outed = TRUE;
             return tmCurVoice;
         }
-        else if (!VoiceBusy() && bSong && ELE_bDOWN)
+        else if (!VoiceBusy() && bSong && ELE_bDOWN && !destfloor_ment_outed)
         {
-            tmCurVoice = SONG_MENT;
+            tmCurVoice = MOTEL_PRIVATE_PARKING; // !!!
+            destfloor_ment_outed = TRUE;
             return tmCurVoice;
         }
     }
     else
     {
         bSong = TRUE;
+		destfloor_ment_outed = FALSE;
     }
+	
     return xBefVoice;
 }
 
@@ -1643,7 +1658,7 @@ void InitVoice(void)
 void SetVoice(void)
 {
     bSetAfterCancel = TRUE; // 카콜 취소시 층멘트 후 취소 나오게 할지 여부 
-    bSetSong = FALSE; // 주행 중 음악 
+    bSetSong = TRUE; // 주행 중 음악 
 	bSetOppositeDoor = FALSE; // 반대편 문이 열립니다.
 }
 
