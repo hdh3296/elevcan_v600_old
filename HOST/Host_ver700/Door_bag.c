@@ -228,7 +228,7 @@ UserDataType	__attribute__((section(".usercode"))) OpenKeyCheck(void)
             break;
         case    MAIN_SUB_DOOR:
             if(sRamDArry[mDoor] & MAIN_OPEN_KEY){
-                if(CurDoorSelect !=  SUB_DOOR){  
+                if( (CurDoorSelect !=  SUB_DOOR) || (bDoorCloseOk)){		//ver6.AH->ver6.AI  
                     NewDoorSelect = MAIN_DOOR;
                     CurDoorSelect = NewDoorSelect;
                     LoopTime=0;
@@ -236,7 +236,7 @@ UserDataType	__attribute__((section(".usercode"))) OpenKeyCheck(void)
                 }
             } 
             else if(sRamDArry[mDoor] & SUB_OPEN_KEY){
-                if(CurDoorSelect !=  MAIN_DOOR){  
+                if( (CurDoorSelect !=  MAIN_DOOR)  || (bDoorCloseOk)){  	//ver6.AH->ver6.AI 
                     NewDoorSelect = SUB_DOOR;
                     CurDoorSelect = NewDoorSelect;
                     LoopTime=0;

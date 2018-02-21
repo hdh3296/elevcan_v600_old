@@ -5094,10 +5094,11 @@ unsigned int  __attribute__((section(".usercode")))   Auto_Manual_Key_Check(void
 			ClrUpDnWard();
 		}
 
-
+/*//ver6.AH->ver6.AI
         if(bDoorCloseOk && (DoorCloseOnTime > 2)){
 			CurDoorSelect=NO_DOOR;
 		}
+*/
 
 
 		Key_Manual_FhmCheck();	
@@ -7252,7 +7253,8 @@ void __attribute__((section(".usercode")))  DoorOpenCloseSeq(void)
 			if(bDoorJumper == 0){
                 SelectDoorClose_you();                      //4    	            		
                 if(bDoorCloseOk){
-					CurDoorSelect=NO_DOOR;
+//////					CurDoorSelect=NO_DOOR;  //ver6.AH->ver6.AI
+
                     sRamDArry[mDoorSeq]=DOOR_CLOSE_END;                                        
                     UpDnRstCheck(); 
 					DoorCloseTime=0;
@@ -7389,7 +7391,8 @@ void __attribute__((section(".usercode")))  DoorOpClSystem(void)
 			else{
 				if( !S2_FIRE1)	bReadyCall=1;
 
-				CurDoorSelect=NO_DOOR;
+//				CurDoorSelect=NO_DOOR;   //ver6.AH->ver6.AI
+
 				#ifdef	FLOOR_64
 				if((sRamDArry[mNewAckStopFloor] > 0) && ((sRamDArry[mNewAckStopFloor] & ONLY_FLR) != sRamDArry[mcurfloor])){					
 				#else
@@ -7632,7 +7635,8 @@ void __attribute__((section(".usercode")))  DoorOpClSystem(void)
                         sRamDArry[mDoorSeq] = READY_ELEVATOR;
                    	}
                     else{
-						CurDoorSelect=NO_DOOR;
+/////						CurDoorSelect=NO_DOOR;  //ver6.AH->ver6.AI
+
 						KidsKeyCheck();
 						sRamDArry[mDoorSeq] = DOOR_OPEN_START;
 

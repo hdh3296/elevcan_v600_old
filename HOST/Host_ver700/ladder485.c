@@ -2591,7 +2591,7 @@ unsigned int __attribute__((section(".usercode"))) SensorPositionDisplay(unsigne
 		case	X0_LENGTH:		// up limt
 	    	OneceUseBuf1=FLOOR_COUNT(cF_TOPFLR);
 			OneceUseBuf2=GET_LONG(BASE_X0_PULSE);
-			if(OneceUseBuf2 > 0)	OneceUseBuf2=(OneceUseBuf2- OneceUseBuf1);
+			if(OneceUseBuf2 > 0)	OneceUseBuf2=(OneceUseBuf1- OneceUseBuf2);  //ver6.AH->ver6.AI
 			PulseToMm(OneceUseBuf2);		
 			break;
 		case	CENTER_LENGTH:
