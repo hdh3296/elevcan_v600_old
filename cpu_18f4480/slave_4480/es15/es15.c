@@ -93,6 +93,7 @@ bit   CarMove;
 bit   KeyClr;
 bit   KeyClrExt;
 bit   Auto;
+bit   b_manual;
 bit   FDsp;
 bit   Parking;
 bit   Vip;
@@ -130,6 +131,7 @@ bit   b_MyFamily=0;
 bit   bIamXSubDoor=0;                    
 bit	  bHALL_LAMP_UP=0;
 
+bit b_autoready=0;
 
 
 const   unsigned        char    seg1[]={0x0,0x06,0x0b,0x07};

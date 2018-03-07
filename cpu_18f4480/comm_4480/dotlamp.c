@@ -564,6 +564,39 @@ void out_1_1_flr(unsigned char id)
 
 }
 
+
+
+void out_mungone_vietnam()
+{
+	/*
+		명원 베트남용, 이정원 이사님 요청
+	*/
+
+	
+
+	BCD1_LAMP=UpMove; // A
+	BCD2_LAMP=DnMove; // B
+	BCD3_LAMP=Auto; // C
+	BCD4_LAMP=b_manual; // D
+	BCD5_LAMP=Emg; // E		
+	//Segment not dispaly			
+	SEG_F=CarMove; 		 
+	if (b_autoready && !UpMove && !DnMove)
+	{
+		SEG_G1=1;		 
+		SEG_G2=1;
+	}
+	else
+	{
+		SEG_G1=0;		 
+		SEG_G2=0;
+	}
+	/*---> FULL 은 기본적으로  FULL 접점에서 출력 나온다. <---*/ 
+
+}
+
+
+
 #endif
 
 void    CompanyChk(unsigned char id)        
@@ -714,9 +747,9 @@ unsigned char   Lamp(unsigned char id)
 
 #if defined(__TYPE_DIRECT_BCD)
 
-	out_lcdDisplay(id); // 만일, LCD 용이면 이 함수를 사요하세요. 
+	//out_lcdDisplay(id); // 만일, LCD 용이면 이 함수를 사요하세요. 
 	//out_1_1_flr(id);
-		
+	out_mungone_vietnam();	
 
 
 #else
@@ -908,6 +941,8 @@ unsigned char   Lamp(unsigned char id)
          
 	Auto=0;
    if(RcvBuf[IdPt+1] & S1_AUTO)             Auto=1;
+   b_manual=0;
+   if(RcvBuf[IdPt+1] & S1_MANUAL)           b_manual=1;
 
 	OverLoad=0;
    if(RcvBuf[IdPt+1] & S1_OVERLOAD)         OverLoad=1;
@@ -921,6 +956,8 @@ unsigned char   Lamp(unsigned char id)
 	bNew_Law=0;
 	if(RcvBuf[IdPt+4] & S4_NEW_LAW_SYSTEM)        bNew_Law=1;
 
+	b_autoready=0;
+	if(RcvBuf[IdPt+mSysStatus] == 65)			b_autoready = 1;
 
 #ifdef __TYPE_CAR
 

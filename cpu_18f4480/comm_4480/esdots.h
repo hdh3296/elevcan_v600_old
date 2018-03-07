@@ -167,3 +167,7 @@ extern	unsigned char ParkingCmdCnt;
 extern	bit		bErrorCar; 
 extern	bit		bNew_Law;
 
+extern bit b_manual;
+extern bit b_autoready;
+
+
