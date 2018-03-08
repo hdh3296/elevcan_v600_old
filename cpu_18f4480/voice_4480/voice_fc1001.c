@@ -424,7 +424,7 @@ void main(void)
     if (bSetSong) bSetCarBtnVoice = FALSE;
 
 
-	Ext_IO_8_Init();
+
 
 // 일반형 보드에서 확장IO 보드로 넘어가면서 릴레이 IO가 출력에서 입력으로 바끼었기 때문에 ....
 #if   defined(NormalBoard_DoorSlow) 
@@ -436,7 +436,7 @@ void main(void)
     {
         CLRWDT();
 
-		Ext_IO_8_Func();
+
 
 
         // Voice Downlod 중...
