@@ -7138,6 +7138,7 @@ void __attribute__((section(".usercode")))  DoorOpenCloseSeq(void)
 
 //ver6.a9x
     		if(sRamDArry[mDoorSeq] == DOOR_OPEN_WAIT){
+				LoopTime=0;										//ver6.aI->ver6.aI
 				if(DoorOpenEndWaitChk()){
 					TmpEncoderErrorClear();
 					DoorOpenTime=0;   					
@@ -7196,7 +7197,7 @@ void __attribute__((section(".usercode")))  DoorOpenCloseSeq(void)
                     UpDnRstCheck();            		
                 }
 	            else{
-                    if(DoorOpenTime > DEFAULT_REOPTM){             ////
+					if(LoopTime > 10){								//ver6.aI->ver6.aI
         		        sRamDArry[mDoorSeq] = DOOR_CLOSE_START;
 						DoorOpClTime=0;
                     }
@@ -7216,7 +7217,7 @@ void __attribute__((section(".usercode")))  DoorOpenCloseSeq(void)
 					DoorOpClTime=0;
 				}
 				#else
-				if(DoorOpenTime > DEFAULT_REOPTM){             ////
+				if(LoopTime > 10){							//ver6.aI->ver6.aI
 					sRamDArry[mDoorSeq] = DOOR_CLOSE_START;
 					DoorOpClTime=0;
 				}
@@ -10681,7 +10682,7 @@ CmdFixFlrTime=cF_FIXFLOORTIME;
         asm("CLRWDT");
 
         Can1Check();
-        Can2Check();
+		Can2Check();
 
         disp_clk_regs();
 
