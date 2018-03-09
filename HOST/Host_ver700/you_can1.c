@@ -326,7 +326,7 @@ unsigned int   __attribute__((section(".usercode")))  ClearKeyData(void)
 	}
 
 
-	HibRelocateStartfloor();
+//	HibRelocateStartfloor();  //start floor 2 이상일때 취소안됨 수정
 
     if(CanCommandCheck())   return(1);
 
