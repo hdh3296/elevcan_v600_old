@@ -128,6 +128,7 @@ date    :       1999,9,21
 /* --> 주의 : 층도착 멘트에 대해서는 딩동 조건을 넣어 줘야 하므로 <--*/
 #define         FLOOR_P                	FLOOR_B7+92	//100 파킹 Floor
 #define         CARBTN_M                FLOOR_B7+93	//101 
+#define         FLOOR_UG                FLOOR_B7+94	//102
 
 	
 	
@@ -686,6 +687,10 @@ unsigned char GetFloorMent(void)
     {
         tmMent = FLOOR_F1;
     }
+    else if (cDotDsp == 'U')
+    {
+        tmMent = FLOOR_F1;
+    }	
     else if (cDotDsp == '0')
     {
         tmMent = FLOOR_B1;
@@ -733,7 +738,14 @@ unsigned char GetFloorMent(void)
         }
         else if (cDotDsp == 'G')
         {
-            tmMent = FLOOR_G;
+            if (ELE_DSP1 == 'U')
+            {
+                tmMent = FLOOR_UG;
+            }
+            else
+            {
+                tmMent = FLOOR_G;
+            }            
         }
         else if (cDotDsp == 'M')
         {
