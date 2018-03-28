@@ -505,7 +505,7 @@ void main(void)
             else
             {
 				/* --> 주의 이 조건안에 들어가야 딩동이 나온다. <--*/
-                if (((CurVoice >= START_FL) && (CurVoice <= END_FL)) || (CurVoice == FLOOR_P))   // 층 도착 !
+                if (((CurVoice >= START_FL) && (CurVoice <= END_FL)) || (CurVoice == FLOOR_P) || (CurVoice == FLOOR_UG))   // 층 도착 !
                 {
                     PlaySeq = DINGDONG_PLAY_SEQ;
                     CurFloorVoice = CurVoice;
