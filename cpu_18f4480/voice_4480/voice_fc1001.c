@@ -14,6 +14,8 @@ date    :       1999,9,21
 
 #include        "Voice_Ext_IO_8.h"
 
+typedef	unsigned int	bool;
+
 
 #define NormalBoard_DoorSlow	1 // 일반형 보드로 도어 슬로우 제어 기능 사용 시(릴레이 출력), 확장IO보드 사용시에는 디파인 막아야 한다. 
 
@@ -281,7 +283,7 @@ unsigned char sizex = 64;
 
 unsigned    char    TestMentDelayTimer;
 unsigned    char    TmpCurVoice;
-unsigned 	char 	CurVoice;
+unsigned 	char 	now_ment;
 
 unsigned	char	CurFloorVoice;
 unsigned    char    RunPgm;
@@ -400,11 +402,26 @@ extern unsigned char get_floorment();
 extern unsigned char   GetVoice_Song(unsigned char);
 extern unsigned char  GetVoice_BeepByBuz(unsigned char);
 
+bool is_etc_flr_ment()
+{
+	return 	(now_ment == DISPLAY_0) ||
+			(now_ment == MINUS_1)	||
+			(now_ment == MINUS_2)	||
+			(now_ment == MINUS_3)	||
+			(now_ment == MINUS_4)	||
+			(now_ment == MINUS_5);	
+}
 
+bool is_baseflr_ment()
+{
+	return (now_ment >= START_FL) && (now_ment <= END_FL);
+}
 
+bool is_flr_arrival_ment()
+{
+	return is_baseflr_ment() || is_etc_flr_ment();
 
-
-
+}
 //##################################//
 // 메인 함수				    	//
 //##################################//
@@ -459,9 +476,9 @@ void main(void) {
         SetCarKeyCancel(); // CAR CALL 취소 값 셋팅
 
         TmpCurVoice = NO_MENT;
-        // Beef 멘트 관련 
+        // Beef 멘트 관련
         if (ELE_bIN_BUZ) {
-            TmpCurVoice = GetVoice_OverLoad(TmpCurVoice, CurVoice);
+            TmpCurVoice = GetVoice_OverLoad(TmpCurVoice, now_ment);
             TmpCurVoice = GetVoice_Floor(TmpCurVoice, get_floorment());
 
             if (BeefDelayTimer > BEEP_DELAY_TIME) {
@@ -472,7 +489,7 @@ void main(void) {
                 if (TmpCurVoice == BEEP_MENT)	BeefDelayTimer = 0;
             }
         } else {
-            TmpCurVoice = GetVoice_State(TmpCurVoice, CurVoice);
+            TmpCurVoice = GetVoice_State(TmpCurVoice, now_ment);
             if (bDingdong == FALSE) TmpCurVoice = GetVoice_OpenCloseUpDn(TmpCurVoice);
             TmpCurVoice = GetVoice_Floor(TmpCurVoice, get_floorment());
             if (bSetCarBtnVoice) TmpCurVoice = GetVoice_CarCall(TmpCurVoice, CurCarKey, BefCarKey);
@@ -481,21 +498,21 @@ void main(void) {
 
 
         if (TmpCurVoice != NO_MENT) {
-            CurVoice = TmpCurVoice;
+            now_ment = TmpCurVoice;
             _VOICE_ACT = VOICE_ON;
             if (bVoicePlaying) {
                 SPI_Stop_Play(); // 일단, 기존 방송 중이던 음성 중지 !
-                if ((CurVoice >= START_FL) && (CurVoice <= END_FL)) {
+                if ((now_ment >= START_FL) && (now_ment <= END_FL)) {
                     PlaySeq = DINGDONG_READY_SEQ;
-                    CurFloorVoice = CurVoice;
+                    CurFloorVoice = now_ment;
                 } else {
                     PlaySeq = CURVOICE_READY_SEQ;
                 }
             } else {
                 /* --> 주의 이 조건안에 들어가야 딩동이 나온다. <--*/
-                if (((CurVoice >= START_FL) && (CurVoice <= END_FL)) || (CurVoice == FLOOR_P)) { // 층 도착 !
+                if (is_flr_arrival_ment()) { // 층 도착 !
                     PlaySeq = DINGDONG_PLAY_SEQ;
-                    CurFloorVoice = CurVoice;
+                    CurFloorVoice = now_ment;
                 } else {
                     PlaySeq = CURVOICE_PLAY_SEQ;
                 }
@@ -520,7 +537,7 @@ void main(void) {
                 break;
             case CURVOICE_READY_SEQ:
                 if (bVoicePlaying == FALSE) {
-                    if (CurVoice & 0x80)
+                    if (now_ment & 0x80)
                         PlaySeq = END_CHK_SEQ;
                     else
                         PlaySeq = CURVOICE_PLAY_SEQ;
@@ -536,7 +553,7 @@ void main(void) {
                 PlaySeq = CURVOICE_PLAYING_SEQ;
                 break;
             case CURVOICE_PLAY_SEQ:
-                SPI_Play(CurVoice); // 도착 '몇 층입다','문이열립이다','닫힙니다' 등 안내방송 출력
+                SPI_Play(now_ment); // 도착 '몇 층입다','문이열립이다','닫힙니다' 등 안내방송 출력
                 PlaySeq = CURVOICE_PLAYING_SEQ;
                 break;
             case CURVOICE_PLAYING_SEQ:
@@ -570,7 +587,7 @@ void main(void) {
             bVoicePlaying = TRUE;
         } else {
             if (PlaySeq == END_SEQ) {
-                CurVoice = NO_MENT;
+                now_ment = NO_MENT;
                 bBeepEnab = TRUE;
                 bDingdong = FALSE;
             }
@@ -628,48 +645,52 @@ void interrupt isr(void) {
 
 }
 
-#define MINUS_DOT	'Z'
 
+#define MINUS_DOT	'Z'
 unsigned char get_floorment(void) {
     unsigned char tmMent;
     unsigned char dot1, dot2, dot1_used;
 
     dot1_used = TRUE;
-    // Dot1 체크 (10의 자리)
     dot1 = ELE_DSP1;
-    if (dot1 == 'B') {
-        tmMent = FLOOR_F1;
-	} else if (dot1 == MINUS_DOT) {
-        tmMent = MINUS_1;	
-    } else if (dot1 == 'P') {
-        tmMent = FLOOR_F1;
-    } else if (dot1 == 'G') {
-        tmMent = FLOOR_F1;
-    } else if (dot1 == '0') {
-        tmMent = FLOOR_B1;
-    } else if (dot1 == '1') {
-        tmMent = 10 + FLOOR_B1;
-    } else if (dot1 == '2') {
-        tmMent = 20 + FLOOR_B1;
-    } else if (dot1 == '3') {
-        tmMent = 30 + FLOOR_B1;
-    } else {
-        //tmMent = (RcvBuf[IdPt] | 0x80);
-        dot1_used = FALSE;
-        tmMent = 0xff;
+
+    switch (dot1) {
+        case 'B':
+			tmMent = FLOOR_F1;
+            break;
+        case MINUS_DOT:
+			tmMent = MINUS_1;
+            break;
+        case '0':			
+			tmMent = FLOOR_B1;
+            break;
+		case '1':
+			tmMent = 10 + FLOOR_B1;				
+            break;
+		case '2':
+			tmMent = 20 + FLOOR_B1;
+            break;
+		case '3':
+			tmMent = 30 + FLOOR_B1;
+            break;	
+        default:
+			dot1_used = FALSE;
+			tmMent = 0xff;
+            break;
     }
 
-    // Dot2 체크(1의 자리)
+    //--------------------------------
+
     if (dot1_used) {
         dot2 = ELE_DSP2;
         if (dot2 == '0') {
-      		if (dot1 == '0') {
-				tmMent = DISPLAY_0;
-        	} else {
-	            if (tmMent < (10 + FLOOR_B1)) {
-	                tmMent = 0xff;
-	            }
-	        }
+            if (dot1 == '0') {
+                tmMent = DISPLAY_0;
+            } else {
+                if (tmMent < (10 + FLOOR_B1)) {
+                    tmMent = 0xff;
+                }
+            }
         } else if (dot2 == 'F') {
             if (ELE_DSP1 == 'G') {
                 tmMent = FLOOR_G;
@@ -689,13 +710,13 @@ unsigned char get_floorment(void) {
         } else if (dot2 == 'P') {
             tmMent = FLOOR_P;
         } else if ((dot2 >= '1') && (dot2 <= '9')) {
-			if (dot1 == 'B') {
+            if (dot1 == 'B') {
                 tmMent = tmMent - (dot2 - '0');
-			} else if (dot1 == MINUS_DOT) {
-				tmMent = tmMent + (dot2 - '0') - 1;
+            } else if (dot1 == MINUS_DOT) {
+                tmMent = tmMent + (dot2 - '0') - 1;
             } else {
                 tmMent = tmMent + (dot2 - '0');
-            }      	
+            }
         } else {
             tmMent = 0xff;
         }
@@ -829,7 +850,7 @@ unsigned char  GetVoice_BeepByBuz(unsigned char xTmpCurVoice) {
         return xTmpCurVoice;
 
     if (ELE_bIN_BUZ) { // 부저 출력
-        if (CurVoice != BEEP_MENT)
+        if (now_ment != BEEP_MENT)
             xTmpCurVoice = BEEP_MENT;
     }
 
@@ -926,7 +947,7 @@ unsigned char   GetVoice_CarCall(UCHAR xTmpCurVoice, UCHAR *xCurkey, UCHAR *xBef
         if (!ELE_bVIP)
             return xTmpCurVoice;
     }
-    if (CurVoice != 0xff)
+    if (now_ment != 0xff)
         return xTmpCurVoice;
 
     bitKey = 0x01;
@@ -979,7 +1000,7 @@ unsigned char    get_carcallment(unsigned char Call_Floor) {
     if (dot1 == 'B') {
         ment = CARBTN_F1;
     } else if (dot1 == MINUS_DOT) {
-    	ment = MINUS_1_BTN;
+        ment = MINUS_1_BTN;
     } else if (dot1 == '0') {
         ment = CARBTN_B1;
     } else if (dot1 == '1') {
@@ -1000,19 +1021,19 @@ unsigned char    get_carcallment(unsigned char Call_Floor) {
         } else if (dot2 == 'M') {
             ment = CARBTN_M;
         } else if (dot2 == '0') {
-			if (dot1 == '0') {
-				ment = DISPLAY_0_BTN;
-			} else {
-	            if (ment < (10 + CARBTN_B1))
-	                ment = 0xff;
-			}
+            if (dot1 == '0') {
+                ment = DISPLAY_0_BTN;
+            } else {
+                if (ment < (10 + CARBTN_B1))
+                    ment = 0xff;
+            }
         } else if (dot2 == 'F') {
             ment = (ment + 4);
         } else if ((dot2 >= '1') && (dot2 <= '9')) {
             if (ment == CARBTN_F1) { // 지하층이면?
                 ment = ment - (dot2 - '0');
             } else if (ment == MINUS_1_BTN) {
-            	ment = ment + (dot2 - '0') - 1;
+                ment = ment + (dot2 - '0') - 1;
             } else { // 지상층이면?
                 ment = ment + (dot2 - '0');
             }
@@ -1431,7 +1452,7 @@ void InitVoice(void) {
     active_key = 0;
     BatteryRun = 0;
     Flow_Active = 0;
-    CurVoice = 0xff;
+    now_ment = 0xff;
     PlaySeq = Default_SEQ;
     bVoicePlaying = 0;
     TmpCurVoice = 0xff;
