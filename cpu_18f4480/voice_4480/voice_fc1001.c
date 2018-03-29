@@ -396,7 +396,7 @@ extern void InitVoice();
 void SetVoice(void);
 extern void SetDipSW();
 extern unsigned char VoiceBusy();
-extern unsigned char GetFloorMent();
+extern unsigned char get_floorment();
 extern unsigned char   GetVoice_Song(unsigned char);
 extern unsigned char  GetVoice_BeepByBuz(unsigned char);
 
@@ -462,7 +462,7 @@ void main(void) {
         // Beef 멘트 관련 
         if (ELE_bIN_BUZ) {
             TmpCurVoice = GetVoice_OverLoad(TmpCurVoice, CurVoice);
-            TmpCurVoice = GetVoice_Floor(TmpCurVoice, GetFloorMent());
+            TmpCurVoice = GetVoice_Floor(TmpCurVoice, get_floorment());
 
             if (BeefDelayTimer > BEEP_DELAY_TIME) {
                 if (bBeepEnab) {
@@ -474,7 +474,7 @@ void main(void) {
         } else {
             TmpCurVoice = GetVoice_State(TmpCurVoice, CurVoice);
             if (bDingdong == FALSE) TmpCurVoice = GetVoice_OpenCloseUpDn(TmpCurVoice);
-            TmpCurVoice = GetVoice_Floor(TmpCurVoice, GetFloorMent());
+            TmpCurVoice = GetVoice_Floor(TmpCurVoice, get_floorment());
             if (bSetCarBtnVoice) TmpCurVoice = GetVoice_CarCall(TmpCurVoice, CurCarKey, BefCarKey);
             if (bSetSong) TmpCurVoice = GetVoice_Song(TmpCurVoice);
         }
@@ -628,9 +628,9 @@ void interrupt isr(void) {
 
 }
 
-#define DOT_MINUS	'Z'
+#define MINUS_DOT	'Z'
 
-unsigned char GetFloorMent(void) {
+unsigned char get_floorment(void) {
     unsigned char tmMent;
     unsigned char dot1, dot2, dot1_used;
 
@@ -639,7 +639,7 @@ unsigned char GetFloorMent(void) {
     dot1 = ELE_DSP1;
     if (dot1 == 'B') {
         tmMent = FLOOR_F1;
-	} else if (dot1 == DOT_MINUS) {
+	} else if (dot1 == MINUS_DOT) {
         tmMent = MINUS_1;	
     } else if (dot1 == 'P') {
         tmMent = FLOOR_F1;
@@ -691,7 +691,7 @@ unsigned char GetFloorMent(void) {
         } else if ((dot2 >= '1') && (dot2 <= '9')) {
 			if (dot1 == 'B') {
                 tmMent = tmMent - (dot2 - '0');
-			} else if (dot1 == DOT_MINUS) {
+			} else if (dot1 == MINUS_DOT) {
 				tmMent = tmMent + (dot2 - '0') - 1;
             } else {
                 tmMent = tmMent + (dot2 - '0');
@@ -968,7 +968,6 @@ unsigned char   GetVoice_CarCall(UCHAR xTmpCurVoice, UCHAR *xCurkey, UCHAR *xBef
 
 
 
-// 카콜 키 상태 값을 CurVoide에 저장한다.
 unsigned char    get_carcallment(unsigned char Call_Floor) {
     unsigned char   dot1, dot2, i, bValid;
     UCHAR ment;
@@ -979,6 +978,8 @@ unsigned char    get_carcallment(unsigned char Call_Floor) {
     dot1 = FloorChar[i + 0];
     if (dot1 == 'B') {
         ment = CARBTN_F1;
+    } else if (dot1 == MINUS_DOT) {
+    	ment = MINUS_1_BTN;
     } else if (dot1 == '0') {
         ment = CARBTN_B1;
     } else if (dot1 == '1') {
@@ -1008,10 +1009,13 @@ unsigned char    get_carcallment(unsigned char Call_Floor) {
         } else if (dot2 == 'F') {
             ment = (ment + 4);
         } else if ((dot2 >= '1') && (dot2 <= '9')) {
-            if (ment == CARBTN_F1) // 지하층이면?
+            if (ment == CARBTN_F1) { // 지하층이면?
                 ment = ment - (dot2 - '0');
-            else // 지상층이면?
+            } else if (ment == MINUS_1_BTN) {
+            	ment = ment + (dot2 - '0') - 1;
+            } else { // 지상층이면?
                 ment = ment + (dot2 - '0');
+            }
         } else {
             ment = 0xff;
         }
