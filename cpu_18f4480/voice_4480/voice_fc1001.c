@@ -16,8 +16,8 @@ date    :       1999,9,21
 
 typedef	unsigned int	bool;
 
-
-#define NormalBoard_DoorSlow	1 // 일반형 보드로 도어 슬로우 제어 기능 사용 시(릴레이 출력), 확장IO보드 사용시에는 디파인 막아야 한다. 
+// 한글 테스트 카카카
+#define NormalBoard_DoorSlow	1 // 일반형 보드로 도어 슬로우 제어 기능 사용 시(릴레이 출력), 확장IO보드 사용시에는 디파인 막아야 한다.
 
 
 #define START_FL	FLOOR_B7
@@ -125,15 +125,15 @@ typedef	unsigned int	bool;
 #define         SILENCE_MENT            FLOOR_B7+87 //95
 #define         SONG_MENT               FLOOR_B7+88 //96
 #define         BEEP_MENT               FLOOR_B7+89 //97 삐 소리
-#define			CARBTN_L				FLOOR_B7+90 //98	
+#define			CARBTN_L				FLOOR_B7+90 //98
 #define			OPPOSITE_OPEN_MENT		FLOOR_B7+91 //99
 /* --> 주의 : 층도착 멘트에 대해서는 딩동 조건을 넣어 줘야 하므로 <--*/
 #define         FLOOR_P                	FLOOR_B7+92	//100 파킹 Floor
 #define         CARBTN_M                FLOOR_B7+93	//101
 // ----------------------------------------------------------
-#define         DISPLAY_0               FLOOR_B7+94	//102 
-#define         MINUS_1                	FLOOR_B7+95	//103 
-#define         MINUS_2                	FLOOR_B7+96	//104 
+#define         DISPLAY_0               FLOOR_B7+94	//102
+#define         MINUS_1                	FLOOR_B7+95	//103
+#define         MINUS_2                	FLOOR_B7+96	//104
 #define         MINUS_3                	FLOOR_B7+97	//105
 #define         MINUS_4                	FLOOR_B7+98	//106
 #define         MINUS_5                	FLOOR_B7+99	//107
@@ -409,7 +409,7 @@ bool is_etc_flr_ment()
 			(now_ment == MINUS_2)	||
 			(now_ment == MINUS_3)	||
 			(now_ment == MINUS_4)	||
-			(now_ment == MINUS_5);	
+			(now_ment == MINUS_5);
 }
 
 bool is_baseflr_ment()
@@ -422,306 +422,83 @@ bool is_flr_arrival_ment()
 	return is_baseflr_ment() || is_etc_flr_ment();
 
 }
-//##################################//
-// 메인 함수				    	//
-//##################################//
 
-void main(void) {
-    di();
-    Initial();
-    PortInit();
-    Timer0Init();
-    InitSPI();
-    Tx1ConfirmCnt = 0;
-    Tx0ConfirmCnt = 0;
-    ei();
-
-    LoadSetupValue();  //120927 :SetupCheck() ?? ??
-    CmpSetBit = 0;          //new
-    MaskSetBit = 0;         //new
-
-    di();
-    CAN_Init();
-    ei();
-
-    InitVoice();
-    SetDipSW();
-    SetVoice(); // 각종 셋팅 여부
-    if (bSetSong) bSetCarBtnVoice = FALSE;
-
-
-
-
-// 일반형 보드에서 확장IO 보드로 넘어가면서 릴레이 IO가 출력에서 입력으로 바끼었기 때문에 ....
-#if   defined(NormalBoard_DoorSlow)
-    TRISC0	=	0x0;    // VOICE 일반 보드 인 경우, 릴레이 출력으로 설정
-#endif
-
-
-    while (1) {
-        CLRWDT();
-
-        // Voice Downlod 중...
-        if (_VOICE_DOWNLOAD_PIN) {
-            WaitDownLoader();
-        }
-
-        if (ELE_bIN_RELAY) {
-            _BATTERY = BAT_ON;
-        } else {
-            _BATTERY = BAT_OFF;
-        }
-
-        DspCharRdWr(); // CAR CALL 음성을 위한 엘리베이터 각층 디스플레이 값 저장
-        SetCarKeyCancel(); // CAR CALL 취소 값 셋팅
-
-        TmpCurVoice = NO_MENT;
-        // Beef 멘트 관련
-        if (ELE_bIN_BUZ) {
-            TmpCurVoice = GetVoice_OverLoad(TmpCurVoice, now_ment);
-            TmpCurVoice = GetVoice_Floor(TmpCurVoice, get_floorment());
-
-            if (BeefDelayTimer > BEEP_DELAY_TIME) {
-                if (bBeepEnab) {
-                    TmpCurVoice = GetVoice_BeepByBuz(TmpCurVoice);
-                }
-
-                if (TmpCurVoice == BEEP_MENT)	BeefDelayTimer = 0;
-            }
-        } else {
-            TmpCurVoice = GetVoice_State(TmpCurVoice, now_ment);
-            if (bDingdong == FALSE) TmpCurVoice = GetVoice_OpenCloseUpDn(TmpCurVoice);
-            TmpCurVoice = GetVoice_Floor(TmpCurVoice, get_floorment());
-            if (bSetCarBtnVoice) TmpCurVoice = GetVoice_CarCall(TmpCurVoice, CurCarKey, BefCarKey);
-            if (bSetSong) TmpCurVoice = GetVoice_Song(TmpCurVoice);
-        }
-
-
-        if (TmpCurVoice != NO_MENT) {
-            now_ment = TmpCurVoice;
-            _VOICE_ACT = VOICE_ON;
-            if (bVoicePlaying) {
-                SPI_Stop_Play(); // 일단, 기존 방송 중이던 음성 중지 !
-                if ((now_ment >= START_FL) && (now_ment <= END_FL)) {
-                    PlaySeq = DINGDONG_READY_SEQ;
-                    CurFloorVoice = now_ment;
-                } else {
-                    PlaySeq = CURVOICE_READY_SEQ;
-                }
-            } else {
-                /* --> 주의 이 조건안에 들어가야 딩동이 나온다. <--*/
-                if (is_flr_arrival_ment()) { // 층 도착 !
-                    PlaySeq = DINGDONG_PLAY_SEQ;
-                    CurFloorVoice = now_ment;
-                } else {
-                    PlaySeq = CURVOICE_PLAY_SEQ;
-                }
-            }
-        }
-
-        switch (PlaySeq) {
-            case DINGDONG_READY_SEQ:
-                if (bVoicePlaying == FALSE) {
-                    PlaySeq = DINGDONG_PLAY_SEQ;
-                }
-                break;
-            case DINGDONG_PLAY_SEQ:
-                SPI_Play(DINGDONG_MENT); // 도착 알림 딩동 !
-                bDingdong = TRUE;
-                PlaySeq = ALARM_PLAYING_SEQ;
-                break;
-            case ALARM_PLAYING_SEQ:
-                if (bVoicePlaying) {
-                    PlaySeq = CURVOICE_READY_SEQ;
-                }
-                break;
-            case CURVOICE_READY_SEQ:
-                if (bVoicePlaying == FALSE) {
-                    if (now_ment & 0x80)
-                        PlaySeq = END_CHK_SEQ;
-                    else
-                        PlaySeq = CURVOICE_PLAY_SEQ;
-
-                    if (bDingdong)
-                        PlaySeq = CURFLOORVOICE_PLAY_SEQ;
-                }
-                break;
-            case CURFLOORVOICE_PLAY_SEQ:
-                SPI_Play(CurFloorVoice);
-                bDingdong = FALSE;
-                if(bSetOppositeDoor)	bOppositeDoor_Enab = TRUE;
-                PlaySeq = CURVOICE_PLAYING_SEQ;
-                break;
-            case CURVOICE_PLAY_SEQ:
-                SPI_Play(now_ment); // 도착 '몇 층입다','문이열립이다','닫힙니다' 등 안내방송 출력
-                PlaySeq = CURVOICE_PLAYING_SEQ;
-                break;
-            case CURVOICE_PLAYING_SEQ:
-                if (bVoicePlaying) {
-                    PlaySeq = END_CHK_SEQ;
-                    if (bAfterCancel) {
-                        bAfterCancel = FALSE;
-                        PlaySeq = CALCEL_READY_SEQ;
-                    }
-                }
-                break;
-            case END_CHK_SEQ:
-                if (bVoicePlaying == FALSE) {
-                    PlaySeq = END_SEQ;
-                    _VOICE_ACT = VOICE_OFF;
-                }
-                break;
-            case CALCEL_READY_SEQ:
-                if (bVoicePlaying == FALSE) {
-                    PlaySeq = CALCEL_PLAY_SEQ;
-                }
-                break;
-            case CALCEL_PLAY_SEQ:
-                SPI_Play(CANCLE_MENT); // 도착 알림 딩동 !
-                PlaySeq = CURVOICE_PLAYING_SEQ;
-                break;
-        }
-
-
-        if (VoiceBusy()) {
-            bVoicePlaying = TRUE;
-        } else {
-            if (PlaySeq == END_SEQ) {
-                now_ment = NO_MENT;
-                bBeepEnab = TRUE;
-                bDingdong = FALSE;
-            }
-            bVoicePlaying = FALSE;
-        }
-    }
-}
-
-
-//##################################//
-// 인터럽트 함수			    	//
-//##################################//
-
-void interrupt isr(void) {
-//    unsigned char i;
-
-
-    if (TMR0IF) {
-
-        TMR0IF = 0 ;
-        TMR0L = MSEC_L;
-        TMR0H = MSEC_H;
-
-        TestMentDelayTimer++;
-        shiftTime++;
-
-        if (BeefDelayTimer < 0xffff) BeefDelayTimer++;
-        if (RealayTestTimer < 0xffff) RealayTestTimer++;
-
-        abctimer++;
-        if (abctimer > 100) {
-            abctimer = 0;
-            if (UpDnVoiceTimer < 200)	UpDnVoiceTimer++;
-            if (nBefFlrTime < 200)	nBefFlrTime++;
-
-            if (FloorXCnt < 200)	FloorXCnt++;
-
-
-        }
-
-        Ext_IO_8_Timer_1msec();
-
-    }
-
-
-#ifdef	CPU45K80
-    if (PIR5 > 0) {
-        CanInterrupt();
-    }
-#else
-    if (PIR3 > 0) {
-        CanInterrupt();
-    }
-#endif
-
-}
 
 
 #define MINUS_DOT	'Z'
+#define EMPTY_MENT  0xff
 unsigned char get_floorment(void) {
-    unsigned char tmMent;
-    unsigned char dot1, dot2, dot1_used;
+    unsigned char ment = EMPTY_MENT;
+    unsigned char dot1_used;
 
     dot1_used = TRUE;
-    dot1 = ELE_DSP1;
 
-    switch (dot1) {
+    switch (ELE_DSP1) {
         case 'B':
-			tmMent = FLOOR_F1;
+			ment = FLOOR_F1;
             break;
         case MINUS_DOT:
-			tmMent = MINUS_1;
+			ment = MINUS_1 - 1;
             break;
-        case '0':			
-			tmMent = FLOOR_B1;
+        case '0':
+			ment = FLOOR_B1;
             break;
 		case '1':
-			tmMent = 10 + FLOOR_B1;				
+			ment = 10 + FLOOR_B1;
             break;
 		case '2':
-			tmMent = 20 + FLOOR_B1;
+			ment = 20 + FLOOR_B1;
             break;
 		case '3':
-			tmMent = 30 + FLOOR_B1;
-            break;	
+			ment = 30 + FLOOR_B1;
+            break;
         default:
 			dot1_used = FALSE;
-			tmMent = 0xff;
-            break;
+			return EMPTY_MENT;
     }
 
-    //--------------------------------
 
-    if (dot1_used) {
-        dot2 = ELE_DSP2;
-        if (dot2 == '0') {
-            if (dot1 == '0') {
-                tmMent = DISPLAY_0;
-            } else {
-                if (tmMent < (10 + FLOOR_B1)) {
-                    tmMent = 0xff;
-                }
-            }
-        } else if (dot2 == 'F') {
-            if (ELE_DSP1 == 'G') {
-                tmMent = FLOOR_G;
-            } else {
-                tmMent = (tmMent + 4);
-            }
-        } else if (dot2 == 'G') {
-            tmMent = FLOOR_G;
-        } else if (dot2 == 'M') {
-            tmMent = FLOOR_M;
-        } else if (dot2 == 'H') {
-            tmMent = FLOOR_PH;
-        } else if (dot2 == 'L') {
-            tmMent = FLOOR_L;
-        } else if (dot2 == 'B') {
-            tmMent = FLOOR_B;
-        } else if (dot2 == 'P') {
-            tmMent = FLOOR_P;
-        } else if ((dot2 >= '1') && (dot2 <= '9')) {
-            if (dot1 == 'B') {
-                tmMent = tmMent - (dot2 - '0');
-            } else if (dot1 == MINUS_DOT) {
-                tmMent = tmMent + (dot2 - '0') - 1;
-            } else {
-                tmMent = tmMent + (dot2 - '0');
-            }
-        } else {
-            tmMent = 0xff;
-        }
-    }
-    return tmMent;
+	if (dot1_used) {
+
+		switch (ELE_DSP2) {
+			case 'F':
+				return (ment + 4);
+			case '0':
+				if (ELE_DSP1 == '0') {
+					return DISPLAY_0;
+				}
+
+				if (ment < (10 + FLOOR_B1)) {
+					return EMPTY_MENT;
+				}
+
+				break;
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
+			case '9':
+				if (ELE_DSP1 == 'B') {
+    	            return ment - (ELE_DSP2 - '0');
+	            }
+
+	            if (ELE_DSP1 == MINUS_DOT) {
+	                return ment + (ELE_DSP2 - '0');
+	            }
+
+	            return ment + (ELE_DSP2 - '0');
+
+			default:
+				return EMPTY_MENT;
+		}
+	}
+// -------------------------------------------
+
+    return ment;
 }
 
 
@@ -1472,6 +1249,228 @@ void SetVoice(void) {
 }
 
 
+//##################################//
+// 메인 함수				    	//
+//##################################//
+
+void main(void) {
+    di();
+    Initial();
+    PortInit();
+    Timer0Init();
+    InitSPI();
+    Tx1ConfirmCnt = 0;
+    Tx0ConfirmCnt = 0;
+    ei();
+
+    LoadSetupValue();  //120927 :SetupCheck() ?? ??
+    CmpSetBit = 0;          //new
+    MaskSetBit = 0;         //new
+
+    di();
+    CAN_Init();
+    ei();
+
+    InitVoice();
+    SetDipSW();
+    SetVoice(); // 각종 셋팅 여부
+    if (bSetSong) bSetCarBtnVoice = FALSE;
+
+
+
+
+// 일반형 보드에서 확장IO 보드로 넘어가면서 릴레이 IO가 출력에서 입력으로 바끼었기 때문에 ....
+#if   defined(NormalBoard_DoorSlow)
+    TRISC0	=	0x0;    // VOICE 일반 보드 인 경우, 릴레이 출력으로 설정
+#endif
+
+
+    while (1) {
+        CLRWDT();
+
+        // Voice Downlod 중...
+        if (_VOICE_DOWNLOAD_PIN) {
+            WaitDownLoader();
+        }
+
+        if (ELE_bIN_RELAY) {
+            _BATTERY = BAT_ON;
+        } else {
+            _BATTERY = BAT_OFF;
+        }
+
+        DspCharRdWr(); // CAR CALL 음성을 위한 엘리베이터 각층 디스플레이 값 저장
+        SetCarKeyCancel(); // CAR CALL 취소 값 셋팅
+
+        TmpCurVoice = NO_MENT;
+        // Beef 멘트 관련
+        if (ELE_bIN_BUZ) {
+            TmpCurVoice = GetVoice_OverLoad(TmpCurVoice, now_ment);
+            TmpCurVoice = GetVoice_Floor(TmpCurVoice, get_floorment());
+
+            if (BeefDelayTimer > BEEP_DELAY_TIME) {
+                if (bBeepEnab) {
+                    TmpCurVoice = GetVoice_BeepByBuz(TmpCurVoice);
+                }
+
+                if (TmpCurVoice == BEEP_MENT)	BeefDelayTimer = 0;
+            }
+        } else {
+            TmpCurVoice = GetVoice_State(TmpCurVoice, now_ment);
+            if (bDingdong == FALSE) TmpCurVoice = GetVoice_OpenCloseUpDn(TmpCurVoice);
+            TmpCurVoice = GetVoice_Floor(TmpCurVoice, get_floorment());
+            if (bSetCarBtnVoice) TmpCurVoice = GetVoice_CarCall(TmpCurVoice, CurCarKey, BefCarKey);
+            if (bSetSong) TmpCurVoice = GetVoice_Song(TmpCurVoice);
+        }
+
+
+        if (TmpCurVoice != NO_MENT) {
+            now_ment = TmpCurVoice;
+            _VOICE_ACT = VOICE_ON;
+            if (bVoicePlaying) {
+                SPI_Stop_Play(); // 일단, 기존 방송 중이던 음성 중지 !
+                if ((now_ment >= START_FL) && (now_ment <= END_FL)) {
+                    PlaySeq = DINGDONG_READY_SEQ;
+                    CurFloorVoice = now_ment;
+                } else {
+                    PlaySeq = CURVOICE_READY_SEQ;
+                }
+            } else {
+                /* --> 주의 이 조건안에 들어가야 딩동이 나온다. <--*/
+                if (is_flr_arrival_ment()) { // 층 도착 !
+                    PlaySeq = DINGDONG_PLAY_SEQ;
+                    CurFloorVoice = now_ment;
+                } else {
+                    PlaySeq = CURVOICE_PLAY_SEQ;
+                }
+            }
+        }
+
+        switch (PlaySeq) {
+            case DINGDONG_READY_SEQ:
+                if (bVoicePlaying == FALSE) {
+                    PlaySeq = DINGDONG_PLAY_SEQ;
+                }
+                break;
+            case DINGDONG_PLAY_SEQ:
+                SPI_Play(DINGDONG_MENT); // 도착 알림 딩동 !
+                bDingdong = TRUE;
+                PlaySeq = ALARM_PLAYING_SEQ;
+                break;
+            case ALARM_PLAYING_SEQ:
+                if (bVoicePlaying) {
+                    PlaySeq = CURVOICE_READY_SEQ;
+                }
+                break;
+            case CURVOICE_READY_SEQ:
+                if (bVoicePlaying == FALSE) {
+                    if (now_ment & 0x80)
+                        PlaySeq = END_CHK_SEQ;
+                    else
+                        PlaySeq = CURVOICE_PLAY_SEQ;
+
+                    if (bDingdong)
+                        PlaySeq = CURFLOORVOICE_PLAY_SEQ;
+                }
+                break;
+            case CURFLOORVOICE_PLAY_SEQ:
+                SPI_Play(CurFloorVoice);
+                bDingdong = FALSE;
+                if(bSetOppositeDoor)	bOppositeDoor_Enab = TRUE;
+                PlaySeq = CURVOICE_PLAYING_SEQ;
+                break;
+            case CURVOICE_PLAY_SEQ:
+                SPI_Play(now_ment); // 도착 '몇 층입다','문이열립이다','닫힙니다' 등 안내방송 출력
+                PlaySeq = CURVOICE_PLAYING_SEQ;
+                break;
+            case CURVOICE_PLAYING_SEQ:
+                if (bVoicePlaying) {
+                    PlaySeq = END_CHK_SEQ;
+                    if (bAfterCancel) {
+                        bAfterCancel = FALSE;
+                        PlaySeq = CALCEL_READY_SEQ;
+                    }
+                }
+                break;
+            case END_CHK_SEQ:
+                if (bVoicePlaying == FALSE) {
+                    PlaySeq = END_SEQ;
+                    _VOICE_ACT = VOICE_OFF;
+                }
+                break;
+            case CALCEL_READY_SEQ:
+                if (bVoicePlaying == FALSE) {
+                    PlaySeq = CALCEL_PLAY_SEQ;
+                }
+                break;
+            case CALCEL_PLAY_SEQ:
+                SPI_Play(CANCLE_MENT); // 도착 알림 딩동 !
+                PlaySeq = CURVOICE_PLAYING_SEQ;
+                break;
+        }
+
+
+        if (VoiceBusy()) {
+            bVoicePlaying = TRUE;
+        } else {
+            if (PlaySeq == END_SEQ) {
+                now_ment = NO_MENT;
+                bBeepEnab = TRUE;
+                bDingdong = FALSE;
+            }
+            bVoicePlaying = FALSE;
+        }
+    }
+}
+
+
+//##################################//
+// 인터럽트 함수			    	//
+//##################################//
+
+void interrupt isr(void) {
+//    unsigned char i;
+
+
+    if (TMR0IF) {
+
+        TMR0IF = 0 ;
+        TMR0L = MSEC_L;
+        TMR0H = MSEC_H;
+
+        TestMentDelayTimer++;
+        shiftTime++;
+
+        if (BeefDelayTimer < 0xffff) BeefDelayTimer++;
+        if (RealayTestTimer < 0xffff) RealayTestTimer++;
+
+        abctimer++;
+        if (abctimer > 100) {
+            abctimer = 0;
+            if (UpDnVoiceTimer < 200)	UpDnVoiceTimer++;
+            if (nBefFlrTime < 200)	nBefFlrTime++;
+
+            if (FloorXCnt < 200)	FloorXCnt++;
+
+
+        }
+
+        Ext_IO_8_Timer_1msec();
+
+    }
+
+
+#ifdef	CPU45K80
+    if (PIR5 > 0) {
+        CanInterrupt();
+    }
+#else
+    if (PIR3 > 0) {
+        CanInterrupt();
+    }
+#endif
+
+}
 
 
 
