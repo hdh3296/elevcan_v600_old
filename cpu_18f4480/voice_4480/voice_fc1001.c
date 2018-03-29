@@ -135,6 +135,12 @@ date    :       1999,9,21
 #define         MINUS_3                	FLOOR_B7+97	//105
 #define         MINUS_4                	FLOOR_B7+98	//106
 #define         MINUS_5                	FLOOR_B7+99	//107
+#define         DISPLAY_0_BTN           FLOOR_B7+100 //108
+#define         MINUS_1_BTN            	FLOOR_B7+101 //109
+#define         MINUS_2_BTN            	FLOOR_B7+102 //110
+#define         MINUS_3_BTN            	FLOOR_B7+103 //111
+#define         MINUS_4_BTN            	FLOOR_B7+104 //112
+#define         MINUS_5_BTN            	FLOOR_B7+105 //113
 
 
 #define NO_MENT 0xff // ¸àÆ® ¾øÀ½
@@ -622,7 +628,7 @@ void interrupt isr(void) {
 
 }
 
-
+#define DOT_MINUS	'Z'
 
 unsigned char GetFloorMent(void) {
     unsigned char tmMent;
@@ -633,7 +639,7 @@ unsigned char GetFloorMent(void) {
     dot1 = ELE_DSP1;
     if (dot1 == 'B') {
         tmMent = FLOOR_F1;
-	} else if (dot1 == '-') {
+	} else if (dot1 == DOT_MINUS) {
         tmMent = MINUS_1;	
     } else if (dot1 == 'P') {
         tmMent = FLOOR_F1;
@@ -657,9 +663,13 @@ unsigned char GetFloorMent(void) {
     if (dot1_used) {
         dot2 = ELE_DSP2;
         if (dot2 == '0') {
-            if (tmMent < (10 + FLOOR_B1)) {
-                tmMent = 0xff;
-            }
+      		if (dot1 == '0') {
+				tmMent = DISPLAY_0;
+        	} else {
+	            if (tmMent < (10 + FLOOR_B1)) {
+	                tmMent = 0xff;
+	            }
+	        }
         } else if (dot2 == 'F') {
             if (ELE_DSP1 == 'G') {
                 tmMent = FLOOR_G;
@@ -681,15 +691,11 @@ unsigned char GetFloorMent(void) {
         } else if ((dot2 >= '1') && (dot2 <= '9')) {
 			if (dot1 == 'B') {
                 tmMent = tmMent - (dot2 - '0');
-			} else if (dot1 == '-') {
+			} else if (dot1 == DOT_MINUS) {
 				tmMent = tmMent + (dot2 - '0') - 1;
             } else {
                 tmMent = tmMent + (dot2 - '0');
-            }
-        } else if (dot2 == '0') {
-        	if (dot1 == '0') {
-				tmMent = DISPLAY_0;
-        	}        	
+            }      	
         } else {
             tmMent = 0xff;
         }
