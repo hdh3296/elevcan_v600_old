@@ -385,7 +385,7 @@ extern void    SetCarKeyCancel();
 extern unsigned char DspCharRdWr();
 extern void    HextoASCIIByte();
 extern void    TestVoicePlay();
-extern unsigned char    GetCarCallMent(unsigned char);
+extern unsigned char    get_carcallment(unsigned char);
 extern unsigned char	GetVoice_CarCall(unsigned char, unsigned char*, unsigned char*);
 extern  unsigned char    GetVoice_Floor(unsigned char, unsigned char);
 extern unsigned char	GetVoice_OpenCloseUpDn(unsigned char);
@@ -937,7 +937,7 @@ unsigned char   GetVoice_CarCall(UCHAR xTmpCurVoice, UCHAR *xCurkey, UCHAR *xBef
             if ((xCurkey[j] & bitKey) &&  !(xBefkey[j] & bitKey)) { // 카콜 등록이면? (참 && !거짓)
                 if (iFloor != (ELE_nCURFLOOR - 1)) { // 카콜 등록 층이 현재 층과 같지 않을 때는 출력을 내보낸다.
                     xBefkey[j] = (xBefkey[j] | bitKey);
-                    xTmpCurVoice = GetCarCallMent(iFloor);
+                    xTmpCurVoice = get_carcallment(iFloor);
                 }
                 break;
             } else if (!(xCurkey[j] & bitKey) && (xBefkey[j] & bitKey)) { //카콜 취소이면? (!거짓 && 참)
@@ -945,7 +945,7 @@ unsigned char   GetVoice_CarCall(UCHAR xTmpCurVoice, UCHAR *xCurkey, UCHAR *xBef
 
                 if (bSetAfterCancel) {
                     bAfterCancel = TRUE;
-                    xTmpCurVoice = GetCarCallMent(iFloor);
+                    // xTmpCurVoice = get_carcallment(iFloor);
                 } else {
                     xTmpCurVoice = CANCLE_MENT;
                 }
@@ -969,50 +969,54 @@ unsigned char   GetVoice_CarCall(UCHAR xTmpCurVoice, UCHAR *xCurkey, UCHAR *xBef
 
 
 // 카콜 키 상태 값을 CurVoide에 저장한다.
-unsigned char    GetCarCallMent(unsigned char Call_Floor) {
-    unsigned char   cDotDsp, i, bValid;
-    UCHAR tmMent;
+unsigned char    get_carcallment(unsigned char Call_Floor) {
+    unsigned char   dot1, dot2, i, bValid;
+    UCHAR ment;
 
     bValid = TRUE;
     // Dot1
     i = (Call_Floor * 2);
-    cDotDsp = FloorChar[i + 0];
-    if (cDotDsp == 'B') {
-        tmMent = CARBTN_F1;
-    } else if (cDotDsp == '0') {
-        tmMent = CARBTN_B1;
-    } else if (cDotDsp == '1') {
-        tmMent = 10 + CARBTN_B1;
-    } else if (cDotDsp == '2') {
-        tmMent = 20 + CARBTN_B1;
-    } else if (cDotDsp == '3') {
-        tmMent = 30 + CARBTN_B1;
+    dot1 = FloorChar[i + 0];
+    if (dot1 == 'B') {
+        ment = CARBTN_F1;
+    } else if (dot1 == '0') {
+        ment = CARBTN_B1;
+    } else if (dot1 == '1') {
+        ment = 10 + CARBTN_B1;
+    } else if (dot1 == '2') {
+        ment = 20 + CARBTN_B1;
+    } else if (dot1 == '3') {
+        ment = 30 + CARBTN_B1;
     } else {
         bValid = FALSE;
-        tmMent = 0xff;
+        ment = 0xff;
     }
     // Dot2
     if (bValid) {
-        cDotDsp = FloorChar[i + 1];
-        if (cDotDsp == 'L') {
-            tmMent = CARBTN_L;
-        } else if (cDotDsp == 'M') {
-            tmMent = CARBTN_M;
-        } else if (cDotDsp == '0') {
-            if (tmMent < (10 + CARBTN_B1))
-                tmMent = 0xff;
-        } else if (cDotDsp == 'F') {
-            tmMent = (tmMent + 4);
-        } else if ((cDotDsp >= '1') && (cDotDsp <= '9')) {
-            if (tmMent == CARBTN_F1) // 지하층이면?
-                tmMent = tmMent - (cDotDsp - '0');
+        dot2 = FloorChar[i + 1];
+        if (dot2 == 'L') {
+            ment = CARBTN_L;
+        } else if (dot2 == 'M') {
+            ment = CARBTN_M;
+        } else if (dot2 == '0') {
+			if (dot1 == '0') {
+				ment = DISPLAY_0_BTN;
+			} else {
+	            if (ment < (10 + CARBTN_B1))
+	                ment = 0xff;
+			}
+        } else if (dot2 == 'F') {
+            ment = (ment + 4);
+        } else if ((dot2 >= '1') && (dot2 <= '9')) {
+            if (ment == CARBTN_F1) // 지하층이면?
+                ment = ment - (dot2 - '0');
             else // 지상층이면?
-                tmMent = tmMent + (cDotDsp - '0');
+                ment = ment + (dot2 - '0');
         } else {
-            tmMent = 0xff;
+            ment = 0xff;
         }
     }
-    return tmMent;
+    return ment;
 }
 
 
