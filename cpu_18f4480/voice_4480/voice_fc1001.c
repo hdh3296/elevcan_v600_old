@@ -143,9 +143,7 @@ typedef	unsigned int	bool;
 #define         MINUS_3_BTN            	FLOOR_B7+103 //111
 #define         MINUS_4_BTN            	FLOOR_B7+104 //112
 #define         MINUS_5_BTN            	FLOOR_B7+105 //113
-
-
-#define NO_MENT 0xff // ¸àÆ® ¾øÀ½
+#define         NO_MENT                 0xff // ¸àÆ® ¾øÀ½
 
 
 
@@ -767,57 +765,77 @@ unsigned char   GetVoice_CarCall(UCHAR xTmpCurVoice, UCHAR *xCurkey, UCHAR *xBef
 
 
 unsigned char    get_carcallment(unsigned char Call_Floor) {
-    unsigned char   dot1, dot2, i, bValid;
-    UCHAR ment;
+    unsigned char   dot1, dot2, i;
+    UCHAR ment = EMPTY_MENT;
 
-    bValid = TRUE;
-    // Dot1
     i = (Call_Floor * 2);
     dot1 = FloorChar[i + 0];
-    if (dot1 == 'B') {
-        ment = CARBTN_F1;
-    } else if (dot1 == MINUS_DOT) {
-        ment = MINUS_1_BTN;
-    } else if (dot1 == '0') {
-        ment = CARBTN_B1;
-    } else if (dot1 == '1') {
-        ment = 10 + CARBTN_B1;
-    } else if (dot1 == '2') {
-        ment = 20 + CARBTN_B1;
-    } else if (dot1 == '3') {
-        ment = 30 + CARBTN_B1;
-    } else {
-        bValid = FALSE;
-        ment = 0xff;
+    switch (dot1) {
+        case 'B':
+            break;
+        case MINUS_DOT:
+            break;
+        case '0':
+        case '1':
+        case '2':
+        case '3':
+            break;
+        default:
+            return EMPTY_MENT;
     }
-    // Dot2
-    if (bValid) {
-        dot2 = FloorChar[i + 1];
-        if (dot2 == 'L') {
-            ment = CARBTN_L;
-        } else if (dot2 == 'M') {
-            ment = CARBTN_M;
-        } else if (dot2 == '0') {
+
+    dot2 = FloorChar[i + 1];
+    switch (dot2) {
+        case 'F':
+            return (ment + 4);
+        case '0':
             if (dot1 == '0') {
-                ment = DISPLAY_0_BTN;
-            } else {
-                if (ment < (10 + CARBTN_B1))
-                    ment = 0xff;
+                return DISPLAY_0_BTN;
             }
-        } else if (dot2 == 'F') {
-            ment = (ment + 4);
-        } else if ((dot2 >= '1') && (dot2 <= '9')) {
-            if (ment == CARBTN_F1) { // ÁöÇÏÃþÀÌ¸é?
-                ment = ment - (dot2 - '0');
-            } else if (ment == MINUS_1_BTN) {
-                ment = ment + (dot2 - '0') - 1;
-            } else { // Áö»óÃþÀÌ¸é?
-                ment = ment + (dot2 - '0');
+
+            if (ment < (10 + CARBTN_B1)) {
+                return EMPTY_MENT;
             }
-        } else {
-            ment = 0xff;
-        }
+
+            return EMPTY_MENT;
+        case  '1':
+        case  '2':
+        case  '3':
+        case  '4':
+        case  '5':
+        case  '6':
+        case  '7':
+        case  '8':
+        case  '9':
+            if (dot1 == 'B') { // ÁöÇÏÃþÀÌ¸é?
+                return CARBTN_F1 - (dot2 - '0');
+            }
+
+            if (dot1 == MINUS_DOT) {
+                return (MINUS_1_BTN - 1) + (dot2 - '0');
+            }
+
+            if (dot1 == '0') {
+                return CARBTN_B1 + (dot2 - '0');
+            }
+
+            if (dot1 == '1') {
+                return (CARBTN_B1 + 10) + (dot2 - '0');
+            }
+
+            if (dot1 == '2') {
+                return (CARBTN_B1 + 20) + (dot2 - '0');
+            }
+
+            if (dot1 == '3') {
+                return (CARBTN_B1 + 30) + (dot2 - '0');
+            }
+
+            return EMPTY_MENT;
+        default:
+            return EMPTY_MENT;
     }
+
     return ment;
 }
 
