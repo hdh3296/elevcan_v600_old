@@ -19,22 +19,22 @@ const   unsigned        char    OVL[]={
 
    0x00,0x00,
    0x3E,0x41,0x41,0x41,0x3E, // O  31
-   0x00, 
+   0x00,
    0x1F,0x20,0x40,0x20,0x1F, // V  38
    0x00,
    0x7F,0x49,0x49,0x49,0x41, // E  21
    0x00,
    0x7F,0x09,0x19,0x29,0x46, // R  30
-   0x00,    
+   0x00,
    0x7F,0x40,0x40,0x40,0x40, // L  28
    0x00,
    0x3E,0x41,0x41,0x41,0x3E, // O  31
-   0x00, 
+   0x00,
    0x7E,0x11,0x11,0x11,0x7E, // A  17
-   0x00,   
+   0x00,
    0x7F,0x41,0x41,0x22,0x1C, // D  20
 
-   0x00,0x00,0x00 
+   0x00,0x00,0x00
 
 };
 
@@ -42,62 +42,62 @@ const   unsigned        char    OVL[]={
 const   unsigned        char    FULL[]={
    0x00,0x00,
    0x7F,0x09,0x09,0x09,0x01,  // F
-   0x00,   
+   0x00,
    0x3F,0x40,0x40,0x40,0x3F,  // U  37
    0x00,
    0x7F,0x40,0x40,0x40,0x40,  // L  28
    0x00,
    0x7F,0x40,0x40,0x40,0x40,  // L  28
-   0x00,0x00,0x00 
+   0x00,0x00,0x00
 };
 
 
 const   unsigned        char    STOP1[]={
    0x00,0x00,
    0x46,0x49,0x49,0x49,0x31, // S  35
-   0x00,   
+   0x00,
    0x01,0x01,0x7F,0x01,0x01, // T  36
    0x00,
    0x3E,0x41,0x41,0x41,0x3E, // O  31
    0x00,
    0x7F,0x09,0x09,0x09,0x06, // P  32
-   0x00,0x00,0x00 
+   0x00,0x00,0x00
 };
 
 const   unsigned        char    FIRE[]={
    0x00,0x00,
    0x7F,0x09,0x09,0x09,0x01,  //F
-   0x00,   
+   0x00,
    0x00,0x41,0x7F,0x41,0x00,  //I  25
    0x00,
    0x7F,0x09,0x19,0x29,0x46,  //R  30
    0x00,
    0x7F,0x49,0x49,0x49,0x41,  //E  21
-   0x00,0x00,0x00 
+   0x00,0x00,0x00
 };
 
 const   unsigned        char    EMG[]={
    0x00,0x00,
    0x7F,0x49,0x49,0x49,0x41, // E  21
-   0x00,   
+   0x00,
    0x7F,0x02,0x0C,0x02,0x7F, // M  29
    0x00,
    0x3E,0x41,0x49,0x49,0x7A, // G  23
-   0x00,    
-   0x00,0x00,0x00,0x00,0x00,  // blanck  
-   0x00,0x00,0xff 
+   0x00,
+   0x00,0x00,0x00,0x00,0x00,  // blanck
+   0x00,0x00,0xff
 };
 
 const   unsigned        char    INS[]={
    0x00,0x00,
    0x00,0x41,0x7F,0x41,0x00,  // I  25
-   0x00, 
+   0x00,
    0x7F,0x04,0x08,0x10,0x7F,  // N  30
-   0x00, 
+   0x00,
    0x46,0x49,0x49,0x49,0x31,  // S  35
-   0x00,    
-   0x00,0x00,0x00,0x00,0x00,  // blanck  
-   0x00,0x00,0x00 
+   0x00,
+   0x00,0x00,0x00,0x00,0x00,  // blanck
+   0x00,0x00,0x00
 };
 
 
@@ -105,27 +105,27 @@ const   unsigned        char    INS[]={
 const   unsigned        char    PARKING[]={
    0x00,0x00,
    0x7F,0x09,0x09,0x09,0x06,  // P  25
-   0x00,   
+   0x00,
    0x7E,0x11,0x11,0x11,0x7E,  // A  17
-   0x00,   
+   0x00,
    0x7F,0x09,0x19,0x29,0x46,  // R  30
    0x00,
    0x7F,0x08,0x14,0x22,0x41,  // K  35
-   0x00, 
+   0x00,
    0x00,0x41,0x7F,0x41,0x00,  // I  25
-   0x00, 
+   0x00,
    0x7F,0x04,0x08,0x10,0x7F,  // N  30
-   0x00,    
+   0x00,
    0x3E,0x41,0x49,0x49,0x7A,  // G  23
-   0x00,    
-   0x00,0x00,0x00,0x00,0x00,  // blanck  
-   0x00,0x00,0x00 
+   0x00,
+   0x00,0x00,0x00,0x00,0x00,  // blanck
+   0x00,0x00,0x00
 };
 
 
 #if defined(RUSSIA_FONT)
 // 최대 14자리 문자 저장 가능
-// 러시아용 
+// 러시아용
 unsigned        char    EMG_buf[]		={"ABAPNR"};
 unsigned        char    PARKING_buf[]	={"UAPKOBKA"};
 unsigned        char    INS_buf[]		={"PEBNMNR"};
@@ -136,7 +136,7 @@ unsigned        char    OVL_buf[]		={"UEPELPGM"};
 unsigned        char    urgent_call_buf[]	={"CPOYHDW_BDMOB"};
 
 #else
-// 일반용 
+// 일반용
 unsigned        char    EMG_buf[]		={"EMG"};
 unsigned        char    PARKING_buf[]	={"PARKING"};
 unsigned        char    INS_buf[]		={"INS"};
@@ -167,7 +167,7 @@ unsigned    char  ThisStstus,BefStstus=0xff,shiftpt;
 
 unsigned    char  befDspChar[2];
 
-bit	bErrorCar; 
+bit	bErrorCar;
 bit	bNew_Law=0;
 
 
@@ -182,7 +182,7 @@ void out_lcdDisplay(unsigned char id)
 	if ((RcvBuf[IdPt+DSP1] == '0') && (RcvBuf[IdPt+DSP2] == 'G'))
 	{
 		BCD1_LAMP=0;
-		BCD2_LAMP=1; 
+		BCD2_LAMP=1;
 		BCD3_LAMP=0;
 		BCD4_LAMP=0;
 		BCD5_LAMP=1;
@@ -224,7 +224,7 @@ void out_lcdDisplay(unsigned char id)
 		if (RcvBuf[IdPt+DSP2] == '0')
 		{
 			// 이런 경우는 없음 .
-		}		
+		}
 		else if (RcvBuf[IdPt+DSP2] == '1')
 		{
 			BCD1_LAMP=0; // M0
@@ -307,8 +307,8 @@ void out_lcdDisplay(unsigned char id)
 				BCD3_LAMP=1;
 				BCD4_LAMP=1;
 				BCD5_LAMP=0;
-			
-		}		
+
+		}
 		else if (RcvBuf[IdPt+DSP2] == '1')
 		{
 			BCD1_LAMP=1;
@@ -391,8 +391,8 @@ void out_lcdDisplay(unsigned char id)
 				BCD3_LAMP=0;
 				BCD4_LAMP=1;
 				BCD5_LAMP=1;
-			
-		}		
+
+		}
 		else if (RcvBuf[IdPt+DSP2] == '1')
 		{
 			BCD1_LAMP=0;
@@ -457,15 +457,15 @@ void out_lcdDisplay(unsigned char id)
 				BCD4_LAMP=0;
 				BCD5_LAMP=1;
 		}
-	}	
-	
-	
-	
-		//Segment not dispaly			
-		SEG_F=Fire; 		 
-		SEG_G1=OverLoad;		 
-		SEG_G2=1; // 24V 전원 공급 용.(n24) 
-		/*---> FULL 은 기본적으로  FULL 접점에서 출력 나온다. <---*/ 
+	}
+
+
+
+		//Segment not dispaly
+		SEG_F=Fire;
+		SEG_G1=OverLoad;
+		SEG_G2=1; // 24V 전원 공급 용.(n24)
+		/*---> FULL 은 기본적으로  FULL 접점에서 출력 나온다. <---*/
 
 }
 
@@ -487,7 +487,7 @@ void out_1_1_flr(unsigned char id)
 			BCD5_LAMP=0;
 			BCD6_LAMP=0;
 			BCD7_LAMP=0;
-			BCD8_LAMP=0;			
+			BCD8_LAMP=0;
 			break;
 		case	2:
 			BCD1_LAMP=0;
@@ -566,20 +566,20 @@ void out_1_1_flr(unsigned char id)
 
 #endif
 
-void    CompanyChk(unsigned char id)        
+void    CompanyChk(unsigned char id)
 {
     unsigned int    IdPt;
     unsigned char   TmpCompany;
 
 	IdPt=IsBufferPt(id);
-    
+
     if(!MaskSetBit){
        if((RcvBuf[IdPt+DSP1] == 'C') && (RcvBuf[IdPt+DSP2] == 'M') && !(RcvBuf[IdPt+1] & S1_AUTO))  {
 	        TmpCompany=(unsigned char)RxSidBuffer;
-			if(TmpCompany != Company){ 
+			if(TmpCompany != Company){
 	            Company=TmpCompany;
 	            CmpSetBit=1;
-			}      
+			}
         }
     }
 }
@@ -595,10 +595,10 @@ unsigned char   Lamp(unsigned char id)
 #ifdef	__COUNT_CAR
     unsigned char   f_dsp,s_dsp;
 #endif
-   
+
 //    IdPt=(id * HOST_DATA_RECOD) + RCV_DATA;
 	IdPt=IsBufferPt(id);
-    
+
     FDsp=0;
 
 //    HostCallMe=0;
@@ -620,7 +620,7 @@ unsigned char   Lamp(unsigned char id)
 
 /*
     if((RcvBuf[IdPt+DSP1] == 'J') && (RcvBuf[IdPt+DSP2] == 'D') && !(RcvBuf[IdPt+1] & S1_AUTO))	SetupBit=1;
-    else                                                                                        SetupBit=0;      
+    else                                                                                        SetupBit=0;
 
     if(SetupBit)    return(0);
 */
@@ -659,21 +659,21 @@ unsigned char   Lamp(unsigned char id)
 	if(RcvBuf[IdPt+SL_mCrtExtMoveFlr]>0){
 		virkey=(RcvBuf[IdPt+SL_mCrtExtMoveFlr] & ONLY_FLR);
 		if( (virkey==0) && (RcvBuf[IdPt+SL_mCrtExtMoveFlr] & DN_READY) ){
-			virkey=64;	
-			VirCarKeySet(virkey);	
+			virkey=64;
+			VirCarKeySet(virkey);
 		}
-		else if( !(RcvBuf[IdPt+SL_mCrtExtMoveFlr] & UPDN_READY)){ 
-			VirCarKeySet(virkey);				
+		else if( !(RcvBuf[IdPt+SL_mCrtExtMoveFlr] & UPDN_READY)){
+			VirCarKeySet(virkey);
 		}
 	}
 #endif
 
- 
+
 ////////////////dot type dsp hib,hpi////////////////////////////////////////////
 #if defined(__DSP_DOT)
 
     if((RcvBuf[IdPt+DSP1]!= befDspChar[0]) || (RcvBuf[IdPt+DSP2] != befDspChar[1])){
-        FloorChange=1;   
+        FloorChange=1;
         BefCurFloor=CurFloor;
 		BefStstus=0xff;
 		shift=0;
@@ -686,7 +686,7 @@ unsigned char   Lamp(unsigned char id)
 	    if( (RcvBuf[IdPt+DSP1] == ' ') && (RcvBuf[IdPt+DSP2] == ' ')){
 			RcvBuf[IdPt+DSP1] = 0x3d;
 			RcvBuf[IdPt+DSP2] = 0x3d;
-	    }	
+	    }
 	    else if( (RcvBuf[IdPt+DSP1] < '0') || (RcvBuf[IdPt+DSP1] > 'Z')){
 			RcvBuf[IdPt+DSP1] = 0x30;
 			RcvBuf[IdPt+DSP2] = 0x30;
@@ -714,20 +714,20 @@ unsigned char   Lamp(unsigned char id)
 
 #if defined(__TYPE_DIRECT_BCD)
 
-	out_lcdDisplay(id); // 만일, LCD 용이면 이 함수를 사요하세요. 
+	out_lcdDisplay(id); // 만일, LCD 용이면 이 함수를 사요하세요.
 	//out_1_1_flr(id);
-		
+
 
 
 #else
 
 
-   if(RcvBuf[IdPt+DSP1] == 'B')      dsplamp0 = 0x1f;   
+   if(RcvBuf[IdPt+DSP1] == 'B')      dsplamp0 = 0x1f;
    else if(RcvBuf[IdPt+DSP1] == '1') dsplamp0 = 0x06;
    else if(RcvBuf[IdPt+DSP1] == '2') dsplamp0 = 0x0b;
    else if(RcvBuf[IdPt+DSP1] == '3') dsplamp0 = 0x07;
    else                              dsplamp0 = 0x0;
-   
+
     BefCurFloor=(P2 & 0xe0);
     BefCurFloor=(dsplamp0 | BefCurFloor);
     P2=BefCurFloor;
@@ -749,7 +749,7 @@ unsigned char   Lamp(unsigned char id)
 
 	if( (RcvBuf[IdPt+DSP1] == ' ') && (RcvBuf[IdPt+DSP2] == ' ')){
       dsplamp1=0;
-	} 
+	}
 
    P0=dsplamp1;
 
@@ -781,7 +781,7 @@ unsigned char   Lamp(unsigned char id)
 		case	7:
 			dsplamp1=0x40;
 			break;
-	}	
+	}
 */
 
 
@@ -801,11 +801,11 @@ unsigned char   Lamp(unsigned char id)
 
 	if((RcvBuf[IdPt+3] 	& S3_PARKING))      dsplamp0=(dsplamp0 | 0x10); //parking
 	if(RcvBuf[IdPt+3] 	& S3_STOP)          dsplamp0=(dsplamp0 | 0x02); //water
-	if(RcvBuf[IdPt + 24] & 0x20)      		dsplamp0=(dsplamp0 | 0x04); //error  
+	if(RcvBuf[IdPt + 24] & 0x20)      		dsplamp0=(dsplamp0 | 0x04); //error
 
 
-    if((RcvBuf[IdPt+3] & S3_OPEN_SUB) && (RcvBuf[IdPt+2] 	& S2_FIRE))	dsplamp0=(dsplamp0 | 0x01); //fire      
-    if((RcvBuf[IdPt+1] & S1_OPEN)     && (RcvBuf[IdPt+2] 	& S2_FIRE))	dsplamp0=(dsplamp0 | 0x01); //fire      
+    if((RcvBuf[IdPt+3] & S3_OPEN_SUB) && (RcvBuf[IdPt+2] 	& S2_FIRE))	dsplamp0=(dsplamp0 | 0x01); //fire
+    if((RcvBuf[IdPt+1] & S1_OPEN)     && (RcvBuf[IdPt+2] 	& S2_FIRE))	dsplamp0=(dsplamp0 | 0x01); //fire
 
 
     BefCurFloor=(P2 & 0xe0);
@@ -816,7 +816,7 @@ unsigned char   Lamp(unsigned char id)
 #endif
 
 //	if(RcvBuf[IdPt + 24] & 0x20)      		FULL_LAMP=1; //error
-//	else									FULL_LAMP=0;					  
+//	else									FULL_LAMP=0;
 
    if(RcvBuf[IdPt+3] & S3_FULL)             FULL_LAMP=1;
    else                                     FULL_LAMP=0;
@@ -838,16 +838,16 @@ unsigned char   Lamp(unsigned char id)
     Open=0;
 
 	if(bIamXSubDoor){
-        if((RcvBuf[IdPt+3] & S3_OPEN_SUB))  Open=1;   
+        if((RcvBuf[IdPt+3] & S3_OPEN_SUB))  Open=1;
     }
     else{
-        if(RcvBuf[IdPt+1] & S1_OPEN)        Open=1;   
-    }    
+        if(RcvBuf[IdPt+1] & S1_OPEN)        Open=1;
+    }
 
 
    Close=0;
    if((RcvBuf[IdPt+1] & S1_CLOSE)){
-      Close=1;   
+      Close=1;
    }
 
 
@@ -857,7 +857,7 @@ unsigned char   Lamp(unsigned char id)
 
 
 #ifdef	CPU65K80
-#ifndef __TYPE_CAR      
+#ifndef __TYPE_CAR
    USER_LAMP3=0;
    if(RcvBuf[IdPt+4] & S4_HALLLANTERN_UP)        USER_LAMP3=1;
 
@@ -881,7 +881,7 @@ unsigned char   Lamp(unsigned char id)
 
    ShiftOn=0;
    if((RcvBuf[IdPt+3] & S3_SHIFT))          ShiftOn=1;
-   
+
    Fire=0;
    if(RcvBuf[IdPt+2] & S2_FIRE)             Fire=1;
 
@@ -891,7 +891,7 @@ unsigned char   Lamp(unsigned char id)
    KeyClr=0;
    if(RcvBuf[IdPt+2] & S2_CAR_BUT_CLR)      KeyClr=1;
 
-   
+
 	Emg=0;
    if(RcvBuf[IdPt+1] & S1_EMG)              Emg=1;
 
@@ -905,7 +905,7 @@ unsigned char   Lamp(unsigned char id)
 
 	CurKey=0;
    if(RcvBuf[IdPt+3] & S3_CURKEY)           CurKey=1;
-         
+
 	Auto=0;
    if(RcvBuf[IdPt+1] & S1_AUTO)             Auto=1;
 
@@ -948,19 +948,20 @@ unsigned char   Lamp(unsigned char id)
 */
 
 
-	
+
 #else
    AUTO_LAMP=0;
-   if(RcvBuf[IdPt+2] & S2_LAMP_USER)        AUTO_LAMP=1;
+   if(RcvBuf[IdPt+2] & S2_LAMP_USER)        AUTO_LAMP=1; // user lamp1
+
    MANUAL_LAMP=0;
-   if(RcvBuf[IdPt+1] & S1_MANUAL)           MANUAL_LAMP=1;
-   
-#endif	
+   if(RcvBuf[IdPt+1] & S1_MANUAL)           MANUAL_LAMP=1; // user lmap2
+
+#endif
 
 
 #else
     Open=0;
-    Close=1;   
+    Close=1;
 	CarMove=0;
 	AUTO_LAMP=0;
    	MANUAL_LAMP=0;
@@ -968,13 +969,13 @@ unsigned char   Lamp(unsigned char id)
    	DnMove=0;
 	Vip=0;
    	Parking=0;
-   	ShiftOn=0;   
+   	ShiftOn=0;
    	Fire=0;
    	KeyClrExt=0;
-   	KeyClr=0;   
+   	KeyClr=0;
 	Emg=0;
    	StopBit=0;
-	CurKey=0;         
+	CurKey=0;
 	Auto=1;
 	OverLoad=0;
 	Full=0;
@@ -1019,10 +1020,10 @@ void  ArrowUpDown(void)
    if(!ShiftOn){
       for(i=11;i<=15;i++){
          shiftDataBuf[i]=DspBuf[i];
-      }              
-      Arrowshift=0; 
+      }
+      Arrowshift=0;
    }
-   
+
    else{
       if(UpMove || DnMove){
          Arrowshift=(Arrowshift + 1)%11;
@@ -1031,16 +1032,16 @@ void  ArrowUpDown(void)
             for(i=11;i<=15;i++){
 				if(UpMove)	j=(DspBuf[i] << k);
 				else 		j=(DspBuf[i] >> k);
-               shiftDataBuf[i]=j;           
+               shiftDataBuf[i]=j;
             }
          }
-      }         
+      }
       else{
          for(i=11;i<=15;i++){
             shiftDataBuf[i]=DspBuf[i];
-         }              
+         }
          Arrowshift=0;
-      }             
+      }
    }
 }
 
@@ -1056,17 +1057,17 @@ void  ShiftData(void)
 
 #ifndef	__COUNT_CAR
    unsigned char  j,k,l;
-  
+
 
    if(Fire || StopBit || Full || Emg || !Auto || OverLoad || Parking || bErrorCar){
-      	shift=(shift+1)%shiftpt; 
-		j=shift;           
+      	shift=(shift+1)%shiftpt;
+		j=shift;
       	for(i=0;i<=10;i++){
 			if(BefStstus != ThisStstus){
 				BefStstus = ThisStstus;
 				LoadMessage( &DspFlr[0],0);
 
-				if(Emg)				LoadMessage( &EMG_buf[0],14);				
+				if(Emg)				LoadMessage( &EMG_buf[0],14);
 				else if(StopBit)	LoadMessage( &STOP1_buf[0],14);
 				else if(!Auto)		LoadMessage( &INS_buf[0],14);
 				else if(Parking)	LoadMessage( &PARKING_buf[0],14);
@@ -1090,17 +1091,17 @@ void  ShiftData(void)
          for(i=0;i<=10;i++){
             shiftDataBuf[i]=DspBuf[i];
          }
-         ManualToggle=0;                  
+         ManualToggle=0;
       }
-      
+
       if(FloorChange){
          if(!ShiftOn){
             FloorChange=0;
             shift=0;
             for(i=0;i<=10;i++){
                shiftDataBuf[i]=DspBuf[i];
-            }            
-         }      
+            }
+         }
 
          else if(UpMove || DnMove){
             shift=(shift + 1)%9;
@@ -1115,24 +1116,24 @@ void  ShiftData(void)
 				}
 
            		shiftDataBuf[i]=(shiftDataBuf[i] | j);
-            
+
                	if(shift==8)   FloorChange=0;
-            }         
-         }         
+            }
+         }
          else{
             FloorChange=0;
             shift=0;
             for(i=0;i<=10;i++){
                shiftDataBuf[i]=DspBuf[i];
-            }            
-         }      
+            }
+         }
       }
-   }                     
+   }
 
 #else
 	for(i=0;i<=10;i++){
 	   shiftDataBuf[i]=DspBuf[i];
-	}            
+	}
 #endif
 
    ArrowUpDown();
