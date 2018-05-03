@@ -299,7 +299,7 @@ bit active_key;
 bit bVoicePlaying; // 현재 음성 방송 중인지 아닌지
 bit bCloseVoice;
 bit bSetCarBtnVoice;
-unsigned int warterMentDelayTimer;
+
 
 typedef struct {
     unsigned char CarKey[4];
@@ -615,7 +615,6 @@ void interrupt isr(void) {
             }
         }
 
-        warterMentDelayTimer++;
         Ext_IO_8_Timer_1msec();
     }
 
@@ -891,10 +890,7 @@ bool isWarterMentEnable() {
 }
 
 
-bool isWaterMentOutDelay() {
 
-	return (warterMentDelayTimer > 5000);
-}
 
 bool checkWarterMentCondition(UCHAR nowMent) {
 
@@ -972,7 +968,6 @@ unsigned char GetVoice_State(UCHAR returnMent, UCHAR nowMent) {
     if (checkWarterMentCondition(nowMent)) {
         returnMent = MENT_WATER;
 		warterMentCnt++;
-        warterMentDelayTimer = 0;
     }
 
     return returnMent;
