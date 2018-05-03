@@ -362,6 +362,7 @@ extern unsigned char VoiceBusy();
 extern unsigned char GetFloorMent();
 extern unsigned char GetVoice_Song(unsigned char);
 extern unsigned char GetVoice_BeepByBuz(unsigned char);
+bool isWarterState();
 
 
 
@@ -451,7 +452,12 @@ void main(void) {
             _VOICE_ACT = VOICE_ON;
 
             if (bVoicePlaying) {
-                SPI_Stop_Play(); // 일단, 기존 방송 중이던 음성 중지 !
+
+				bool waterState = isWarterState();
+				if (!waterState) {
+					SPI_Stop_Play(); // 일단, 기존 방송 중이던 음성 중지 !
+				}
+
 
                 if ((CurVoice >= START_FL) && (CurVoice <= END_FL)) {
                     PlaySeq = DINGDONG_READY_SEQ;
@@ -887,7 +893,7 @@ bool isWarterMentEnable() {
 
 bool isWaterMentOutDelay() {
 
-	return (warterMentDelayTimer > 10000);
+	return (warterMentDelayTimer > 5000);
 }
 
 bool checkWarterMentCondition(UCHAR nowMent) {
@@ -895,7 +901,7 @@ bool checkWarterMentCondition(UCHAR nowMent) {
 	bool moving = isWarterMentEnable();
 	bool waterMentReady = isWaterEmptyMent(nowMent);
 
-	return (waterMentReady && moving && isWaterMentOutDelay());
+	return (waterMentReady && moving);
 }
 
 
