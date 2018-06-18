@@ -332,7 +332,9 @@ bit valid_key;
 bit active_key;
 bit bVoicePlaying; // 현재 음성 방송 중인지 아닌지
 bit bCloseVoice;
-bit bSetCarBtnVoice;
+bit bDipSw2On;
+bit bInvalid;
+
 
 typedef struct {
     unsigned char CarKey[4];
@@ -423,8 +425,8 @@ bool is_flr_arrival_ment()
 
 
 
-#define MINUS_DOT	'Z'
-#define EMPTY_MENT  0xff
+#define MINUS_DOT	'=' // #todo : 변경하기 마지막에 테스트 완료 후에
+#define EMPTY_MENT 0xff
 unsigned char get_floorment(void) {
     unsigned char ment = EMPTY_MENT;
     unsigned char dot1_used;
@@ -546,10 +548,10 @@ unsigned char   GetVoice_OpenCloseUpDn(unsigned char xTmpCurVoice) {
         if (ELE_bOPEN && (UpDnVoiceTimer > 40)
                 && xbOpened && (xbUpDned == FALSE)) {
             if (ELE_bUP) {
-                xTmpCurVoice = UP_MENT; // 올라갑니다 !
+                if (bInvalid) xTmpCurVoice = UP_MENT; // 올라갑니다.
                 xbUpDned = TRUE;
             } else if (ELE_bDOWN) {
-                xTmpCurVoice = DOWN_MENT; // 내려 갑니다 !
+                if (bInvalid) xTmpCurVoice = DOWN_MENT; // 내려 갑니다.
                 xbUpDned = TRUE;
             }
         }
@@ -563,14 +565,14 @@ unsigned char   GetVoice_OpenCloseUpDn(unsigned char xTmpCurVoice) {
         if ( (ELE_bOUT_OP) && (xbOpened == FALSE) && !bVoicePlaying ) {	//open
             if (bOppositeDoor_Enab) {
                 bOppositeDoor_Enab = FALSE;
-                xTmpCurVoice = OPPOSITE_OPEN_MENT; // 반대편 문이 열립니다.
+                if (bInvalid) xTmpCurVoice = OPPOSITE_OPEN_MENT; // 반대편 문이 열립니다.
             } else {
-                xTmpCurVoice = OPEN_MENT; // 문이 열립니다 !
+                if (bInvalid) xTmpCurVoice = OPEN_MENT; // 문이 열립니다 !
             }
             xbOpened = TRUE;
             UpDnVoiceTimer = 0;
         } else if (xbOpened && ELE_bOUT_CL) { // close : 문이 이미 열려있는 상태에서 close 출력이 나오면
-            xTmpCurVoice = CLOSE_MENT; // 문이 닫힙니다 !
+            if (bInvalid) xTmpCurVoice = CLOSE_MENT; // 문이 닫힙니다 !
             xbOpened = FALSE;
         }
 
@@ -1194,9 +1196,11 @@ void SetDipSW() {
     RcvBuf[IdPt+S0_FLOOR] = 0x0;
 
     if (!_DIPSW2) {
-        bSetCarBtnVoice = TRUE;
+        bDipSw2On = TRUE;
+		bInvalid = TRUE; // 러시아 장애인용 이면, 소리가 나게 (올라갑니다, 내려갑니다, 열립니다. 닫힙니다.)
     } else {
-        bSetCarBtnVoice = FALSE;
+        bDipSw2On = FALSE;
+		bInvalid = FALSE;
     }
     if (!_DIPSW1) {
         TestVoicePlay();
@@ -1292,7 +1296,7 @@ void main(void) {
     InitVoice();
     SetDipSW();
     SetVoice(); // 각종 셋팅 여부
-    if (bSetSong) bSetCarBtnVoice = FALSE;
+    if (bSetSong) bDipSw2On = FALSE;
 
 
 
@@ -1337,7 +1341,7 @@ void main(void) {
             TmpCurVoice = GetVoice_State(TmpCurVoice, now_ment);
             if (bDingdong == FALSE) TmpCurVoice = GetVoice_OpenCloseUpDn(TmpCurVoice);
             TmpCurVoice = GetVoice_Floor(TmpCurVoice, get_floorment());
-            if (bSetCarBtnVoice) TmpCurVoice = GetVoice_CarCall(TmpCurVoice, CurCarKey, BefCarKey);
+            TmpCurVoice = GetVoice_CarCall(TmpCurVoice, CurCarKey, BefCarKey);
             if (bSetSong) TmpCurVoice = GetVoice_Song(TmpCurVoice);
         }
 
