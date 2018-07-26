@@ -143,6 +143,7 @@ typedef	unsigned int	bool;
 #define         MINUS_3_BTN            	FLOOR_B7+103 //111
 #define         MINUS_4_BTN            	FLOOR_B7+104 //112
 #define         MINUS_5_BTN            	FLOOR_B7+105 //113
+#define			URGENT_CALL				FLOOR_B7+106 // 114
 #define         NO_MENT                 0xff // ¸àÆ® ¾øÀ½
 
 
