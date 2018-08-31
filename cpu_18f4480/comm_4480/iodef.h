@@ -13,8 +13,8 @@
 
 //#define		NEW_CAR						1
 //#define		NEW_HIB_HPI					1
-//#define		NEW_ES15					1
-#define		NEW_VOICE					1
+#define		NEW_ES15					1
+//#define		NEW_VOICE					1
 //#define		NEW_CAN_IO_32_BCD			1
 //#define		NEW_CAN_IO_32_FLR_ONOFF		1
 //#define		NEW_CAN_IO_8				1
@@ -68,7 +68,7 @@
 
 
 
-//#define __TYPE_DIRECT_BCD // BCD1_LAMP ~ BCD4_LAMP에 대하여 출력값을 직접 입력해야 한다. (Direct 또는 BCD에 따라)
+#define __TYPE_DIRECT_BCD // BCD1_LAMP ~ BCD4_LAMP에 대하여 출력값을 직접 입력해야 한다. (Direct 또는 BCD에 따라)
 
 //#define	RUSSIA_FONT
 

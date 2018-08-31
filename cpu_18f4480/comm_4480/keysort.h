@@ -23,7 +23,7 @@ extern	void	MyConfigSet(void);
 
 
 
-                                                                                                                                                                                                
+
 #define     IsCarClose(pt)                          (RcvBuf[pt + S1_STATE] & S1_CLOSE)              ? (1) : (0)
 #define     IsCarMainOpen(pt)                       (RcvBuf[pt + S1_STATE] & S1_OPEN)               ? (1) : (0)
 #define     IsCarSubOpen(pt)                        (RcvBuf[pt + S3_STATE] & S3_OPEN_SUB)           ? (1) : (0)
@@ -36,9 +36,15 @@ extern	void	MyConfigSet(void);
 #define     IsCarAuto(pt)                            (RcvBuf[pt + S1_STATE] & S1_AUTO)              ? (1) : (0)
 #define     IsCarManual(pt)                          (!(RcvBuf[pt + S1_STATE] & S1_AUTO))           ? (1) : (0)
 #define     IsCarEmg(pt)                             (RcvBuf[pt + S1_STATE] & S1_EMG)               ? (1) : (0)
-#define     IsCarFire(pt)                            (RcvBuf[pt + S2_STATE] & S2_FIRE)              ? (1) : (0)
-#define     IsCarMove(pt)                            (RcvBuf[pt + S2_STATE] & S2_CAR_MOVE)          ? (1) : (0)
-#define     IsCarExtButClr(pt)                       (RcvBuf[pt + S2_STATE] & S2_EXT_BUT_CLR)       ? (1) : (0)
+
+#define     IsCarFire(pt)		(RcvBuf[pt + S2_STATE] & S2_FIRE)       	? (1) : (0)
+#define     IsCarMove(pt)		(RcvBuf[pt + S2_STATE] & S2_CAR_MOVE)   	? (1) : (0)
+#define     IsCarExtButClr(pt)	(RcvBuf[pt + S2_STATE] & S2_EXT_BUT_CLR)	? (1) : (0)
+#define 	IsVoiceFlow(pt) 	(((RcvBuf[pt + S2_STATE] & S2_FLOW) != 0x00)?		1:0) // 음성시작
+
+#define 	isOUT_OP(pt)  	(((RcvBuf[pt + SL_OUT_OP] & 0x01) == 0x0)?	0:1)
+
+
 #define     IsCarParking(pt)                         (RcvBuf[pt + S3_STATE] & S3_PARKING)           ? (1) : (0)
 #define     IsCarVip(pt)                             (RcvBuf[pt + S3_STATE] & S3_VIP)               ? (1) : (0)
 #define     IsCarFull(pt)                            (RcvBuf[pt + S3_STATE] & S3_FULL)              ? (1) : (0)
@@ -60,6 +66,7 @@ extern	void	MyConfigSet(void);
 #define     IsYouDn(pt)                             ( pt & DN_READY)                         		? (1) : (0)
 #define     IsYouUpOrDn(pt)                         ((pt & UPDN_READY))                             ? (1) : (0)
 
+#define 	systemStatus(pt)  RcvBuf[pt + SL_mSysStatus]
 
 
 #ifdef		FLOOR_64

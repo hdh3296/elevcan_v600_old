@@ -10,6 +10,8 @@
 #include        "keysort.h"
 #include        "setup.h"
 
+typedef unsigned int	bool;
+
 
 extern	bit	bDoorOpenWaitOn;
 
@@ -470,12 +472,62 @@ void out_lcdDisplay(unsigned char id)
 }
 
 
-void out_1_1_flr(unsigned char id)
-{
+void initAllOutLamp(void) {
+	BCD1_LAMP=0;
+	BCD2_LAMP=0;
+	BCD3_LAMP=0;
+	BCD4_LAMP=0;
+	BCD5_LAMP=0;
+	BCD6_LAMP=0;
+	BCD7_LAMP=0;
+	BCD8_LAMP=0;
+}
+
+
+
+bool isFlowed(unsigned char id) {
+	unsigned int IdPt = IsBufferPt(id);
+	static bool flowed = 0;
+
+	if (IsVoiceFlow(IdPt)) {
+		flowed = 1;
+	}
+
+	if (isOUT_OP(IdPt)) {
+		flowed = 0;
+	}
+
+	return flowed;
+}
+
+bool isNormal(unsigned char id) {
+	unsigned int IdPt = IsBufferPt(id);
+
+	if (systemStatus(IdPt) <= 44) {
+		return 0;
+	}
+	return 1;
+}
+
+bool enableOutLampCondition(unsigned char id) {
+
+	if (isFlowed(id) && isNormal(id)) {
+		return 1;
+	}
+	return 0;
+}
+
+void out_1_1_flr(unsigned char id) {
 	unsigned int    IdPt;
 
 	IdPt=IsBufferPt(id);
 
+
+
+	if (!enableOutLampCondition(id)) {
+		initAllOutLamp();
+		return;
+	}
 
 	switch(RcvBuf[IdPt])
 	{
@@ -714,8 +766,8 @@ unsigned char   Lamp(unsigned char id)
 
 #if defined(__TYPE_DIRECT_BCD)
 
-	out_lcdDisplay(id); // 만일, LCD 용이면 이 함수를 사요하세요.
-	//out_1_1_flr(id);
+//	out_lcdDisplay(id); // 만일, LCD 용이면 이 함수를 사요하세요.
+	out_1_1_flr(id);
 
 
 
