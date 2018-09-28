@@ -101,6 +101,7 @@ extern	void	MyConfigSet(void);
 #define     IsBufferPt(pt)                     		  ((pt * HOST_DATA_RECOD) + RCV_DATA)
 
 
+
 #define     GetMode(t_offset)                   	(t_offset / 8)
 #define     GetBitPoint(t_offset)                   (0x01 << (t_offset % 8))
 

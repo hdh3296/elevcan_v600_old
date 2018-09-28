@@ -483,54 +483,8 @@ void initAllOutLamp(void) {
 	BCD8_LAMP=0;
 }
 
-
-
-bool isFlowed(unsigned char id) {
-	unsigned int IdPt = IsBufferPt(id);
-	static bool flowed = 0;
-
-	if (IsVoiceFlow(IdPt)) {
-		flowed = 1;
-	}
-
-	if (isOUT_OP(IdPt)) {
-		flowed = 0;
-	}
-
-	return flowed;
-}
-
-bool isNormal(unsigned char id) {
-	unsigned int IdPt = IsBufferPt(id);
-
-	if (systemStatus(IdPt) <= 44) {
-		return 0;
-	}
-	return 1;
-}
-
-bool enableOutLampCondition(unsigned char id) {
-
-	if (isFlowed(id) && isNormal(id)) {
-		return 1;
-	}
-	return 0;
-}
-
-void out_1_1_flr(unsigned char id) {
-	unsigned int    IdPt;
-
-	IdPt=IsBufferPt(id);
-
-
-
-	if (!enableOutLampCondition(id)) {
-		initAllOutLamp();
-		return;
-	}
-
-	switch(RcvBuf[IdPt])
-	{
+void outDot1_1FlrNow(unsigned char destFlr) {
+	switch(destFlr) {
 		case	1:
 			BCD1_LAMP=1;
 			BCD2_LAMP=0;
@@ -614,6 +568,83 @@ void out_1_1_flr(unsigned char id) {
 			break;
 	}
 
+}
+
+
+bool isFlowed(unsigned char id) {
+	unsigned int IdPt = IsBufferPt(id);
+	static bool flowed = 0;
+
+	if (IsVoiceFlow(IdPt)) {
+		flowed = 1;
+	}
+
+	if (isOUT_OP(IdPt)) {
+		// 도어 오픈 출력이 나가면
+		flowed = 0;
+	}
+
+	return flowed;
+}
+
+bool isNormal(unsigned int IdPt) {
+	if (systemStatus(IdPt) <= 44) {
+		return 0;
+	}
+	return 1;
+}
+
+
+unsigned char destFlr(unsigned int IdPt) {
+
+	return (RcvBuf[IdPt + DEST_FLR] & 0b00011111) + 1;
+}
+
+typedef enum {
+	DISABLE = 0,
+	ENABLE = 1,
+} t_TrafficLight;
+
+bool disableOutLampCondition(unsigned char id) {
+	unsigned int IdPt = IsBufferPt(id);
+
+	if (! isNormal(IdPt)) {
+		// 비정상 적일 때
+		return DISABLE;
+	}
+
+	if (isOUT_OP(IdPt)) {
+		// 문이 열릴 때
+		return DISABLE;
+	}
+
+	if (systemStatus(IdPt) == 57) {
+		return DISABLE;
+	}
+
+	return ENABLE;
+}
+
+void out_1_1_flr(unsigned char id) {
+	unsigned int    IdPt;
+	unsigned char	nDestFlr;
+	bool 			bMoving;
+	IdPt = IsBufferPt(id);
+
+	if (disableOutLampCondition(id) == DISABLE) {
+		// off 해야하는 상황이면
+		// off 한다.
+		initAllOutLamp();
+		return;
+	}
+
+	if (IsCarMove(IdPt)) {
+		// 주행 중일 때만 출력 변경해주면 된다.
+		nDestFlr = destFlr(IdPt);
+		outDot1_1FlrNow(nDestFlr);
+	} else {
+		initAllOutLamp();
+	}
 }
 
 #endif
@@ -766,7 +797,10 @@ unsigned char   Lamp(unsigned char id)
 
 #if defined(__TYPE_DIRECT_BCD)
 
-//	out_lcdDisplay(id); // 만일, LCD 용이면 이 함수를 사요하세요.
+/*	#0928 카리프트 신호등
+
+	엘리베이터가 목적층을 향해 출발하면 목적층에 해당하는 ABCD.. 접점 출력 !!!
+*/
 	out_1_1_flr(id);
 
 
