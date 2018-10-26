@@ -644,6 +644,23 @@ unsigned char    GetVoice_State(UCHAR xTmpCurVoice, UCHAR xCurVoice) {
     if (xTmpCurVoice != NO_MENT)
         return xTmpCurVoice;
 
+	// 화재
+	if (!ELE_bIN_FIR) {
+		bHajaeMentEn = TRUE;
+	}
+
+	if (ELE_bIN_FR1 || ELE_bIN_FR2) {
+		bHajaeMentEn = FALSE;
+	} else {
+		bHajaeMentEn = TRUE;
+	}
+
+	if (ELE_bIN_FIR && (xCurVoice != HWAJAE_MENT) && bHajaeMentEn) {
+		return HWAJAE_MENT;
+	}
+
+
+
     // 파킹
     if (ELE_bPARKING_READY  && (xCurVoice != PARKING_MENT)) {
         xTmpCurVoice = PARKING_MENT;
@@ -660,18 +677,6 @@ unsigned char    GetVoice_State(UCHAR xTmpCurVoice, UCHAR xCurVoice) {
         xTmpCurVoice = OVERLOAD_MENT;
     }
 
-    // 화재
-    if (!ELE_bFIRE) {
-        bHajaeMentEn = TRUE;
-    }
-
-    if (ELE_bIN_FR1) {
-        bHajaeMentEn = FALSE;
-    }
-
-    if (ELE_bFIRE && (xCurVoice != HWAJAE_MENT) && bHajaeMentEn) {
-        xTmpCurVoice = HWAJAE_MENT;
-    }
 
     // 비상
     // [151006] 자동시에만 EMG MENT 출력 되도록 수정
@@ -688,7 +693,7 @@ unsigned char    GetVoice_State(UCHAR xTmpCurVoice, UCHAR xCurVoice) {
         xTmpCurVoice = POWER_DOWN_MENT;
     }
 
-    return xTmpCurVoice;
+	return xTmpCurVoice;
 
 }
 
